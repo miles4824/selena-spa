@@ -68,7 +68,7 @@ def build():
 
       <div class="mt-3 flex items-center justify-center gap-1.5 text-xs">
         <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-300 font-medium font-mono">
-          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-purple-400"></i> v0.0.0.1 • Selena Spa
+          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-purple-400"></i> v0.0.0.2 • Selena Spa
         </span>
       </div>
 
