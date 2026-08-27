@@ -68,7 +68,7 @@ def build():
 
       <div class="mt-3 flex items-center justify-center gap-1.5 text-xs">
         <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-300 font-medium">
-          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-purple-400"></i> v1.7 • Chuẩn Hóa SĐT 09x & Định Dạng Ngày Giờ
+          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-purple-400"></i> v1.8 • Tăng Font Chữ Rõ Nét & Chuẩn Format 2026/08/27 - 16:46
         </span>
       </div>
 
@@ -506,15 +506,23 @@ def build():
 
     function formatAppDateTime(d = new Date()) {
       if (!d) return '';
-      const dateObj = (d instanceof Date) ? d : new Date(d);
-      if (isNaN(dateObj.getTime())) {
-        let str = String(d).trim();
-        if (str.includes('GMT')) {
+      if (typeof d === 'string') {
+        let str = d.trim();
+        if (str.includes('GMT') || str.includes('T')) {
           const parsed = new Date(str);
           if (!isNaN(parsed.getTime())) return formatAppDateTime(parsed);
         }
-        return str.replace(/-/g, '/');
+        let parts = str.split(' - ');
+        if (parts.length === 2) {
+          return parts[0].replace(/-/g, '/') + ' - ' + parts[1];
+        } else if (str.includes(' / ')) {
+          return str.replace(' / ', ' - ').replace(/-/g, '/');
+        } else {
+          return str.replace(/-/g, '/');
+        }
       }
+      const dateObj = (d instanceof Date) ? d : new Date(d);
+      if (isNaN(dateObj.getTime())) return String(d);
       const y = dateObj.getFullYear();
       const m = String(dateObj.getMonth() + 1).padStart(2, '0');
       const day = String(dateObj.getDate()).padStart(2, '0');
@@ -1022,14 +1030,26 @@ def build():
       document.getElementById('admin-receipt-count').innerText = receipts.length + ' hóa đơn';
       const tableBody = document.getElementById('admin-receipts-table-body');
       tableBody.innerHTML = receipts.map(r => `
-        <tr class="hover:bg-white/5 transition">
-          <td class="py-3 font-mono text-[11px] text-slate-400">${r.receipt_id}<br><span class="text-[10px] text-slate-500 font-mono">${formatAppDateTime(r.date)}</span></td>
-          <td class="py-3 font-medium text-white">${r.service_name}</td>
-          <td class="py-3 text-slate-300">${r.customer_name}<br><span class="text-[10px] text-slate-500 font-mono">${normalizePhone(r.customer_phone)}</span></td>
-          <td class="py-3"><span class="px-2 py-0.5 rounded-md bg-purple-500/10 text-purple-300 text-[11px]">${r.staff_name}</span></td>
-          <td class="py-3 text-right font-bold text-emerald-400 font-heading">${r.total_paid.toLocaleString('vi-VN')} đ</td>
-          <td class="py-3 text-right">
-            <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold ${r.payment_method === 'Chuyển khoản' || r.payment_method === 'Transfer' ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30' : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'}">
+        <tr class="hover:bg-white/5 transition border-b border-white/5">
+          <td class="py-4 font-mono">
+            <div class="text-xs font-bold text-slate-200 font-mono">${r.receipt_id}</div>
+            <div class="text-xs text-purple-400 font-mono mt-0.5">${formatAppDateTime(r.date)}</div>
+          </td>
+          <td class="py-4">
+            <div class="text-sm font-bold text-white">${r.service_name}</div>
+          </td>
+          <td class="py-4">
+            <div class="text-sm font-semibold text-slate-200">${r.customer_name}</div>
+            <div class="text-xs text-slate-400 font-mono">${normalizePhone(r.customer_phone)}</div>
+          </td>
+          <td class="py-4">
+            <span class="px-2.5 py-1 rounded-lg bg-purple-500/15 text-purple-300 text-xs font-semibold border border-purple-500/20 whitespace-nowrap">${r.staff_name}</span>
+          </td>
+          <td class="py-4 text-right">
+            <span class="text-sm sm:text-base font-extrabold text-emerald-400 font-heading">${r.total_paid.toLocaleString('vi-VN')} đ</span>
+          </td>
+          <td class="py-4 text-right">
+            <span class="px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap ${r.payment_method === 'Chuyển khoản' || r.payment_method === 'Transfer' ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30' : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'}">
               ${r.payment_method === 'Chuyển khoản' || r.payment_method === 'Transfer' ? 'Chuyển khoản' : 'Tiền mặt'}
             </span>
           </td>
@@ -1038,13 +1058,13 @@ def build():
 
       const expContainer = document.getElementById('admin-expenses-list');
       expContainer.innerHTML = expenses.map(e => `
-        <div class="p-4 rounded-2xl bg-white/5 border border-white/5 space-y-1.5">
+        <div class="p-4 sm:p-5 rounded-2xl bg-white/5 border border-white/5 space-y-2">
           <div class="flex justify-between items-center">
-            <span class="px-2 py-0.5 rounded-md bg-red-500/10 text-red-300 font-bold text-xs">${e.expense_type}</span>
-            <span class="text-[11px] text-slate-400 font-mono">${formatAppDateTime(e.date)}</span>
+            <span class="px-2.5 py-1 rounded-lg bg-red-500/10 text-red-300 font-bold text-xs">${e.expense_type}</span>
+            <span class="text-xs text-slate-400 font-mono">${formatAppDateTime(e.date)}</span>
           </div>
-          <div class="text-lg font-extrabold text-white font-heading">${e.amount.toLocaleString('vi-VN')} đ</div>
-          <div class="text-xs text-slate-400">${e.note || 'Không có ghi chú'}</div>
+          <div class="text-xl font-extrabold text-white font-heading">${e.amount.toLocaleString('vi-VN')} đ</div>
+          <div class="text-xs text-slate-300">${e.note || 'Không có ghi chú'}</div>
         </div>
       `).join('');
 
