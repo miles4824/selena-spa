@@ -80,7 +80,7 @@ def build():
 
       <div class="pt-1 flex items-center justify-center">
         <span class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#FFF0EB] border border-[#FCDFD7] text-[#E58A7B] text-xs font-semibold font-mono">
-          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-[#E58A7B]"></i> v0.0.0.6 • Selena Spa
+          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-[#E58A7B]"></i> v0.0.0.7 • Selena Spa
         </span>
       </div>
 
@@ -1355,7 +1355,7 @@ def build():
 
     function saveGasUrl() {
       const url = document.getElementById('setting-gas-url').value.trim();
-      localStorage.setItem('selena_gas_url', url);
+      localStorage.setItem('selena_gas_url', url || DEFAULT_GAS_URL);
       alert('✅ Đã lưu cấu hình Google Apps Script URL!');
       refreshDataFromGoogleSheets();
     }
@@ -1367,12 +1367,24 @@ def build():
       localStorage.removeItem('selena_expenses');
       localStorage.removeItem('selena_users');
       localStorage.removeItem('selena_menu');
+      localStorage.removeItem('selena_gas_url');
       alert('🧹 Đã xóa cache thành công! Đang đồng bộ lại từ Google Sheets...');
       refreshDataFromGoogleSheets();
     }
 
+    const DEFAULT_GAS_URL = 'https://script.google.com/macros/s/AKfycbwQ-Dwr2zCWWWMPWBCyVIfwDirofgvjD8S7Ug-5OSNLHvM63Gw0nSCa10BqhpD5g8id/exec';
+
+    function getGasUrl() {
+      let url = localStorage.getItem('selena_gas_url') || DEFAULT_GAS_URL;
+      if (!url || url.includes('AKfycbyLuh0304rL-59hJq-wzP3h-a6lH-v9C-s')) {
+        url = DEFAULT_GAS_URL;
+        localStorage.setItem('selena_gas_url', DEFAULT_GAS_URL);
+      }
+      return url;
+    }
+
     async function callGasApi(action, payload = {}) {
-      const gasUrl = localStorage.getItem('selena_gas_url') || 'https://script.google.com/macros/s/AKfycbyLuh0304rL-59hJq-wzP3h-a6lH-v9C-s/exec';
+      const gasUrl = getGasUrl();
       if (!gasUrl || !gasUrl.startsWith('http')) return null;
 
       try {
@@ -1390,11 +1402,13 @@ def build():
 
     async function refreshDataFromGoogleSheets() {
       const btn = document.getElementById('btn-sync-cloud');
-      if (btn) btn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin text-[#E58A7B]"></i> <span class="hidden sm:inline">Đang tải...</span>';
-      lucide.createIcons();
+      if (btn) {
+        btn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin text-[#E58A7B]"></i> <span class="hidden sm:inline">Đang tải...</span>';
+        lucide.createIcons();
+      }
 
       const result = await callGasApi('sync_all_data');
-      if (result && result.status === 'success' && result.data) {
+      if (result && (result.status === 'success' || result.success === true) && result.data) {
         if (result.data.menu && result.data.menu.length > 0) setStored('menu', result.data.menu);
         if (result.data.users && result.data.users.length > 0) setStored('users', result.data.users);
         if (result.data.customers) setStored('customers', result.data.customers);
@@ -1412,8 +1426,10 @@ def build():
         }
       }
 
-      if (btn) btn.innerHTML = '<i data-lucide="cloud-check" class="w-4 h-4 text-[#2E7D6D]"></i> <span class="hidden sm:inline">Đồng bộ Sheet</span>';
-      lucide.createIcons();
+      if (btn) {
+        btn.innerHTML = '<i data-lucide="cloud-check" class="w-4 h-4 text-[#2E7D6D]"></i> <span class="hidden sm:inline">Đồng bộ Sheet</span>';
+        lucide.createIcons();
+      }
     }
 
     function renderQuickAccounts() {
@@ -1463,11 +1479,8 @@ def build():
       initMenuUI();
       renderQuickAccounts();
 
-      const savedUrl = localStorage.getItem('selena_gas_url');
-      if (savedUrl) {
-        const inp = document.getElementById('setting-gas-url');
-        if (inp) inp.value = savedUrl;
-      }
+      const inp = document.getElementById('setting-gas-url');
+      if (inp) inp.value = getGasUrl();
 
       const activeSession = localStorage.getItem('selena_active_session');
       if (activeSession) {
