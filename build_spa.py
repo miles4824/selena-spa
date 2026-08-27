@@ -1,4 +1,8 @@
-<!DOCTYPE html>
+# -*- coding: utf-8 -*-
+import os
+
+def build():
+    p1_head = """<!DOCTYPE html>
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
@@ -38,7 +42,9 @@
   </style>
 </head>
 <body class="min-h-screen flex flex-col selection:bg-purple-500/30">
-  <!-- 1. PHONE + PASSWORD LOGIN SCREEN -->
+"""
+
+    p2_login = """  <!-- 1. PHONE + PASSWORD LOGIN SCREEN -->
   <div id="screen-login" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0f111a]/95 backdrop-blur-2xl">
     <div class="w-full max-w-sm glass-card rounded-3xl p-6 sm:p-8 shadow-2xl border border-white/10 text-center relative">
       <div class="inline-flex p-3.5 rounded-2xl bg-gradient-to-tr from-purple-600/30 to-rose-500/20 border border-purple-500/30 shadow-lg shadow-purple-500/10 mb-3">
@@ -108,7 +114,9 @@
       </div>
     </div>
   </div>
-  <!-- 2. NAVBAR -->
+"""
+
+    p3_navbar = """  <!-- 2. NAVBAR -->
   <header id="main-header" class="hidden sticky top-0 z-40 glass-card border-b border-white/5 px-4 py-3 backdrop-blur-xl">
     <div class="max-w-5xl mx-auto flex items-center justify-between">
       <div class="flex items-center gap-2.5">
@@ -132,7 +140,9 @@
       </div>
     </div>
   </header>
-  <!-- 3. STAFF POS VIEW -->
+"""
+
+    p4_staff_pos = """  <!-- 3. STAFF POS VIEW -->
   <main id="view-staff-pos" class="hidden flex-1 p-4 sm:p-6 max-w-xl w-full mx-auto space-y-4 pb-24">
     <div class="glass-card rounded-2xl p-4 flex items-center justify-between border border-white/5">
       <div class="flex items-center gap-3">
@@ -222,7 +232,9 @@
       </div>
     </div>
   </main>
-  <!-- 4. STAFF SALARY VIEW -->
+"""
+
+    p5_staff_history = """  <!-- 4. STAFF SALARY VIEW -->
   <main id="view-staff-history" class="hidden flex-1 p-4 sm:p-6 max-w-xl w-full mx-auto space-y-4 pb-24">
     <div class="flex justify-between items-center px-1">
       <div>
@@ -260,7 +272,9 @@
       <div id="staff-receipts-list" class="space-y-2"></div>
     </div>
   </main>
-  <!-- 5. ADMIN DASHBOARD VIEW -->
+"""
+
+    p6_admin = """  <!-- 5. ADMIN DASHBOARD VIEW -->
   <main id="view-admin-dashboard" class="hidden flex-1 p-4 sm:p-6 max-w-5xl w-full mx-auto space-y-6 pb-24">
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
       <div>
@@ -424,7 +438,9 @@
       </form>
     </div>
   </div>
-  <!-- 9. JAVASCRIPT LOGIC -->
+"""
+
+    p7_js = """  <!-- 9. JAVASCRIPT LOGIC -->
   <script>
     const DEFAULT_MENU = [
       { service_id: 'CB_BE', service_name: 'Combo Bé (Gội cơ bản)', price: 45000, duration_min: 30, cosmetics_cost: 4500, commission_value: 4500 },
@@ -930,3 +946,16 @@
   </script>
 </body>
 </html>
+"""
+
+    full_html = p1_head + p2_login + p3_navbar + p4_staff_pos + p5_staff_history + p6_admin + p7_js
+    
+    target_path = r'c:\Users\Miles\Downloads\Selena\selena-spa.html'
+    with open(target_path, 'w', encoding='utf-8') as f:
+        f.write(full_html)
+    
+    print('SUCCESS: Created selena-spa.html (Size: ' + str(len(full_html)) + ' bytes)')
+
+if __name__ == '__main__':
+    build()
+

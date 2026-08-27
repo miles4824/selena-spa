@@ -38,56 +38,72 @@
   </style>
 </head>
 <body class="min-h-screen flex flex-col selection:bg-purple-500/30">
-  <!-- 1. PIN LOGIN SCREEN -->
+  <!-- 1. PHONE + PASSWORD LOGIN SCREEN -->
   <div id="screen-login" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0f111a]/95 backdrop-blur-2xl">
     <div class="w-full max-w-sm glass-card rounded-3xl p-6 sm:p-8 shadow-2xl border border-white/10 text-center relative">
       <div class="inline-flex p-3.5 rounded-2xl bg-gradient-to-tr from-purple-600/30 to-rose-500/20 border border-purple-500/30 shadow-lg shadow-purple-500/10 mb-3">
         <i data-lucide="sparkles" class="w-8 h-8 text-purple-400"></i>
       </div>
       <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight font-heading">SELENA SPA</h1>
-      <p class="text-xs text-slate-400 mt-1">Hệ Thống Quản Lý Nội Bộ & Bán Hàng</p>
+      <p class="text-xs text-slate-400 mt-1">Đăng Nhập Tài Khoản Nội Bộ</p>
 
-      <div class="mt-4 flex items-center justify-center gap-1.5 text-xs">
+      <div class="mt-3 flex items-center justify-center gap-1.5 text-xs">
         <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-medium">
-          <i data-lucide="wifi" class="w-3.5 h-3.5"></i> Wifi Tiệm: Đã kết nối an toàn
+          <i data-lucide="shield-check" class="w-3.5 h-3.5"></i> Bảo mật thiết bị riêng biệt
         </span>
       </div>
 
-      <div class="my-6">
-        <div class="text-xs text-slate-400 mb-3 font-medium">Nhập mã PIN để đăng nhập:</div>
-        <div class="flex justify-center items-center gap-3.5" id="pin-dots">
-          <div class="w-4 h-4 rounded-full bg-white/10 border border-white/20 transition-all duration-200"></div>
-          <div class="w-4 h-4 rounded-full bg-white/10 border border-white/20 transition-all duration-200"></div>
-          <div class="w-4 h-4 rounded-full bg-white/10 border border-white/20 transition-all duration-200"></div>
-          <div class="w-4 h-4 rounded-full bg-white/10 border border-white/20 transition-all duration-200"></div>
+      <!-- Form Login -->
+      <form onsubmit="handlePhoneLogin(event)" class="mt-5 space-y-3.5 text-left">
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1.5">Số điện thoại / Tài khoản:</label>
+          <div class="relative">
+            <input type="tel" id="login-phone" placeholder="0949251144" required class="w-full bg-[#141724] border border-white/10 rounded-2xl p-3.5 pl-10 text-white text-sm focus:outline-none focus:border-purple-500 transition font-mono">
+            <i data-lucide="phone" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+          </div>
         </div>
-      </div>
 
-      <div id="login-error" class="hidden mb-4 p-3 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs flex items-start gap-2 text-left">
-        <i data-lucide="alert-triangle" class="w-4 h-4 shrink-0 mt-0.5"></i>
-        <span id="login-error-text">Mã PIN không chính xác</span>
-      </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1.5">Mật khẩu:</label>
+          <div class="relative">
+            <input type="password" id="login-password" placeholder="••••••" required class="w-full bg-[#141724] border border-white/10 rounded-2xl p-3.5 pl-10 pr-10 text-white text-sm focus:outline-none focus:border-purple-500 transition">
+            <i data-lucide="lock" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+            <button type="button" onclick="togglePasswordVisibility()" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white cursor-pointer">
+              <i data-lucide="eye" id="pwd-eye-icon" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
 
-      <div class="grid grid-cols-3 gap-2.5 max-w-[260px] mx-auto">
-        <button onclick="pressPin('1')" class="h-14 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/5 text-xl font-bold text-white transition active:scale-90 font-heading cursor-pointer">1</button>
-        <button onclick="pressPin('2')" class="h-14 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/5 text-xl font-bold text-white transition active:scale-90 font-heading cursor-pointer">2</button>
-        <button onclick="pressPin('3')" class="h-14 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/5 text-xl font-bold text-white transition active:scale-90 font-heading cursor-pointer">3</button>
-        <button onclick="pressPin('4')" class="h-14 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/5 text-xl font-bold text-white transition active:scale-90 font-heading cursor-pointer">4</button>
-        <button onclick="pressPin('5')" class="h-14 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/5 text-xl font-bold text-white transition active:scale-90 font-heading cursor-pointer">5</button>
-        <button onclick="pressPin('6')" class="h-14 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/5 text-xl font-bold text-white transition active:scale-90 font-heading cursor-pointer">6</button>
-        <button onclick="pressPin('7')" class="h-14 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/5 text-xl font-bold text-white transition active:scale-90 font-heading cursor-pointer">7</button>
-        <button onclick="pressPin('8')" class="h-14 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/5 text-xl font-bold text-white transition active:scale-90 font-heading cursor-pointer">8</button>
-        <button onclick="pressPin('9')" class="h-14 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/5 text-xl font-bold text-white transition active:scale-90 font-heading cursor-pointer">9</button>
-        <button onclick="deletePin()" class="h-14 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/5 text-slate-400 hover:text-white transition active:scale-90 flex items-center justify-center cursor-pointer"><i data-lucide="delete" class="w-5 h-5"></i></button>
-        <button onclick="pressPin('0')" class="h-14 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/5 text-xl font-bold text-white transition active:scale-90 font-heading cursor-pointer">0</button>
-        <button onclick="submitPin()" class="h-14 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 border border-purple-500/30 text-xs font-bold text-white shadow-lg shadow-purple-500/20 transition active:scale-90 flex items-center justify-center uppercase tracking-wider font-heading cursor-pointer">Vào</button>
-      </div>
+        <!-- Remember Me Checkbox -->
+        <div class="flex items-center justify-between pt-1">
+          <label class="flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
+            <input type="checkbox" id="login-remember" checked class="w-4 h-4 accent-purple-600 rounded cursor-pointer">
+            <span>Ghi nhớ trên máy này</span>
+          </label>
+        </div>
 
-      <div class="mt-6 pt-5 border-t border-white/5">
-        <div class="text-[11px] text-slate-400 mb-2">Bấm thử tài khoản Demo:</div>
-        <div class="flex flex-wrap justify-center gap-1.5">
-          <button onclick="quickLogin('8888')" class="px-2.5 py-1 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/20 text-purple-300 text-[11px] font-medium transition cursor-pointer">👑 Chủ Tiệm (8888)</button>
-          <button onclick="quickLogin('1234')" class="px-2.5 py-1 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 text-emerald-300 text-[11px] font-medium transition cursor-pointer">💆 KTV Mai Lan (1234)</button>
+        <div id="login-error" class="hidden p-3 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs flex items-start gap-2">
+          <i data-lucide="alert-triangle" class="w-4 h-4 shrink-0 mt-0.5"></i>
+          <span id="login-error-text">Số điện thoại hoặc mật khẩu không đúng</span>
+        </div>
+
+        <button type="submit" class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-sm shadow-lg shadow-purple-500/25 transition active:scale-95 cursor-pointer uppercase tracking-wider flex items-center justify-center gap-2">
+          <i data-lucide="log-in" class="w-4 h-4"></i> Đăng Nhập Ngay
+        </button>
+      </form>
+
+      <!-- Quick Test Accounts -->
+      <div class="mt-5 pt-4 border-t border-white/5">
+        <div class="text-[11px] text-slate-400 mb-2 font-medium">Bấm thử đăng nhập nhanh (Demo):</div>
+        <div class="flex flex-col gap-1.5">
+          <button onclick="quickFillLogin('0949251144', '123456')" class="w-full p-2 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/20 text-purple-300 text-xs font-semibold transition flex items-center justify-between cursor-pointer">
+            <span>👑 Chủ Sáng Lập (0949251144)</span>
+            <span class="text-[10px] text-purple-400 font-mono">Pass: 123456</span>
+          </button>
+          <button onclick="quickFillLogin('0912345678', '123456')" class="w-full p-2 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 text-emerald-300 text-xs font-semibold transition flex items-center justify-between cursor-pointer">
+            <span>💆 KTV Mai Lan (0912345678)</span>
+            <span class="text-[10px] text-emerald-400 font-mono">Pass: 123456</span>
+          </button>
         </div>
       </div>
     </div>
@@ -420,8 +436,11 @@
     ];
 
     const DEFAULT_USERS = [
-      { user_id: 'ADMIN01', username: 'admin', pin: '8888', full_name: 'Chủ Tiệm Selena Spa', role: 'admin', salary_type: 'owner', base_salary: 0 },
-      { user_id: 'KTV01', username: 'ktv_lan', pin: '1234', full_name: 'KTV Mai Lan', role: 'staff', salary_type: 'fixed_10pct', base_salary: 2000000 }
+    // SUPREME FOUNDER + STAFF ACCOUNTS
+    const DEFAULT_USERS = [
+      { user_id: 'FOUNDER_01', phone: '0949251144', password: '123456', full_name: 'Miles (Chủ Sáng Lập)', role: 'admin', salary_type: 'owner', base_salary: 0 },
+      { user_id: 'KTV01', phone: '0912345678', password: '123456', full_name: 'KTV Mai Lan', role: 'staff', salary_type: 'fixed_10pct', base_salary: 2000000 },
+      { user_id: 'KTV02', phone: '0987654321', password: '123456', full_name: 'KTV Kim Hoa', role: 'staff', salary_type: 'commission_20pct', base_salary: 0 }
     ];
 
     const DEFAULT_CUSTOMERS = [
@@ -429,7 +448,6 @@
     ];
 
     let currentUser = null;
-    let currentPin = '';
     let selectedComboId = 'CB_01';
     let paymentMethod = 'Transfer';
     let currentCustomer = null;
@@ -456,64 +474,77 @@
       lucide.createIcons();
       initMenuUI();
       document.getElementById('setting-gas-url').value = localStorage.getItem('selena_gas_url') || '';
+
+      // Check auto-login saved session
+      const savedUser = localStorage.getItem('selena_active_session');
+      if (savedUser) {
+        try {
+          const u = JSON.parse(savedUser);
+          loginSuccess(u);
+        } catch(e) {}
+      }
     });
 
-    function pressPin(d) {
-      if (currentPin.length < 4) {
-        currentPin += d;
-        updatePinDots();
-        if (currentPin.length === 4) setTimeout(submitPin, 100);
+    function togglePasswordVisibility() {
+      const pwd = document.getElementById('login-password');
+      if (pwd.type === 'password') {
+        pwd.type = 'text';
+      } else {
+        pwd.type = 'password';
       }
     }
 
-    function deletePin() {
-      currentPin = currentPin.slice(0, -1);
-      updatePinDots();
-      document.getElementById('login-error').classList.add('hidden');
-    }
+    function handlePhoneLogin(e) {
+      e.preventDefault();
+      const phone = document.getElementById('login-phone').value.trim();
+      const pwd = document.getElementById('login-password').value.trim();
+      const remember = document.getElementById('login-remember').checked;
 
-    function updatePinDots() {
-      const dots = document.getElementById('pin-dots').children;
-      for (let i = 0; i < 4; i++) {
-        dots[i].className = i < currentPin.length 
-          ? 'w-4 h-4 rounded-full bg-purple-400 shadow-[0_0_12px_rgba(167,139,250,0.8)] scale-110 transition-all duration-200' 
-          : 'w-4 h-4 rounded-full bg-white/10 border border-white/20 transition-all duration-200';
-      }
-    }
-
-    function submitPin() {
       const users = getStored('users', DEFAULT_USERS);
-      const user = users.find(u => u.pin === currentPin || u.username === currentPin);
+      const user = users.find(u => (u.phone === phone || u.user_id === phone) && u.password === pwd);
 
       if (user) {
-        currentUser = user;
-        document.getElementById('screen-login').classList.add('hidden');
-        document.getElementById('main-header').classList.remove('hidden');
-        document.getElementById('mobile-nav').classList.remove('hidden');
-
-        document.getElementById('header-user-name').innerText = user.full_name;
-        document.getElementById('header-role-badge').innerText = user.role === 'admin' ? '👑 Quyền Chủ Tiệm' : '💆 Kỹ Thuật Viên';
-
-        if (user.role === 'admin') showView('admin');
-        else showView('pos');
+        if (remember) {
+          localStorage.setItem('selena_active_session', JSON.stringify(user));
+        } else {
+          localStorage.removeItem('selena_active_session');
+        }
+        loginSuccess(user);
       } else {
         document.getElementById('login-error').classList.remove('hidden');
-        document.getElementById('login-error-text').innerText = 'Mã PIN không đúng. Thử 8888 (Chủ) hoặc 1234 (KTV).';
-        currentPin = '';
-        updatePinDots();
+        document.getElementById('login-error-text').innerText = 'Số điện thoại hoặc mật khẩu không chính xác!';
       }
     }
 
-    function quickLogin(pin) {
-      currentPin = pin;
-      updatePinDots();
-      submitPin();
+    function quickFillLogin(phone, pwd) {
+      document.getElementById('login-phone').value = phone;
+      document.getElementById('login-password').value = pwd;
+      document.getElementById('login-error').classList.add('hidden');
+      
+      const users = getStored('users', DEFAULT_USERS);
+      const user = users.find(u => u.phone === phone);
+      if (user) {
+        localStorage.setItem('selena_active_session', JSON.stringify(user));
+        loginSuccess(user);
+      }
+    }
+
+    function loginSuccess(user) {
+      currentUser = user;
+      document.getElementById('screen-login').classList.add('hidden');
+      document.getElementById('main-header').classList.remove('hidden');
+      document.getElementById('mobile-nav').classList.remove('hidden');
+
+      document.getElementById('header-user-name').innerText = user.full_name;
+      document.getElementById('header-role-badge').innerText = user.role === 'admin' ? '👑 Chủ Sáng Lập' : '💆 Kỹ Thuật Viên';
+
+      if (user.role === 'admin') showView('admin');
+      else showView('pos');
     }
 
     function logout() {
       currentUser = null;
-      currentPin = '';
-      updatePinDots();
+      localStorage.removeItem('selena_active_session');
       document.getElementById('screen-login').classList.remove('hidden');
       document.getElementById('main-header').classList.add('hidden');
       document.getElementById('mobile-nav').classList.add('hidden');
