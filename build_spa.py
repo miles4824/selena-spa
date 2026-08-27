@@ -464,7 +464,6 @@ def build():
       { service_id: 'CB_05', service_name: 'Combo 5 (Đại tiệc Thư giãn Hoàng Gia)', price: 219000, duration_min: 110, cosmetics_cost: 22000, commission_value: 22000 }
     ];
 
-    const DEFAULT_USERS = [
     // SUPREME FOUNDER + STAFF ACCOUNTS
     const DEFAULT_USERS = [
       { user_id: 'FOUNDER_01', phone: '0949251144', password: '123456', full_name: 'Miles (Chủ Sáng Lập)', role: 'admin', salary_type: 'owner', base_salary: 0 },
@@ -491,7 +490,13 @@ def build():
     }
 
     if (!localStorage.getItem('selena_menu')) setStored('menu', DEFAULT_MENU);
-    if (!localStorage.getItem('selena_users')) setStored('users', DEFAULT_USERS);
+    
+    // Always refresh users if old schema was present
+    const storedUsers = getStored('users', []);
+    if (!storedUsers.length || !storedUsers[0].phone) {
+      setStored('users', DEFAULT_USERS);
+    }
+    
     if (!localStorage.getItem('selena_customers')) setStored('customers', DEFAULT_CUSTOMERS);
     if (!localStorage.getItem('selena_receipts')) setStored('receipts', []);
     if (!localStorage.getItem('selena_expenses')) setStored('expenses', [
