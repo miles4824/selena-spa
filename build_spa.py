@@ -68,7 +68,7 @@ def build():
 
       <div class="mt-3 flex items-center justify-center gap-1.5 text-xs">
         <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-300 font-medium">
-          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-purple-400"></i> v1.4 • Đã kết nối Google Sheet
+          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-purple-400"></i> v1.5 • Đồng Bộ 2 Chiều Google Sheet
         </span>
       </div>
 
@@ -142,12 +142,15 @@ def build():
         </div>
       </div>
 
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-2.5">
+        <button id="btn-sync-cloud" onclick="refreshDataFromGoogleSheets()" title="Đồng bộ Google Sheets 2 chiều" class="px-2.5 py-1.5 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/20 text-purple-300 text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer">
+          <i data-lucide="cloud-check" class="w-3.5 h-3.5 text-emerald-400"></i> <span class="hidden sm:inline text-[11px]">Đồng bộ Sheet</span>
+        </button>
         <div class="hidden sm:flex flex-col text-right">
           <span id="header-user-name" class="text-xs font-bold text-white">Mai Lan</span>
           <span class="text-[10px] text-emerald-400">Đang hoạt động</span>
         </div>
-        <button onclick="logout()" title="Đăng xuất" class="p-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition border border-white/5 cursor-pointer">
+        <button onclick="logout()" title="Đăng xuất" class="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition border border-white/5 cursor-pointer">
           <i data-lucide="log-out" class="w-4 h-4"></i>
         </button>
       </div>
@@ -527,10 +530,42 @@ def build():
       { expense_id: 'EXP02', date: '2026-08-01', expense_type: 'Điện cố định', amount: 1000000, note: 'Điện chiếu sáng & máy lạnh' }
     ]);
 
+    async function refreshDataFromGoogleSheets(silent = false) {
+      const btn = document.getElementById('btn-sync-cloud');
+      if (btn && !silent) {
+        btn.innerHTML = '<i data-lucide="refresh-cw" class="w-3.5 h-3.5 animate-spin text-purple-300"></i> <span class="hidden sm:inline text-[11px]">Đang tải...</span>';
+        lucide.createIcons();
+      }
+
+      const res = await callGasApi('sync_all_data');
+      if (res && res.success && res.data) {
+        if (res.data.menu && res.data.menu.length) setStored('menu', res.data.menu);
+        if (res.data.users && res.data.users.length) setStored('users', res.data.users);
+        if (res.data.customers && res.data.customers.length) setStored('customers', res.data.customers);
+        if (res.data.receipts) setStored('receipts', res.data.receipts);
+        if (res.data.expenses) setStored('expenses', res.data.expenses);
+
+        initMenuUI();
+        if (currentUser?.role === 'admin') loadAdminDashboard();
+        else if (currentUser?.role === 'staff') {
+          updatePOSStaffInfo();
+          loadStaffHistory();
+        }
+      }
+
+      if (btn) {
+        btn.innerHTML = '<i data-lucide="cloud-check" class="w-3.5 h-3.5 text-emerald-400"></i> <span class="hidden sm:inline text-[11px]">Đã đồng bộ Sheet</span>';
+        lucide.createIcons();
+      }
+    }
+
     window.addEventListener('DOMContentLoaded', () => {
       lucide.createIcons();
       initMenuUI();
       document.getElementById('setting-gas-url').value = getGasUrl();
+
+      // Auto sync with Google Sheets on load
+      refreshDataFromGoogleSheets(true);
 
       // Check auto-login saved session
       const savedUser = localStorage.getItem('selena_active_session');

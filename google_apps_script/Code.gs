@@ -38,6 +38,10 @@ function handleRequest(e) {
         result = handleLogin(params);
         break;
 
+      case 'sync_all_data':
+        result = syncAllData();
+        break;
+
       case 'get_menu':
         result = getMenuList();
         break;
@@ -586,4 +590,128 @@ function formatDate(d) {
 
 function formatDateTime(d) {
   return Utilities.formatDate(d, 'GMT+7', 'yyyy-MM-dd HH:mm:ss');
+}
+
+// -------------------------------------------------------------
+// 8. ĐỒNG BỘ TOÀN DIỆN 2 CHIỀU (SYNC ALL DATA TỪ SHEET)
+// -------------------------------------------------------------
+function syncAllData() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  
+  // 1. Menu
+  const sheetMenu = ss.getSheetByName('tb_menu');
+  let menu = [];
+  if (sheetMenu) {
+    const data = sheetMenu.getDataRange().getValues();
+    for (let i = 1; i < data.length; i++) {
+      let r = data[i];
+      if (r[0] && r[1]) {
+        menu.push({
+          service_id: String(r[0]),
+          service_name: String(r[1]),
+          price: Number(r[2]) || 0,
+          duration_min: Number(r[3]) || 30,
+          cosmetics_cost: Number(r[4]) || 0,
+          commission_value: Number(r[6]) || (Number(r[2]) * 0.1)
+        });
+      }
+    }
+  }
+
+  // 2. Users
+  const sheetUsers = ss.getSheetByName('tb_users');
+  let users = [];
+  if (sheetUsers) {
+    const data = sheetUsers.getDataRange().getValues();
+    for (let i = 1; i < data.length; i++) {
+      let r = data[i];
+      if (r[0] && r[1]) {
+        users.push({
+          user_id: String(r[0]),
+          phone: String(r[1]),
+          password: String(r[2]),
+          full_name: String(r[3]),
+          role: String(r[4]),
+          salary_type: String(r[5]),
+          base_salary: Number(r[6]) || 0
+        });
+      }
+    }
+  }
+
+  // 3. Customers
+  const sheetCust = ss.getSheetByName('tb_customers');
+  let customers = [];
+  if (sheetCust) {
+    const data = sheetCust.getDataRange().getValues();
+    for (let i = 1; i < data.length; i++) {
+      let r = data[i];
+      if (r[0]) {
+        customers.push({
+          phone_number: String(r[0]),
+          customer_name: String(r[1]),
+          total_visits: Number(r[2]) || 0,
+          voucher_count: Number(r[3]) || 0,
+          notes: String(r[4] || '')
+        });
+      }
+    }
+  }
+
+  // 4. Receipts
+  const sheetRec = ss.getSheetByName('tb_receipts');
+  let receipts = [];
+  if (sheetRec) {
+    const data = sheetRec.getDataRange().getValues();
+    for (let i = data.length - 1; i >= 1; i--) {
+      let r = data[i];
+      if (r[0]) {
+        receipts.push({
+          receipt_id: String(r[0]),
+          date: String(r[2]),
+          customer_phone: String(r[3]),
+          customer_name: String(r[4]),
+          service_id: String(r[5]),
+          service_name: String(r[6]),
+          staff_id: String(r[7]),
+          staff_name: String(r[8]),
+          price: Number(r[9]) || 0,
+          commission_amount: Number(r[10]) || 0,
+          total_paid: Number(r[12]) || 0,
+          payment_method: String(r[13]),
+          is_voucher_used: Boolean(r[14])
+        });
+      }
+    }
+  }
+
+  // 5. Expenses
+  const sheetExp = ss.getSheetByName('tb_expenses');
+  let expenses = [];
+  if (sheetExp) {
+    const data = sheetExp.getDataRange().getValues();
+    for (let i = data.length - 1; i >= 1; i--) {
+      let r = data[i];
+      if (r[0]) {
+        expenses.push({
+          expense_id: String(r[0]),
+          date: String(r[1]),
+          expense_type: String(r[2]),
+          amount: Number(r[3]) || 0,
+          note: String(r[4] || '')
+        });
+      }
+    }
+  }
+
+  return {
+    success: true,
+    data: {
+      menu: menu,
+      users: users,
+      customers: customers,
+      receipts: receipts,
+      expenses: expenses
+    }
+  };
 }
