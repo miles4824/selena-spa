@@ -67,8 +67,8 @@ def build():
       <p class="text-xs text-slate-400 mt-1">Đăng Nhập Tài Khoản Nội Bộ</p>
 
       <div class="mt-3 flex items-center justify-center gap-1.5 text-xs">
-        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-medium">
-          <i data-lucide="shield-check" class="w-3.5 h-3.5"></i> Bảo mật thiết bị riêng biệt
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-300 font-medium">
+          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-purple-400"></i> v1.2 • Đã kết nối Google Sheet
         </span>
       </div>
 
