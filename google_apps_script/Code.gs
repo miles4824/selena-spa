@@ -261,7 +261,8 @@ function createReceipt(params) {
   // 2. Tìm thông tin nhân viên & cách tính lương qua SĐT hoặc staff_id
   let staffName = String(params.staff_name || '');
   let staffCode = String(params.staff_id || 'KTV01');
-  let staffSalaryType = 'fixed_10pct';
+  let staffSalaryType = 'fixed';
+  let commRate = 10;
   if (sheetUsers) {
     const usersData = sheetUsers.getDataRange().getValues();
     for (let i = 1; i < usersData.length; i++) {
@@ -271,19 +272,17 @@ function createReceipt(params) {
         staffCode = uStaffId || staffCode;
         staffName = String(usersData[i][4] || usersData[i][3] || staffName);
         staffSalaryType = String(usersData[i][6] || usersData[i][5] || staffSalaryType);
+        let rateRaw = String(usersData[i][7] || '');
+        commRate = Number(rateRaw.replace(/[^\d.]/g, '')) || (staffSalaryType.includes('20') ? 20 : 10);
         break;
       }
     }
   }
 
-  // 3. Tính tiền hoa hồng KTV (Commission)
+  // 3. Tính tiền hoa hồng KTV theo % thực tế của thợ
   let commissionAmount = Number(params.commission_amount) || 0;
   if (!commissionAmount) {
-    if (staffSalaryType.includes('20') || staffSalaryType === 'commission_20pct') {
-      commissionAmount = Math.round(price * 0.20);
-    } else {
-      commissionAmount = Math.round(price * 0.10);
-    }
+    commissionAmount = Math.round(price * (commRate / 100));
   }
 
   // 4. Tính tiền thực thu từ khách
@@ -614,7 +613,7 @@ function syncAllData() {
     }
   }
 
-  // 2. Users (tb_users: user_id, staff_id, phone, password, full_name, role, salary_type, base_salary...)
+  // 2. Users (tb_users: user_id, staff_id, phone, password, full_name, role, salary_type, commission_rate, base_salary...)
   const sheetUsers = ss.getSheetByName('tb_users');
   let users = [];
   if (sheetUsers) {
@@ -628,8 +627,17 @@ function syncAllData() {
         let pwd = String(r[3] || '123456').trim();
         let fullName = String(r[4] || '').trim();
         let role = String(r[5] || 'staff').trim();
-        let salaryType = String(r[6] || 'fixed_10pct').trim();
-        let baseSalary = Number(String(r[7] || 0).replace(/[^\d]/g, '')) || 0;
+        let salaryType = String(r[6] || 'fixed').trim();
+        
+        // Đọc % hoa hồng từ Cột H (Index 7)
+        let commRateRaw = String(r[7] || '').trim();
+        let commRate = Number(commRateRaw.replace(/[^\d.]/g, '')) || 0;
+        if (!commRate && salaryType.includes('20')) commRate = 20;
+        if (!commRate && (salaryType.includes('10') || salaryType === 'fixed')) commRate = 10;
+        if (role === 'admin' || role === 'owner') commRate = 100;
+
+        // Đọc lương cứng từ Cột I (Index 8)
+        let baseSalary = Number(String(r[8] || r[7] || 0).replace(/[^\d]/g, '')) || 0;
 
         const isOwner = (role.toLowerCase() === 'admin' || role === 'Chủ tiệm' || role === 'Chủ Sáng Lập' || phone === '0949251144' || staffId === 'FOUNDER_01');
 
@@ -641,6 +649,7 @@ function syncAllData() {
           full_name: fullName || (isOwner ? 'Miles (Đấng tối cao)' : 'KTV'),
           role: isOwner ? 'Chủ tiệm' : 'Kỹ thuật viên',
           salary_type: salaryType,
+          commission_rate: commRate,
           base_salary: baseSalary
         });
       }

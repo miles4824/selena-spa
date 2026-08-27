@@ -13,16 +13,17 @@
 function initDatabase() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   
-  // 1. BẢNG tb_users (Tài khoản nhân sự & Lương)
+  // 1. BẢNG tb_users (12 Cột với commission_rate riêng biệt)
   let sheetUsers = getOrCreateSheet(ss, 'tb_users');
   sheetUsers.clear();
   sheetUsers.appendRow([
-    'sdt_tai_khoan', 'mat_khau', 'ho_ten', 'vai_tro', 
-    'che_do_luong', 'luong_cung', 'ngan_hang', 'so_tai_khoan', 'ten_chu_tk'
+    'user_id', 'staff_id', 'phone', 'password', 'full_name', 
+    'role', 'salary_type', 'commission_rate', 'base_salary', 
+    'bank_name', 'bank_account_no', 'bank_account_name'
   ]);
-  sheetUsers.appendRow(["'0949251144", '123456', 'Miles (Chủ Sáng Lập)', 'Chủ tiệm', 'Chủ tiệm', 0, 'MBBank', "'0912345678", 'MILES']);
-  sheetUsers.appendRow(["'0912345678", '123456', 'KTV Mai Lan', 'Kỹ thuật viên', '10% + Lương cứng', 2000000, 'Vietcombank', "'1012345678", 'MAI LAN']);
-  sheetUsers.appendRow(["'0987654321", '123456', 'KTV Kim Hoa', 'Kỹ thuật viên', '20% (Không lương)', 0, 'Techcombank', "'19012345678", 'KIM HOA']);
+  sheetUsers.appendRow(["'0949251144", 'FOUNDER_01', "'0949251144", '123456', 'Miles (Đấng tối cao)', 'admin', 'owner', '100%', 0, 'MBBank', "'0912345678", 'MILES']);
+  sheetUsers.appendRow(["'0799625591", 'KTV01', "'0799625591", '123456', 'Thu Ngân', 'staff', 'fixed', '10%', 2000000, 'Vietcombank', "'1012345678", 'THU NGAN']);
+  sheetUsers.appendRow(["'0912345678", 'KTV02', "'0912345678", '123456', 'KTV Mai Lan', 'staff', 'commission', '20%', 2000000, 'Techcombank', "'19012345678", 'MAI LAN']);
   formatHeader(sheetUsers, '#7c6cf0');
 
   // 2. BẢNG tb_menu (Danh mục Combo & Dịch vụ)

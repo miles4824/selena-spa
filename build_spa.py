@@ -68,7 +68,7 @@ def build():
 
       <div class="mt-3 flex items-center justify-center gap-1.5 text-xs">
         <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-300 font-medium">
-          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-purple-400"></i> v2.1 • Giao Diện Thẻ Mobile & Xóa Cache Đồng Bộ
+          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-purple-400"></i> v2.3 • Quản Lý % Hoa Hồng Động & Đồng Bộ Chuẩn 12 Cột
         </span>
       </div>
 
@@ -865,17 +865,18 @@ def build():
     function updatePOSStaffInfo() {
       document.getElementById('staff-pos-name').innerText = currentUser?.full_name || 'KTV';
       document.getElementById('staff-pos-avatar').innerText = (currentUser?.full_name || 'K').charAt(0);
-      const is20 = currentUser?.salary_type && currentUser.salary_type.includes('20%');
-      document.getElementById('staff-pos-model').innerText = is20 ? '20% Tour (Không lương cứng)' : '10% Tour + Lương Cứng';
+      const rate = currentUser?.commission_rate || (currentUser?.salary_type?.includes('20') ? 20 : 10);
+      const isFixed = currentUser?.salary_type === 'fixed' || currentUser?.salary_type === 'fixed_10pct';
+      document.getElementById('staff-pos-model').innerText = `${rate}% Tour (${isFixed ? 'Có lương cứng' : 'Thuần hoa hồng'})`;
       updatePOSCalculations();
     }
 
     function updatePOSCalculations() {
       const menu = getStored('menu', DEFAULT_MENU);
       const service = menu.find(m => m.service_id === selectedComboId) || menu[0];
-      const is20 = currentUser?.salary_type && currentUser.salary_type.includes('20%');
-      let comm = is20 ? Math.round(service.price * 0.20) : Math.round(service.price * 0.10);
-      document.getElementById('staff-pos-commission').innerText = '+' + comm.toLocaleString('vi-VN') + ' đ';
+      const rate = currentUser?.commission_rate || (currentUser?.salary_type?.includes('20') ? 20 : 10);
+      let comm = Math.round(service.price * (rate / 100));
+      document.getElementById('staff-pos-commission').innerText = '+' + comm.toLocaleString('vi-VN') + ' đ (' + rate + '%)';
 
       let finalPrice = useVoucher ? 0 : service.price;
       document.getElementById('pos-price-display').innerText = useVoucher ? '0 đ (Dùng Voucher)' : finalPrice.toLocaleString('vi-VN') + ' đ';
@@ -990,8 +991,8 @@ def build():
       const receipts = getStored('receipts', []);
       const customers = getStored('customers', DEFAULT_CUSTOMERS);
 
-      const is20 = currentUser?.salary_type && currentUser.salary_type.includes('20%');
-      const comm = is20 ? Math.round(service.price * 0.20) : Math.round(service.price * 0.10);
+      const rate = currentUser?.commission_rate || (currentUser?.salary_type?.includes('20') ? 20 : 10);
+      const comm = Math.round(service.price * (rate / 100));
       const finalPrice = useVoucher ? 0 : service.price;
       const phone = document.getElementById('pos-customer-phone').value.trim();
       const name = document.getElementById('pos-customer-name').value.trim() || 'Khách vãng lai';
@@ -999,6 +1000,7 @@ def build():
       const receiptId = 'HD' + Date.now().toString().slice(-6);
       const normPhone = normalizePhone(phone);
       const staffPhone = normalizePhone(currentUser?.phone || '0949251144');
+      const staffCode = currentUser?.staff_id || 'KTV01';
       const receiptData = {
         receipt_id: receiptId,
         date: formatAppDateTime(new Date()),
@@ -1006,8 +1008,9 @@ def build():
         customer_name: name,
         service_id: service.service_id,
         service_name: service.service_name,
+        user_id: staffPhone,
+        staff_id: staffCode,
         staff_phone: staffPhone,
-        staff_id: staffPhone,
         staff_name: currentUser?.full_name || 'Miles',
         price: service.price,
         commission_amount: comm,
@@ -1240,7 +1243,7 @@ def build():
                 </div>
                 <div>
                   <div class="text-sm font-bold text-white">${u.full_name}</div>
-                  <div class="text-xs text-slate-400 font-mono">${normalizePhone(u.phone)} • ${u.user_id}</div>
+                  <div class="text-xs text-slate-400 font-mono">${normalizePhone(u.phone)} • Mã: ${u.staff_id || u.user_id}</div>
                 </div>
               </div>
               <span class="px-2.5 py-0.5 rounded-full text-xs font-bold ${u.role === 'admin' ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30' : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'}">
@@ -1248,7 +1251,7 @@ def build():
               </span>
             </div>
             <div class="text-xs text-slate-300 bg-white/5 rounded-xl p-2.5 border border-white/5 space-y-1">
-              <div><span class="text-slate-400">Chế độ lương:</span> <span class="font-bold text-purple-300">${u.salary_type === 'commission_20pct' ? '20% Tour (Không lương cứng)' : u.salary_type === 'fixed_10pct' ? '10% Tour + Lương cứng' : 'Chủ tiệm'}</span></div>
+              <div><span class="text-slate-400">Hoa hồng:</span> <span class="font-bold text-purple-300">${u.commission_rate || (u.salary_type?.includes('20') ? 20 : 10)}% / ca</span> (${u.salary_type === 'fixed' || u.salary_type === 'fixed_10pct' ? 'Có lương cứng' : u.role === 'admin' ? 'Chủ tiệm' : 'Thuần hoa hồng'})</div>
               <div><span class="text-slate-400">Lương cứng:</span> <span class="font-bold text-emerald-400 font-heading">${(u.base_salary || 0).toLocaleString('vi-VN')} đ</span></div>
             </div>
           </div>
