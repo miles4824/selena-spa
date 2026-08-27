@@ -68,7 +68,7 @@ def build():
 
       <div class="mt-3 flex items-center justify-center gap-1.5 text-xs">
         <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-300 font-medium">
-          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-purple-400"></i> v1.9 • Cập Nhật Tên KTV Tức Thì & Quản Lý Nhân Viên
+          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-purple-400"></i> v2.0 • Chuẩn Hóa Tiếng Việt 100% & Quản Lý Qua SĐT
         </span>
       </div>
 
@@ -487,11 +487,11 @@ def build():
       { service_id: 'CB_05', service_name: 'Combo 5 (Đại tiệc Thư giãn Hoàng Gia)', price: 219000, duration_min: 110, cosmetics_cost: 22000, commission_value: 22000 }
     ];
 
-    // SUPREME FOUNDER + STAFF ACCOUNTS
+    // SUPREME FOUNDER + STAFF ACCOUNTS (100% Tiếng Việt Thân Thiện)
     const DEFAULT_USERS = [
-      { user_id: 'FOUNDER_01', phone: '0949251144', password: '123456', full_name: 'Miles (Chủ Sáng Lập)', role: 'admin', salary_type: 'owner', base_salary: 0 },
-      { user_id: 'KTV01', phone: '0912345678', password: '123456', full_name: 'KTV Mai Lan', role: 'staff', salary_type: 'fixed_10pct', base_salary: 2000000 },
-      { user_id: 'KTV02', phone: '0987654321', password: '123456', full_name: 'KTV Kim Hoa', role: 'staff', salary_type: 'commission_20pct', base_salary: 0 }
+      { user_id: '0949251144', phone: '0949251144', password: '123456', full_name: 'Miles (Chủ Sáng Lập)', role: 'Chủ tiệm', salary_type: 'Chủ tiệm', base_salary: 0 },
+      { user_id: '0912345678', phone: '0912345678', password: '123456', full_name: 'KTV Mai Lan', role: 'Kỹ thuật viên', salary_type: '10% + Lương cứng', base_salary: 2000000 },
+      { user_id: '0987654321', phone: '0987654321', password: '123456', full_name: 'KTV Kim Hoa', role: 'Kỹ thuật viên', salary_type: '20% (Không lương)', base_salary: 0 }
     ];
 
     const DEFAULT_CUSTOMERS = [
@@ -674,12 +674,12 @@ def build():
 
     async function handlePhoneLogin(e) {
       if (e && e.preventDefault) e.preventDefault();
-      const phone = (document.getElementById('login-phone').value || '').trim();
+      const rawPhone = (document.getElementById('login-phone').value || '').trim();
+      const normPhone = normalizePhone(rawPhone);
       const pwd = (document.getElementById('login-password').value || '').trim();
-      const remember = document.getElementById('login-remember')?.checked;
 
       let users = getStored('users', DEFAULT_USERS);
-      let user = users.find(u => (u.phone === phone || u.user_id === phone) && String(u.password) === pwd);
+      let user = users.find(u => (normalizePhone(u.phone) === normPhone || normalizePhone(u.user_id) === normPhone) && String(u.password) === pwd);
 
       // If not found, try dynamic online sync from Google Sheets
       if (!user) {
@@ -689,15 +689,15 @@ def build():
         if (res && res.success && res.data?.users) {
           setStored('users', res.data.users);
           users = res.data.users;
-          user = users.find(u => (u.phone === phone || u.user_id === phone) && String(u.password) === pwd);
+          user = users.find(u => (normalizePhone(u.phone) === normPhone || normalizePhone(u.user_id) === normPhone) && String(u.password) === pwd);
         }
       }
 
       // Direct fallback matching for default demo accounts
       if (!user) {
-        if (phone === '0949251144' && (pwd === '123456' || pwd === '1234' || !pwd)) user = DEFAULT_USERS[0];
-        else if (phone === '0912345678' && (pwd === '123456' || pwd === '1234' || !pwd)) user = DEFAULT_USERS[1];
-        else if (phone === '0987654321' && (pwd === '123456' || pwd === '1234' || !pwd)) user = DEFAULT_USERS[2];
+        if (normPhone === '0949251144' && (pwd === '123456' || pwd === '1234' || !pwd)) user = DEFAULT_USERS[0];
+        else if (normPhone === '0912345678' && (pwd === '123456' || pwd === '1234' || !pwd)) user = DEFAULT_USERS[1];
+        else if (normPhone === '0987654321' && (pwd === '123456' || pwd === '1234' || !pwd)) user = DEFAULT_USERS[2];
       }
 
       if (user) {
@@ -712,21 +712,29 @@ def build():
     }
 
     function quickFillLogin(phone, pwd) {
-      document.getElementById('login-phone').value = phone;
+      const normPhone = normalizePhone(phone);
+      document.getElementById('login-phone').value = normPhone;
       document.getElementById('login-password').value = pwd;
       document.getElementById('login-error').classList.add('hidden');
       
       const users = getStored('users', DEFAULT_USERS);
-      let user = users.find(u => u.phone === phone);
+      let user = users.find(u => normalizePhone(u.phone) === normPhone);
       if (!user) {
-        if (phone === '0949251144') user = DEFAULT_USERS[0];
-        else if (phone === '0912345678') user = DEFAULT_USERS[1];
-        else if (phone === '0987654321') user = DEFAULT_USERS[2];
+        if (normPhone === '0949251144') user = DEFAULT_USERS[0];
+        else if (normPhone === '0912345678') user = DEFAULT_USERS[1];
+        else if (normPhone === '0987654321') user = DEFAULT_USERS[2];
       }
       if (user) {
         localStorage.setItem('selena_active_session', JSON.stringify(user));
         loginSuccess(user);
       }
+    }
+
+    function isUserOwner(u) {
+      if (!u) return false;
+      const role = String(u.role || '').toLowerCase();
+      const phone = normalizePhone(u.phone);
+      return (role === 'admin' || role === 'chủ tiệm' || role === 'chủ sáng lập' || phone === '0949251144');
     }
 
     function loginSuccess(user) {
@@ -735,10 +743,11 @@ def build():
       document.getElementById('main-header').classList.remove('hidden');
       document.getElementById('mobile-nav').classList.remove('hidden');
 
+      const isOwner = isUserOwner(user);
       document.getElementById('header-user-name').innerText = user.full_name;
-      document.getElementById('header-role-badge').innerText = user.role === 'admin' ? '👑 Chủ Sáng Lập' : '💆 Kỹ Thuật Viên';
+      document.getElementById('header-role-badge').innerText = isOwner ? '👑 Chủ Sáng Lập' : '💆 Kỹ Thuật Viên';
 
-      if (user.role === 'admin') showView('admin');
+      if (isOwner) showView('admin');
       else showView('pos');
     }
 
@@ -772,7 +781,7 @@ def build():
         loadAdminDashboard();
       }
 
-      if (currentUser?.role === 'staff') {
+      if (!isUserOwner(currentUser)) {
         navContainer.innerHTML = `
           <button onclick="showView('pos')" class="py-2.5 rounded-2xl flex flex-col items-center gap-1 ${view === 'pos' ? 'bg-purple-600/30 text-purple-300 font-bold border border-purple-500/30' : 'text-slate-400'}">
             <i data-lucide="plus-circle" class="w-5 h-5"></i>
@@ -827,14 +836,16 @@ def build():
     function updatePOSStaffInfo() {
       document.getElementById('staff-pos-name').innerText = currentUser?.full_name || 'KTV';
       document.getElementById('staff-pos-avatar').innerText = (currentUser?.full_name || 'K').charAt(0);
-      document.getElementById('staff-pos-model').innerText = currentUser?.salary_type === 'commission_20pct' ? '20% Tour (Không lương cứng)' : '10% Tour + Lương Cứng';
+      const is20 = currentUser?.salary_type && currentUser.salary_type.includes('20%');
+      document.getElementById('staff-pos-model').innerText = is20 ? '20% Tour (Không lương cứng)' : '10% Tour + Lương Cứng';
       updatePOSCalculations();
     }
 
     function updatePOSCalculations() {
       const menu = getStored('menu', DEFAULT_MENU);
       const service = menu.find(m => m.service_id === selectedComboId) || menu[0];
-      let comm = currentUser?.salary_type === 'commission_20pct' ? Math.round(service.price * 0.20) : Math.round(service.price * 0.10);
+      const is20 = currentUser?.salary_type && currentUser.salary_type.includes('20%');
+      let comm = is20 ? Math.round(service.price * 0.20) : Math.round(service.price * 0.10);
       document.getElementById('staff-pos-commission').innerText = '+' + comm.toLocaleString('vi-VN') + ' đ';
 
       let finalPrice = useVoucher ? 0 : service.price;
@@ -950,13 +961,15 @@ def build():
       const receipts = getStored('receipts', []);
       const customers = getStored('customers', DEFAULT_CUSTOMERS);
 
-      const comm = currentUser?.salary_type === 'commission_20pct' ? Math.round(service.price * 0.20) : Math.round(service.price * 0.10);
+      const is20 = currentUser?.salary_type && currentUser.salary_type.includes('20%');
+      const comm = is20 ? Math.round(service.price * 0.20) : Math.round(service.price * 0.10);
       const finalPrice = useVoucher ? 0 : service.price;
       const phone = document.getElementById('pos-customer-phone').value.trim();
       const name = document.getElementById('pos-customer-name').value.trim() || 'Khách vãng lai';
 
       const receiptId = 'HD' + Date.now().toString().slice(-6);
       const normPhone = normalizePhone(phone);
+      const staffPhone = normalizePhone(currentUser?.phone || '0949251144');
       const receiptData = {
         receipt_id: receiptId,
         date: formatAppDateTime(new Date()),
@@ -964,7 +977,8 @@ def build():
         customer_name: name,
         service_id: service.service_id,
         service_name: service.service_name,
-        staff_id: currentUser?.user_id || 'FOUNDER_01',
+        staff_phone: staffPhone,
+        staff_id: staffPhone,
         staff_name: currentUser?.full_name || 'Miles',
         price: service.price,
         commission_amount: comm,
@@ -1011,7 +1025,13 @@ def build():
 
     function loadStaffHistory() {
       const receipts = getStored('receipts', []);
-      const myReceipts = receipts.filter(r => r.staff_id === currentUser?.user_id);
+      const myPhone = normalizePhone(currentUser?.phone);
+      const myName = currentUser?.full_name;
+      const myReceipts = receipts.filter(r => 
+        (r.staff_phone && normalizePhone(r.staff_phone) === myPhone) ||
+        (r.staff_id && normalizePhone(r.staff_id) === myPhone) ||
+        (r.staff_name && r.staff_name === myName)
+      );
       const totalComm = myReceipts.reduce((sum, r) => sum + (r.commission_amount || 0), 0);
       const baseSalary = currentUser?.base_salary || 0;
 
@@ -1053,7 +1073,7 @@ def build():
 
       const totalRev = receipts.reduce((sum, r) => sum + (r.total_paid || 0), 0);
       const totalComm = receipts.reduce((sum, r) => sum + (r.commission_amount || 0), 0);
-      const totalBase = users.filter(u => u.role === 'staff').reduce((sum, u) => sum + (u.base_salary || 0), 0);
+      const totalBase = users.filter(u => u.role !== 'admin' && u.role !== 'Chủ tiệm' && u.role !== 'Chủ Sáng Lập').reduce((sum, u) => sum + (u.base_salary || 0), 0);
       const totalExp = expenses.reduce((sum, e) => sum + (e.amount || 0), 0);
       const totalCosmetics = receipts.reduce((sum, r) => sum + (cosmeticsMap[r.service_id] || 0), 0);
 

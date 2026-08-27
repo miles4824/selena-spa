@@ -233,73 +233,66 @@ function createReceipt(params) {
   const sheetMenu = ss.getSheetByName('tb_menu');
 
   const now = new Date();
-  const dateStr = formatDate(now);
   const timeStr = formatDateTime(now);
-  const receiptId = 'HD' + Utilities.formatDate(now, 'GMT+7', 'yyMMddHHmmss');
+  const receiptId = params.receipt_id || ('HD' + Utilities.formatDate(now, 'GMT+7', 'yyMMddHHmmss'));
 
-  const phone = String(params.customer_phone || '').trim();
+  const phone = normalizePhone(params.customer_phone);
   const customerName = String(params.customer_name || 'Khách vãng lai').trim();
   const serviceId = String(params.service_id || '').trim();
-  const staffId = String(params.staff_id || '').trim();
-  const paymentMethod = String(params.payment_method || 'Cash').trim();
+  const staffPhone = normalizePhone(params.staff_phone || params.staff_id);
+  const paymentMethod = String(params.payment_method || 'Chuyển khoản').trim();
   const isVoucherUsed = Boolean(params.is_voucher_used);
   const note = String(params.note || '').trim();
 
   // 1. Tìm thông tin dịch vụ
-  let serviceName = '';
-  let price = 0;
-  let commType = 'fixed';
-  let commValue = 0;
-  let cosmeticsCost = 0;
-
-  const menuData = sheetMenu.getDataRange().getValues();
-  for (let i = 1; i < menuData.length; i++) {
-    if (String(menuData[i][0]).trim() === serviceId) {
-      serviceName = String(menuData[i][1]);
-      price = Number(menuData[i][2]) || 0;
-      cosmeticsCost = Number(menuData[i][4]) || 0;
-      commType = String(menuData[i][5]);
-      commValue = Number(menuData[i][6]) || 0;
-      break;
+  let serviceName = String(params.service_name || '');
+  let price = Number(params.price) || 0;
+  if (!serviceName && sheetMenu) {
+    const menuData = sheetMenu.getDataRange().getValues();
+    for (let i = 1; i < menuData.length; i++) {
+      if (String(menuData[i][0]).trim() === serviceId) {
+        serviceName = String(menuData[i][1]);
+        price = Number(menuData[i][2]) || price;
+        break;
+      }
     }
   }
 
-  // 2. Tìm thông tin nhân viên & cách tính lương
-  let staffName = '';
-  let staffSalaryType = 'fixed_10pct';
-  const usersData = sheetUsers.getDataRange().getValues();
-  for (let i = 1; i < usersData.length; i++) {
-    if (String(usersData[i][0]).trim() === staffId) {
-      staffName = String(usersData[i][3]);
-      staffSalaryType = String(usersData[i][5]);
-      break;
+  // 2. Tìm thông tin nhân viên & cách tính lương qua SĐT (Khóa liên kết)
+  let staffName = String(params.staff_name || '');
+  let staffSalaryType = '10% + Lương cứng';
+  if (sheetUsers) {
+    const usersData = sheetUsers.getDataRange().getValues();
+    for (let i = 1; i < usersData.length; i++) {
+      let uPhone = normalizePhone(usersData[i][0]);
+      if (uPhone === staffPhone || normalizePhone(usersData[i][1]) === staffPhone) {
+        staffName = String(usersData[i][2] || usersData[i][3] || staffName);
+        staffSalaryType = String(usersData[i][4] || usersData[i][5] || staffSalaryType);
+        break;
+      }
     }
   }
 
   // 3. Tính tiền hoa hồng KTV (Commission)
-  let commissionAmount = 0;
-  if (staffSalaryType === 'commission_20pct') {
-    commissionAmount = Math.round(price * 0.20);
-  } else if (staffSalaryType === 'fixed_10pct') {
-    commissionAmount = Math.round(price * 0.10);
-  } else {
-    commissionAmount = commType === 'percentage' ? Math.round(price * (commValue / 100)) : commValue;
+  let commissionAmount = Number(params.commission_amount) || 0;
+  if (!commissionAmount) {
+    if (staffSalaryType.includes('20%')) {
+      commissionAmount = Math.round(price * 0.20);
+    } else {
+      commissionAmount = Math.round(price * 0.10);
+    }
   }
 
   // 4. Tính tiền thực thu từ khách
-  let discountAmount = 0;
-  let totalPaid = price;
-  if (isVoucherUsed) {
-    discountAmount = price;
-    totalPaid = 0; // Khách dùng voucher được miễn phí
-  }
+  let discountAmount = isVoucherUsed ? price : 0;
+  let totalPaid = isVoucherUsed ? 0 : price;
 
-  // 5. Ghi vào tb_receipts
+  // 5. Ghi vào tb_receipts (Bảo toàn số 0 đầu bằng nháy đơn)
   sheetReceipts.appendRow([
-    receiptId, timeStr, dateStr, phone, customerName,
-    serviceId, serviceName, staffId, staffName, price,
+    receiptId, timeStr, timeStr, "'" + phone, customerName,
+    serviceId, serviceName, "'" + staffPhone, staffName, price,
     commissionAmount, discountAmount, totalPaid, paymentMethod,
-    isVoucherUsed, 'completed', note
+    isVoucherUsed, note
   ]);
 
   // 6. Xử lý tích điểm & Voucher khách hàng trong tb_customers
@@ -310,20 +303,17 @@ function createReceipt(params) {
   if (phone) {
     const custData = sheetCustomers.getDataRange().getValues();
     for (let i = 1; i < custData.length; i++) {
-      if (String(custData[i][0]).trim() === phone) {
+      if (normalizePhone(custData[i][0]) === phone) {
         customerRowIndex = i + 1;
         let curVisits = Number(custData[i][2]) || 0;
         let curVouchers = Number(custData[i][3]) || 0;
 
         if (isVoucherUsed) {
-          // Trừ 1 voucher
           updatedVouchers = Math.max(0, curVouchers - 1);
           updatedVisits = curVisits;
         } else {
-          // Cộng 1 lượt gội
           updatedVisits = curVisits + 1;
           updatedVouchers = curVouchers;
-          // Nếu đạt mốc 10 lần -> tặng 1 voucher & trừ 10 lượt
           if (updatedVisits >= 10) {
             updatedVouchers += 1;
             updatedVisits -= 10;
@@ -337,16 +327,19 @@ function createReceipt(params) {
       sheetCustomers.getRange(customerRowIndex, 2).setValue(customerName);
       sheetCustomers.getRange(customerRowIndex, 3).setValue(updatedVisits);
       sheetCustomers.getRange(customerRowIndex, 4).setValue(updatedVouchers);
-      sheetCustomers.getRange(customerRowIndex, 5).setValue(dateStr);
+      sheetCustomers.getRange(customerRowIndex, 5).setValue(timeStr);
       if (note) {
         let oldNote = sheetCustomers.getRange(customerRowIndex, 6).getValue();
         sheetCustomers.getRange(customerRowIndex, 6).setValue(oldNote ? oldNote + ' | ' + note : note);
       }
     } else {
       // Khách mới
-      sheetCustomers.appendRow([phone, customerName, 1, 0, dateStr, note]);
+      sheetCustomers.appendRow(["'" + phone, customerName, 1, 0, timeStr, note]);
     }
   }
+
+  return { success: true, receipt_id: receiptId, total_paid: totalPaid, commission_earned: commissionAmount };
+}
 
   return {
     success: true,
@@ -618,22 +611,41 @@ function syncAllData() {
     }
   }
 
-  // 2. Users
+  // 2. Users (tb_users: sdt_tai_khoan, mat_khau, ho_ten, vai_tro, che_do_luong, luong_cung, ...)
   const sheetUsers = ss.getSheetByName('tb_users');
   let users = [];
   if (sheetUsers) {
     const data = sheetUsers.getDataRange().getValues();
     for (let i = 1; i < data.length; i++) {
       let r = data[i];
-      if (r[0] && r[1]) {
+      if (r[0]) {
+        let phone = normalizePhone(r[0]);
+        let pwd = String(r[1] || '123456');
+        let fullName = String(r[2] || '');
+        let role = String(r[3] || 'Kỹ thuật viên').trim();
+        let salaryType = String(r[4] || '10% + Lương cứng').trim();
+        let baseSalary = Number(r[5]) || 0;
+
+        // Old layout fallback if user still has old columns
+        if (r.length >= 7 && (String(r[4]).toLowerCase() === 'admin' || String(r[4]).toLowerCase() === 'staff')) {
+          phone = normalizePhone(r[1]);
+          pwd = String(r[2]);
+          fullName = String(r[3]);
+          role = String(r[4]);
+          salaryType = String(r[5]);
+          baseSalary = Number(r[6]) || 0;
+        }
+
+        const isOwner = (role.toLowerCase() === 'admin' || role === 'Chủ tiệm' || role === 'Chủ Sáng Lập' || phone === '0949251144');
+
         users.push({
-          user_id: String(r[0]),
-          phone: String(r[1]),
-          password: String(r[2]),
-          full_name: String(r[3]),
-          role: String(r[4]),
-          salary_type: String(r[5]),
-          base_salary: Number(r[6]) || 0
+          user_id: phone,
+          phone: phone,
+          password: pwd,
+          full_name: fullName || (isOwner ? 'Miles (Chủ Sáng Lập)' : 'KTV'),
+          role: isOwner ? 'Chủ tiệm' : 'Kỹ thuật viên',
+          salary_type: isOwner ? 'Chủ tiệm' : salaryType,
+          base_salary: baseSalary
         });
       }
     }
@@ -647,8 +659,7 @@ function syncAllData() {
     for (let i = 1; i < data.length; i++) {
       let r = data[i];
       if (r[0]) {
-        let phone = String(r[0]).trim().replace(/\D/g, '');
-        if (phone.length > 0 && !phone.startsWith('0')) phone = '0' + phone;
+        let phone = normalizePhone(r[0]);
         let lastVisit = '';
         if (r[4]) {
           try {
@@ -680,11 +691,11 @@ function syncAllData() {
         receipts.push({
           receipt_id: String(r[0]),
           date: String(r[2]),
-          customer_phone: String(r[3]),
+          customer_phone: normalizePhone(r[3]),
           customer_name: String(r[4]),
           service_id: String(r[5]),
           service_name: String(r[6]),
-          staff_id: String(r[7]),
+          staff_phone: normalizePhone(r[7]),
           staff_name: String(r[8]),
           price: Number(r[9]) || 0,
           commission_amount: Number(r[10]) || 0,
@@ -717,12 +728,6 @@ function syncAllData() {
 
   return {
     success: true,
-    data: {
-      menu: menu,
-      users: users,
-      customers: customers,
-      receipts: receipts,
-      expenses: expenses
-    }
+    data: { menu, users, customers, receipts, expenses }
   };
 }
