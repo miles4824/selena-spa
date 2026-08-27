@@ -53,152 +53,155 @@
   </div>
   <!-- 1. PHONE + PASSWORD LOGIN SCREEN -->
   <div id="screen-login" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0f111a]/95 backdrop-blur-2xl">
-    <div class="w-full max-w-sm glass-card rounded-3xl p-6 sm:p-8 shadow-2xl border border-white/10 text-center relative">
-      <div class="inline-flex p-3.5 rounded-2xl bg-gradient-to-tr from-purple-600/30 to-rose-500/20 border border-purple-500/30 shadow-lg shadow-purple-500/10 mb-3">
-        <i data-lucide="sparkles" class="w-8 h-8 text-purple-400"></i>
+    <div class="w-full max-w-md glass-card rounded-3xl p-7 sm:p-9 shadow-2xl border border-white/10 text-center relative space-y-2">
+      <div class="inline-flex p-4 rounded-2xl bg-gradient-to-tr from-purple-600/30 to-rose-500/20 border border-purple-500/30 shadow-lg shadow-purple-500/10 mb-2">
+        <i data-lucide="sparkles" class="w-9 h-9 text-purple-400"></i>
       </div>
       <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight font-heading">SELENA SPA</h1>
-      <p class="text-xs text-slate-400 mt-1">Đăng Nhập Tài Khoản Nội Bộ</p>
+      <p class="text-sm text-slate-300 font-medium">Đăng Nhập Tài Khoản Nội Bộ</p>
 
-      <div class="mt-3 flex items-center justify-center gap-1.5 text-xs">
-        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-300 font-medium font-mono">
-          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-purple-400"></i> v0.0.0.3 • Selena Spa
+      <div class="pt-1 flex items-center justify-center">
+        <span class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-300 text-xs font-medium font-mono">
+          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-purple-400"></i> v0.0.0.4 • Selena Spa
         </span>
       </div>
 
       <!-- Form Login -->
-      <form onsubmit="event.preventDefault(); handlePhoneLogin(event); return false;" class="mt-5 space-y-3.5 text-left">
+      <form onsubmit="event.preventDefault(); handlePhoneLogin(event); return false;" class="mt-6 space-y-4 text-left">
         <div>
-          <label class="block text-xs font-semibold text-slate-300 mb-1.5">Số điện thoại / Tài khoản:</label>
+          <label class="block text-sm font-semibold text-slate-200 mb-1.5">Số điện thoại / Tài khoản:</label>
           <div class="relative">
-            <input type="tel" id="login-phone" placeholder="0949251144" required class="w-full bg-[#141724] border border-white/10 rounded-2xl p-3.5 pl-10 text-white text-sm focus:outline-none focus:border-purple-500 transition font-mono">
-            <i data-lucide="phone" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+            <input type="tel" id="login-phone" placeholder="0949251144" required class="w-full bg-[#141724] border border-white/10 rounded-2xl p-4 pl-11 text-white text-base focus:outline-none focus:border-purple-500 transition font-mono">
+            <i data-lucide="phone" class="w-5 h-5 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
           </div>
         </div>
 
         <div>
-          <label class="block text-xs font-semibold text-slate-300 mb-1.5">Mật khẩu:</label>
+          <label class="block text-sm font-semibold text-slate-200 mb-1.5">Mật khẩu:</label>
           <div class="relative">
-            <input type="password" id="login-password" placeholder="••••••" required class="w-full bg-[#141724] border border-white/10 rounded-2xl p-3.5 pl-10 pr-10 text-white text-sm focus:outline-none focus:border-purple-500 transition">
-            <i data-lucide="lock" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
-            <button type="button" onclick="togglePasswordVisibility()" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white cursor-pointer">
-              <i data-lucide="eye" id="pwd-eye-icon" class="w-4 h-4"></i>
+            <input type="password" id="login-password" placeholder="••••••" required class="w-full bg-[#141724] border border-white/10 rounded-2xl p-4 pl-11 pr-11 text-white text-base focus:outline-none focus:border-purple-500 transition">
+            <i data-lucide="lock" class="w-5 h-5 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+            <button type="button" onclick="togglePasswordVisibility()" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white cursor-pointer p-1">
+              <i data-lucide="eye" id="pwd-eye-icon" class="w-5 h-5"></i>
             </button>
           </div>
         </div>
 
         <!-- Remember Me Checkbox -->
         <div class="flex items-center justify-between pt-1">
-          <label class="flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
+          <label class="flex items-center gap-2.5 text-xs sm:text-sm text-slate-300 cursor-pointer">
             <input type="checkbox" id="login-remember" checked class="w-4 h-4 accent-purple-600 rounded cursor-pointer">
-            <span>Ghi nhớ trên máy này</span>
+            <span>Ghi nhớ đăng nhập trên máy này</span>
           </label>
         </div>
 
-        <div id="login-error" class="hidden p-3 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs flex items-start gap-2">
+        <div id="login-error" class="hidden p-3.5 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-300 text-xs sm:text-sm flex items-start gap-2">
           <i data-lucide="alert-triangle" class="w-4 h-4 shrink-0 mt-0.5"></i>
           <span id="login-error-text">Số điện thoại hoặc mật khẩu không đúng</span>
         </div>
 
-        <button type="button" onclick="handlePhoneLogin(event)" class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-sm shadow-lg shadow-purple-500/25 transition active:scale-95 cursor-pointer uppercase tracking-wider flex items-center justify-center gap-2">
-          <i data-lucide="log-in" class="w-4 h-4"></i> Đăng Nhập Ngay
+        <button type="button" onclick="handlePhoneLogin(event)" class="w-full py-4 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-base shadow-lg shadow-purple-500/25 transition active:scale-95 cursor-pointer uppercase tracking-wider flex items-center justify-center gap-2">
+          <i data-lucide="log-in" class="w-5 h-5"></i> Đăng Nhập Ngay
         </button>
       </form>
 
       <!-- Quick Test Accounts -->
-      <div class="mt-5 pt-4 border-t border-white/5">
-        <div class="text-[11px] text-slate-400 mb-2 font-medium">Tài khoản nhân viên (Đồng bộ từ tb_users):</div>
-        <div id="login-quick-accounts" class="flex flex-col gap-1.5">
-          <button onclick="quickFillLogin('0949251144', '123456')" class="w-full p-2 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/20 text-purple-300 text-xs font-semibold transition flex items-center justify-between cursor-pointer">
-            <span>👑 Miles (Chủ Sáng Lập)</span>
-            <span class="text-[10px] text-purple-400 font-mono">0949251144</span>
+      <div class="mt-6 pt-5 border-t border-white/5 space-y-2">
+        <div class="text-xs text-slate-400 font-medium">Tài khoản nhân viên (Đồng bộ từ Google Sheets):</div>
+        <div id="login-quick-accounts" class="flex flex-col gap-2">
+          <button onclick="quickFillLogin('0949251144', '123456')" class="w-full p-3 rounded-2xl bg-white/[0.04] hover:bg-white/[0.08] text-purple-300 text-xs sm:text-sm font-semibold transition flex items-center justify-between cursor-pointer">
+            <span>👑 Miles (Đấng tối cao)</span>
+            <span class="text-xs text-purple-400 font-mono">0949251144</span>
           </button>
         </div>
       </div>
     </div>
   </div>
   <!-- 2. NAVBAR -->
-  <header id="main-header" class="hidden sticky top-0 z-40 glass-card border-b border-white/5 px-4 py-3 backdrop-blur-xl">
+  <header id="main-header" class="hidden sticky top-0 z-40 glass-card border-b border-white/5 px-4 sm:px-6 py-3.5 backdrop-blur-xl">
     <div class="max-w-5xl mx-auto flex items-center justify-between">
-      <div class="flex items-center gap-2.5">
+      <div class="flex items-center gap-3">
         <div class="p-2 rounded-xl bg-gradient-to-tr from-purple-600/30 to-rose-500/20 border border-purple-500/30 text-purple-400">
-          <i data-lucide="sparkles" class="w-4 h-4"></i>
+          <i data-lucide="sparkles" class="w-5 h-5"></i>
         </div>
         <div>
-          <span class="font-extrabold text-base tracking-tight text-white font-heading block">SELENA SPA</span>
-          <span id="header-role-badge" class="text-[10px] text-slate-400 block -mt-0.5">Kỹ Thuật Viên</span>
+          <span class="font-extrabold text-base sm:text-lg tracking-tight text-white font-heading block">SELENA SPA</span>
+          <span id="header-role-badge" class="text-xs text-purple-400 font-semibold block -mt-0.5">Kỹ Thuật Viên</span>
         </div>
       </div>
 
-      <div class="flex items-center gap-2.5">
-        <button id="btn-sync-cloud" onclick="refreshDataFromGoogleSheets()" title="Đồng bộ Google Sheets 2 chiều" class="px-2.5 py-1.5 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/20 text-purple-300 text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer">
-          <i data-lucide="cloud-check" class="w-3.5 h-3.5 text-emerald-400"></i> <span class="hidden sm:inline text-[11px]">Đồng bộ Sheet</span>
+      <div class="flex items-center gap-3">
+        <button id="btn-sync-cloud" onclick="refreshDataFromGoogleSheets()" title="Đồng bộ Google Sheets 2 chiều" class="px-3 py-2 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/20 text-purple-300 text-xs sm:text-sm font-semibold flex items-center gap-2 transition cursor-pointer">
+          <i data-lucide="cloud-check" class="w-4 h-4 text-emerald-400"></i> <span class="hidden sm:inline">Đồng bộ Sheet</span>
         </button>
         <div class="hidden sm:flex flex-col text-right">
-          <span id="header-user-name" class="text-xs font-bold text-white">Mai Lan</span>
-          <span class="text-[10px] text-emerald-400">Đang hoạt động</span>
+          <span id="header-user-name" class="text-sm font-bold text-white">Mai Lan</span>
+          <span class="text-xs text-emerald-400">Đang hoạt động</span>
         </div>
-        <button onclick="logout()" title="Đăng xuất" class="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition border border-white/5 cursor-pointer">
+        <button onclick="logout()" title="Đăng xuất" class="p-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white transition border border-white/5 cursor-pointer">
           <i data-lucide="log-out" class="w-4 h-4"></i>
         </button>
       </div>
     </div>
   </header>
   <!-- 3. STAFF POS VIEW -->
-  <main id="view-staff-pos" class="hidden flex-1 p-4 sm:p-6 max-w-xl w-full mx-auto space-y-4 pb-24">
-    <div class="glass-card rounded-2xl p-4 flex items-center justify-between border border-white/5">
-      <div class="flex items-center gap-3">
-        <div id="staff-pos-avatar" class="w-10 h-10 rounded-xl bg-gradient-to-tr from-purple-600 to-rose-500 flex items-center justify-center text-white font-bold font-heading shadow-md shadow-purple-500/20">L</div>
+  <main id="view-staff-pos" class="hidden flex-1 p-4 sm:p-6 max-w-xl w-full mx-auto space-y-5 pb-24">
+    <!-- Staff Info Banner -->
+    <div class="p-4 sm:p-5 rounded-3xl bg-white/[0.04] flex items-center justify-between">
+      <div class="flex items-center gap-3.5">
+        <div id="staff-pos-avatar" class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-purple-600 to-rose-500 flex items-center justify-center text-white text-base font-extrabold font-heading shadow-lg shadow-purple-500/20">L</div>
         <div>
-          <div id="staff-pos-name" class="text-sm font-bold text-white font-heading">KTV Mai Lan</div>
-          <div id="staff-pos-model" class="text-[11px] text-slate-400">10% Tour + Lương Cứng</div>
+          <div id="staff-pos-name" class="text-base sm:text-lg font-bold text-white font-heading">KTV Mai Lan</div>
+          <div id="staff-pos-model" class="text-xs sm:text-sm text-slate-300 font-medium mt-0.5">10% Tour • Có lương cứng</div>
         </div>
       </div>
       <div class="text-right">
-        <span class="text-[10px] text-slate-400 block">Hoa hồng ca này</span>
-        <span id="staff-pos-commission" class="text-sm font-extrabold text-emerald-400 font-heading">+6.400 đ</span>
+        <span class="text-xs text-slate-400 block font-medium">Hoa hồng ca này</span>
+        <span id="staff-pos-commission" class="text-base sm:text-lg font-extrabold text-emerald-400 font-heading">+6.400 đ (10%)</span>
       </div>
     </div>
 
-    <div class="glass-card rounded-3xl p-5 sm:p-6 shadow-xl border border-white/10 space-y-5">
-      <div>
-        <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-purple-400"></i> 1. Chọn Combo Dịch Vụ
+    <div class="glass-card rounded-3xl p-6 sm:p-7 shadow-xl border border-white/10 space-y-6">
+      <!-- 1. Select Service -->
+      <div class="space-y-2.5">
+        <label class="block text-sm font-bold text-slate-200 uppercase tracking-wider flex items-center gap-2">
+          <i data-lucide="sparkles" class="w-4 h-4 text-purple-400"></i> 1. Chọn Combo Dịch Vụ
         </label>
-        <select id="pos-service-select" onchange="onSelectServiceChange()" class="w-full bg-[#141724] border border-white/10 rounded-2xl p-3.5 text-white font-semibold text-sm focus:outline-none focus:border-purple-500 transition cursor-pointer"></select>
-        <div id="pos-quick-combos" class="flex flex-wrap gap-1.5 mt-2.5"></div>
+        <select id="pos-service-select" onchange="onSelectServiceChange()" class="w-full bg-[#141724] border border-white/10 rounded-2xl p-4 text-white font-semibold text-base focus:outline-none focus:border-purple-500 transition cursor-pointer"></select>
+        <div id="pos-quick-combos" class="flex flex-wrap gap-2 pt-1"></div>
       </div>
 
+      <!-- 2. Customer Info -->
       <div class="space-y-3">
-        <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
-          <i data-lucide="user" class="w-3.5 h-3.5 text-purple-400"></i> 2. Thông Tin Khách Hàng
+        <label class="block text-sm font-bold text-slate-200 uppercase tracking-wider flex items-center gap-2">
+          <i data-lucide="user" class="w-4 h-4 text-purple-400"></i> 2. Thông Tin Khách Hàng
         </label>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div class="relative">
-            <input type="tel" id="pos-customer-phone" oninput="onCustomerPhoneInput(this.value)" placeholder="Số điện thoại khách..." class="w-full bg-[#141724] border border-white/10 rounded-2xl p-3.5 pl-10 text-white text-sm focus:outline-none focus:border-purple-500 transition">
-            <i data-lucide="phone" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+            <input type="tel" id="pos-customer-phone" oninput="onCustomerPhoneInput(this.value)" placeholder="Số điện thoại khách..." class="w-full bg-[#141724] border border-white/10 rounded-2xl p-4 pl-11 text-white text-base focus:outline-none focus:border-purple-500 transition font-mono">
+            <i data-lucide="phone" class="w-5 h-5 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
           </div>
-          <input type="text" id="pos-customer-name" placeholder="Tên khách hàng (Tùy chọn)" class="w-full bg-[#141724] border border-white/10 rounded-2xl p-3.5 text-white text-sm focus:outline-none focus:border-purple-500 transition">
+          <input type="text" id="pos-customer-name" placeholder="Tên khách hàng (Tùy chọn)" class="w-full bg-[#141724] border border-white/10 rounded-2xl p-4 text-white text-base focus:outline-none focus:border-purple-500 transition">
         </div>
 
-        <div id="pos-customer-card" class="hidden p-4 rounded-2xl bg-gradient-to-r from-purple-950/40 to-rose-950/30 border border-purple-500/20 space-y-2.5">
+        <div id="pos-customer-card" class="hidden p-4 sm:p-5 rounded-2xl bg-purple-950/30 space-y-3">
           <div class="flex justify-between items-center">
             <div class="flex items-center gap-2">
-              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-              <span id="pos-cust-name-badge" class="text-xs font-bold text-white">Chị Mai Lan</span>
-              <span id="pos-cust-phone-badge" class="text-[11px] text-slate-400">(0912345678)</span>
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+              <span id="pos-cust-name-badge" class="text-sm font-bold text-white">Chị Mai Lan</span>
+              <span id="pos-cust-phone-badge" class="text-xs text-slate-400 font-mono">(0912345678)</span>
             </div>
-            <span id="pos-cust-visits-badge" class="text-xs font-extrabold text-purple-300 font-heading">8 / 10 Lần gội</span>
+            <span id="pos-cust-visits-badge" class="text-xs sm:text-sm font-extrabold text-purple-300 font-heading">8 / 10 Lần gội</span>
           </div>
-          <div class="w-full h-2 bg-white/10 rounded-full overflow-hidden">
+          <div class="w-full h-2.5 bg-white/10 rounded-full overflow-hidden">
             <div id="pos-cust-progress-bar" class="h-full bg-gradient-to-r from-purple-500 to-rose-400 rounded-full transition-all duration-500" style="width: 80%"></div>
           </div>
-          <div id="pos-cust-notes-box" class="text-xs text-rose-300/90 bg-rose-500/10 rounded-xl p-2 border border-rose-500/20">
-            <span class="font-semibold">📝 Lưu ý:</span> <span id="pos-cust-notes-text">Da đầu dầu, thích sấy mát</span>
+          <div id="pos-cust-notes-box" class="text-xs sm:text-sm text-rose-200 bg-rose-500/10 rounded-xl p-3">
+            <span class="font-bold">📝 Lưu ý:</span> <span id="pos-cust-notes-text">Da đầu dầu, thích sấy mát</span>
           </div>
-          <div id="pos-voucher-banner" class="hidden flex items-center justify-between p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
-            <div class="flex items-center gap-2 text-xs text-emerald-300 font-medium">
-              <i data-lucide="gift" class="w-4 h-4 text-emerald-400"></i>
+          <div id="pos-voucher-banner" class="hidden flex items-center justify-between p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+            <div class="flex items-center gap-2.5 text-xs sm:text-sm text-emerald-300 font-semibold">
+              <i data-lucide="gift" class="w-5 h-5 text-emerald-400"></i>
               <span id="pos-voucher-text">Khách có 1 Voucher Combo 1 miễn phí!</span>
             </div>
             <input type="checkbox" id="pos-use-voucher" onchange="onVoucherToggle(this.checked)" class="w-5 h-5 accent-emerald-500 rounded cursor-pointer">
@@ -206,28 +209,30 @@
         </div>
       </div>
 
-      <div>
-        <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-          <i data-lucide="credit-card" class="w-3.5 h-3.5 text-purple-400"></i> 3. Phương Thức Thanh Toán
+      <!-- 3. Payment Method -->
+      <div class="space-y-2.5">
+        <label class="block text-sm font-bold text-slate-200 uppercase tracking-wider flex items-center gap-2">
+          <i data-lucide="credit-card" class="w-4 h-4 text-purple-400"></i> 3. Phương Thức Thanh Toán
         </label>
-        <div class="grid grid-cols-2 gap-2.5">
-          <button type="button" id="btn-pay-qr" onclick="setPaymentMethod('Chuyển khoản')" class="p-3.5 rounded-2xl border bg-purple-600/20 border-purple-500 text-purple-300 font-semibold text-sm flex items-center justify-center gap-2 shadow-md shadow-purple-500/10 transition cursor-pointer">
-            <i data-lucide="qr-code" class="w-4 h-4"></i> Chuyển Khoản QR
+        <div class="grid grid-cols-2 gap-3">
+          <button type="button" id="btn-pay-qr" onclick="setPaymentMethod('Chuyển khoản')" class="p-4 rounded-2xl border bg-purple-600/20 border-purple-500 text-purple-300 font-bold text-sm sm:text-base flex items-center justify-center gap-2 shadow-md shadow-purple-500/10 transition cursor-pointer">
+            <i data-lucide="qr-code" class="w-5 h-5"></i> Chuyển Khoản QR
           </button>
-          <button type="button" id="btn-pay-cash" onclick="setPaymentMethod('Tiền mặt')" class="p-3.5 rounded-2xl border bg-white/5 border-white/5 text-slate-400 hover:bg-white/10 font-semibold text-sm flex items-center justify-center gap-2 transition cursor-pointer">
-            <i data-lucide="banknote" class="w-4 h-4"></i> Tiền Mặt
+          <button type="button" id="btn-pay-cash" onclick="setPaymentMethod('Tiền mặt')" class="p-4 rounded-2xl border bg-white/[0.04] border-white/5 text-slate-400 hover:bg-white/[0.08] font-bold text-sm sm:text-base flex items-center justify-center gap-2 transition cursor-pointer">
+            <i data-lucide="banknote" class="w-5 h-5"></i> Tiền Mặt
           </button>
         </div>
       </div>
 
-      <div class="pt-2 border-t border-white/5 space-y-3">
+      <!-- 4. Price & Submit -->
+      <div class="pt-3 border-t border-white/5 space-y-3.5">
         <div class="flex justify-between items-center">
-          <span class="text-sm text-slate-400">Tổng tiền khách trả:</span>
+          <span class="text-sm sm:text-base text-slate-300 font-medium">Tổng tiền khách trả:</span>
           <div class="text-right">
-            <span id="pos-price-display" class="text-2xl font-extrabold text-white font-heading">64.000 đ</span>
+            <span id="pos-price-display" class="text-2xl sm:text-3xl font-extrabold text-white font-heading">64.000 đ</span>
           </div>
         </div>
-        <button type="button" onclick="submitPOSReceipt()" class="w-full py-4 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-extrabold text-base shadow-xl shadow-purple-500/25 flex items-center justify-center gap-2 transition active:scale-95 cursor-pointer">
+        <button type="button" onclick="submitPOSReceipt()" class="w-full py-4.5 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-extrabold text-base sm:text-lg shadow-xl shadow-purple-500/25 flex items-center justify-center gap-2 transition active:scale-95 cursor-pointer">
           <i data-lucide="check-circle" class="w-5 h-5"></i>
           <span id="pos-submit-btn-text">Hiện Mã VietQR & Lưu Ca</span>
         </button>
@@ -235,108 +240,113 @@
     </div>
   </main>
   <!-- 4. STAFF SALARY VIEW -->
-  <main id="view-staff-history" class="hidden flex-1 p-4 sm:p-6 max-w-xl w-full mx-auto space-y-4 pb-24">
+  <main id="view-staff-history" class="hidden flex-1 p-4 sm:p-6 max-w-2xl w-full mx-auto space-y-5 pb-24">
     <div class="flex justify-between items-center px-1">
       <div>
-        <h2 class="text-xl font-bold text-white font-heading">Lương & Ca Làm Cá Nhân</h2>
-        <p class="text-xs text-slate-400">Tháng này</p>
+        <h2 class="text-xl sm:text-2xl font-extrabold text-white font-heading">Lương & Ca Làm Cá Nhân</h2>
+        <p class="text-xs sm:text-sm text-slate-400">Báo cáo thu nhập tháng này</p>
       </div>
-      <button onclick="loadStaffHistory()" class="p-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition cursor-pointer">
+      <button onclick="loadStaffHistory()" class="p-3 rounded-2xl bg-white/[0.04] hover:bg-white/[0.08] text-slate-300 hover:text-white transition cursor-pointer">
         <i data-lucide="refresh-cw" class="w-4 h-4"></i>
       </button>
     </div>
 
-    <div class="glass-card rounded-3xl p-5 sm:p-6 shadow-2xl border border-purple-500/20 bg-gradient-to-br from-purple-950/40 via-[#141724] to-[#0f111a] space-y-4">
+    <!-- Main Salary Card (Sleek, Spacious, Borderless) -->
+    <div class="glass-card rounded-3xl p-6 sm:p-8 shadow-2xl border border-purple-500/20 bg-gradient-to-br from-purple-950/50 via-[#141724] to-[#0f111a] space-y-5">
       <div>
-        <span class="text-xs font-semibold text-purple-400 uppercase tracking-wider block">Tổng Thu Nhập Tháng Tạm Tính</span>
-        <div class="text-3xl sm:text-4xl font-extrabold text-white font-heading mt-1" id="staff-total-earnings">
-          0 <span class="text-lg text-purple-400 font-normal">đ</span>
+        <span class="text-xs sm:text-sm font-semibold text-purple-300 uppercase tracking-wider block">Tổng Thu Nhập Tháng Tạm Tính</span>
+        <div class="text-4xl sm:text-5xl font-extrabold text-white font-heading mt-1.5" id="staff-total-earnings">
+          0 <span class="text-xl text-purple-400 font-normal">đ</span>
         </div>
       </div>
 
-      <!-- Tiến Trình Ngày Công Theo Tháng -->
-      <div class="p-3.5 rounded-2xl bg-white/5 border border-white/5 space-y-2">
-        <div class="flex justify-between items-center text-xs">
-          <span class="text-slate-300 font-medium">Tiến trình ngày công tháng này:</span>
+      <!-- Working Days Progress -->
+      <div class="p-4 sm:p-5 rounded-2xl bg-white/[0.04] space-y-2.5">
+        <div class="flex justify-between items-center text-xs sm:text-sm">
+          <span class="text-slate-200 font-semibold">Tiến trình ngày công tháng này:</span>
           <span class="font-bold text-purple-300 font-mono" id="staff-days-progress-text">0 / 27 ngày</span>
         </div>
-        <div class="w-full bg-white/10 rounded-full h-2.5 overflow-hidden">
-          <div id="staff-days-progress-bar" class="bg-gradient-to-r from-purple-500 to-emerald-400 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+        <div class="w-full bg-white/10 rounded-full h-3 overflow-hidden">
+          <div id="staff-days-progress-bar" class="bg-gradient-to-r from-purple-500 via-indigo-400 to-emerald-400 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
         </div>
-        <div class="flex justify-between text-[11px] text-slate-400">
-          <span id="staff-daily-rate-note">Công: 0 đ/ngày (Chuẩn 2.000.000 đ)</span>
-          <span class="font-bold text-emerald-400" id="staff-days-pct-text">0%</span>
+        <div class="flex justify-between text-xs sm:text-sm text-slate-300">
+          <span id="staff-daily-rate-note">Công: 0 đ/ngày (Định mức 2.000.000 đ)</span>
+          <span class="font-bold text-emerald-400 font-heading" id="staff-days-pct-text">0% chỉ tiêu</span>
         </div>
       </div>
 
-      <div class="grid grid-cols-3 gap-2 pt-2 border-t border-white/5 text-center">
-        <div class="p-2.5 rounded-xl bg-white/5">
-          <span class="text-[10px] text-slate-400 block uppercase">Số ca gội</span>
-          <span class="text-sm font-bold text-white font-heading" id="staff-total-tours">0 ca</span>
+      <!-- 3 Stats Columns -->
+      <div class="grid grid-cols-3 gap-3 pt-2 text-center">
+        <div class="p-3.5 rounded-2xl bg-white/[0.04]">
+          <span class="text-xs text-slate-400 block uppercase font-medium">Số ca gội</span>
+          <span class="text-base sm:text-lg font-bold text-white font-heading mt-0.5 block" id="staff-total-tours">0 ca</span>
         </div>
-        <div class="p-2.5 rounded-xl bg-white/5">
-          <span class="text-[10px] text-slate-400 block uppercase">Lương Tour</span>
-          <span class="text-sm font-bold text-emerald-400 font-heading" id="staff-total-commission">0 đ</span>
+        <div class="p-3.5 rounded-2xl bg-white/[0.04]">
+          <span class="text-xs text-slate-400 block uppercase font-medium">Lương Tour</span>
+          <span class="text-base sm:text-lg font-bold text-emerald-400 font-heading mt-0.5 block" id="staff-total-commission">0 đ</span>
         </div>
-        <div class="p-2.5 rounded-xl bg-white/5">
-          <span class="text-[10px] text-slate-400 block uppercase">Lương Cứng Đạt</span>
-          <span class="text-sm font-bold text-slate-200 font-heading" id="staff-base-salary">0 đ</span>
+        <div class="p-3.5 rounded-2xl bg-white/[0.04]">
+          <span class="text-xs text-slate-400 block uppercase font-medium">Lương Cứng Đạt</span>
+          <span class="text-base sm:text-lg font-bold text-purple-300 font-heading mt-0.5 block" id="staff-base-salary">0 đ</span>
         </div>
       </div>
     </div>
 
-    <div class="space-y-2.5">
-      <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-wider px-1">Lịch Sử Ca Làm Gần Đây</h3>
-      <div id="staff-receipts-list" class="space-y-2"></div>
+    <!-- Receipts History -->
+    <div class="space-y-3 pt-1">
+      <h3 class="text-xs sm:text-sm font-bold text-slate-300 uppercase tracking-wider px-1">Lịch Sử Ca Làm Gần Đây</h3>
+      <div id="staff-receipts-list" class="space-y-2.5"></div>
     </div>
   </main>
   <!-- 5. ADMIN DASHBOARD VIEW -->
   <main id="view-admin-dashboard" class="hidden flex-1 p-4 sm:p-6 max-w-5xl w-full mx-auto space-y-6 pb-24">
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
       <div>
-        <h2 class="text-2xl font-extrabold text-white font-heading flex items-center gap-2">👑 Quản Trị Selena Spa</h2>
-        <p class="text-xs text-slate-400">Thống kê tài chính dòng tiền & Kiểm soát vận hành</p>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-white font-heading flex items-center gap-2.5">👑 Quản Trị Selena Spa</h2>
+        <p class="text-xs sm:text-sm text-slate-400">Thống kê tài chính dòng tiền & Kiểm soát vận hành</p>
       </div>
-      <button onclick="loadAdminDashboard()" class="px-3.5 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 text-xs font-semibold flex items-center gap-1.5 transition border border-white/5 cursor-pointer">
-        <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Làm mới
+      <button onclick="loadAdminDashboard()" class="px-4 py-2.5 rounded-2xl bg-white/[0.04] hover:bg-white/[0.08] text-slate-200 text-xs sm:text-sm font-semibold flex items-center gap-2 transition cursor-pointer">
+        <i data-lucide="refresh-cw" class="w-4 h-4"></i> Làm mới
       </button>
     </div>
 
+    <!-- Financial KPI Cards -->
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-      <div class="glass-card rounded-3xl p-4 sm:p-5 border border-emerald-500/20 bg-gradient-to-br from-emerald-950/20 to-transparent">
-        <span class="text-[11px] font-semibold text-emerald-400 uppercase tracking-wider block">Doanh Thu Tổng</span>
-        <div class="text-xl sm:text-2xl font-extrabold text-white font-heading mt-1" id="kpi-revenue">0 đ</div>
-        <span class="text-[10px] text-slate-400 mt-1 block" id="kpi-tours">0 ca phục vụ</span>
+      <div class="glass-card rounded-3xl p-5 sm:p-6 border border-emerald-500/20 bg-gradient-to-br from-emerald-950/20 to-transparent space-y-1">
+        <span class="text-xs sm:text-sm font-semibold text-emerald-400 uppercase tracking-wider block">Doanh Thu Tổng</span>
+        <div class="text-2xl sm:text-3xl font-extrabold text-white font-heading" id="kpi-revenue">0 đ</div>
+        <span class="text-xs text-slate-400 block" id="kpi-tours">0 ca phục vụ</span>
       </div>
-      <div class="glass-card rounded-3xl p-4 sm:p-5 border border-purple-500/20 bg-gradient-to-br from-purple-950/20 to-transparent">
-        <span class="text-[11px] font-semibold text-purple-400 uppercase tracking-wider block">Tổng Lương KTV</span>
-        <div class="text-xl sm:text-2xl font-extrabold text-white font-heading mt-1" id="kpi-salaries">0 đ</div>
-        <span class="text-[10px] text-slate-400 mt-1 block">Lương cứng + Tour</span>
+      <div class="glass-card rounded-3xl p-5 sm:p-6 border border-purple-500/20 bg-gradient-to-br from-purple-950/20 to-transparent space-y-1">
+        <span class="text-xs sm:text-sm font-semibold text-purple-400 uppercase tracking-wider block">Tổng Lương KTV</span>
+        <div class="text-2xl sm:text-3xl font-extrabold text-white font-heading" id="kpi-salaries">0 đ</div>
+        <span class="text-xs text-slate-400 block">Lương cứng + Tour</span>
       </div>
-      <div class="glass-card rounded-3xl p-4 sm:p-5 border border-red-500/20 bg-gradient-to-br from-red-950/20 to-transparent">
-        <span class="text-[11px] font-semibold text-red-400 uppercase tracking-wider block">Chi Phí Vận Hành</span>
-        <div class="text-xl sm:text-2xl font-extrabold text-white font-heading mt-1" id="kpi-expenses">0 đ</div>
-        <span class="text-[10px] text-slate-400 mt-1 block">Điện, nước, mạng, mặt bằng</span>
+      <div class="glass-card rounded-3xl p-5 sm:p-6 border border-red-500/20 bg-gradient-to-br from-red-950/20 to-transparent space-y-1">
+        <span class="text-xs sm:text-sm font-semibold text-red-400 uppercase tracking-wider block">Chi Phí Vận Hành</span>
+        <div class="text-2xl sm:text-3xl font-extrabold text-white font-heading" id="kpi-expenses">0 đ</div>
+        <span class="text-xs text-slate-400 block">Điện, nước, mạng, mặt bằng</span>
       </div>
-      <div class="glass-card rounded-3xl p-4 sm:p-5 border border-rose-500/30 bg-gradient-to-br from-rose-950/30 to-transparent col-span-2 sm:col-span-1 shadow-lg shadow-rose-500/10">
-        <span class="text-[11px] font-bold text-rose-400 uppercase tracking-wider block">LỢI NHUẬN RÒNG</span>
-        <div class="text-xl sm:text-2xl font-extrabold text-rose-300 font-heading mt-1" id="kpi-net-profit">0 đ</div>
-        <span class="text-[10px] text-emerald-400 mt-1 block font-medium">Tiền thực nhận của Chủ</span>
+      <div class="glass-card rounded-3xl p-5 sm:p-6 border border-rose-500/30 bg-gradient-to-br from-rose-950/30 to-transparent col-span-2 sm:col-span-1 shadow-lg shadow-rose-500/10 space-y-1">
+        <span class="text-xs sm:text-sm font-bold text-rose-400 uppercase tracking-wider block">LỢI NHUẬN RÒNG</span>
+        <div class="text-2xl sm:text-3xl font-extrabold text-rose-300 font-heading" id="kpi-net-profit">0 đ</div>
+        <span class="text-xs text-emerald-400 font-medium block">Tiền thực nhận của Chủ</span>
       </div>
     </div>
 
+    <!-- Subtabs Navigation -->
     <div class="flex items-center gap-2 overflow-x-auto pb-1 border-b border-white/5">
-      <button onclick="switchAdminTab('receipts')" id="tab-btn-receipts" class="px-4 py-2 rounded-2xl text-xs font-bold bg-purple-600 text-white shadow-md shadow-purple-600/30 transition cursor-pointer shrink-0">📜 Hóa Đơn Toàn Tiệm</button>
-      <button onclick="switchAdminTab('customers')" id="tab-btn-customers" class="px-4 py-2 rounded-2xl text-xs font-bold bg-white/5 hover:bg-white/10 text-slate-400 transition cursor-pointer shrink-0">👥 Khách Hàng (tb_customers)</button>
-      <button onclick="switchAdminTab('users')" id="tab-btn-users" class="px-4 py-2 rounded-2xl text-xs font-bold bg-white/5 hover:bg-white/10 text-slate-400 transition cursor-pointer shrink-0">💆 Nhân Viên (tb_users)</button>
-      <button onclick="switchAdminTab('expenses')" id="tab-btn-expenses" class="px-4 py-2 rounded-2xl text-xs font-bold bg-white/5 hover:bg-white/10 text-slate-400 transition cursor-pointer shrink-0">⚡ Chi Phí Vận Hành</button>
-      <button onclick="switchAdminTab('settings')" id="tab-btn-settings" class="px-4 py-2 rounded-2xl text-xs font-bold bg-white/5 hover:bg-white/10 text-slate-400 transition cursor-pointer shrink-0">⚙️ Kết Nối Google Sheets</button>
+      <button onclick="switchAdminTab('receipts')" id="tab-btn-receipts" class="px-4.5 py-2.5 rounded-2xl text-xs sm:text-sm font-bold bg-purple-600 text-white shadow-md shadow-purple-600/30 transition cursor-pointer shrink-0">📜 Hóa Đơn Toàn Tiệm</button>
+      <button onclick="switchAdminTab('customers')" id="tab-btn-customers" class="px-4.5 py-2.5 rounded-2xl text-xs sm:text-sm font-bold bg-white/5 hover:bg-white/10 text-slate-400 transition cursor-pointer shrink-0">👥 Khách Hàng (tb_customers)</button>
+      <button onclick="switchAdminTab('users')" id="tab-btn-users" class="px-4.5 py-2.5 rounded-2xl text-xs sm:text-sm font-bold bg-white/5 hover:bg-white/10 text-slate-400 transition cursor-pointer shrink-0">💆 Nhân Viên (tb_users)</button>
+      <button onclick="switchAdminTab('expenses')" id="tab-btn-expenses" class="px-4.5 py-2.5 rounded-2xl text-xs sm:text-sm font-bold bg-white/5 hover:bg-white/10 text-slate-400 transition cursor-pointer shrink-0">⚡ Chi Phí Vận Hành</button>
+      <button onclick="switchAdminTab('settings')" id="tab-btn-settings" class="px-4.5 py-2.5 rounded-2xl text-xs sm:text-sm font-bold bg-white/5 hover:bg-white/10 text-slate-400 transition cursor-pointer shrink-0">⚙️ Kết Nối Google Sheets</button>
     </div>
 
-    <div id="admin-subtab-receipts" class="glass-card rounded-3xl p-4 sm:p-6 border border-white/10 space-y-4">
+    <div id="admin-subtab-receipts" class="glass-card rounded-3xl p-5 sm:p-7 border border-white/10 space-y-4">
       <div class="flex justify-between items-center">
-        <h3 class="text-sm sm:text-base font-bold text-white font-heading">Nhật Ký Hóa Đơn Gần Đây</h3>
-        <span class="text-xs text-purple-400 font-bold" id="admin-receipt-count">0 hóa đơn</span>
+        <h3 class="text-base sm:text-lg font-bold text-white font-heading">Nhật Ký Hóa Đơn Gần Đây</h3>
+        <span class="text-xs sm:text-sm text-purple-400 font-bold" id="admin-receipt-count">0 hóa đơn</span>
       </div>
 
       <!-- Mobile View (Cards) -->
@@ -344,15 +354,15 @@
 
       <!-- Desktop View (Spacious Table) -->
       <div class="hidden md:block overflow-x-auto">
-        <table class="w-full text-left text-xs min-w-[650px]">
+        <table class="w-full text-left text-sm min-w-[700px]">
           <thead>
-            <tr class="border-b border-white/10 text-slate-400 text-xs">
-              <th class="pb-3 font-semibold">Mã HD</th>
-              <th class="pb-3 font-semibold">Dịch Vụ</th>
-              <th class="pb-3 font-semibold">Khách</th>
-              <th class="pb-3 font-semibold">KTV</th>
-              <th class="pb-3 font-semibold text-right">Thu Thực</th>
-              <th class="pb-3 font-semibold text-right">Thanh Toán</th>
+            <tr class="border-b border-white/10 text-slate-400 text-xs sm:text-sm">
+              <th class="pb-3.5 font-semibold">Mã HD</th>
+              <th class="pb-3.5 font-semibold">Dịch Vụ</th>
+              <th class="pb-3.5 font-semibold">Khách</th>
+              <th class="pb-3.5 font-semibold">KTV</th>
+              <th class="pb-3.5 font-semibold text-right">Thu Thực</th>
+              <th class="pb-3.5 font-semibold text-right">Thanh Toán</th>
             </tr>
           </thead>
           <tbody id="admin-receipts-table-body" class="divide-y divide-white/5"></tbody>
@@ -1150,20 +1160,20 @@
 
       const list = document.getElementById('staff-receipts-list');
       if (payroll.myReceipts.length === 0) {
-        list.innerHTML = '<div class="glass-card rounded-2xl p-6 text-center text-slate-500 text-xs">Chưa có ca làm nào trong tháng này.</div>';
+        list.innerHTML = '<div class="glass-card rounded-3xl p-8 text-center text-slate-400 text-sm font-medium">Chưa có ca làm nào trong tháng này.</div>';
       } else {
         list.innerHTML = payroll.myReceipts.map((r, i) => `
-          <div class="glass-card rounded-2xl p-3.5 border border-white/5 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-              <div class="w-9 h-9 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center font-bold text-xs font-heading">${i+1}</div>
+          <div class="p-4 sm:p-5 rounded-2xl bg-white/[0.04] hover:bg-white/[0.07] transition flex items-center justify-between gap-3">
+            <div class="flex items-center gap-3.5">
+              <div class="w-10 h-10 rounded-xl bg-purple-500/15 text-purple-300 flex items-center justify-center font-bold text-sm font-heading">${i+1}</div>
               <div>
-                <div class="text-xs font-bold text-white">${r.service_name}</div>
-                <div class="text-[11px] text-slate-400 font-mono">${formatAppDateTime(r.date)} • Khách: ${r.customer_name}</div>
+                <div class="text-sm sm:text-base font-bold text-white">${r.service_name}</div>
+                <div class="text-xs sm:text-sm text-slate-400 font-mono mt-0.5">${formatAppDateTime(r.date)} • Khách: <span class="text-slate-200">${r.customer_name}</span></div>
               </div>
             </div>
-            <div class="text-right">
-              <div class="text-xs font-bold text-emerald-400 font-heading">+${(r.commission_amount || 0).toLocaleString('vi-VN')} đ</div>
-              <div class="text-[10px] text-slate-400">Thu: ${(r.total_paid || 0).toLocaleString('vi-VN')} đ (${r.payment_method === 'Chuyển khoản' || r.payment_method === 'Transfer' ? 'QR' : 'Tiền mặt'})</div>
+            <div class="text-right shrink-0">
+              <div class="text-sm sm:text-base font-extrabold text-emerald-400 font-heading">+${(r.commission_amount || 0).toLocaleString('vi-VN')} đ</div>
+              <div class="text-xs text-slate-400 mt-0.5">Thu: ${(r.total_paid || 0).toLocaleString('vi-VN')} đ (${r.payment_method === 'Chuyển khoản' || r.payment_method === 'Transfer' ? 'QR' : 'Tiền mặt'})</div>
             </div>
           </div>
         `).join('');
@@ -1205,27 +1215,27 @@
       const mobileCards = document.getElementById('admin-receipts-mobile-cards');
 
       if (receipts.length === 0) {
-        tableBody.innerHTML = '<tr><td colspan="6" class="py-8 text-center text-slate-500 text-xs font-medium">Chưa có hóa đơn nào (Bảng tb_receipts trên Google Sheet đang trống)</td></tr>';
-        if (mobileCards) mobileCards.innerHTML = '<div class="glass-card rounded-2xl p-6 text-center text-slate-500 text-xs">Chưa có hóa đơn nào (Bảng tb_receipts trên Google Sheet đang trống).</div>';
+        tableBody.innerHTML = '<tr><td colspan="6" class="py-10 text-center text-slate-500 text-sm font-medium">Chưa có hóa đơn nào (Bảng tb_receipts trên Google Sheet đang trống)</td></tr>';
+        if (mobileCards) mobileCards.innerHTML = '<div class="p-8 text-center text-slate-500 text-sm">Chưa có hóa đơn nào.</div>';
       } else {
         tableBody.innerHTML = receipts.map(r => `
           <tr class="hover:bg-white/5 transition border-b border-white/5">
             <td class="py-4 font-mono">
-              <div class="text-xs font-bold text-slate-200 font-mono">${r.receipt_id}</div>
+              <div class="text-sm font-bold text-slate-200 font-mono">${r.receipt_id}</div>
               <div class="text-xs text-purple-400 font-mono mt-0.5">${formatAppDateTime(r.date)}</div>
             </td>
             <td class="py-4">
-              <div class="text-sm font-bold text-white">${r.service_name}</div>
+              <div class="text-sm sm:text-base font-bold text-white">${r.service_name}</div>
             </td>
             <td class="py-4">
               <div class="text-sm font-semibold text-slate-200">${r.customer_name}</div>
               <div class="text-xs text-slate-400 font-mono">${normalizePhone(r.customer_phone)}</div>
             </td>
             <td class="py-4">
-              <span class="px-2.5 py-1 rounded-lg bg-purple-500/15 text-purple-300 text-xs font-semibold border border-purple-500/20 whitespace-nowrap">${r.staff_name}</span>
+              <span class="px-3 py-1 rounded-xl bg-purple-500/15 text-purple-300 text-xs font-semibold whitespace-nowrap">${r.staff_name}</span>
             </td>
             <td class="py-4 text-right">
-              <span class="text-sm sm:text-base font-extrabold text-emerald-400 font-heading">${(r.total_paid || 0).toLocaleString('vi-VN')} đ</span>
+              <span class="text-base font-extrabold text-emerald-400 font-heading">${(r.total_paid || 0).toLocaleString('vi-VN')} đ</span>
             </td>
             <td class="py-4 text-right">
               <span class="px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap ${r.payment_method === 'Chuyển khoản' || r.payment_method === 'Transfer' ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30' : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'}">
@@ -1237,27 +1247,27 @@
 
         if (mobileCards) {
           mobileCards.innerHTML = receipts.map(r => `
-            <div class="glass-card rounded-2xl p-4 border border-white/5 space-y-2.5">
+            <div class="p-4 sm:p-5 rounded-2xl bg-white/[0.04] space-y-3">
               <div class="flex items-center justify-between">
                 <div>
-                  <div class="text-xs font-bold text-slate-200 font-mono">${r.receipt_id}</div>
+                  <div class="text-xs font-bold text-slate-300 font-mono">${r.receipt_id}</div>
                   <div class="text-xs text-purple-400 font-mono mt-0.5">${formatAppDateTime(r.date)}</div>
                 </div>
-                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold ${r.payment_method === 'Chuyển khoản' || r.payment_method === 'Transfer' ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30' : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'}">
+                <span class="px-3 py-1 rounded-full text-xs font-bold ${r.payment_method === 'Chuyển khoản' || r.payment_method === 'Transfer' ? 'bg-purple-500/20 text-purple-300' : 'bg-emerald-500/20 text-emerald-300'}">
                   ${r.payment_method === 'Chuyển khoản' || r.payment_method === 'Transfer' ? 'QR Chuyển khoản' : 'Tiền mặt'}
                 </span>
               </div>
-              <div class="text-sm font-extrabold text-white">${r.service_name}</div>
-              <div class="flex items-center justify-between text-xs pt-1.5 border-t border-white/5">
+              <div class="text-base font-extrabold text-white">${r.service_name}</div>
+              <div class="flex items-center justify-between text-sm pt-2 border-t border-white/5">
                 <div class="text-slate-300">
                   <span class="text-slate-400">Khách:</span> <span class="font-semibold text-white">${r.customer_name}</span>
-                  ${r.customer_phone ? `<span class="text-slate-400 font-mono text-[11px]"> (${normalizePhone(r.customer_phone)})</span>` : ''}
+                  ${r.customer_phone ? `<span class="text-slate-400 font-mono text-xs"> (${normalizePhone(r.customer_phone)})</span>` : ''}
                 </div>
-                <span class="px-2 py-0.5 rounded-md bg-purple-500/15 text-purple-300 text-xs font-semibold">${r.staff_name}</span>
+                <span class="px-2.5 py-0.5 rounded-lg bg-purple-500/15 text-purple-300 text-xs font-semibold">${r.staff_name}</span>
               </div>
-              <div class="flex items-center justify-between pt-1.5 border-t border-white/5">
-                <span class="text-xs text-slate-400">Thu thực tế:</span>
-                <span class="text-base font-extrabold text-emerald-400 font-heading">${(r.total_paid || 0).toLocaleString('vi-VN')} đ</span>
+              <div class="flex items-center justify-between pt-2 border-t border-white/5">
+                <span class="text-xs sm:text-sm text-slate-300">Thu thực tế:</span>
+                <span class="text-base sm:text-lg font-extrabold text-emerald-400 font-heading">${(r.total_paid || 0).toLocaleString('vi-VN')} đ</span>
               </div>
             </div>
           `).join('');
@@ -1266,13 +1276,13 @@
 
       const expContainer = document.getElementById('admin-expenses-list');
       expContainer.innerHTML = expenses.map(e => `
-        <div class="p-4 sm:p-5 rounded-2xl bg-white/5 border border-white/5 space-y-2">
+        <div class="p-5 rounded-2xl bg-white/[0.04] space-y-2">
           <div class="flex justify-between items-center">
-            <span class="px-2.5 py-1 rounded-lg bg-red-500/10 text-red-300 font-bold text-xs">${e.expense_type}</span>
+            <span class="px-3 py-1 rounded-xl bg-red-500/15 text-red-300 font-bold text-xs">${e.expense_type}</span>
             <span class="text-xs text-slate-400 font-mono">${formatAppDateTime(e.date)}</span>
           </div>
-          <div class="text-xl font-extrabold text-white font-heading">${e.amount.toLocaleString('vi-VN')} đ</div>
-          <div class="text-xs text-slate-300">${e.note || 'Không có ghi chú'}</div>
+          <div class="text-2xl font-extrabold text-white font-heading">${e.amount.toLocaleString('vi-VN')} đ</div>
+          <div class="text-xs sm:text-sm text-slate-300">${e.note || 'Không có ghi chú'}</div>
         </div>
       `).join('');
 
@@ -1284,29 +1294,29 @@
         let cleanNote = c.notes || '';
         if (cleanNote.includes('GMT') || cleanNote.includes('00:00:00')) cleanNote = '';
         return `
-        <div class="glass-card rounded-2xl p-4 border border-white/5 space-y-2.5">
+        <div class="p-4 sm:p-5 rounded-2xl bg-white/[0.04] space-y-3">
           <div class="flex items-center justify-between">
-            <div class="flex items-center gap-2.5">
-              <div class="w-9 h-9 rounded-xl bg-purple-500/20 text-purple-300 flex items-center justify-center font-bold text-xs">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-2xl bg-purple-500/20 text-purple-300 flex items-center justify-center font-bold text-sm">
                 ${(c.customer_name || 'K')[0]}
               </div>
               <div>
-                <div class="text-xs font-bold text-white">${c.customer_name}</div>
-                <div class="text-[11px] text-slate-400 font-mono">${normalizePhone(c.phone_number)}</div>
+                <div class="text-sm sm:text-base font-bold text-white">${c.customer_name}</div>
+                <div class="text-xs text-slate-400 font-mono mt-0.5">${normalizePhone(c.phone_number)}</div>
               </div>
             </div>
-            ${c.voucher_count > 0 ? `<span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-bold border border-emerald-500/30">🎁 ${c.voucher_count} Voucher</span>` : ''}
+            ${c.voucher_count > 0 ? `<span class="px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-bold">🎁 ${c.voucher_count} Voucher</span>` : ''}
           </div>
-          <div>
-            <div class="flex justify-between text-[10px] text-slate-400 mb-1">
+          <div class="space-y-1.5">
+            <div class="flex justify-between text-xs text-slate-400">
               <span>Tiến trình tích điểm</span>
-              <span class="font-bold text-purple-400">${c.total_visits || 0}/10 lần</span>
+              <span class="font-bold text-purple-300 font-mono">${c.total_visits || 0}/10 lần</span>
             </div>
-            <div class="w-full bg-white/5 rounded-full h-1.5 overflow-hidden">
+            <div class="w-full bg-white/10 rounded-full h-2 overflow-hidden">
               <div class="bg-gradient-to-r from-purple-500 to-rose-400 h-full rounded-full" style="width: ${Math.min(100, ((c.total_visits || 0) / 10) * 100)}%"></div>
             </div>
           </div>
-          ${cleanNote ? `<div class="text-[11px] text-slate-300 bg-white/5 rounded-xl p-2 border border-white/5">📝 ${cleanNote}</div>` : ''}
+          ${cleanNote ? `<div class="text-xs sm:text-sm text-slate-300 bg-white/5 rounded-xl p-3">📝 ${cleanNote}</div>` : ''}
         </div>
       `}).join('');
 
@@ -1320,44 +1330,44 @@
           const p = calculateStaffPayroll(u, receipts);
           const isOwner = isUserOwner(u);
           return `
-          <div class="glass-card rounded-2xl p-4 border border-white/5 space-y-3">
+          <div class="p-5 rounded-2xl bg-white/[0.04] space-y-3.5">
             <div class="flex items-center justify-between">
-              <div class="flex items-center gap-2.5">
-                <div class="w-10 h-10 rounded-xl ${isOwner ? 'bg-purple-500/20 text-purple-300' : 'bg-emerald-500/20 text-emerald-300'} flex items-center justify-center font-bold text-xs font-heading">
+              <div class="flex items-center gap-3">
+                <div class="w-11 h-11 rounded-2xl ${isOwner ? 'bg-purple-500/20 text-purple-300' : 'bg-emerald-500/20 text-emerald-300'} flex items-center justify-center font-bold text-base font-heading">
                   ${(u.full_name || 'U')[0]}
                 </div>
                 <div>
-                  <div class="text-sm font-bold text-white">${u.full_name}</div>
-                  <div class="text-xs text-slate-400 font-mono">${normalizePhone(u.phone)} • Mã: ${u.staff_id || u.user_id}</div>
+                  <div class="text-base font-bold text-white font-heading">${u.full_name}</div>
+                  <div class="text-xs text-slate-400 font-mono mt-0.5">${normalizePhone(u.phone)} • Mã: ${u.staff_id || u.user_id}</div>
                 </div>
               </div>
-              <span class="px-2.5 py-0.5 rounded-full text-xs font-bold ${isOwner ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30' : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'}">
+              <span class="px-3 py-1 rounded-full text-xs font-bold ${isOwner ? 'bg-purple-500/20 text-purple-300' : 'bg-emerald-500/20 text-emerald-300'}">
                 ${isOwner ? '👑 Chủ' : '💆 KTV'}
               </span>
             </div>
             
             ${!isOwner ? `
-            <div class="text-xs text-slate-300 bg-white/5 rounded-xl p-3 border border-white/5 space-y-1.5">
-              <div class="flex justify-between">
+            <div class="text-xs sm:text-sm text-slate-200 bg-white/[0.03] rounded-2xl p-4 space-y-2">
+              <div class="flex justify-between items-center">
                 <span class="text-slate-400">Ngày công tháng này:</span>
                 <span class="font-bold text-purple-300 font-mono">${p.workedDays} / ${p.standardDays} ngày (${Math.round((p.workedDays/p.standardDays)*100)}%)</span>
               </div>
-              <div class="flex justify-between">
+              <div class="flex justify-between items-center">
                 <span class="text-slate-400">Lương cứng đạt:</span>
                 <span class="font-bold text-slate-200 font-mono">${p.earnedBase.toLocaleString('vi-VN')} đ <span class="text-slate-500 font-normal">/ ${p.totalMonthlyBase.toLocaleString('vi-VN')} đ</span></span>
               </div>
-              <div class="flex justify-between">
+              <div class="flex justify-between items-center">
                 <span class="text-slate-400">Hoa hồng (${p.myReceipts.length} ca):</span>
                 <span class="font-bold text-emerald-400 font-mono">+${p.totalComm.toLocaleString('vi-VN')} đ</span>
               </div>
-              <div class="pt-1.5 border-t border-white/5 flex justify-between items-center text-xs">
+              <div class="pt-2.5 border-t border-white/5 flex justify-between items-center text-sm">
                 <span class="text-slate-300 font-semibold">Tổng thu nhập tháng:</span>
-                <span class="text-sm font-extrabold text-emerald-400 font-heading">${p.totalEarnings.toLocaleString('vi-VN')} đ</span>
+                <span class="text-base sm:text-lg font-extrabold text-emerald-400 font-heading">${p.totalEarnings.toLocaleString('vi-VN')} đ</span>
               </div>
             </div>
             ` : `
-            <div class="text-xs text-slate-400 bg-white/5 rounded-xl p-2.5 border border-white/5">
-              👑 Tài khoản Chủ Sáng Lập — Nhận toàn bộ lợi nhuận sau khi trừ chi phí & lương KTV.
+            <div class="text-xs sm:text-sm text-slate-400 bg-white/[0.03] rounded-2xl p-3.5">
+              👑 Tài khoản Chủ Sáng Lập — Quản trị doanh thu & Lợi nhuận ròng tiệm.
             </div>
             `}
           </div>
