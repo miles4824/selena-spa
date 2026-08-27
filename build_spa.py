@@ -68,7 +68,7 @@ def build():
 
       <div class="mt-3 flex items-center justify-center gap-1.5 text-xs">
         <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-300 font-medium">
-          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-purple-400"></i> v2.0 • Chuẩn Hóa Tiếng Việt 100% & Quản Lý Qua SĐT
+          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-purple-400"></i> v2.1 • Giao Diện Thẻ Mobile & Xóa Cache Đồng Bộ
         </span>
       </div>
 
@@ -329,15 +329,20 @@ def build():
       <button onclick="switchAdminTab('settings')" id="tab-btn-settings" class="px-4 py-2 rounded-2xl text-xs font-bold bg-white/5 hover:bg-white/10 text-slate-400 transition cursor-pointer shrink-0">⚙️ Kết Nối Google Sheets</button>
     </div>
 
-    <div id="admin-subtab-receipts" class="glass-card rounded-3xl p-5 sm:p-6 border border-white/10 space-y-4">
+    <div id="admin-subtab-receipts" class="glass-card rounded-3xl p-4 sm:p-6 border border-white/10 space-y-4">
       <div class="flex justify-between items-center">
-        <h3 class="text-sm font-bold text-white font-heading">Nhật Ký Hóa Đơn Gần Đây</h3>
-        <span class="text-xs text-slate-400" id="admin-receipt-count">0 hóa đơn</span>
+        <h3 class="text-sm sm:text-base font-bold text-white font-heading">Nhật Ký Hóa Đơn Gần Đây</h3>
+        <span class="text-xs text-purple-400 font-bold" id="admin-receipt-count">0 hóa đơn</span>
       </div>
-      <div class="overflow-x-auto">
-        <table class="w-full text-left text-xs">
+
+      <!-- Mobile View (Cards) -->
+      <div id="admin-receipts-mobile-cards" class="block md:hidden space-y-3"></div>
+
+      <!-- Desktop View (Spacious Table) -->
+      <div class="hidden md:block overflow-x-auto">
+        <table class="w-full text-left text-xs min-w-[650px]">
           <thead>
-            <tr class="border-b border-white/10 text-slate-400">
+            <tr class="border-b border-white/10 text-slate-400 text-xs">
               <th class="pb-3 font-semibold">Mã HD</th>
               <th class="pb-3 font-semibold">Dịch Vụ</th>
               <th class="pb-3 font-semibold">Khách</th>
@@ -397,6 +402,14 @@ def build():
           <button onclick="saveGasUrl()" class="px-4 py-3 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs transition cursor-pointer">Lưu</button>
         </div>
         <p class="text-[11px] text-slate-500">* Để trống sẽ chạy chế độ Offline LocalStorage miễn phí.</p>
+      </div>
+
+      <div class="p-4 rounded-2xl bg-red-500/10 border border-red-500/20 space-y-2">
+        <div class="text-xs font-bold text-red-300">Quản Lý Dữ Liệu Bộ Nhớ:</div>
+        <p class="text-[11px] text-slate-400">Nếu vừa chạy lại bảng trên Google Sheet và muốn App xóa dữ liệu thử nghiệm cũ để lấy dữ liệu mới nhất từ Sheet:</p>
+        <button onclick="resetLocalDataAndResync()" class="w-full py-3 rounded-xl bg-red-600/30 hover:bg-red-600/50 border border-red-500/50 text-red-200 font-bold text-xs flex items-center justify-center gap-2 transition cursor-pointer">
+          <i data-lucide="refresh-cw" class="w-4 h-4"></i> Xóa Cache Cũ & Đồng Bộ Lại Từ Google Sheets
+        </button>
       </div>
     </div>
   </main>
@@ -626,13 +639,13 @@ def build():
           }
           renderQuickLoginButtons(res.data.users);
         }
-        if (res.data.customers && res.data.customers.length) setStored('customers', res.data.customers);
-        if (res.data.receipts) setStored('receipts', res.data.receipts);
-        if (res.data.expenses) setStored('expenses', res.data.expenses);
+        if (res.data.customers !== undefined) setStored('customers', res.data.customers);
+        if (res.data.receipts !== undefined) setStored('receipts', res.data.receipts);
+        if (res.data.expenses !== undefined) setStored('expenses', res.data.expenses);
 
         initMenuUI();
-        if (currentUser?.role === 'admin') loadAdminDashboard();
-        else if (currentUser?.role === 'staff') {
+        if (isUserOwner(currentUser)) loadAdminDashboard();
+        else {
           updatePOSStaffInfo();
           loadStaffHistory();
         }
@@ -642,6 +655,22 @@ def build():
         btn.innerHTML = '<i data-lucide="cloud-check" class="w-3.5 h-3.5 text-emerald-400"></i> <span class="hidden sm:inline text-[11px]">Đã đồng bộ Sheet</span>';
         lucide.createIcons();
       }
+    }
+
+    async function resetLocalDataAndResync() {
+      if (!confirm('Bạn có chắc muốn xóa sạch dữ liệu bộ nhớ tạm trên máy này và kéo lại toàn bộ từ Google Sheets về không?')) return;
+      localStorage.removeItem('selena_receipts');
+      localStorage.removeItem('selena_expenses');
+      localStorage.removeItem('selena_customers');
+      localStorage.removeItem('selena_users');
+      localStorage.removeItem('selena_menu');
+      setStored('receipts', []);
+      setStored('expenses', []);
+      setStored('customers', DEFAULT_CUSTOMERS);
+      setStored('users', DEFAULT_USERS);
+      setStored('menu', DEFAULT_MENU);
+      await refreshDataFromGoogleSheets(false);
+      alert('✅ Đã xóa sạch bộ nhớ tạm và đồng bộ lại 100% dữ liệu từ Google Sheets!');
     }
 
     window.addEventListener('DOMContentLoaded', () => {
@@ -1088,32 +1117,67 @@ def build():
 
       document.getElementById('admin-receipt-count').innerText = receipts.length + ' hóa đơn';
       const tableBody = document.getElementById('admin-receipts-table-body');
-      tableBody.innerHTML = receipts.map(r => `
-        <tr class="hover:bg-white/5 transition border-b border-white/5">
-          <td class="py-4 font-mono">
-            <div class="text-xs font-bold text-slate-200 font-mono">${r.receipt_id}</div>
-            <div class="text-xs text-purple-400 font-mono mt-0.5">${formatAppDateTime(r.date)}</div>
-          </td>
-          <td class="py-4">
-            <div class="text-sm font-bold text-white">${r.service_name}</div>
-          </td>
-          <td class="py-4">
-            <div class="text-sm font-semibold text-slate-200">${r.customer_name}</div>
-            <div class="text-xs text-slate-400 font-mono">${normalizePhone(r.customer_phone)}</div>
-          </td>
-          <td class="py-4">
-            <span class="px-2.5 py-1 rounded-lg bg-purple-500/15 text-purple-300 text-xs font-semibold border border-purple-500/20 whitespace-nowrap">${r.staff_name}</span>
-          </td>
-          <td class="py-4 text-right">
-            <span class="text-sm sm:text-base font-extrabold text-emerald-400 font-heading">${r.total_paid.toLocaleString('vi-VN')} đ</span>
-          </td>
-          <td class="py-4 text-right">
-            <span class="px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap ${r.payment_method === 'Chuyển khoản' || r.payment_method === 'Transfer' ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30' : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'}">
-              ${r.payment_method === 'Chuyển khoản' || r.payment_method === 'Transfer' ? 'Chuyển khoản' : 'Tiền mặt'}
-            </span>
-          </td>
-        </tr>
-      `).join('');
+      const mobileCards = document.getElementById('admin-receipts-mobile-cards');
+
+      if (receipts.length === 0) {
+        tableBody.innerHTML = '<tr><td colspan="6" class="py-8 text-center text-slate-500 text-xs font-medium">Chưa có hóa đơn nào (Bảng tb_receipts trên Google Sheet đang trống)</td></tr>';
+        if (mobileCards) mobileCards.innerHTML = '<div class="glass-card rounded-2xl p-6 text-center text-slate-500 text-xs">Chưa có hóa đơn nào (Bảng tb_receipts trên Google Sheet đang trống).</div>';
+      } else {
+        tableBody.innerHTML = receipts.map(r => `
+          <tr class="hover:bg-white/5 transition border-b border-white/5">
+            <td class="py-4 font-mono">
+              <div class="text-xs font-bold text-slate-200 font-mono">${r.receipt_id}</div>
+              <div class="text-xs text-purple-400 font-mono mt-0.5">${formatAppDateTime(r.date)}</div>
+            </td>
+            <td class="py-4">
+              <div class="text-sm font-bold text-white">${r.service_name}</div>
+            </td>
+            <td class="py-4">
+              <div class="text-sm font-semibold text-slate-200">${r.customer_name}</div>
+              <div class="text-xs text-slate-400 font-mono">${normalizePhone(r.customer_phone)}</div>
+            </td>
+            <td class="py-4">
+              <span class="px-2.5 py-1 rounded-lg bg-purple-500/15 text-purple-300 text-xs font-semibold border border-purple-500/20 whitespace-nowrap">${r.staff_name}</span>
+            </td>
+            <td class="py-4 text-right">
+              <span class="text-sm sm:text-base font-extrabold text-emerald-400 font-heading">${(r.total_paid || 0).toLocaleString('vi-VN')} đ</span>
+            </td>
+            <td class="py-4 text-right">
+              <span class="px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap ${r.payment_method === 'Chuyển khoản' || r.payment_method === 'Transfer' ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30' : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'}">
+                ${r.payment_method === 'Chuyển khoản' || r.payment_method === 'Transfer' ? 'Chuyển khoản' : 'Tiền mặt'}
+              </span>
+            </td>
+          </tr>
+        `).join('');
+
+        if (mobileCards) {
+          mobileCards.innerHTML = receipts.map(r => `
+            <div class="glass-card rounded-2xl p-4 border border-white/5 space-y-2.5">
+              <div class="flex items-center justify-between">
+                <div>
+                  <div class="text-xs font-bold text-slate-200 font-mono">${r.receipt_id}</div>
+                  <div class="text-xs text-purple-400 font-mono mt-0.5">${formatAppDateTime(r.date)}</div>
+                </div>
+                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold ${r.payment_method === 'Chuyển khoản' || r.payment_method === 'Transfer' ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30' : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'}">
+                  ${r.payment_method === 'Chuyển khoản' || r.payment_method === 'Transfer' ? 'QR Chuyển khoản' : 'Tiền mặt'}
+                </span>
+              </div>
+              <div class="text-sm font-extrabold text-white">${r.service_name}</div>
+              <div class="flex items-center justify-between text-xs pt-1.5 border-t border-white/5">
+                <div class="text-slate-300">
+                  <span class="text-slate-400">Khách:</span> <span class="font-semibold text-white">${r.customer_name}</span>
+                  ${r.customer_phone ? `<span class="text-slate-400 font-mono text-[11px]"> (${normalizePhone(r.customer_phone)})</span>` : ''}
+                </div>
+                <span class="px-2 py-0.5 rounded-md bg-purple-500/15 text-purple-300 text-xs font-semibold">${r.staff_name}</span>
+              </div>
+              <div class="flex items-center justify-between pt-1.5 border-t border-white/5">
+                <span class="text-xs text-slate-400">Thu thực tế:</span>
+                <span class="text-base font-extrabold text-emerald-400 font-heading">${(r.total_paid || 0).toLocaleString('vi-VN')} đ</span>
+              </div>
+            </div>
+          `).join('');
+        }
+      }
 
       const expContainer = document.getElementById('admin-expenses-list');
       expContainer.innerHTML = expenses.map(e => `
