@@ -1,0 +1,107 @@
+/**
+ * =========================================================================
+ * SELENA SPA - SCRIPT KHỞI TẠO CƠ SỞ DỮ LIỆU GOOGLE SHEETS (1-CLICK SETUP)
+ * =========================================================================
+ * Hướng dẫn:
+ * 1. Mở file Google Sheet mới trên Google Drive của bạn.
+ * 2. Vào 'Tiện ích mở rộng' (Extensions) -> 'Apps Script'.
+ * 3. Dán toàn bộ mã nguồn này vào file 'Setup.gs'.
+ * 4. Chọn hàm 'initDatabase' và bấm nút 'Chạy' (Run).
+ * 5. Cấp quyền truy cập cho Script. Toàn bộ 6 bảng sẽ được tạo tự động với dữ liệu mẫu!
+ */
+
+function initDatabase() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  
+  // 1. BẢNG tb_users (Tài khoản & Lương)
+  let sheetUsers = getOrCreateSheet(ss, 'tb_users');
+  sheetUsers.clear();
+  sheetUsers.appendRow([
+    'user_id', 'username', 'password_hash', 'full_name', 'role', 
+    'salary_type', 'base_salary', 'bank_name', 'bank_account_no', 'bank_account_name'
+  ]);
+  sheetUsers.appendRow(['ADMIN01', 'admin', '8888', 'Chủ Tiệm Selena Spa', 'admin', 'owner', 0, 'MBBank', '0912345678', 'CHU TIEM']);
+  sheetUsers.appendRow(['KTV01', 'ktv_lan', '1234', 'KTV Mai Lan', 'staff', 'fixed_10pct', 2000000, 'Vietcombank', '1012345678', 'MAI LAN']);
+  sheetUsers.appendRow(['KTV02', 'ktv_hoa', '1234', 'KTV Kim Hoa', 'staff', 'commission_20pct', 0, 'Techcombank', '19012345678', 'KIM HOA']);
+  formatHeader(sheetUsers, '#7c6cf0');
+
+  // 2. BẢNG tb_menu (Danh mục Combo & Dịch vụ)
+  let sheetMenu = getOrCreateSheet(ss, 'tb_menu');
+  sheetMenu.clear();
+  sheetMenu.appendRow([
+    'service_id', 'service_name', 'price', 'duration_min', 'cosmetics_cost', 
+    'commission_type', 'commission_value', 'is_active'
+  ]);
+  sheetMenu.appendRow(['CB_BE', 'Combo Bé (Gội cơ bản)', 45000, 30, 4500, 'fixed', 4500, true]);
+  sheetMenu.appendRow(['CB_01', 'Combo 1 (Gội dưỡng sinh thư giãn)', 64000, 50, 6400, 'fixed', 6400, true]);
+  sheetMenu.appendRow(['CB_02', 'Combo 2 (Dưỡng sinh chuyên sâu + Cổ vai gáy)', 109000, 75, 10000, 'fixed', 11000, true]);
+  sheetMenu.appendRow(['CB_03', 'Combo 3 (Dưỡng sinh thảo mộc cao cấp)', 139000, 85, 14000, 'fixed', 14000, true]);
+  sheetMenu.appendRow(['CB_04', 'Combo 4 (Liệu trình phục hồi da đầu + Massage)', 179000, 95, 18000, 'fixed', 18000, true]);
+  sheetMenu.appendRow(['CB_05', 'Combo 5 (Đại tiệc Thư giãn Hoàng Gia)', 219000, 110, 22000, 'fixed', 22000, true]);
+  formatHeader(sheetMenu, '#10b981');
+
+  // 3. BẢNG tb_receipts (Nhật ký Hóa đơn & Ca làm)
+  let sheetReceipts = getOrCreateSheet(ss, 'tb_receipts');
+  sheetReceipts.clear();
+  sheetReceipts.appendRow([
+    'receipt_id', 'timestamp', 'date', 'customer_phone', 'customer_name', 
+    'service_id', 'service_name', 'staff_id', 'staff_name', 'price', 
+    'commission_amount', 'discount_amount', 'total_paid', 'payment_method', 
+    'is_voucher_used', 'status', 'note'
+  ]);
+  formatHeader(sheetReceipts, '#3b82f6');
+
+  // 4. BẢNG tb_expenses (Chi phí Vận hành)
+  let sheetExpenses = getOrCreateSheet(ss, 'tb_expenses');
+  sheetExpenses.clear();
+  sheetExpenses.appendRow([
+    'expense_id', 'date', 'expense_type', 'amount', 'note'
+  ]);
+  sheetExpenses.appendRow(['EXP01', '2026-08-01', 'Mặt bằng', 0, 'Chi phí thuê mặt bằng']);
+  sheetExpenses.appendRow(['EXP02', '2026-08-01', 'Mạng Internet', 350000, 'Gói cước mạng wifi']);
+  sheetExpenses.appendRow(['EXP03', '2026-08-01', 'Điện cố định', 1000000, 'Tiền điện sinh hoạt cố định']);
+  sheetExpenses.appendRow(['EXP04', '2026-08-01', 'Nước cố định', 250000, 'Tiền nước sinh hoạt']);
+  formatHeader(sheetExpenses, '#ef4444');
+
+  // 5. BẢNG tb_customers (Khách hàng & Tích điểm)
+  let sheetCustomers = getOrCreateSheet(ss, 'tb_customers');
+  sheetCustomers.clear();
+  sheetCustomers.appendRow([
+    'phone_number', 'customer_name', 'total_visits', 'voucher_count', 'last_visit_date', 'notes'
+  ]);
+  sheetCustomers.appendRow(['0912345678', 'Chị Mai Lan', 8, 0, '2026-08-25', 'Da đầu nhạy cảm, thích sấy mát, gội nước ấm']);
+  sheetCustomers.appendRow(['0987654321', 'Anh Nam', 2, 1, '2026-08-26', 'Thích massage mạnh cổ vai gáy']);
+  formatHeader(sheetCustomers, '#ec4899');
+
+  // 6. BẢNG tb_config (Cấu hình Bảo mật & Hệ thống)
+  let sheetConfig = getOrCreateSheet(ss, 'tb_config');
+  sheetConfig.clear();
+  sheetConfig.appendRow(['key', 'value', 'description']);
+  sheetConfig.appendRow(['WIFI_SPA_IP', '14.232.245.10', 'Địa chỉ IP Wifi công cộng của tiệm Spa để xác thực KTV']);
+  sheetConfig.appendRow(['BANK_NAME', 'MBBank', 'Tên ngân hàng nhận tiền của Chủ']);
+  sheetConfig.appendRow(['BANK_ACCOUNT_NO', '0912345678', 'Số tài khoản nhận tiền của Chủ']);
+  sheetConfig.appendRow(['BANK_ACCOUNT_NAME', 'CHU TIEM SELENA SPA', 'Tên chủ tài khoản ngân hàng']);
+  sheetConfig.appendRow(['LOYALTY_TARGET', '10', 'Số lần gội để được tặng 1 Voucher']);
+  formatHeader(sheetConfig, '#6b7280');
+
+  SpreadsheetApp.flush();
+  Logger.log('ĐÃ KHỞI TẠO THÀNH CÔNG 6 BẢNG DỮ LIỆU CHO SELENA SPA!');
+}
+
+function getOrCreateSheet(ss, name) {
+  let sheet = ss.getSheetByName(name);
+  if (!sheet) {
+    sheet = ss.insertSheet(name);
+  }
+  return sheet;
+}
+
+function formatHeader(sheet, bgColor) {
+  let range = sheet.getRange(1, 1, 1, sheet.getLastColumn());
+  range.setBackground(bgColor);
+  range.setFontColor('#ffffff');
+  range.setFontWeight('bold');
+  range.setHorizontalAlignment('center');
+  sheet.setFrozenRows(1);
+  sheet.autoResizeColumns(1, sheet.getLastColumn());
+}

@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Selena Spa - Quản Lý & Bán Hàng</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
+  <style>
+    body {
+      background-color: #0f111a;
+      color: #f3f4f6;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+    h1, h2, h3, h4, h5, h6, .font-heading {
+      font-family: 'Outfit', sans-serif;
+    }
+    .glass-card {
+      background: rgba(22, 25, 38, 0.75);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .glass-modal {
+      background: rgba(18, 21, 32, 0.9);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-purple-500/30">
+  <!-- 1. PIN LOGIN SCREEN -->
+  <div id="screen-login" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0f111a]/95 backdrop-blur-2xl">
+    <div class="w-full max-w-sm glass-card rounded-3xl p-6 sm:p-8 shadow-2xl border border-white/10 text-center relative">
+      <div class="inline-flex p-3.5 rounded-2xl bg-gradient-to-tr from-purple-600/30 to-rose-500/20 border border-purple-500/30 shadow-lg shadow-purple-500/10 mb-3">
+        <i data-lucide="sparkles" class="w-8 h-8 text-purple-400"></i>
+      </div>
+      <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight font-heading">SELENA SPA</h1>
+      <p class="text-xs text-slate-400 mt-1">Hệ Thống Quản Lý Nội Bộ & Bán Hàng</p>
+
+      <div class="mt-4 flex items-center justify-center gap-1.5 text-xs">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-medium">
+          <i data-lucide="wifi" class="w-3.5 h-3.5"></i> Wifi Tiệm: Đã kết nối an toàn
+        </span>
+      </div>
+
+      <div class="my-6">
+        <div class="text-xs text-slate-400 mb-3 font-medium">Nhập mã PIN để đăng nhập:</div>
+        <div class="flex justify-center items-center gap-3.5" id="pin-dots">
+          <div class="w-4 h-4 rounded-full bg-white/10 border border-white/20 transition-all duration-200"></div>
+          <div class="w-4 h-4 rounded-full bg-white/10 border border-white/20 transition-all duration-200"></div>
+          <div class="w-4 h-4 rounded-full bg-white/10 border border-white/20 transition-all duration-200"></div>
+          <div class="w-4 h-4 rounded-full bg-white/10 border border-white/20 transition-all duration-200"></div>
+        </div>
+      </div>
+
+      <div id="login-error" class="hidden mb-4 p-3 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs flex items-start gap-2 text-left">
+        <i data-lucide="alert-triangle" class="w-4 h-4 shrink-0 mt-0.5"></i>
+        <span id="login-error-text">Mã PIN không chính xác</span>
+      </div>
+
+      <div class="grid grid-cols-3 gap-2.5 max-w-[260px] mx-auto">
+        <button onclick="pressPin('1')" class="h-14 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/5 text-xl font-bold text-white transition active:scale-90 font-heading cursor-pointer">1</button>
+        <button onclick="pressPin('2')" class="h-14 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/5 text-xl font-bold text-white transition active:scale-90 font-heading cursor-pointer">2</button>
+        <button onclick="pressPin('3')" class="h-14 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/5 text-xl font-bold text-white transition active:scale-90 font-heading cursor-pointer">3</button>
+        <button onclick="pressPin('4')" class="h-14 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/5 text-xl font-bold text-white transition active:scale-90 font-heading cursor-pointer">4</button>
+        <button onclick="pressPin('5')" class="h-14 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/5 text-xl font-bold text-white transition active:scale-90 font-heading cursor-pointer">5</button>
+        <button onclick="pressPin('6')" class="h-14 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/5 text-xl font-bold text-white transition active:scale-90 font-heading cursor-pointer">6</button>
+        <button onclick="pressPin('7')" class="h-14 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/5 text-xl font-bold text-white transition active:scale-90 font-heading cursor-pointer">7</button>
+        <button onclick="pressPin('8')" class="h-14 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/5 text-xl font-bold text-white transition active:scale-90 font-heading cursor-pointer">8</button>
+        <button onclick="pressPin('9')" class="h-14 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/5 text-xl font-bold text-white transition active:scale-90 font-heading cursor-pointer">9</button>
+        <button onclick="deletePin()" class="h-14 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/5 text-slate-400 hover:text-white transition active:scale-90 flex items-center justify-center cursor-pointer"><i data-lucide="delete" class="w-5 h-5"></i></button>
+        <button onclick="pressPin('0')" class="h-14 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/5 text-xl font-bold text-white transition active:scale-90 font-heading cursor-pointer">0</button>
+        <button onclick="submitPin()" class="h-14 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 border border-purple-500/30 text-xs font-bold text-white shadow-lg shadow-purple-500/20 transition active:scale-90 flex items-center justify-center uppercase tracking-wider font-heading cursor-pointer">Vào</button>
+      </div>
+
+      <div class="mt-6 pt-5 border-t border-white/5">
+        <div class="text-[11px] text-slate-400 mb-2">Bấm thử tài khoản Demo:</div>
+        <div class="flex flex-wrap justify-center gap-1.5">
+          <button onclick="quickLogin('8888')" class="px-2.5 py-1 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/20 text-purple-300 text-[11px] font-medium transition cursor-pointer">👑 Chủ Tiệm (8888)</button>
+          <button onclick="quickLogin('1234')" class="px-2.5 py-1 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 text-emerald-300 text-[11px] font-medium transition cursor-pointer">💆 KTV Mai Lan (1234)</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- 2. NAVBAR -->
+  <header id="main-header" class="hidden sticky top-0 z-40 glass-card border-b border-white/5 px-4 py-3 backdrop-blur-xl">
+    <div class="max-w-5xl mx-auto flex items-center justify-between">
+      <div class="flex items-center gap-2.5">
+        <div class="p-2 rounded-xl bg-gradient-to-tr from-purple-600/30 to-rose-500/20 border border-purple-500/30 text-purple-400">
+          <i data-lucide="sparkles" class="w-4 h-4"></i>
+        </div>
+        <div>
+          <span class="font-extrabold text-base tracking-tight text-white font-heading block">SELENA SPA</span>
+          <span id="header-role-badge" class="text-[10px] text-slate-400 block -mt-0.5">Kỹ Thuật Viên</span>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <div class="hidden sm:flex flex-col text-right">
+          <span id="header-user-name" class="text-xs font-bold text-white">Mai Lan</span>
+          <span class="text-[10px] text-emerald-400">Đang hoạt động</span>
+        </div>
+        <button onclick="logout()" title="Đăng xuất" class="p-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition border border-white/5 cursor-pointer">
+          <i data-lucide="log-out" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+  <!-- 3. STAFF POS VIEW -->
+  <main id="view-staff-pos" class="hidden flex-1 p-4 sm:p-6 max-w-xl w-full mx-auto space-y-4 pb-24">
+    <div class="glass-card rounded-2xl p-4 flex items-center justify-between border border-white/5">
+      <div class="flex items-center gap-3">
+        <div id="staff-pos-avatar" class="w-10 h-10 rounded-xl bg-gradient-to-tr from-purple-600 to-rose-500 flex items-center justify-center text-white font-bold font-heading shadow-md shadow-purple-500/20">L</div>
+        <div>
+          <div id="staff-pos-name" class="text-sm font-bold text-white font-heading">KTV Mai Lan</div>
+          <div id="staff-pos-model" class="text-[11px] text-slate-400">10% Tour + Lương Cứng</div>
+        </div>
+      </div>
+      <div class="text-right">
+        <span class="text-[10px] text-slate-400 block">Hoa hồng ca này</span>
+        <span id="staff-pos-commission" class="text-sm font-extrabold text-emerald-400 font-heading">+6.400 đ</span>
+      </div>
+    </div>
+
+    <div class="glass-card rounded-3xl p-5 sm:p-6 shadow-xl border border-white/10 space-y-5">
+      <div>
+        <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-purple-400"></i> 1. Chọn Combo Dịch Vụ
+        </label>
+        <select id="pos-service-select" onchange="onSelectServiceChange()" class="w-full bg-[#141724] border border-white/10 rounded-2xl p-3.5 text-white font-semibold text-sm focus:outline-none focus:border-purple-500 transition cursor-pointer"></select>
+        <div id="pos-quick-combos" class="flex flex-wrap gap-1.5 mt-2.5"></div>
+      </div>
+
+      <div class="space-y-3">
+        <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+          <i data-lucide="user" class="w-3.5 h-3.5 text-purple-400"></i> 2. Thông Tin Khách Hàng
+        </label>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+          <div class="relative">
+            <input type="tel" id="pos-customer-phone" oninput="onCustomerPhoneInput(this.value)" placeholder="Số điện thoại khách..." class="w-full bg-[#141724] border border-white/10 rounded-2xl p-3.5 pl-10 text-white text-sm focus:outline-none focus:border-purple-500 transition">
+            <i data-lucide="phone" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+          </div>
+          <input type="text" id="pos-customer-name" placeholder="Tên khách hàng (Tùy chọn)" class="w-full bg-[#141724] border border-white/10 rounded-2xl p-3.5 text-white text-sm focus:outline-none focus:border-purple-500 transition">
+        </div>
+
+        <div id="pos-customer-card" class="hidden p-4 rounded-2xl bg-gradient-to-r from-purple-950/40 to-rose-950/30 border border-purple-500/20 space-y-2.5">
+          <div class="flex justify-between items-center">
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+              <span id="pos-cust-name-badge" class="text-xs font-bold text-white">Chị Mai Lan</span>
+              <span id="pos-cust-phone-badge" class="text-[11px] text-slate-400">(0912345678)</span>
+            </div>
+            <span id="pos-cust-visits-badge" class="text-xs font-extrabold text-purple-300 font-heading">8 / 10 Lần gội</span>
+          </div>
+          <div class="w-full h-2 bg-white/10 rounded-full overflow-hidden">
+            <div id="pos-cust-progress-bar" class="h-full bg-gradient-to-r from-purple-500 to-rose-400 rounded-full transition-all duration-500" style="width: 80%"></div>
+          </div>
+          <div id="pos-cust-notes-box" class="text-xs text-rose-300/90 bg-rose-500/10 rounded-xl p-2 border border-rose-500/20">
+            <span class="font-semibold">📝 Lưu ý:</span> <span id="pos-cust-notes-text">Da đầu dầu, thích sấy mát</span>
+          </div>
+          <div id="pos-voucher-banner" class="hidden flex items-center justify-between p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+            <div class="flex items-center gap-2 text-xs text-emerald-300 font-medium">
+              <i data-lucide="gift" class="w-4 h-4 text-emerald-400"></i>
+              <span id="pos-voucher-text">Khách có 1 Voucher Combo 1 miễn phí!</span>
+            </div>
+            <input type="checkbox" id="pos-use-voucher" onchange="onVoucherToggle(this.checked)" class="w-5 h-5 accent-emerald-500 rounded cursor-pointer">
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+          <i data-lucide="credit-card" class="w-3.5 h-3.5 text-purple-400"></i> 3. Phương Thức Thanh Toán
+        </label>
+        <div class="grid grid-cols-2 gap-2.5">
+          <button type="button" id="btn-pay-qr" onclick="setPaymentMethod('Transfer')" class="p-3.5 rounded-2xl border bg-purple-600/20 border-purple-500 text-purple-300 font-semibold text-sm flex items-center justify-center gap-2 shadow-md shadow-purple-500/10 transition cursor-pointer">
+            <i data-lucide="qr-code" class="w-4 h-4"></i> Chuyển Khoản QR
+          </button>
+          <button type="button" id="btn-pay-cash" onclick="setPaymentMethod('Cash')" class="p-3.5 rounded-2xl border bg-white/5 border-white/5 text-slate-400 hover:bg-white/10 font-semibold text-sm flex items-center justify-center gap-2 transition cursor-pointer">
+            <i data-lucide="banknote" class="w-4 h-4"></i> Tiền Mặt
+          </button>
+        </div>
+      </div>
+
+      <div class="pt-2 border-t border-white/5 space-y-3">
+        <div class="flex justify-between items-center">
+          <span class="text-sm text-slate-400">Tổng tiền khách trả:</span>
+          <div class="text-right">
+            <span id="pos-price-display" class="text-2xl font-extrabold text-white font-heading">64.000 đ</span>
+          </div>
+        </div>
+        <button type="button" onclick="submitPOSReceipt()" class="w-full py-4 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-extrabold text-base shadow-xl shadow-purple-500/25 flex items-center justify-center gap-2 transition active:scale-95 cursor-pointer">
+          <i data-lucide="check-circle" class="w-5 h-5"></i>
+          <span id="pos-submit-btn-text">Hiện Mã VietQR & Lưu Ca</span>
+        </button>
+      </div>
+    </div>
+  </main>
+  <!-- 4. STAFF SALARY VIEW -->
+  <main id="view-staff-history" class="hidden flex-1 p-4 sm:p-6 max-w-xl w-full mx-auto space-y-4 pb-24">
+    <div class="flex justify-between items-center px-1">
+      <div>
+        <h2 class="text-xl font-bold text-white font-heading">Lương & Ca Làm Cá Nhân</h2>
+        <p class="text-xs text-slate-400">Tháng này</p>
+      </div>
+      <button onclick="loadStaffHistory()" class="p-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition cursor-pointer">
+        <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+      </button>
+    </div>
+
+    <div class="glass-card rounded-3xl p-6 shadow-2xl border border-purple-500/20 bg-gradient-to-br from-purple-950/40 via-[#141724] to-[#0f111a]">
+      <span class="text-xs font-semibold text-purple-400 uppercase tracking-wider block">Tổng Thu Nhập Tạm Tính</span>
+      <div class="text-3xl sm:text-4xl font-extrabold text-white font-heading mt-1" id="staff-total-earnings">
+        0 <span class="text-lg text-purple-400 font-normal">đ</span>
+      </div>
+      <div class="grid grid-cols-3 gap-2 pt-4 mt-4 border-t border-white/5 text-center">
+        <div class="p-2.5 rounded-xl bg-white/5">
+          <span class="text-[10px] text-slate-400 block uppercase">Số ca gội</span>
+          <span class="text-sm font-bold text-white font-heading" id="staff-total-tours">0 ca</span>
+        </div>
+        <div class="p-2.5 rounded-xl bg-white/5">
+          <span class="text-[10px] text-slate-400 block uppercase">Lương Tour</span>
+          <span class="text-sm font-bold text-emerald-400 font-heading" id="staff-total-commission">0 đ</span>
+        </div>
+        <div class="p-2.5 rounded-xl bg-white/5">
+          <span class="text-[10px] text-slate-400 block uppercase">Lương Cứng</span>
+          <span class="text-sm font-bold text-slate-300 font-heading" id="staff-base-salary">0 đ</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="space-y-2.5">
+      <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-wider px-1">Lịch Sử Ca Làm Gần Đây</h3>
+      <div id="staff-receipts-list" class="space-y-2"></div>
+    </div>
+  </main>
+  <!-- 5. ADMIN DASHBOARD VIEW -->
+  <main id="view-admin-dashboard" class="hidden flex-1 p-4 sm:p-6 max-w-5xl w-full mx-auto space-y-6 pb-24">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+      <div>
+        <h2 class="text-2xl font-extrabold text-white font-heading flex items-center gap-2">👑 Quản Trị Selena Spa</h2>
+        <p class="text-xs text-slate-400">Thống kê tài chính dòng tiền & Kiểm soát vận hành</p>
+      </div>
+      <button onclick="loadAdminDashboard()" class="px-3.5 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 text-xs font-semibold flex items-center gap-1.5 transition border border-white/5 cursor-pointer">
+        <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Làm mới
+      </button>
+    </div>
+
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+      <div class="glass-card rounded-3xl p-4 sm:p-5 border border-emerald-500/20 bg-gradient-to-br from-emerald-950/20 to-transparent">
+        <span class="text-[11px] font-semibold text-emerald-400 uppercase tracking-wider block">Doanh Thu Tổng</span>
+        <div class="text-xl sm:text-2xl font-extrabold text-white font-heading mt-1" id="kpi-revenue">0 đ</div>
+        <span class="text-[10px] text-slate-400 mt-1 block" id="kpi-tours">0 ca phục vụ</span>
+      </div>
+      <div class="glass-card rounded-3xl p-4 sm:p-5 border border-purple-500/20 bg-gradient-to-br from-purple-950/20 to-transparent">
+        <span class="text-[11px] font-semibold text-purple-400 uppercase tracking-wider block">Tổng Lương KTV</span>
+        <div class="text-xl sm:text-2xl font-extrabold text-white font-heading mt-1" id="kpi-salaries">0 đ</div>
+        <span class="text-[10px] text-slate-400 mt-1 block">Lương cứng + Tour</span>
+      </div>
+      <div class="glass-card rounded-3xl p-4 sm:p-5 border border-red-500/20 bg-gradient-to-br from-red-950/20 to-transparent">
+        <span class="text-[11px] font-semibold text-red-400 uppercase tracking-wider block">Chi Phí Vận Hành</span>
+        <div class="text-xl sm:text-2xl font-extrabold text-white font-heading mt-1" id="kpi-expenses">0 đ</div>
+        <span class="text-[10px] text-slate-400 mt-1 block">Điện, nước, mạng, mặt bằng</span>
+      </div>
+      <div class="glass-card rounded-3xl p-4 sm:p-5 border border-rose-500/30 bg-gradient-to-br from-rose-950/30 to-transparent col-span-2 sm:col-span-1 shadow-lg shadow-rose-500/10">
+        <span class="text-[11px] font-bold text-rose-400 uppercase tracking-wider block">LỢI NHUẬN RÒNG</span>
+        <div class="text-xl sm:text-2xl font-extrabold text-rose-300 font-heading mt-1" id="kpi-net-profit">0 đ</div>
+        <span class="text-[10px] text-emerald-400 mt-1 block font-medium">Tiền thực nhận của Chủ</span>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-2 overflow-x-auto pb-1 border-b border-white/5">
+      <button onclick="switchAdminTab('receipts')" id="tab-btn-receipts" class="px-4 py-2 rounded-2xl text-xs font-bold bg-purple-600 text-white shadow-md shadow-purple-600/30 transition cursor-pointer">📜 Hóa Đơn Toàn Tiệm</button>
+      <button onclick="switchAdminTab('expenses')" id="tab-btn-expenses" class="px-4 py-2 rounded-2xl text-xs font-bold bg-white/5 hover:bg-white/10 text-slate-400 transition cursor-pointer">⚡ Chi Phí Vận Hành</button>
+      <button onclick="switchAdminTab('settings')" id="tab-btn-settings" class="px-4 py-2 rounded-2xl text-xs font-bold bg-white/5 hover:bg-white/10 text-slate-400 transition cursor-pointer">⚙️ Kết Nối Google Sheets</button>
+    </div>
+
+    <div id="admin-subtab-receipts" class="glass-card rounded-3xl p-5 sm:p-6 border border-white/10 space-y-4">
+      <div class="flex justify-between items-center">
+        <h3 class="text-sm font-bold text-white font-heading">Nhật Ký Hóa Đơn Gần Đây</h3>
+        <span class="text-xs text-slate-400" id="admin-receipt-count">0 hóa đơn</span>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs">
+          <thead>
+            <tr class="border-b border-white/10 text-slate-400">
+              <th class="pb-3 font-semibold">Mã HD</th>
+              <th class="pb-3 font-semibold">Dịch Vụ</th>
+              <th class="pb-3 font-semibold">Khách</th>
+              <th class="pb-3 font-semibold">KTV</th>
+              <th class="pb-3 font-semibold text-right">Thu Thực</th>
+              <th class="pb-3 font-semibold text-right">Thanh Toán</th>
+            </tr>
+          </thead>
+          <tbody id="admin-receipts-table-body" class="divide-y divide-white/5"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="admin-subtab-expenses" class="hidden glass-card rounded-3xl p-5 sm:p-6 border border-white/10 space-y-4">
+      <div class="flex justify-between items-center">
+        <h3 class="text-sm font-bold text-white font-heading">Chi Phí Phát Sinh Hằng Tháng</h3>
+        <button onclick="openAddExpenseModal()" class="px-3 py-1.5 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold text-xs shadow-lg shadow-red-600/20 flex items-center gap-1 transition cursor-pointer">
+          <i data-lucide="plus" class="w-3.5 h-3.5"></i> Nhập Chi Phí Mới
+        </button>
+      </div>
+      <div id="admin-expenses-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
+    </div>
+
+    <div id="admin-subtab-settings" class="hidden glass-card rounded-3xl p-5 sm:p-6 border border-white/10 space-y-6">
+      <div>
+        <h3 class="text-base font-bold text-white font-heading flex items-center gap-2">
+          <i data-lucide="settings" class="w-5 h-5 text-purple-400"></i> Kết Nối Google Sheets & Bảo Mật Wifi
+        </h3>
+        <p class="text-xs text-slate-400 mt-1">Đồng bộ trực tiếp về Google Sheets trên Google Drive của bạn</p>
+      </div>
+      <div class="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-2">
+        <label class="block text-xs font-semibold text-slate-300">Đường dẫn Google Apps Script Web App URL:</label>
+        <div class="flex gap-2">
+          <input type="text" id="setting-gas-url" placeholder="https://script.google.com/macros/s/.../exec" class="flex-1 bg-[#141724] border border-white/10 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-purple-500 font-mono">
+          <button onclick="saveGasUrl()" class="px-4 py-3 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs transition cursor-pointer">Lưu</button>
+        </div>
+        <p class="text-[11px] text-slate-500">* Để trống sẽ chạy chế độ Offline LocalStorage miễn phí.</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- 6. MOBILE NAVIGATION -->
+  <nav id="mobile-nav" class="hidden fixed bottom-0 left-0 right-0 z-40 glass-card border-t border-white/10 p-2 sm:hidden backdrop-blur-2xl">
+    <div id="nav-buttons-container" class="grid grid-cols-2 gap-2 max-w-sm mx-auto"></div>
+  </nav>
+
+  <!-- 7. VIETQR MODAL -->
+  <div id="modal-vietqr" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+    <div class="w-full max-w-sm glass-modal rounded-3xl p-6 shadow-2xl border border-white/10 text-center relative">
+      <button onclick="closeVietQRModal()" class="absolute top-4 right-4 p-2 rounded-full bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition cursor-pointer">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold mb-3">
+        <i data-lucide="qr-code" class="w-3.5 h-3.5"></i> VietQR Chuyển Khoản Nhanh
+      </div>
+      <h3 class="text-xl font-bold text-white font-heading">Quét Mã Thanh Toán</h3>
+      <p class="text-xs text-slate-400 mt-1">Khách quét bằng bất kỳ App Ngân hàng nào</p>
+      <div class="mt-4 p-3 bg-white rounded-2xl shadow-inner inline-block">
+        <img id="vietqr-img" src="" alt="VietQR Code" class="w-56 h-56 object-contain rounded-xl">
+      </div>
+      <div class="mt-4 p-3.5 rounded-2xl bg-white/5 border border-white/10 flex justify-between items-center text-left">
+        <div>
+          <div id="vietqr-bank-info" class="text-[11px] text-slate-400">MBBank - 0912345678</div>
+          <div id="vietqr-account-name" class="text-xs text-slate-300 font-medium">SELENA SPA</div>
+        </div>
+        <div class="text-right">
+          <div class="text-[10px] text-slate-400 uppercase tracking-wider">Số tiền</div>
+          <div id="vietqr-amount" class="text-lg font-extrabold text-emerald-400 font-heading">0 đ</div>
+        </div>
+      </div>
+      <div class="mt-3 text-[11px] text-slate-400 bg-purple-500/10 border border-purple-500/20 rounded-xl py-1.5 px-3">
+        Nội dung CK: <span id="vietqr-desc" class="font-bold text-purple-300">SelenaSpa HD01</span>
+      </div>
+      <div class="mt-5 flex gap-2">
+        <button onclick="closeVietQRModal()" class="flex-1 py-3 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 font-semibold text-sm cursor-pointer">Hủy</button>
+        <button onclick="confirmVietQRSuccess()" class="flex-[2] py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-bold text-sm shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2 cursor-pointer">
+          <i data-lucide="check-circle" class="w-4 h-4"></i> Xác nhận Đã nhận tiền
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 8. ADD EXPENSE MODAL -->
+  <div id="modal-add-expense" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+    <div class="w-full max-w-sm glass-modal rounded-3xl p-6 border border-white/10 relative">
+      <h3 class="text-lg font-bold text-white font-heading mb-4">Nhập Chi Phí Phát Sinh</h3>
+      <form onsubmit="handleSaveExpenseForm(event)" class="space-y-3.5">
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 mb-1">Loại chi phí</label>
+          <select id="input-exp-type" class="w-full bg-[#141724] border border-white/10 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-purple-500">
+            <option value="Điện sấy">Điện sấy & máy lạnh</option>
+            <option value="Điện cố định">Điện sinh hoạt cố định</option>
+            <option value="Nước cố định">Tiền nước sạch</option>
+            <option value="Mạng Internet">Mạng wifi internet</option>
+            <option value="Mặt bằng">Tiền thuê mặt bằng</option>
+            <option value="Mỹ phẩm & Dầu gội">Mua thêm dầu gội, mỹ phẩm</option>
+            <option value="Khác">Chi phí khác</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 mb-1">Số tiền (VNĐ)</label>
+          <input type="number" id="input-exp-amount" placeholder="Ví dụ: 350000" class="w-full bg-[#141724] border border-white/10 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-purple-500" required>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 mb-1">Ghi chú</label>
+          <input type="text" id="input-exp-note" placeholder="Ghi chú chi tiết..." class="w-full bg-[#141724] border border-white/10 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-purple-500">
+        </div>
+        <div class="flex gap-2 pt-2">
+          <button type="button" onclick="closeAddExpenseModal()" class="flex-1 py-3 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 font-semibold text-xs cursor-pointer">Đóng</button>
+          <button type="submit" class="flex-1 py-3 rounded-xl bg-gradient-to-r from-red-500 to-rose-500 text-white font-bold text-xs shadow-lg shadow-red-500/20 cursor-pointer">Lưu Chi Phí</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <!-- 9. JAVASCRIPT LOGIC -->
+  <script>
+    const DEFAULT_MENU = [
+      { service_id: 'CB_BE', service_name: 'Combo Bé (Gội cơ bản)', price: 45000, duration_min: 30, cosmetics_cost: 4500, commission_value: 4500 },
+      { service_id: 'CB_01', service_name: 'Combo 1 (Gội dưỡng sinh thư giãn)', price: 64000, duration_min: 50, cosmetics_cost: 6400, commission_value: 6400 },
+      { service_id: 'CB_02', service_name: 'Combo 2 (Dưỡng sinh chuyên sâu + Cổ vai gáy)', price: 109000, duration_min: 75, cosmetics_cost: 10000, commission_value: 11000 },
+      { service_id: 'CB_03', service_name: 'Combo 3 (Dưỡng sinh thảo mộc cao cấp)', price: 139000, duration_min: 85, cosmetics_cost: 14000, commission_value: 14000 },
+      { service_id: 'CB_04', service_name: 'Combo 4 (Liệu trình phục hồi da đầu + Massage)', price: 179000, duration_min: 95, cosmetics_cost: 18000, commission_value: 18000 },
+      { service_id: 'CB_05', service_name: 'Combo 5 (Đại tiệc Thư giãn Hoàng Gia)', price: 219000, duration_min: 110, cosmetics_cost: 22000, commission_value: 22000 }
+    ];
+
+    const DEFAULT_USERS = [
+      { user_id: 'ADMIN01', username: 'admin', pin: '8888', full_name: 'Chủ Tiệm Selena Spa', role: 'admin', salary_type: 'owner', base_salary: 0 },
+      { user_id: 'KTV01', username: 'ktv_lan', pin: '1234', full_name: 'KTV Mai Lan', role: 'staff', salary_type: 'fixed_10pct', base_salary: 2000000 }
+    ];
+
+    const DEFAULT_CUSTOMERS = [
+      { phone_number: '0912345678', customer_name: 'Chị Mai Lan', total_visits: 8, voucher_count: 0, notes: 'Da đầu dầu nhạy cảm, thích sấy mát, gội nước ấm' }
+    ];
+
+    let currentUser = null;
+    let currentPin = '';
+    let selectedComboId = 'CB_01';
+    let paymentMethod = 'Transfer';
+    let currentCustomer = null;
+    let useVoucher = false;
+
+    function getStored(key, def) {
+      const v = localStorage.getItem('selena_' + key);
+      return v ? JSON.parse(v) : def;
+    }
+    function setStored(key, val) {
+      localStorage.setItem('selena_' + key, JSON.stringify(val));
+    }
+
+    if (!localStorage.getItem('selena_menu')) setStored('menu', DEFAULT_MENU);
+    if (!localStorage.getItem('selena_users')) setStored('users', DEFAULT_USERS);
+    if (!localStorage.getItem('selena_customers')) setStored('customers', DEFAULT_CUSTOMERS);
+    if (!localStorage.getItem('selena_receipts')) setStored('receipts', []);
+    if (!localStorage.getItem('selena_expenses')) setStored('expenses', [
+      { expense_id: 'EXP01', date: '2026-08-01', expense_type: 'Mạng Internet', amount: 350000, note: 'Gói wifi tiệm' },
+      { expense_id: 'EXP02', date: '2026-08-01', expense_type: 'Điện cố định', amount: 1000000, note: 'Điện chiếu sáng & máy lạnh' }
+    ]);
+
+    window.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+      initMenuUI();
+      document.getElementById('setting-gas-url').value = localStorage.getItem('selena_gas_url') || '';
+    });
+
+    function pressPin(d) {
+      if (currentPin.length < 4) {
+        currentPin += d;
+        updatePinDots();
+        if (currentPin.length === 4) setTimeout(submitPin, 100);
+      }
+    }
+
+    function deletePin() {
+      currentPin = currentPin.slice(0, -1);
+      updatePinDots();
+      document.getElementById('login-error').classList.add('hidden');
+    }
+
+    function updatePinDots() {
+      const dots = document.getElementById('pin-dots').children;
+      for (let i = 0; i < 4; i++) {
+        dots[i].className = i < currentPin.length 
+          ? 'w-4 h-4 rounded-full bg-purple-400 shadow-[0_0_12px_rgba(167,139,250,0.8)] scale-110 transition-all duration-200' 
+          : 'w-4 h-4 rounded-full bg-white/10 border border-white/20 transition-all duration-200';
+      }
+    }
+
+    function submitPin() {
+      const users = getStored('users', DEFAULT_USERS);
+      const user = users.find(u => u.pin === currentPin || u.username === currentPin);
+
+      if (user) {
+        currentUser = user;
+        document.getElementById('screen-login').classList.add('hidden');
+        document.getElementById('main-header').classList.remove('hidden');
+        document.getElementById('mobile-nav').classList.remove('hidden');
+
+        document.getElementById('header-user-name').innerText = user.full_name;
+        document.getElementById('header-role-badge').innerText = user.role === 'admin' ? '👑 Quyền Chủ Tiệm' : '💆 Kỹ Thuật Viên';
+
+        if (user.role === 'admin') showView('admin');
+        else showView('pos');
+      } else {
+        document.getElementById('login-error').classList.remove('hidden');
+        document.getElementById('login-error-text').innerText = 'Mã PIN không đúng. Thử 8888 (Chủ) hoặc 1234 (KTV).';
+        currentPin = '';
+        updatePinDots();
+      }
+    }
+
+    function quickLogin(pin) {
+      currentPin = pin;
+      updatePinDots();
+      submitPin();
+    }
+
+    function logout() {
+      currentUser = null;
+      currentPin = '';
+      updatePinDots();
+      document.getElementById('screen-login').classList.remove('hidden');
+      document.getElementById('main-header').classList.add('hidden');
+      document.getElementById('mobile-nav').classList.add('hidden');
+      hideAllViews();
+    }
+
+    function hideAllViews() {
+      document.getElementById('view-staff-pos').classList.add('hidden');
+      document.getElementById('view-staff-history').classList.add('hidden');
+      document.getElementById('view-admin-dashboard').classList.add('hidden');
+    }
+
+    function showView(view) {
+      hideAllViews();
+      const navContainer = document.getElementById('nav-buttons-container');
+
+      if (view === 'pos') {
+        document.getElementById('view-staff-pos').classList.remove('hidden');
+        updatePOSStaffInfo();
+      } else if (view === 'history') {
+        document.getElementById('view-staff-history').classList.remove('hidden');
+        loadStaffHistory();
+      } else if (view === 'admin') {
+        document.getElementById('view-admin-dashboard').classList.remove('hidden');
+        loadAdminDashboard();
+      }
+
+      if (currentUser?.role === 'staff') {
+        navContainer.innerHTML = `
+          <button onclick="showView('pos')" class="py-2.5 rounded-2xl flex flex-col items-center gap-1 ${view === 'pos' ? 'bg-purple-600/30 text-purple-300 font-bold border border-purple-500/30' : 'text-slate-400'}">
+            <i data-lucide="plus-circle" class="w-5 h-5"></i>
+            <span class="text-[10px]">Nhập Ca Gội</span>
+          </button>
+          <button onclick="showView('history')" class="py-2.5 rounded-2xl flex flex-col items-center gap-1 ${view === 'history' ? 'bg-purple-600/30 text-purple-300 font-bold border border-purple-500/30' : 'text-slate-400'}">
+            <i data-lucide="history" class="w-5 h-5"></i>
+            <span class="text-[10px]">Lương & Ca Làm</span>
+          </button>
+        `;
+      } else {
+        navContainer.innerHTML = `
+          <button onclick="showView('admin')" class="py-2.5 rounded-2xl flex flex-col items-center gap-1 ${view === 'admin' ? 'bg-purple-600/30 text-purple-300 font-bold border border-purple-500/30' : 'text-slate-400'}">
+            <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+            <span class="text-[10px]">Quản Trị Chủ</span>
+          </button>
+          <button onclick="showView('pos')" class="py-2.5 rounded-2xl flex flex-col items-center gap-1 ${view === 'pos' ? 'bg-purple-600/30 text-purple-300 font-bold border border-purple-500/30' : 'text-slate-400'}">
+            <i data-lucide="plus-circle" class="w-5 h-5"></i>
+            <span class="text-[10px]">Thử Nhập Ca</span>
+          </button>
+        `;
+      }
+      lucide.createIcons();
+    }
+
+    function initMenuUI() {
+      const menu = getStored('menu', DEFAULT_MENU);
+      const select = document.getElementById('pos-service-select');
+      const quickContainer = document.getElementById('pos-quick-combos');
+
+      select.innerHTML = menu.map(m => `
+        <option value="${m.service_id}">${m.service_name} — ${m.price.toLocaleString('vi-VN')} đ (${m.duration_min}p)</option>
+      `).join('');
+
+      quickContainer.innerHTML = menu.slice(0, 4).map(m => `
+        <button type="button" onclick="selectQuickCombo('${m.service_id}')" class="px-3 py-1.5 rounded-xl text-xs font-medium bg-white/5 hover:bg-white/10 text-slate-300 border border-white/5 transition cursor-pointer">
+          ${m.service_name.split('(')[0].trim()} (${Math.round(m.price/1000)}k)
+        </button>
+      `).join('');
+    }
+
+    function selectQuickCombo(id) {
+      document.getElementById('pos-service-select').value = id;
+      onSelectServiceChange();
+    }
+
+    function onSelectServiceChange() {
+      selectedComboId = document.getElementById('pos-service-select').value;
+      updatePOSCalculations();
+    }
+
+    function updatePOSStaffInfo() {
+      document.getElementById('staff-pos-name').innerText = currentUser?.full_name || 'KTV';
+      document.getElementById('staff-pos-avatar').innerText = (currentUser?.full_name || 'K').charAt(0);
+      document.getElementById('staff-pos-model').innerText = currentUser?.salary_type === 'commission_20pct' ? '20% Tour (Không lương cứng)' : '10% Tour + Lương Cứng';
+      updatePOSCalculations();
+    }
+
+    function updatePOSCalculations() {
+      const menu = getStored('menu', DEFAULT_MENU);
+      const service = menu.find(m => m.service_id === selectedComboId) || menu[0];
+      let comm = currentUser?.salary_type === 'commission_20pct' ? Math.round(service.price * 0.20) : Math.round(service.price * 0.10);
+      document.getElementById('staff-pos-commission').innerText = '+' + comm.toLocaleString('vi-VN') + ' đ';
+
+      let finalPrice = useVoucher ? 0 : service.price;
+      document.getElementById('pos-price-display').innerText = useVoucher ? '0 đ (Dùng Voucher)' : finalPrice.toLocaleString('vi-VN') + ' đ';
+    }
+
+    function onCustomerPhoneInput(val) {
+      const phone = val.trim();
+      const card = document.getElementById('pos-customer-card');
+      const customers = getStored('customers', DEFAULT_CUSTOMERS);
+
+      if (phone.length >= 9) {
+        const cust = customers.find(c => c.phone_number === phone);
+        if (cust) {
+          currentCustomer = cust;
+          card.classList.remove('hidden');
+          document.getElementById('pos-customer-name').value = cust.customer_name;
+          document.getElementById('pos-cust-name-badge').innerText = cust.customer_name;
+          document.getElementById('pos-cust-phone-badge').innerText = '(' + cust.phone_number + ')';
+          document.getElementById('pos-cust-visits-badge').innerText = cust.total_visits + ' / 10 Lần gội';
+          document.getElementById('pos-cust-progress-bar').style.width = Math.min(100, (cust.total_visits / 10) * 100) + '%';
+          
+          if (cust.notes) {
+            document.getElementById('pos-cust-notes-box').classList.remove('hidden');
+            document.getElementById('pos-cust-notes-text').innerText = cust.notes;
+          } else {
+            document.getElementById('pos-cust-notes-box').classList.add('hidden');
+          }
+
+          if (cust.voucher_count > 0) {
+            document.getElementById('pos-voucher-banner').classList.remove('hidden');
+            document.getElementById('pos-voucher-text').innerText = 'Khách có ' + cust.voucher_count + ' Voucher Combo 1 miễn phí!';
+          } else {
+            document.getElementById('pos-voucher-banner').classList.add('hidden');
+          }
+        } else {
+          currentCustomer = null;
+          card.classList.add('hidden');
+        }
+      } else {
+        currentCustomer = null;
+        card.classList.add('hidden');
+      }
+    }
+
+    function onVoucherToggle(checked) {
+      useVoucher = checked;
+      updatePOSCalculations();
+    }
+
+    function setPaymentMethod(method) {
+      paymentMethod = method;
+      const btnQR = document.getElementById('btn-pay-qr');
+      const btnCash = document.getElementById('btn-pay-cash');
+      const submitText = document.getElementById('pos-submit-btn-text');
+
+      if (method === 'Transfer') {
+        btnQR.className = 'p-3.5 rounded-2xl border bg-purple-600/20 border-purple-500 text-purple-300 font-semibold text-sm flex items-center justify-center gap-2 shadow-md shadow-purple-500/10 transition cursor-pointer';
+        btnCash.className = 'p-3.5 rounded-2xl border bg-white/5 border-white/5 text-slate-400 hover:bg-white/10 font-semibold text-sm flex items-center justify-center gap-2 transition cursor-pointer';
+        submitText.innerText = 'Hiện Mã VietQR & Lưu Ca';
+      } else {
+        btnCash.className = 'p-3.5 rounded-2xl border bg-emerald-600/20 border-emerald-500 text-emerald-300 font-semibold text-sm flex items-center justify-center gap-2 shadow-md shadow-emerald-500/10 transition cursor-pointer';
+        btnQR.className = 'p-3.5 rounded-2xl border bg-white/5 border-white/5 text-slate-400 hover:bg-white/10 font-semibold text-sm flex items-center justify-center gap-2 transition cursor-pointer';
+        submitText.innerText = 'Lưu Ca Gội Ngay (Tiền mặt)';
+      }
+    }
+
+    function submitPOSReceipt() {
+      const menu = getStored('menu', DEFAULT_MENU);
+      const service = menu.find(m => m.service_id === selectedComboId) || menu[0];
+      const finalPrice = useVoucher ? 0 : service.price;
+
+      if (paymentMethod === 'Transfer' && !useVoucher) {
+        const bankName = 'MBBank';
+        const accountNo = '0912345678';
+        const receiptId = 'HD' + Date.now().toString().slice(-4);
+        const desc = 'SelenaSpa ' + receiptId;
+        const qrUrl = 'https://img.vietqr.io/image/' + bankName + '-' + accountNo + '-compact2.png?amount=' + finalPrice + '&addInfo=' + encodeURIComponent(desc) + '&accountName=SELENA%20SPA';
+
+        document.getElementById('vietqr-img').src = qrUrl;
+        document.getElementById('vietqr-amount').innerText = finalPrice.toLocaleString('vi-VN') + ' đ';
+        document.getElementById('vietqr-desc').innerText = desc;
+        document.getElementById('modal-vietqr').classList.remove('hidden');
+      } else {
+        saveReceiptRecord();
+      }
+    }
+
+    function closeVietQRModal() {
+      document.getElementById('modal-vietqr').classList.add('hidden');
+    }
+
+    function confirmVietQRSuccess() {
+      closeVietQRModal();
+      saveReceiptRecord();
+    }
+
+    function saveReceiptRecord() {
+      const menu = getStored('menu', DEFAULT_MENU);
+      const service = menu.find(m => m.service_id === selectedComboId) || menu[0];
+      const receipts = getStored('receipts', []);
+      const customers = getStored('customers', DEFAULT_CUSTOMERS);
+
+      const comm = currentUser?.salary_type === 'commission_20pct' ? Math.round(service.price * 0.20) : Math.round(service.price * 0.10);
+      const finalPrice = useVoucher ? 0 : service.price;
+      const phone = document.getElementById('pos-customer-phone').value.trim();
+      const name = document.getElementById('pos-customer-name').value.trim() || 'Khách vãng lai';
+
+      const receiptId = 'HD' + Date.now().toString().slice(-6);
+      receipts.unshift({
+        receipt_id: receiptId,
+        date: new Date().toISOString().split('T')[0],
+        customer_phone: phone,
+        customer_name: name,
+        service_id: service.service_id,
+        service_name: service.service_name,
+        staff_id: currentUser.user_id,
+        staff_name: currentUser.full_name,
+        price: service.price,
+        commission_amount: comm,
+        total_paid: finalPrice,
+        payment_method: paymentMethod,
+        is_voucher_used: useVoucher
+      });
+      setStored('receipts', receipts);
+
+      if (phone) {
+        let custIndex = customers.findIndex(c => c.phone_number === phone);
+        if (custIndex >= 0) {
+          let cur = customers[custIndex];
+          let updatedVisits = useVoucher ? cur.total_visits : (cur.total_visits + 1);
+          let updatedVouchers = cur.voucher_count || 0;
+          if (useVoucher) updatedVouchers = Math.max(0, updatedVouchers - 1);
+          else if (updatedVisits >= 10) {
+            updatedVouchers += 1;
+            updatedVisits -= 10;
+            confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+            alert('🎉 CHÚC MỪNG! Khách hàng đã tích đủ 10 lần gội, đã cộng 1 Voucher Combo 1!');
+          }
+          customers[custIndex] = { ...cur, customer_name: name, total_visits: updatedVisits, voucher_count: updatedVouchers };
+        } else {
+          customers.push({ phone_number: phone, customer_name: name, total_visits: 1, voucher_count: 0, notes: '' });
+        }
+        setStored('customers', customers);
+      }
+
+      alert('✅ Đã lưu ca gội thành công! Hoa hồng của bạn: +' + comm.toLocaleString('vi-VN') + ' đ');
+      
+      document.getElementById('pos-customer-phone').value = '';
+      document.getElementById('pos-customer-name').value = '';
+      document.getElementById('pos-customer-card').classList.add('hidden');
+      useVoucher = false;
+      document.getElementById('pos-use-voucher').checked = false;
+      updatePOSCalculations();
+    }
+
+    function loadStaffHistory() {
+      const receipts = getStored('receipts', []);
+      const myReceipts = receipts.filter(r => r.staff_id === currentUser?.user_id);
+      const totalComm = myReceipts.reduce((sum, r) => sum + (r.commission_amount || 0), 0);
+      const baseSalary = currentUser?.base_salary || 0;
+
+      document.getElementById('staff-total-earnings').innerHTML = (baseSalary + totalComm).toLocaleString('vi-VN') + ' <span class="text-lg text-purple-400 font-normal">đ</span>';
+      document.getElementById('staff-total-tours').innerText = myReceipts.length + ' ca';
+      document.getElementById('staff-total-commission').innerText = totalComm.toLocaleString('vi-VN') + ' đ';
+      document.getElementById('staff-base-salary').innerText = baseSalary.toLocaleString('vi-VN') + ' đ';
+
+      const list = document.getElementById('staff-receipts-list');
+      if (myReceipts.length === 0) {
+        list.innerHTML = '<div class="glass-card rounded-2xl p-6 text-center text-slate-500 text-xs">Chưa có ca làm nào trong tháng này.</div>';
+      } else {
+        list.innerHTML = myReceipts.map((r, i) => `
+          <div class="glass-card rounded-2xl p-3.5 border border-white/5 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center font-bold text-xs font-heading">${i+1}</div>
+              <div>
+                <div class="text-xs font-bold text-white">${r.service_name}</div>
+                <div class="text-[11px] text-slate-400">${r.date} • Khách: ${r.customer_name}</div>
+              </div>
+            </div>
+            <div class="text-right">
+              <div class="text-xs font-bold text-emerald-400 font-heading">+${r.commission_amount.toLocaleString('vi-VN')} đ</div>
+              <div class="text-[10px] text-slate-400">Thu: ${r.total_paid.toLocaleString('vi-VN')} đ (${r.payment_method === 'Transfer' ? 'QR' : 'Tiền mặt'})</div>
+            </div>
+          </div>
+        `).join('');
+      }
+    }
+
+    function loadAdminDashboard() {
+      const receipts = getStored('receipts', []);
+      const expenses = getStored('expenses', []);
+      const users = getStored('users', DEFAULT_USERS);
+      const menu = getStored('menu', DEFAULT_MENU);
+
+      let cosmeticsMap = {};
+      menu.forEach(m => cosmeticsMap[m.service_id] = m.cosmetics_cost || 0);
+
+      const totalRev = receipts.reduce((sum, r) => sum + (r.total_paid || 0), 0);
+      const totalComm = receipts.reduce((sum, r) => sum + (r.commission_amount || 0), 0);
+      const totalBase = users.filter(u => u.role === 'staff').reduce((sum, u) => sum + (u.base_salary || 0), 0);
+      const totalExp = expenses.reduce((sum, e) => sum + (e.amount || 0), 0);
+      const totalCosmetics = receipts.reduce((sum, r) => sum + (cosmeticsMap[r.service_id] || 0), 0);
+
+      const totalSalaries = totalBase + totalComm;
+      const netProfit = totalRev - totalSalaries - totalExp - totalCosmetics;
+
+      document.getElementById('kpi-revenue').innerText = totalRev.toLocaleString('vi-VN') + ' đ';
+      document.getElementById('kpi-tours').innerText = receipts.length + ' ca phục vụ';
+      document.getElementById('kpi-salaries').innerText = totalSalaries.toLocaleString('vi-VN') + ' đ';
+      document.getElementById('kpi-expenses').innerText = (totalExp + totalCosmetics).toLocaleString('vi-VN') + ' đ';
+      document.getElementById('kpi-net-profit').innerText = netProfit.toLocaleString('vi-VN') + ' đ';
+
+      document.getElementById('admin-receipt-count').innerText = receipts.length + ' hóa đơn';
+      const tableBody = document.getElementById('admin-receipts-table-body');
+      tableBody.innerHTML = receipts.map(r => `
+        <tr class="hover:bg-white/5 transition">
+          <td class="py-3 font-mono text-[11px] text-slate-400">${r.receipt_id}</td>
+          <td class="py-3 font-medium text-white">${r.service_name}</td>
+          <td class="py-3 text-slate-300">${r.customer_name}</td>
+          <td class="py-3"><span class="px-2 py-0.5 rounded-md bg-purple-500/10 text-purple-300 text-[11px]">${r.staff_name}</span></td>
+          <td class="py-3 text-right font-bold text-emerald-400 font-heading">${r.total_paid.toLocaleString('vi-VN')} đ</td>
+          <td class="py-3 text-right">
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold ${r.payment_method === 'Transfer' ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30' : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'}">
+              ${r.payment_method === 'Transfer' ? 'QR' : 'Tiền mặt'}
+            </span>
+          </td>
+        </tr>
+      `).join('');
+
+      const expContainer = document.getElementById('admin-expenses-list');
+      expContainer.innerHTML = expenses.map(e => `
+        <div class="p-4 rounded-2xl bg-white/5 border border-white/5 space-y-1.5">
+          <div class="flex justify-between items-center">
+            <span class="px-2 py-0.5 rounded-md bg-red-500/10 text-red-300 font-bold text-xs">${e.expense_type}</span>
+            <span class="text-[11px] text-slate-400">${e.date}</span>
+          </div>
+          <div class="text-lg font-extrabold text-white font-heading">${e.amount.toLocaleString('vi-VN')} đ</div>
+          <div class="text-xs text-slate-400">${e.note || 'Không có ghi chú'}</div>
+        </div>
+      `).join('');
+    }
+
+    function switchAdminTab(tab) {
+      document.getElementById('admin-subtab-receipts').classList.add('hidden');
+      document.getElementById('admin-subtab-expenses').classList.add('hidden');
+      document.getElementById('admin-subtab-settings').classList.add('hidden');
+
+      document.getElementById('tab-btn-receipts').className = 'px-4 py-2 rounded-2xl text-xs font-bold bg-white/5 hover:bg-white/10 text-slate-400 transition cursor-pointer';
+      document.getElementById('tab-btn-expenses').className = 'px-4 py-2 rounded-2xl text-xs font-bold bg-white/5 hover:bg-white/10 text-slate-400 transition cursor-pointer';
+      document.getElementById('tab-btn-settings').className = 'px-4 py-2 rounded-2xl text-xs font-bold bg-white/5 hover:bg-white/10 text-slate-400 transition cursor-pointer';
+
+      if (tab === 'receipts') {
+        document.getElementById('admin-subtab-receipts').classList.remove('hidden');
+        document.getElementById('tab-btn-receipts').className = 'px-4 py-2 rounded-2xl text-xs font-bold bg-purple-600 text-white shadow-md shadow-purple-600/30 transition cursor-pointer';
+      } else if (tab === 'expenses') {
+        document.getElementById('admin-subtab-expenses').classList.remove('hidden');
+        document.getElementById('tab-btn-expenses').className = 'px-4 py-2 rounded-2xl text-xs font-bold bg-purple-600 text-white shadow-md shadow-purple-600/30 transition cursor-pointer';
+      } else if (tab === 'settings') {
+        document.getElementById('admin-subtab-settings').classList.remove('hidden');
+        document.getElementById('tab-btn-settings').className = 'px-4 py-2 rounded-2xl text-xs font-bold bg-purple-600 text-white shadow-md shadow-purple-600/30 transition cursor-pointer';
+      }
+      lucide.createIcons();
+    }
+
+    function openAddExpenseModal() { document.getElementById('modal-add-expense').classList.remove('hidden'); }
+    function closeAddExpenseModal() { document.getElementById('modal-add-expense').classList.add('hidden'); }
+
+    function handleSaveExpenseForm(e) {
+      e.preventDefault();
+      const type = document.getElementById('input-exp-type').value;
+      const amount = Number(document.getElementById('input-exp-amount').value);
+      const note = document.getElementById('input-exp-note').value;
+
+      const expenses = getStored('expenses', []);
+      expenses.unshift({
+        expense_id: 'EXP' + Date.now().toString().slice(-4),
+        date: new Date().toISOString().split('T')[0],
+        expense_type: type,
+        amount: amount,
+        note: note
+      });
+      setStored('expenses', expenses);
+      closeAddExpenseModal();
+      loadAdminDashboard();
+    }
+
+    function saveGasUrl() {
+      const url = document.getElementById('setting-gas-url').value.trim();
+      localStorage.setItem('selena_gas_url', url);
+      alert('✅ Đã lưu đường dẫn Google Apps Script Web App!');
+    }
+  </script>
+</body>
+</html>
