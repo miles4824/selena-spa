@@ -552,6 +552,23 @@ def build():
       return `${y}/${m}/${day} - ${h}:${min}`;
     }
 
+    function parsePercentage(val) {
+      if (val === undefined || val === null || val === '') return 10;
+      if (typeof val === 'number') {
+        if (val > 0 && val <= 1) return Math.round(val * 100);
+        return Math.round(val);
+      }
+      let s = String(val).trim();
+      if (s.includes('%')) {
+        let num = parseFloat(s.replace('%', ''));
+        return isNaN(num) ? 10 : num;
+      }
+      let num = parseFloat(s);
+      if (isNaN(num)) return 10;
+      if (num > 0 && num <= 1) return Math.round(num * 100);
+      return num;
+    }
+
     const DEFAULT_GAS_URL = 'https://script.google.com/macros/s/AKfycbwQ-Dwr2zCWWWMPWBCyVIfwDirofgvjD8S7Ug-5OSNLHvM63Gw0nSCa10BqhpD5g8id/exec';
 
     function getGasUrl() {
@@ -865,7 +882,7 @@ def build():
     function updatePOSStaffInfo() {
       document.getElementById('staff-pos-name').innerText = currentUser?.full_name || 'KTV';
       document.getElementById('staff-pos-avatar').innerText = (currentUser?.full_name || 'K').charAt(0);
-      const rate = currentUser?.commission_rate || (currentUser?.salary_type?.includes('20') ? 20 : 10);
+      const rate = parsePercentage(currentUser?.commission_rate);
       const isFixed = currentUser?.salary_type === 'fixed' || currentUser?.salary_type === 'fixed_10pct';
       document.getElementById('staff-pos-model').innerText = `${rate}% Tour (${isFixed ? 'Có lương cứng' : 'Thuần hoa hồng'})`;
       updatePOSCalculations();
@@ -874,7 +891,7 @@ def build():
     function updatePOSCalculations() {
       const menu = getStored('menu', DEFAULT_MENU);
       const service = menu.find(m => m.service_id === selectedComboId) || menu[0];
-      const rate = currentUser?.commission_rate || (currentUser?.salary_type?.includes('20') ? 20 : 10);
+      const rate = parsePercentage(currentUser?.commission_rate);
       let comm = Math.round(service.price * (rate / 100));
       document.getElementById('staff-pos-commission').innerText = '+' + comm.toLocaleString('vi-VN') + ' đ (' + rate + '%)';
 
@@ -991,7 +1008,7 @@ def build():
       const receipts = getStored('receipts', []);
       const customers = getStored('customers', DEFAULT_CUSTOMERS);
 
-      const rate = currentUser?.commission_rate || (currentUser?.salary_type?.includes('20') ? 20 : 10);
+      const rate = parsePercentage(currentUser?.commission_rate);
       const comm = Math.round(service.price * (rate / 100));
       const finalPrice = useVoucher ? 0 : service.price;
       const phone = document.getElementById('pos-customer-phone').value.trim();

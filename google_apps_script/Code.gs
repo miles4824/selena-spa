@@ -86,9 +86,22 @@ function handleRequest(e) {
   }
 }
 
-// -------------------------------------------------------------
-// 1. XÁC THỰC ĐĂNG NHẬP & BẢO MẬT WIFI
-// -------------------------------------------------------------
+function parsePercentage(val) {
+  if (val === undefined || val === null || val === '') return 10;
+  if (typeof val === 'number') {
+    if (val > 0 && val <= 1) return Math.round(val * 100);
+    return Math.round(val);
+  }
+  let s = String(val).trim();
+  if (s.includes('%')) {
+    let num = parseFloat(s.replace('%', ''));
+    return isNaN(num) ? 10 : num;
+  }
+  let num = parseFloat(s);
+  if (isNaN(num)) return 10;
+  if (num > 0 && num <= 1) return Math.round(num * 100);
+  return num;
+}
 function handleLogin(params) {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheetUsers = ss.getSheetByName('tb_users');
@@ -272,14 +285,13 @@ function createReceipt(params) {
         staffCode = uStaffId || staffCode;
         staffName = String(usersData[i][4] || usersData[i][3] || staffName);
         staffSalaryType = String(usersData[i][6] || usersData[i][5] || staffSalaryType);
-        let rateRaw = String(usersData[i][7] || '');
-        commRate = Number(rateRaw.replace(/[^\d.]/g, '')) || (staffSalaryType.includes('20') ? 20 : 10);
+        commRate = parsePercentage(usersData[i][7]);
         break;
       }
     }
   }
 
-  // 3. Tính tiền hoa hồng KTV theo % thực tế của thợ
+  // 3. Tính tiền hoa hồng KTV theo % thực tế của thợ (Ví dụ 10% của 64.000 = 6.400)
   let commissionAmount = Number(params.commission_amount) || 0;
   if (!commissionAmount) {
     commissionAmount = Math.round(price * (commRate / 100));
@@ -630,10 +642,7 @@ function syncAllData() {
         let salaryType = String(r[6] || 'fixed').trim();
         
         // Đọc % hoa hồng từ Cột H (Index 7)
-        let commRateRaw = String(r[7] || '').trim();
-        let commRate = Number(commRateRaw.replace(/[^\d.]/g, '')) || 0;
-        if (!commRate && salaryType.includes('20')) commRate = 20;
-        if (!commRate && (salaryType.includes('10') || salaryType === 'fixed')) commRate = 10;
+        let commRate = parsePercentage(r[7]);
         if (role === 'admin' || role === 'owner') commRate = 100;
 
         // Đọc lương cứng từ Cột I (Index 8)
