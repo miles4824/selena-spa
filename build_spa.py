@@ -80,7 +80,7 @@ def build():
 
       <div class="pt-1 flex items-center justify-center">
         <span class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#FFF0EB] border border-[#FCDFD7] text-[#E58A7B] text-xs font-semibold font-mono">
-          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-[#E58A7B]"></i> v0.0.1.0 • Selena Spa
+          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-[#E58A7B]"></i> v0.0.1.1 • Selena Spa
         </span>
       </div>
 
@@ -160,7 +160,12 @@ def build():
           <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#FFF0EB] border border-[#FCDFD7] text-[#E58A7B] text-xs font-bold shadow-sm">
             <i data-lucide="megaphone" class="w-3.5 h-3.5 text-[#E58A7B]"></i> Thông Báo Từ Chủ Tiệm
           </div>
-          <span class="text-[11px] text-[#A39696] font-mono" id="home-announcement-date">Hôm nay</span>
+          <div class="flex items-center gap-2">
+            <span class="text-[11px] text-[#A39696] font-mono" id="home-announcement-date">Hôm nay</span>
+            <button onclick="refreshDataFromGoogleSheets()" title="Đồng bộ lại" class="p-1 rounded-full hover:bg-white text-[#A39696] hover:text-[#E58A7B] transition cursor-pointer">
+              <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+            </button>
+          </div>
         </div>
         <div class="text-sm sm:text-base font-bold text-[#2D2424] leading-relaxed" id="home-announcement-content">
           ✨ Chúc các kỹ thuật viên một ngày làm việc tràn đầy năng lượng! Hãy luôn giữ nụ cười tươi, vệ sinh bồn gội sạch sẽ và tư vấn chu đáo cho khách nhé.
@@ -1793,6 +1798,9 @@ def build():
           localStorage.removeItem('selena_active_session');
         }
       }
+      
+      // Auto sync latest data from Google Sheets immediately on load
+      refreshDataFromGoogleSheets();
       lucide.createIcons();
     });
   </script>
