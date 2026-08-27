@@ -7,6 +7,12 @@ def build():
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Selena Spa">
   <title>Selena Spa - Quản Lý & Bán Hàng</title>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -23,6 +29,7 @@ def build():
       color: #f3f4f6;
       font-family: 'Plus Jakarta Sans', sans-serif;
       -webkit-tap-highlight-color: transparent;
+      overscroll-behavior-y: contain;
     }
     h1, h2, h3, h4, h5, h6, .font-heading {
       font-family: 'Outfit', sans-serif;
@@ -42,6 +49,12 @@ def build():
   </style>
 </head>
 <body class="min-h-screen flex flex-col selection:bg-purple-500/30">
+  <!-- Pull to Refresh Banner -->
+  <div id="ptr-indicator" class="fixed top-0 left-0 right-0 z-50 flex items-center justify-center py-3 text-xs text-purple-300 font-bold bg-[#141724]/95 border-b border-purple-500/30 backdrop-blur-xl shadow-lg transition-transform duration-200 pointer-events-none -translate-y-full">
+    <div class="flex items-center gap-2" id="ptr-content">
+      <i data-lucide="arrow-down" class="w-4 h-4 text-purple-400"></i> Vuốt xuống để tải lại bản mới nhất...
+    </div>
+  </div>
 """
 
     p2_login = """  <!-- 1. PHONE + PASSWORD LOGIN SCREEN -->
@@ -943,6 +956,51 @@ def build():
       localStorage.setItem('selena_gas_url', url);
       alert('✅ Đã lưu đường dẫn Google Apps Script Web App!');
     }
+
+    // PULL TO REFRESH LOGIC FOR IPHONE PWA
+    let touchStartY = 0;
+    let isPulling = false;
+    const ptr = document.getElementById('ptr-indicator');
+    const ptrContent = document.getElementById('ptr-content');
+
+    window.addEventListener('touchstart', (e) => {
+      if (window.scrollY <= 5) {
+        touchStartY = e.touches[0].clientY;
+        isPulling = true;
+      }
+    }, { passive: true });
+
+    window.addEventListener('touchmove', (e) => {
+      if (!isPulling) return;
+      const touchY = e.touches[0].clientY;
+      const diff = touchY - touchStartY;
+      if (diff > 10 && window.scrollY <= 5) {
+        const translate = Math.min(diff * 0.45, 65);
+        ptr.style.transform = `translateY(${translate - 60}px)`;
+        if (diff > 80) {
+          ptrContent.innerHTML = '<i data-lucide="rotate-cw" class="w-4 h-4 text-purple-400"></i> Thả tay để làm mới bản mới nhất!';
+        } else {
+          ptrContent.innerHTML = '<i data-lucide="arrow-down" class="w-4 h-4 text-purple-400"></i> Vuốt xuống để làm mới...';
+        }
+        lucide.createIcons();
+      }
+    }, { passive: true });
+
+    window.addEventListener('touchend', (e) => {
+      if (!isPulling) return;
+      isPulling = false;
+      const touchY = e.changedTouches[0].clientY;
+      if (touchY - touchStartY > 80 && window.scrollY <= 5) {
+        ptr.style.transform = 'translateY(0px)';
+        ptrContent.innerHTML = '<i data-lucide="refresh-cw" class="w-4 h-4 text-purple-400 animate-spin"></i> Đang tải lại bản mới nhất...';
+        lucide.createIcons();
+        setTimeout(() => {
+          window.location.reload(true);
+        }, 300);
+      } else {
+        ptr.style.transform = 'translateY(-100%)';
+      }
+    });
   </script>
 </body>
 </html>
@@ -950,12 +1008,14 @@ def build():
 
     full_html = p1_head + p2_login + p3_navbar + p4_staff_pos + p5_staff_history + p6_admin + p7_js
     
-    target_path = r'c:\Users\Miles\Downloads\Selena\selena-spa.html'
-    with open(target_path, 'w', encoding='utf-8') as f:
+    with open(r'c:\Users\Miles\Downloads\Selena\selena-spa.html', 'w', encoding='utf-8') as f:
+        f.write(full_html)
+    with open(r'c:\Users\Miles\Downloads\Selena\index.html', 'w', encoding='utf-8') as f:
         f.write(full_html)
     
-    print('SUCCESS: Created selena-spa.html (Size: ' + str(len(full_html)) + ' bytes)')
+    print('SUCCESS: Created selena-spa.html and index.html (Size: ' + str(len(full_html)) + ' bytes)')
 
 if __name__ == '__main__':
     build()
+
 
