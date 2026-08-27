@@ -80,7 +80,7 @@ def build():
 
       <div class="pt-1 flex items-center justify-center">
         <span class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#FFF0EB] border border-[#FCDFD7] text-[#E58A7B] text-xs font-semibold font-mono">
-          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-[#E58A7B]"></i> v0.0.0.7 • Selena Spa
+          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-[#E58A7B]"></i> v0.0.0.8 • Selena Spa
         </span>
       </div>
 
@@ -99,13 +99,12 @@ def build():
           <div class="relative">
             <input type="password" id="login-password" placeholder="••••••" required class="w-full bg-[#F7F2EC] border border-[#EFE8DF] rounded-2xl p-4 pl-11 pr-11 text-[#2D2424] text-base focus:outline-none focus:border-[#E58A7B] focus:bg-white transition">
             <i data-lucide="lock" class="w-5 h-5 text-[#A39696] absolute left-3.5 top-1/2 -translate-y-1/2"></i>
-            <button type="button" onclick="togglePasswordVisibility()" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#A39696] hover:text-[#2D2424] cursor-pointer p-1">
-              <i data-lucide="eye" id="pwd-eye-icon" class="w-5 h-5"></i>
+            <button type="button" onclick="togglePasswordVisibility()" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#A39696] hover:text-[#2D2424]">
+              <i data-lucide="eye" id="login-eye-icon" class="w-5 h-5"></i>
             </button>
           </div>
         </div>
 
-        <!-- Remember Me Checkbox -->
         <div class="flex items-center justify-between pt-1">
           <label class="flex items-center gap-2.5 text-xs sm:text-sm text-[#7E7272] cursor-pointer">
             <input type="checkbox" id="login-remember" checked class="w-4 h-4 accent-[#E58A7B] rounded cursor-pointer">
@@ -126,12 +125,7 @@ def build():
       <!-- Quick Test Accounts -->
       <div class="mt-6 pt-5 border-t border-[#F0EAE1] space-y-2">
         <div class="text-xs text-[#A39696] font-medium">Tài khoản nhân sự (Đồng bộ từ tb_users):</div>
-        <div id="login-quick-accounts" class="flex flex-col gap-2">
-          <button onclick="quickFillLogin('0949251144', '123456')" class="w-full p-3 rounded-2xl bg-[#F7F2EC] hover:bg-[#FFF0EB] text-[#2D2424] hover:text-[#E58A7B] text-xs sm:text-sm font-semibold transition flex items-center justify-between cursor-pointer border border-[#EFE8DF]">
-            <span>👑 Miles (Đấng tối cao)</span>
-            <span class="text-xs text-[#E58A7B] font-mono">0949251144</span>
-          </button>
-        </div>
+        <div id="login-quick-accounts" class="flex flex-col gap-2"></div>
       </div>
     </div>
   </div>
@@ -164,41 +158,180 @@ def build():
   </header>
 """
 
-    p4_staff_pos = """  <!-- 3. STAFF POS VIEW (LUXURY SPA THEME) -->
-  <main id="view-staff-pos" class="hidden flex-1 p-4 sm:p-6 max-w-xl w-full mx-auto space-y-5 pb-28">
+    p4_view_home = """  <!-- TAB 1. HOME VIEW (TỔNG QUAN KTV HOẶC DASHBOARD CHỦ) -->
+  <main id="view-home" class="hidden flex-1 p-4 sm:p-6 max-w-5xl w-full mx-auto space-y-6 pb-28">
     
-    <!-- Date Strip Pills (Thanh chọn ngày lịch dạng viên thuốc như ảnh mẫu) -->
-    <div class="spa-card p-3.5 flex items-center justify-between gap-1 overflow-x-auto no-scrollbar" id="pos-date-strip">
-      <div class="flex items-center justify-between w-full gap-1.5 text-center">
-        <div class="flex-1 py-2 px-1 rounded-2xl bg-[#F7F2EC] text-[#7E7272] text-xs">
-          <span class="block text-[10px] text-[#A39696] uppercase font-bold">CN</span>
-          <span class="text-sm font-extrabold text-[#2D2424]">23</span>
+    <!-- A. KTV HOME VIEW -->
+    <div id="home-ktv-section" class="hidden space-y-5 max-w-2xl mx-auto">
+      <!-- Date Strip Pills -->
+      <div class="spa-card p-3.5 flex items-center justify-between gap-1 overflow-x-auto no-scrollbar" id="pos-date-strip">
+        <div class="flex items-center justify-between w-full gap-1.5 text-center">
+          <div class="flex-1 py-2 px-1 rounded-2xl bg-[#F7F2EC] text-[#7E7272] text-xs">
+            <span class="block text-[10px] text-[#A39696] uppercase font-bold">CN</span>
+            <span class="text-sm font-extrabold text-[#2D2424]">23</span>
+          </div>
+          <div class="flex-1 py-2 px-1 rounded-2xl bg-[#F7F2EC] text-[#7E7272] text-xs">
+            <span class="block text-[10px] text-[#A39696] uppercase font-bold">T2</span>
+            <span class="text-sm font-extrabold text-[#2D2424]">24</span>
+          </div>
+          <div class="flex-1 py-2 px-1 rounded-2xl bg-[#F7F2EC] text-[#7E7272] text-xs">
+            <span class="block text-[10px] text-[#A39696] uppercase font-bold">T3</span>
+            <span class="text-sm font-extrabold text-[#2D2424]">25</span>
+          </div>
+          <div class="flex-1 py-2 px-1 rounded-2xl bg-[#F7F2EC] text-[#7E7272] text-xs">
+            <span class="block text-[10px] text-[#A39696] uppercase font-bold">T4</span>
+            <span class="text-sm font-extrabold text-[#2D2424]">26</span>
+          </div>
+          <div class="flex-1 py-2 px-1 rounded-2xl bg-[#E58A7B] text-white shadow-md shadow-[#E58A7B]/25">
+            <span class="block text-[10px] text-white/80 uppercase font-bold">Hôm nay</span>
+            <span class="text-sm font-extrabold text-white">27</span>
+          </div>
+          <div class="flex-1 py-2 px-1 rounded-2xl bg-[#F7F2EC] text-[#7E7272] text-xs">
+            <span class="block text-[10px] text-[#A39696] uppercase font-bold">T6</span>
+            <span class="text-sm font-extrabold text-[#2D2424]">28</span>
+          </div>
+          <div class="flex-1 py-2 px-1 rounded-2xl bg-[#F7F2EC] text-[#7E7272] text-xs">
+            <span class="block text-[10px] text-[#A39696] uppercase font-bold">T7</span>
+            <span class="text-sm font-extrabold text-[#2D2424]">29</span>
+          </div>
         </div>
-        <div class="flex-1 py-2 px-1 rounded-2xl bg-[#F7F2EC] text-[#7E7272] text-xs">
-          <span class="block text-[10px] text-[#A39696] uppercase font-bold">T2</span>
-          <span class="text-sm font-extrabold text-[#2D2424]">24</span>
+      </div>
+
+      <!-- Welcome Wellness Card -->
+      <div class="spa-card p-6 sm:p-7 relative overflow-hidden bg-gradient-to-br from-[#FFF0EB] via-[#FFFFFF] to-[#FAF6F1]">
+        <div class="relative z-10 space-y-3">
+          <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/90 border border-[#FCDFD7] text-[#E58A7B] text-xs font-bold shadow-sm">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> Daily Spa & Wellness
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-[#2D2424]">Chào bạn, hôm nay sẵn sàng tỏa sáng chưa? ✨</h2>
+          <p class="text-xs sm:text-sm text-[#7E7272] max-w-md">Mỗi ca gội là một trải nghiệm thư giãn tuyệt vời gửi gắm đến khách hàng.</p>
+          <div class="pt-2">
+            <button onclick="showView('add')" class="px-6 py-3.5 rounded-full bg-[#E58A7B] hover:bg-[#D9796A] text-white font-extrabold text-sm shadow-lg shadow-[#E58A7B]/25 transition flex items-center gap-2 cursor-pointer active:scale-95">
+              <i data-lucide="plus-circle" class="w-5 h-5"></i> Vào Ca Gội Ngay
+            </button>
+          </div>
         </div>
-        <div class="flex-1 py-2 px-1 rounded-2xl bg-[#F7F2EC] text-[#7E7272] text-xs">
-          <span class="block text-[10px] text-[#A39696] uppercase font-bold">T3</span>
-          <span class="text-sm font-extrabold text-[#2D2424]">25</span>
+      </div>
+
+      <!-- Today Quick Stats -->
+      <div class="grid grid-cols-2 gap-3.5">
+        <div class="spa-card p-4 sm:p-5 space-y-1 bg-[#E8F8F5] border-[#B7EBDD]">
+          <span class="text-xs font-bold text-[#2E7D6D] uppercase tracking-wider block">Ca gội hôm nay</span>
+          <div class="text-2xl sm:text-3xl font-extrabold text-[#2D2424]" id="home-today-tours">0 ca</div>
+          <span class="text-[11px] text-[#2E7D6D] block">Đang phục vụ</span>
         </div>
-        <div class="flex-1 py-2 px-1 rounded-2xl bg-[#F7F2EC] text-[#7E7272] text-xs">
-          <span class="block text-[10px] text-[#A39696] uppercase font-bold">T4</span>
-          <span class="text-sm font-extrabold text-[#2D2424]">26</span>
+        <div class="spa-card p-4 sm:p-5 space-y-1 bg-[#FFF0EB] border-[#FCDFD7]">
+          <span class="text-xs font-bold text-[#E58A7B] uppercase tracking-wider block">Hoa hồng hôm nay</span>
+          <div class="text-2xl sm:text-3xl font-extrabold text-[#2D2424]" id="home-today-comm">0 đ</div>
+          <span class="text-[11px] text-[#E58A7B] block">Tích lũy trong ngày</span>
         </div>
-        <!-- Active Today Pill (Terracotta) -->
-        <div class="flex-1 py-2 px-1 rounded-2xl bg-[#E58A7B] text-white shadow-md shadow-[#E58A7B]/25">
-          <span class="block text-[10px] text-white/80 uppercase font-bold">Hôm nay</span>
-          <span class="text-sm font-extrabold text-white">27</span>
+      </div>
+    </div>
+
+    <!-- B. OWNER (ADMIN) HOME DASHBOARD -->
+    <div id="home-owner-section" class="hidden space-y-6">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+        <div>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-[#2D2424] flex items-center gap-2.5">👑 Quản Trị Selena Spa</h2>
+          <p class="text-xs sm:text-sm text-[#7E7272]">Thống kê tài chính dòng tiền & Kiểm soát vận hành</p>
         </div>
-        <div class="flex-1 py-2 px-1 rounded-2xl bg-[#F7F2EC] text-[#7E7272] text-xs">
-          <span class="block text-[10px] text-[#A39696] uppercase font-bold">T6</span>
-          <span class="text-sm font-extrabold text-[#2D2424]">28</span>
+        <button onclick="loadAdminDashboard()" class="px-4 py-2.5 rounded-2xl bg-white hover:bg-[#FFF0EB] text-[#2D2424] hover:text-[#E58A7B] text-xs sm:text-sm font-bold flex items-center gap-2 transition border border-[#F0EAE1] shadow-sm cursor-pointer">
+          <i data-lucide="refresh-cw" class="w-4 h-4 text-[#E58A7B]"></i> Làm mới
+        </button>
+      </div>
+
+      <!-- 4 Pastel Financial KPI Cards -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <div class="p-5 sm:p-6 rounded-3xl bg-[#E8F8F5] border border-[#B7EBDD] space-y-1 shadow-sm">
+          <span class="text-xs sm:text-sm font-bold text-[#2E7D6D] uppercase tracking-wider block">Doanh Thu Tổng</span>
+          <div class="text-2xl sm:text-3xl font-extrabold text-[#2D2424]" id="kpi-revenue">0 đ</div>
+          <span class="text-xs text-[#2E7D6D] font-medium block" id="kpi-tours">0 ca phục vụ</span>
         </div>
-        <div class="flex-1 py-2 px-1 rounded-2xl bg-[#F7F2EC] text-[#7E7272] text-xs">
-          <span class="block text-[10px] text-[#A39696] uppercase font-bold">T7</span>
-          <span class="text-sm font-extrabold text-[#2D2424]">29</span>
+        <div class="p-5 sm:p-6 rounded-3xl bg-[#F5EEF8] border border-[#E8DAEF] space-y-1 shadow-sm">
+          <span class="text-xs sm:text-sm font-bold text-[#8E44AD] uppercase tracking-wider block">Tổng Lương KTV</span>
+          <div class="text-2xl sm:text-3xl font-extrabold text-[#2D2424]" id="kpi-salaries">0 đ</div>
+          <span class="text-xs text-[#8E44AD] font-medium block">Lương cứng + Tour</span>
         </div>
+        <div class="p-5 sm:p-6 rounded-3xl bg-[#FFF0EB] border border-[#FCDFD7] space-y-1 shadow-sm">
+          <span class="text-xs sm:text-sm font-bold text-[#D35400] uppercase tracking-wider block">Chi Phí Vận Hành</span>
+          <div class="text-2xl sm:text-3xl font-extrabold text-[#2D2424]" id="kpi-expenses">0 đ</div>
+          <span class="text-xs text-[#D35400] font-medium block">Điện, nước, mạng, mặt bằng</span>
+        </div>
+        <div class="p-5 sm:p-6 rounded-3xl bg-[#E58A7B] text-white space-y-1 shadow-lg shadow-[#E58A7B]/20 col-span-2 sm:col-span-1">
+          <span class="text-xs sm:text-sm font-extrabold text-white/90 uppercase tracking-wider block">LỢI NHUẬN RÒNG</span>
+          <div class="text-2xl sm:text-3xl font-extrabold text-white" id="kpi-net-profit">0 đ</div>
+          <span class="text-xs text-white/90 font-medium block">Tiền thực nhận của Chủ</span>
+        </div>
+      </div>
+
+      <!-- Subtabs Navigation -->
+      <div class="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
+        <button onclick="switchAdminTab('users')" id="tab-btn-users" class="px-5 py-2.5 rounded-full text-xs sm:text-sm font-bold bg-[#E58A7B] text-white shadow-md shadow-[#E58A7B]/25 transition cursor-pointer shrink-0">💆 Nhân Viên (tb_users)</button>
+        <button onclick="switchAdminTab('customers')" id="tab-btn-customers" class="px-5 py-2.5 rounded-full text-xs sm:text-sm font-bold bg-white hover:bg-[#FFF0EB] text-[#7E7272] border border-[#F0EAE1] transition cursor-pointer shrink-0">👥 Khách Hàng (tb_customers)</button>
+        <button onclick="switchAdminTab('settings')" id="tab-btn-settings" class="px-5 py-2.5 rounded-full text-xs sm:text-sm font-bold bg-white hover:bg-[#FFF0EB] text-[#7E7272] border border-[#F0EAE1] transition cursor-pointer shrink-0">⚙️ Kết Nối Google Sheets</button>
+      </div>
+
+      <!-- Users Subtab -->
+      <div id="admin-subtab-users" class="spa-card p-5 sm:p-7 space-y-4">
+        <div class="flex justify-between items-center">
+          <div>
+            <h3 class="text-base sm:text-lg font-extrabold text-[#2D2424]">Danh Sách Nhân Viên (tb_users)</h3>
+            <p class="text-xs text-[#7E7272]">Thêm / sửa thợ trực tiếp trên Google Sheet</p>
+          </div>
+          <span class="text-xs sm:text-sm text-[#E58A7B] font-bold" id="admin-users-count">0 nhân sự</span>
+        </div>
+        <div id="admin-users-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5"></div>
+      </div>
+
+      <!-- Customers Subtab -->
+      <div id="admin-subtab-customers" class="hidden spa-card p-5 sm:p-7 space-y-4">
+        <div class="flex justify-between items-center">
+          <div>
+            <h3 class="text-base sm:text-lg font-extrabold text-[#2D2424]">Danh Sách Khách Hàng (tb_customers)</h3>
+            <p class="text-xs text-[#7E7272]">Tự động đồng bộ với Google Sheets</p>
+          </div>
+          <span class="text-xs sm:text-sm text-[#E58A7B] font-bold" id="admin-customer-count">0 khách</span>
+        </div>
+        <div id="admin-customers-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
+      </div>
+
+      <!-- Settings Subtab -->
+      <div id="admin-subtab-settings" class="hidden spa-card p-5 sm:p-7 space-y-6">
+        <div>
+          <h3 class="text-lg font-extrabold text-[#2D2424] flex items-center gap-2">
+            <i data-lucide="settings" class="w-5 h-5 text-[#E58A7B]"></i> Kết Nối Google Sheets
+          </h3>
+          <p class="text-xs sm:text-sm text-[#7E7272] mt-1">Đồng bộ trực tiếp về Google Sheets trên Google Drive của bạn</p>
+        </div>
+        <div class="p-4 rounded-3xl bg-[#F7F2EC] space-y-2 border border-[#EFE8DF]">
+          <label class="block text-xs sm:text-sm font-bold text-[#2D2424]">Đường dẫn Google Apps Script Web App URL:</label>
+          <div class="flex gap-2">
+            <input type="text" id="setting-gas-url" placeholder="https://script.google.com/macros/s/.../exec" class="flex-1 bg-white border border-[#EFE8DF] rounded-2xl p-3.5 text-xs sm:text-sm text-[#2D2424] focus:outline-none focus:border-[#E58A7B] font-mono">
+            <button onclick="saveGasUrl()" class="px-5 py-3 rounded-2xl bg-[#E58A7B] hover:bg-[#D9796A] text-white font-bold text-xs sm:text-sm transition cursor-pointer">Lưu</button>
+          </div>
+        </div>
+
+        <div class="p-4 rounded-3xl bg-rose-50 border border-rose-200 space-y-2">
+          <div class="text-xs sm:text-sm font-bold text-rose-700">Quản Lý Dữ Liệu Bộ Nhớ:</div>
+          <p class="text-xs text-rose-600">Nếu vừa cập nhật bảng trên Google Sheet và muốn App xóa dữ liệu thử nghiệm cũ để lấy dữ liệu mới nhất từ Sheet:</p>
+          <button onclick="resetLocalDataAndResync()" class="w-full py-3.5 rounded-2xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition cursor-pointer shadow-md shadow-rose-600/20">
+            <i data-lucide="refresh-cw" class="w-4 h-4"></i> Xóa Cache Cũ & Đồng Bộ Lại Từ Google Sheets
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+"""
+
+    p5_view_add = """  <!-- TAB 2. ADD (TẠO CA GỘI POS) -->
+  <main id="view-add" class="hidden flex-1 p-4 sm:p-6 max-w-xl w-full mx-auto space-y-5 pb-28">
+    <div class="flex justify-between items-center px-1">
+      <div>
+        <h2 class="text-2xl font-extrabold text-[#2D2424]">Tạo Ca Gội Mới</h2>
+        <p class="text-xs sm:text-sm text-[#7E7272]">Nhập dịch vụ & tạo mã VietQR</p>
+      </div>
+      <div class="w-10 h-10 rounded-2xl bg-[#FFF0EB] border border-[#FCDFD7] flex items-center justify-center text-[#E58A7B]">
+        <i data-lucide="plus" class="w-5 h-5"></i>
       </div>
     </div>
 
@@ -298,119 +431,27 @@ def build():
   </main>
 """
 
-    p5_staff_history = """  <!-- 4. STAFF SALARY VIEW (ROUTINE TIMELINE THEME) -->
-  <main id="view-staff-history" class="hidden flex-1 p-4 sm:p-6 max-w-2xl w-full mx-auto space-y-5 pb-28">
+    p6_view_history = """  <!-- TAB 3. LỊCH SỬ (TIMELINE CHO KTV HOẶC HÓA ĐƠN TOÀN TIỆM CHO CHỦ) -->
+  <main id="view-history" class="hidden flex-1 p-4 sm:p-6 max-w-4xl w-full mx-auto space-y-5 pb-28">
     <div class="flex justify-between items-center px-1">
       <div>
-        <h2 class="text-2xl font-extrabold text-[#2D2424]">Lương & Tiến Trình Ca Làm</h2>
-        <p class="text-xs sm:text-sm text-[#7E7272]">Thu nhập tháng này</p>
+        <h2 class="text-2xl font-extrabold text-[#2D2424]">Nhật Ký & Lịch Sử Ca</h2>
+        <p class="text-xs sm:text-sm text-[#7E7272]">Danh sách ca làm và trạng thái thanh toán</p>
       </div>
-      <button onclick="loadStaffHistory()" class="p-3 rounded-2xl bg-white hover:bg-[#FFF0EB] text-[#7E7272] hover:text-[#E58A7B] transition border border-[#F0EAE1] shadow-sm cursor-pointer">
+      <button onclick="loadHistoryView()" class="p-3 rounded-2xl bg-white hover:bg-[#FFF0EB] text-[#7E7272] hover:text-[#E58A7B] transition border border-[#F0EAE1] shadow-sm cursor-pointer">
         <i data-lucide="refresh-cw" class="w-4 h-4"></i>
       </button>
     </div>
 
-    <!-- Main Salary Card (Porcelain White + Terracotta Accents) -->
-    <div class="spa-card p-6 sm:p-8 space-y-5">
-      <div>
-        <span class="text-xs sm:text-sm font-bold text-[#E58A7B] uppercase tracking-wider block">Tổng Thu Nhập Tháng Tạm Tính</span>
-        <div class="text-4xl sm:text-5xl font-extrabold text-[#2D2424] mt-1.5" id="staff-total-earnings">
-          0 <span class="text-xl text-[#E58A7B] font-normal">đ</span>
-        </div>
-      </div>
-
-      <!-- Working Days Progress -->
-      <div class="p-4 sm:p-5 rounded-3xl bg-[#F7F2EC] space-y-2.5">
-        <div class="flex justify-between items-center text-xs sm:text-sm">
-          <span class="text-[#2D2424] font-bold">Tiến trình ngày công tháng này:</span>
-          <span class="font-extrabold text-[#E58A7B] font-mono" id="staff-days-progress-text">0 / 27 ngày</span>
-        </div>
-        <div class="w-full bg-white rounded-full h-3 overflow-hidden shadow-inner">
-          <div id="staff-days-progress-bar" class="bg-gradient-to-r from-[#E58A7B] to-[#F09A8D] h-full rounded-full transition-all duration-500" style="width: 0%"></div>
-        </div>
-        <div class="flex justify-between text-xs sm:text-sm text-[#7E7272]">
-          <span id="staff-daily-rate-note">Công: 0 đ/ngày (Định mức 2.000.000 đ)</span>
-          <span class="font-bold text-[#2E7D6D]" id="staff-days-pct-text">0% chỉ tiêu</span>
-        </div>
-      </div>
-
-      <!-- 3 Stats Columns -->
-      <div class="grid grid-cols-3 gap-3 pt-2 text-center">
-        <div class="p-3.5 rounded-2xl bg-[#EBF5FB] border border-[#D4E6F1]">
-          <span class="text-xs text-[#2980B9] block uppercase font-bold">Số ca gội</span>
-          <span class="text-base sm:text-lg font-extrabold text-[#2D2424] mt-0.5 block" id="staff-total-tours">0 ca</span>
-        </div>
-        <div class="p-3.5 rounded-2xl bg-[#E8F8F5] border border-[#B7EBDD]">
-          <span class="text-xs text-[#2E7D6D] block uppercase font-bold">Lương Tour</span>
-          <span class="text-base sm:text-lg font-extrabold text-[#2E7D6D] mt-0.5 block" id="staff-total-commission">0 đ</span>
-        </div>
-        <div class="p-3.5 rounded-2xl bg-[#FFF0EB] border border-[#FCDFD7]">
-          <span class="text-xs text-[#E58A7B] block uppercase font-bold">Lương Cứng Đạt</span>
-          <span class="text-base sm:text-lg font-extrabold text-[#E58A7B] mt-0.5 block" id="staff-base-salary">0 đ</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Timeline Routine Receipts History (Như màn hình Daily Routine trong ảnh mẫu) -->
-    <div class="space-y-3 pt-2">
-      <div class="flex justify-between items-center px-1">
-        <h3 class="text-sm sm:text-base font-extrabold text-[#2D2424] uppercase tracking-wider">Nhật Ký Ca Làm Theo Khung Giờ</h3>
-        <span class="text-xs text-[#E58A7B] font-bold">Hôm nay</span>
-      </div>
+    <!-- KTV View: Daily Routine Timeline -->
+    <div id="history-ktv-section" class="hidden space-y-4">
       <div id="staff-receipts-list" class="space-y-3"></div>
     </div>
-  </main>
-"""
 
-    p6_admin = """  <!-- 5. ADMIN DASHBOARD VIEW (LUXURY SPA THEME) -->
-  <main id="view-admin-dashboard" class="hidden flex-1 p-4 sm:p-6 max-w-5xl w-full mx-auto space-y-6 pb-28">
-    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-      <div>
-        <h2 class="text-2xl sm:text-3xl font-extrabold text-[#2D2424] flex items-center gap-2.5">👑 Quản Trị Selena Spa</h2>
-        <p class="text-xs sm:text-sm text-[#7E7272]">Thống kê tài chính dòng tiền & Kiểm soát vận hành</p>
-      </div>
-      <button onclick="loadAdminDashboard()" class="px-4 py-2.5 rounded-2xl bg-white hover:bg-[#FFF0EB] text-[#2D2424] hover:text-[#E58A7B] text-xs sm:text-sm font-bold flex items-center gap-2 transition border border-[#F0EAE1] shadow-sm cursor-pointer">
-        <i data-lucide="refresh-cw" class="w-4 h-4 text-[#E58A7B]"></i> Làm mới
-      </button>
-    </div>
-
-    <!-- 4 Pastel Financial KPI Cards (Mint, Lavender, Peach, Terracotta) -->
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-      <div class="p-5 sm:p-6 rounded-3xl bg-[#E8F8F5] border border-[#B7EBDD] space-y-1 shadow-sm">
-        <span class="text-xs sm:text-sm font-bold text-[#2E7D6D] uppercase tracking-wider block">Doanh Thu Tổng</span>
-        <div class="text-2xl sm:text-3xl font-extrabold text-[#2D2424]" id="kpi-revenue">0 đ</div>
-        <span class="text-xs text-[#2E7D6D] font-medium block" id="kpi-tours">0 ca phục vụ</span>
-      </div>
-      <div class="p-5 sm:p-6 rounded-3xl bg-[#F5EEF8] border border-[#E8DAEF] space-y-1 shadow-sm">
-        <span class="text-xs sm:text-sm font-bold text-[#8E44AD] uppercase tracking-wider block">Tổng Lương KTV</span>
-        <div class="text-2xl sm:text-3xl font-extrabold text-[#2D2424]" id="kpi-salaries">0 đ</div>
-        <span class="text-xs text-[#8E44AD] font-medium block">Lương cứng + Tour</span>
-      </div>
-      <div class="p-5 sm:p-6 rounded-3xl bg-[#FFF0EB] border border-[#FCDFD7] space-y-1 shadow-sm">
-        <span class="text-xs sm:text-sm font-bold text-[#D35400] uppercase tracking-wider block">Chi Phí Vận Hành</span>
-        <div class="text-2xl sm:text-3xl font-extrabold text-[#2D2424]" id="kpi-expenses">0 đ</div>
-        <span class="text-xs text-[#D35400] font-medium block">Điện, nước, mạng, mặt bằng</span>
-      </div>
-      <div class="p-5 sm:p-6 rounded-3xl bg-[#E58A7B] text-white space-y-1 shadow-lg shadow-[#E58A7B]/20 col-span-2 sm:col-span-1">
-        <span class="text-xs sm:text-sm font-extrabold text-white/90 uppercase tracking-wider block">LỢI NHUẬN RÒNG</span>
-        <div class="text-2xl sm:text-3xl font-extrabold text-white" id="kpi-net-profit">0 đ</div>
-        <span class="text-xs text-white/90 font-medium block">Tiền thực nhận của Chủ</span>
-      </div>
-    </div>
-
-    <!-- Subtabs Navigation (Floating Pills) -->
-    <div class="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
-      <button onclick="switchAdminTab('receipts')" id="tab-btn-receipts" class="px-5 py-2.5 rounded-full text-xs sm:text-sm font-bold bg-[#E58A7B] text-white shadow-md shadow-[#E58A7B]/25 transition cursor-pointer shrink-0">📜 Hóa Đơn Toàn Tiệm</button>
-      <button onclick="switchAdminTab('customers')" id="tab-btn-customers" class="px-5 py-2.5 rounded-full text-xs sm:text-sm font-bold bg-white hover:bg-[#FFF0EB] text-[#7E7272] border border-[#F0EAE1] transition cursor-pointer shrink-0">👥 Khách Hàng (tb_customers)</button>
-      <button onclick="switchAdminTab('users')" id="tab-btn-users" class="px-5 py-2.5 rounded-full text-xs sm:text-sm font-bold bg-white hover:bg-[#FFF0EB] text-[#7E7272] border border-[#F0EAE1] transition cursor-pointer shrink-0">💆 Nhân Viên (tb_users)</button>
-      <button onclick="switchAdminTab('expenses')" id="tab-btn-expenses" class="px-5 py-2.5 rounded-full text-xs sm:text-sm font-bold bg-white hover:bg-[#FFF0EB] text-[#7E7272] border border-[#F0EAE1] transition cursor-pointer shrink-0">⚡ Chi Phí Vận Hành</button>
-      <button onclick="switchAdminTab('settings')" id="tab-btn-settings" class="px-5 py-2.5 rounded-full text-xs sm:text-sm font-bold bg-white hover:bg-[#FFF0EB] text-[#7E7272] border border-[#F0EAE1] transition cursor-pointer shrink-0">⚙️ Kết Nối Google Sheets</button>
-    </div>
-
-    <!-- Receipts Subtab -->
-    <div id="admin-subtab-receipts" class="spa-card p-5 sm:p-7 space-y-4">
+    <!-- Owner View: All Shop Receipts -->
+    <div id="history-owner-section" class="hidden spa-card p-5 sm:p-7 space-y-4">
       <div class="flex justify-between items-center">
-        <h3 class="text-base sm:text-lg font-extrabold text-[#2D2424]">Nhật Ký Hóa Đơn Gần Đây</h3>
+        <h3 class="text-base sm:text-lg font-extrabold text-[#2D2424]">Toàn Bộ Hóa Đơn Tiệm</h3>
         <span class="text-xs sm:text-sm text-[#E58A7B] font-bold" id="admin-receipt-count">0 hóa đơn</span>
       </div>
 
@@ -434,72 +475,85 @@ def build():
         </table>
       </div>
     </div>
+  </main>
+"""
 
-    <!-- Customers Subtab -->
-    <div id="admin-subtab-customers" class="hidden spa-card p-5 sm:p-7 space-y-4">
-      <div class="flex justify-between items-center">
-        <div>
-          <h3 class="text-base sm:text-lg font-extrabold text-[#2D2424]">Danh Sách Khách Hàng (tb_customers)</h3>
-          <p class="text-xs text-[#7E7272]">Tự động đồng bộ với Google Sheets</p>
-        </div>
-        <span class="text-xs sm:text-sm text-[#E58A7B] font-bold" id="admin-customer-count">0 khách</span>
-      </div>
-      <div id="admin-customers-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
-    </div>
-
-    <!-- Users Subtab -->
-    <div id="admin-subtab-users" class="hidden spa-card p-5 sm:p-7 space-y-4">
-      <div class="flex justify-between items-center">
-        <div>
-          <h3 class="text-base sm:text-lg font-extrabold text-[#2D2424]">Danh Sách Nhân Viên (tb_users)</h3>
-          <p class="text-xs text-[#7E7272]">Thêm / sửa thợ trực tiếp trên Google Sheet</p>
-        </div>
-        <span class="text-xs sm:text-sm text-[#E58A7B] font-bold" id="admin-users-count">0 nhân sự</span>
-      </div>
-      <div id="admin-users-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5"></div>
-    </div>
-
-    <!-- Expenses Subtab -->
-    <div id="admin-subtab-expenses" class="hidden spa-card p-5 sm:p-7 space-y-4">
-      <div class="flex justify-between items-center">
-        <h3 class="text-base sm:text-lg font-extrabold text-[#2D2424]">Chi Phí Phát Sinh Hằng Tháng</h3>
-        <button onclick="openAddExpenseModal()" class="px-4 py-2 rounded-full bg-[#E58A7B] hover:bg-[#D9796A] text-white font-bold text-xs shadow-md shadow-[#E58A7B]/20 flex items-center gap-1.5 transition cursor-pointer">
-          <i data-lucide="plus" class="w-4 h-4"></i> Nhập Chi Phí Mới
-        </button>
-      </div>
-      <div id="admin-expenses-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
-    </div>
-
-    <!-- Settings Subtab -->
-    <div id="admin-subtab-settings" class="hidden spa-card p-5 sm:p-7 space-y-6">
+    p7_view_income = """  <!-- TAB 4. THU NHẬP (BẢNG LƯƠNG KTV HOẶC CHI PHÍ & LỢI NHUẬN CHỦ) -->
+  <main id="view-income" class="hidden flex-1 p-4 sm:p-6 max-w-4xl w-full mx-auto space-y-5 pb-28">
+    <div class="flex justify-between items-center px-1">
       <div>
-        <h3 class="text-lg font-extrabold text-[#2D2424] flex items-center gap-2">
-          <i data-lucide="settings" class="w-5 h-5 text-[#E58A7B]"></i> Kết Nối Google Sheets
-        </h3>
-        <p class="text-xs sm:text-sm text-[#7E7272] mt-1">Đồng bộ trực tiếp về Google Sheets trên Google Drive của bạn</p>
+        <h2 class="text-2xl font-extrabold text-[#2D2424]">Thu Nhập & Tài Chính</h2>
+        <p class="text-xs sm:text-sm text-[#7E7272]">Chi tiết lương ngày công & chi phí vận hành</p>
       </div>
-      <div class="p-4 rounded-3xl bg-[#F7F2EC] space-y-2 border border-[#EFE8DF]">
-        <label class="block text-xs sm:text-sm font-bold text-[#2D2424]">Đường dẫn Google Apps Script Web App URL:</label>
-        <div class="flex gap-2">
-          <input type="text" id="setting-gas-url" placeholder="https://script.google.com/macros/s/.../exec" class="flex-1 bg-white border border-[#EFE8DF] rounded-2xl p-3.5 text-xs sm:text-sm text-[#2D2424] focus:outline-none focus:border-[#E58A7B] font-mono">
-          <button onclick="saveGasUrl()" class="px-5 py-3 rounded-2xl bg-[#E58A7B] hover:bg-[#D9796A] text-white font-bold text-xs sm:text-sm transition cursor-pointer">Lưu</button>
-        </div>
-        <p class="text-xs text-[#A39696]">* Để trống sẽ chạy chế độ Offline LocalStorage miễn phí.</p>
-      </div>
+      <button onclick="loadIncomeView()" class="p-3 rounded-2xl bg-white hover:bg-[#FFF0EB] text-[#7E7272] hover:text-[#E58A7B] transition border border-[#F0EAE1] shadow-sm cursor-pointer">
+        <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+      </button>
+    </div>
 
-      <div class="p-4 rounded-3xl bg-rose-50 border border-rose-200 space-y-2">
-        <div class="text-xs sm:text-sm font-bold text-rose-700">Quản Lý Dữ Liệu Bộ Nhớ:</div>
-        <p class="text-xs text-rose-600">Nếu vừa cập nhật bảng trên Google Sheet và muốn App xóa dữ liệu thử nghiệm cũ để lấy dữ liệu mới nhất từ Sheet:</p>
-        <button onclick="resetLocalDataAndResync()" class="w-full py-3.5 rounded-2xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition cursor-pointer shadow-md shadow-rose-600/20">
-          <i data-lucide="refresh-cw" class="w-4 h-4"></i> Xóa Cache Cũ & Đồng Bộ Lại Từ Google Sheets
-        </button>
+    <!-- KTV Income Payroll Card -->
+    <div id="income-ktv-section" class="hidden space-y-5">
+      <div class="spa-card p-6 sm:p-8 space-y-5">
+        <div>
+          <span class="text-xs sm:text-sm font-bold text-[#E58A7B] uppercase tracking-wider block">Tổng Thu Nhập Tháng Tạm Tính</span>
+          <div class="text-4xl sm:text-5xl font-extrabold text-[#2D2424] mt-1.5" id="staff-total-earnings">
+            0 <span class="text-xl text-[#E58A7B] font-normal">đ</span>
+          </div>
+        </div>
+
+        <!-- Working Days Progress -->
+        <div class="p-4 sm:p-5 rounded-3xl bg-[#F7F2EC] space-y-2.5">
+          <div class="flex justify-between items-center text-xs sm:text-sm">
+            <span class="text-[#2D2424] font-bold">Tiến trình ngày công tháng này:</span>
+            <span class="font-extrabold text-[#E58A7B] font-mono" id="staff-days-progress-text">0 / 27 ngày</span>
+          </div>
+          <div class="w-full bg-white rounded-full h-3 overflow-hidden shadow-inner">
+            <div id="staff-days-progress-bar" class="bg-gradient-to-r from-[#E58A7B] to-[#F09A8D] h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+          </div>
+          <div class="flex justify-between text-xs sm:text-sm text-[#7E7272]">
+            <span id="staff-daily-rate-note">Công: 0 đ/ngày (Định mức 2.000.000 đ)</span>
+            <span class="font-bold text-[#2E7D6D]" id="staff-days-pct-text">0% chỉ tiêu</span>
+          </div>
+        </div>
+
+        <!-- 3 Stats Columns -->
+        <div class="grid grid-cols-3 gap-3 pt-2 text-center">
+          <div class="p-3.5 rounded-2xl bg-[#EBF5FB] border border-[#D4E6F1]">
+            <span class="text-xs text-[#2980B9] block uppercase font-bold">Số ca gội</span>
+            <span class="text-base sm:text-lg font-extrabold text-[#2D2424] mt-0.5 block" id="staff-total-tours">0 ca</span>
+          </div>
+          <div class="p-3.5 rounded-2xl bg-[#E8F8F5] border border-[#B7EBDD]">
+            <span class="text-xs text-[#2E7D6D] block uppercase font-bold">Lương Tour</span>
+            <span class="text-base sm:text-lg font-extrabold text-[#2E7D6D] mt-0.5 block" id="staff-total-commission">0 đ</span>
+          </div>
+          <div class="p-3.5 rounded-2xl bg-[#FFF0EB] border border-[#FCDFD7]">
+            <span class="text-xs text-[#E58A7B] block uppercase font-bold">Lương Cứng Đạt</span>
+            <span class="text-base sm:text-lg font-extrabold text-[#E58A7B] mt-0.5 block" id="staff-base-salary">0 đ</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Owner Income & Expenses Section -->
+    <div id="income-owner-section" class="hidden space-y-5">
+      <div class="spa-card p-5 sm:p-7 space-y-4">
+        <div class="flex justify-between items-center">
+          <div>
+            <h3 class="text-base sm:text-lg font-extrabold text-[#2D2424]">Chi Phí Vận Hành Tiệm</h3>
+            <p class="text-xs text-[#7E7272]">Điện sấy, nước sạch, internet, mặt bằng, mỹ phẩm</p>
+          </div>
+          <button onclick="openAddExpenseModal()" class="px-4 py-2.5 rounded-full bg-[#E58A7B] hover:bg-[#D9796A] text-white font-bold text-xs shadow-md shadow-[#E58A7B]/20 flex items-center gap-1.5 transition cursor-pointer">
+            <i data-lucide="plus" class="w-4 h-4"></i> Nhập Chi Phí Mới
+          </button>
+        </div>
+        <div id="admin-expenses-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
       </div>
     </div>
   </main>
+"""
 
-  <!-- 6. FLOATING BOTTOM NAVIGATION DOCK (NHƯ DOCK DƯỚI ĐÁY ẢNH MẪU 1) -->
+    p8_bottom_dock = """  <!-- 6. FLOATING BOTTOM NAVIGATION DOCK (4 TABS CHUẨN ẢNH MẪU) -->
   <nav id="mobile-nav" class="hidden fixed bottom-4 left-4 right-4 z-40 max-w-sm mx-auto">
-    <div id="nav-buttons-container" class="bg-white/95 backdrop-blur-xl rounded-full p-2 border border-[#F0EAE1] shadow-[0_12px_40px_rgba(0,0,0,0.08)] grid grid-cols-2 gap-1.5"></div>
+    <div id="nav-buttons-container" class="bg-[#FAF6F1]/95 backdrop-blur-2xl rounded-full p-1.5 border border-[#F0EAE1] shadow-[0_12px_40px_rgba(0,0,0,0.08)] flex items-center justify-around"></div>
   </nav>
 
   <!-- 7. VIETQR MODAL -->
@@ -572,7 +626,7 @@ def build():
   </div>
 """
 
-    p7_js = """  <!-- 9. JAVASCRIPT LOGIC -->
+    p9_js = """  <!-- 9. JAVASCRIPT LOGIC -->
   <script>
     // -------------------------------------------------------------
     // DEFAULT DATA (FALLBACK)
@@ -597,56 +651,137 @@ def build():
 
     // State Variables
     let currentUser = null;
+    let currentTab = 'home';
     let selectedComboId = 'CB01';
     let currentCustomer = null;
-    let useVoucher = false;
     let paymentMethod = 'Chuyển khoản';
+    let useVoucher = false;
+    let pendingReceipt = null;
     let isPasswordVisible = false;
 
     // Helper functions
     function normalizePhone(p) {
       if (!p) return '';
-      let s = String(p).trim().replace(/\\D/g, '');
-      if (s.startsWith('84') && s.length === 11) s = '0' + s.slice(2);
-      if (s.length === 9 && !s.startsWith('0')) s = '0' + s;
-      return s;
+      return String(p).replace(/[^0-9]/g, '');
     }
 
     function parsePercentage(val) {
       if (val === undefined || val === null || val === '') return 10;
-      let s = String(val).trim().replace('%', '');
+      if (typeof val === 'number') {
+        if (val > 0 && val <= 1) return Math.round(val * 100);
+        return Math.round(val);
+      }
+      let s = String(val).trim();
+      if (s.includes('%')) {
+        let num = parseFloat(s.replace('%', ''));
+        return isNaN(num) ? 10 : num;
+      }
       let num = parseFloat(s);
       if (isNaN(num)) return 10;
       if (num > 0 && num <= 1) return Math.round(num * 100);
       return Math.round(num);
     }
 
-    function formatAppDateTime(dateInput) {
-      if (!dateInput) return '';
-      let d = new Date(dateInput);
-      if (isNaN(d.getTime())) return String(dateInput);
-      const pad = n => String(n).padStart(2, '0');
-      const y = d.getFullYear();
-      const m = pad(d.getMonth() + 1);
-      const day = pad(d.getDate());
-      const hh = pad(d.getHours());
-      const mm = pad(d.getMinutes());
-      return `${y}/${m}/${day} - ${hh}:${mm}`;
+    function normalizeDateKey(dateStr) {
+      if (!dateStr) return '';
+      let s = String(dateStr).trim();
+      s = s.replace(/\//g, '-');
+      let parts = s.split(' ');
+      let datePart = parts[0];
+      let subParts = datePart.split('-');
+      if (subParts.length === 3) {
+        if (subParts[0].length === 4) {
+          let y = subParts[0];
+          let m = subParts[1].padStart(2, '0');
+          let d = subParts[2].padStart(2, '0');
+          return `${y}-${m}-${d}`;
+        } else if (subParts[2].length === 4) {
+          let d = subParts[0].padStart(2, '0');
+          let m = subParts[1].padStart(2, '0');
+          let y = subParts[2];
+          return `${y}-${m}-${d}`;
+        }
+      }
+      return datePart;
     }
 
-    function getStored(key, defaultVal) {
-      const data = localStorage.getItem('selena_' + key);
-      return data ? JSON.parse(data) : defaultVal;
+    function getMonthWorkingDaysInfo(targetDate = new Date()) {
+      const year = targetDate.getFullYear();
+      const month = targetDate.getMonth();
+      const totalDaysInMonth = new Date(year, month + 1, 0).getDate();
+      const standardDays = Math.max(24, totalDaysInMonth - 4);
+      return { totalDaysInMonth, standardDays };
     }
 
-    function setStored(key, val) {
-      localStorage.setItem('selena_' + key, JSON.stringify(val));
+    function calculateStaffPayroll(staff, allReceipts, targetDate = new Date()) {
+      const baseSalary = Number(staff.base_salary) || 0;
+      const rate = parsePercentage(staff.commission_rate);
+      const isFixed = staff.salary_type === 'fixed' || staff.salary_type === 'fixed_10pct';
+      const staffPhone = normalizePhone(staff.phone);
+      const staffCode = String(staff.staff_id || '').trim();
+
+      const { standardDays } = getMonthWorkingDaysInfo(targetDate);
+      const currentMonthStr = `${targetDate.getFullYear()}-${String(targetDate.getMonth() + 1).padStart(2, '0')}`;
+
+      const workedDaysSet = new Set();
+      let totalCommission = 0;
+      let totalTours = 0;
+
+      allReceipts.forEach(r => {
+        const rStaffPhone = normalizePhone(r.staff_phone);
+        const rStaffCode = String(r.staff_id || '').trim();
+        const rStaffName = String(r.staff_name || '').trim();
+
+        const isMe = (staffPhone && rStaffPhone === staffPhone) || 
+                     (staffCode && rStaffCode === staffCode) || 
+                     (staff.full_name && rStaffName === staff.full_name);
+
+        if (isMe) {
+          const normKey = normalizeDateKey(r.date || r.created_at);
+          if (normKey.startsWith(currentMonthStr)) {
+            workedDaysSet.add(normKey);
+            totalCommission += (Number(r.commission_amount) || 0);
+            totalTours += 1;
+          }
+        }
+      });
+
+      const workedDays = workedDaysSet.size;
+      const dailyRate = isFixed ? Math.round(baseSalary / standardDays) : 0;
+      const earnedBase = isFixed ? Math.round(workedDays * dailyRate) : 0;
+      const totalEarnings = earnedBase + totalCommission;
+
+      return {
+        isFixed,
+        baseSalary,
+        rate,
+        standardDays,
+        workedDays,
+        dailyRate,
+        earnedBase,
+        totalCommission,
+        totalTours,
+        totalEarnings
+      };
+    }
+
+    function getStored(key, fallback) {
+      try {
+        const val = localStorage.getItem('selena_' + key);
+        return val ? JSON.parse(val) : fallback;
+      } catch (e) {
+        return fallback;
+      }
+    }
+
+    function setStored(key, data) {
+      localStorage.setItem('selena_' + key, JSON.stringify(data));
     }
 
     function togglePasswordVisibility() {
-      const pwdInput = document.getElementById('login-password');
-      const eyeIcon = document.getElementById('pwd-eye-icon');
       isPasswordVisible = !isPasswordVisible;
+      const pwdInput = document.getElementById('login-password');
+      const eyeIcon = document.getElementById('login-eye-icon');
       pwdInput.type = isPasswordVisible ? 'text' : 'password';
       eyeIcon.setAttribute('data-lucide', isPasswordVisible ? 'eye-off' : 'eye');
       lucide.createIcons();
@@ -701,8 +836,7 @@ def build():
       document.getElementById('header-user-name').innerText = user.full_name;
       document.getElementById('header-role-badge').innerText = isOwner ? '👑 Chủ Sáng Lập' : '💆 Kỹ Thuật Viên';
 
-      if (isOwner) showView('admin');
-      else showView('pos');
+      showView('home');
     }
 
     function logout() {
@@ -715,48 +849,118 @@ def build():
     }
 
     function hideAllViews() {
-      document.getElementById('view-staff-pos').classList.add('hidden');
-      document.getElementById('view-staff-history').classList.add('hidden');
-      document.getElementById('view-admin-dashboard').classList.add('hidden');
+      document.getElementById('view-home').classList.add('hidden');
+      document.getElementById('view-add').classList.add('hidden');
+      document.getElementById('view-history').classList.add('hidden');
+      document.getElementById('view-income').classList.add('hidden');
     }
 
     function showView(view) {
+      currentTab = view;
       hideAllViews();
-      const navContainer = document.getElementById('nav-buttons-container');
+      const isOwner = isUserOwner(currentUser);
 
-      if (view === 'pos') {
-        document.getElementById('view-staff-pos').classList.remove('hidden');
+      if (view === 'home') {
+        document.getElementById('view-home').classList.remove('hidden');
+        if (isOwner) {
+          document.getElementById('home-ktv-section').classList.add('hidden');
+          document.getElementById('home-owner-section').classList.remove('hidden');
+          loadAdminDashboard();
+        } else {
+          document.getElementById('home-owner-section').classList.add('hidden');
+          document.getElementById('home-ktv-section').classList.remove('hidden');
+          loadKTVHomeStats();
+        }
+      } else if (view === 'add') {
+        document.getElementById('view-add').classList.remove('hidden');
         updatePOSStaffInfo();
       } else if (view === 'history') {
-        document.getElementById('view-staff-history').classList.remove('hidden');
-        loadStaffHistory();
-      } else if (view === 'admin') {
-        document.getElementById('view-admin-dashboard').classList.remove('hidden');
-        loadAdminDashboard();
+        document.getElementById('view-history').classList.remove('hidden');
+        loadHistoryView();
+      } else if (view === 'income') {
+        document.getElementById('view-income').classList.remove('hidden');
+        loadIncomeView();
       }
 
-      if (!isUserOwner(currentUser)) {
-        navContainer.innerHTML = `
-          <button onclick="showView('pos')" class="py-2.5 rounded-full flex items-center justify-center gap-2 transition cursor-pointer ${view === 'pos' ? 'bg-[#E58A7B] text-white font-bold shadow-md shadow-[#E58A7B]/25' : 'text-[#7E7272] hover:text-[#2D2424]'}">
-            <i data-lucide="plus-circle" class="w-4 h-4"></i>
-            <span class="text-xs font-bold">Vào Ca</span>
-          </button>
-          <button onclick="showView('history')" class="py-2.5 rounded-full flex items-center justify-center gap-2 transition cursor-pointer ${view === 'history' ? 'bg-[#E58A7B] text-white font-bold shadow-md shadow-[#E58A7B]/25' : 'text-[#7E7272] hover:text-[#2D2424]'}">
-            <i data-lucide="wallet" class="w-4 h-4"></i>
-            <span class="text-xs font-bold">Lương & Ca</span>
-          </button>
-        `;
+      renderBottomNavDock();
+      lucide.createIcons();
+    }
+
+    function renderBottomNavDock() {
+      const navContainer = document.getElementById('nav-buttons-container');
+      const tabs = [
+        { id: 'home', icon: 'home', label: 'Home' },
+        { id: 'add', icon: 'plus', label: 'Tạo ca' },
+        { id: 'history', icon: 'clock', label: 'Lịch sử' },
+        { id: 'income', icon: 'wallet', label: 'Thu nhập' }
+      ];
+
+      navContainer.innerHTML = tabs.map(t => {
+        const isActive = (currentTab === t.id);
+        if (isActive) {
+          return `
+            <button onclick="showView('${t.id}')" title="${t.label}" class="w-12 h-12 rounded-full bg-[#E58A7B] text-white flex items-center justify-center shadow-lg shadow-[#E58A7B]/25 scale-105 transition-all duration-300 cursor-pointer">
+              <i data-lucide="${t.icon}" class="w-5 h-5"></i>
+            </button>
+          `;
+        } else {
+          return `
+            <button onclick="showView('${t.id}')" title="${t.label}" class="w-12 h-12 rounded-full flex items-center justify-center text-[#8C827A] hover:text-[#2D2424] hover:bg-white/60 transition-all duration-200 cursor-pointer">
+              <i data-lucide="${t.icon}" class="w-5 h-5"></i>
+            </button>
+          `;
+        }
+      }).join('');
+    }
+
+    function loadKTVHomeStats() {
+      const receipts = getStored('receipts', []);
+      const todayStr = normalizeDateKey(new Date());
+      const staffPhone = normalizePhone(currentUser?.phone);
+      const staffCode = String(currentUser?.staff_id || '').trim();
+
+      let todayTours = 0;
+      let todayComm = 0;
+
+      receipts.forEach(r => {
+        const rDate = normalizeDateKey(r.date || r.created_at);
+        const rPhone = normalizePhone(r.staff_phone);
+        const rCode = String(r.staff_id || '').trim();
+
+        if (rDate === todayStr && ((staffPhone && rPhone === staffPhone) || (staffCode && rCode === staffCode))) {
+          todayTours += 1;
+          todayComm += (Number(r.commission_amount) || 0);
+        }
+      });
+
+      document.getElementById('home-today-tours').innerText = todayTours + ' ca';
+      document.getElementById('home-today-comm').innerText = todayComm.toLocaleString('vi-VN') + ' đ';
+    }
+
+    function loadHistoryView() {
+      const isOwner = isUserOwner(currentUser);
+      if (isOwner) {
+        document.getElementById('history-ktv-section').classList.add('hidden');
+        document.getElementById('history-owner-section').classList.remove('hidden');
+        loadAdminReceiptsList();
       } else {
-        navContainer.innerHTML = `
-          <button onclick="showView('admin')" class="py-2.5 rounded-full flex items-center justify-center gap-2 transition cursor-pointer ${view === 'admin' ? 'bg-[#E58A7B] text-white font-bold shadow-md shadow-[#E58A7B]/25' : 'text-[#7E7272] hover:text-[#2D2424]'}">
-            <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
-            <span class="text-xs font-bold">Quản Trị</span>
-          </button>
-          <button onclick="showView('pos')" class="py-2.5 rounded-full flex items-center justify-center gap-2 transition cursor-pointer ${view === 'pos' ? 'bg-[#E58A7B] text-white font-bold shadow-md shadow-[#E58A7B]/25' : 'text-[#7E7272] hover:text-[#2D2424]'}">
-            <i data-lucide="plus-circle" class="w-4 h-4"></i>
-            <span class="text-xs font-bold">Thử Ca</span>
-          </button>
-        `;
+        document.getElementById('history-owner-section').classList.add('hidden');
+        document.getElementById('history-ktv-section').classList.remove('hidden');
+        loadStaffHistoryList();
+      }
+      lucide.createIcons();
+    }
+
+    function loadIncomeView() {
+      const isOwner = isUserOwner(currentUser);
+      if (isOwner) {
+        document.getElementById('income-ktv-section').classList.add('hidden');
+        document.getElementById('income-owner-section').classList.remove('hidden');
+        loadAdminExpensesList();
+      } else {
+        document.getElementById('income-owner-section').classList.add('hidden');
+        document.getElementById('income-ktv-section').classList.remove('hidden');
+        loadStaffPayrollStats();
       }
       lucide.createIcons();
     }
@@ -875,31 +1079,70 @@ def build():
         btnCash.className = 'p-4 rounded-2xl border bg-[#F7F2EC] border-[#EFE8DF] text-[#7E7272] hover:bg-[#FFF0EB] font-bold text-sm sm:text-base flex items-center justify-center gap-2 transition cursor-pointer';
         submitText.innerText = 'Hiện Mã VietQR & Lưu Ca';
       } else {
-        btnCash.className = 'p-4 rounded-2xl border bg-[#E8F8F5] border-[#2E7D6D] text-[#2E7D6D] font-extrabold text-sm sm:text-base flex items-center justify-center gap-2 shadow-sm transition cursor-pointer';
+        btnCash.className = 'p-4 rounded-2xl border bg-[#FFF0EB] border-[#E58A7B] text-[#E58A7B] font-extrabold text-sm sm:text-base flex items-center justify-center gap-2 shadow-sm transition cursor-pointer';
         btnQR.className = 'p-4 rounded-2xl border bg-[#F7F2EC] border-[#EFE8DF] text-[#7E7272] hover:bg-[#FFF0EB] font-bold text-sm sm:text-base flex items-center justify-center gap-2 transition cursor-pointer';
         submitText.innerText = 'Lưu Ca Gội Ngay (Tiền mặt)';
       }
+      lucide.createIcons();
     }
 
     function submitPOSReceipt() {
       const menu = getStored('menu', DEFAULT_MENU);
       const service = menu.find(m => m.service_id === selectedComboId) || menu[0];
+      const phone = document.getElementById('pos-customer-phone').value.trim();
+      const name = document.getElementById('pos-customer-name').value.trim() || 'Khách vãng lai';
+      const rate = parsePercentage(currentUser?.commission_rate);
+      const commAmount = Math.round(service.price * (rate / 100));
       const finalPrice = useVoucher ? 0 : service.price;
 
-      if (paymentMethod === 'Chuyển khoản' && !useVoucher) {
-        const bankName = 'MBBank';
-        const accountNo = '0912345678';
-        const receiptId = 'HD' + Date.now().toString().slice(-4);
-        const desc = 'SelenaSpa ' + receiptId;
-        const qrUrl = 'https://img.vietqr.io/image/' + bankName + '-' + accountNo + '-compact2.png?amount=' + finalPrice + '&addInfo=' + encodeURIComponent(desc) + '&accountName=SELENA%20SPA';
+      const now = new Date();
+      const timeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+      const dateStr = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}`;
+      const receiptId = 'HD' + Date.now().toString().slice(-6);
 
-        document.getElementById('vietqr-img').src = qrUrl;
-        document.getElementById('vietqr-amount').innerText = finalPrice.toLocaleString('vi-VN') + ' đ';
-        document.getElementById('vietqr-desc').innerText = desc;
-        document.getElementById('modal-vietqr').classList.remove('hidden');
+      pendingReceipt = {
+        receipt_id: receiptId,
+        service_id: service.service_id,
+        service_name: service.service_name,
+        price: service.price,
+        total_paid: finalPrice,
+        commission_amount: commAmount,
+        customer_phone: phone,
+        customer_name: name,
+        staff_phone: currentUser?.phone || '0799625591',
+        staff_id: currentUser?.staff_id || 'KTV01',
+        staff_name: currentUser?.full_name || 'KTV',
+        payment_method: paymentMethod,
+        is_voucher_used: useVoucher,
+        date: dateStr,
+        time: timeStr,
+        created_at: dateStr + ' ' + timeStr
+      };
+
+      if (paymentMethod === 'Chuyển khoản' && finalPrice > 0) {
+        showVietQRModal(pendingReceipt);
       } else {
-        saveReceiptRecord();
+        saveReceiptRecord(pendingReceipt);
       }
+    }
+
+    function showVietQRModal(receipt) {
+      const bankName = currentUser?.bank_name || 'MBBank';
+      const bankAcc = currentUser?.bank_account_no || '0949251144';
+      const accName = currentUser?.bank_account_name || 'SELENA SPA';
+      const amount = receipt.total_paid;
+      const desc = 'SelenaSpa ' + receipt.receipt_id;
+
+      const qrUrl = `https://img.vietqr.io/image/${bankName}-${bankAcc}-compact2.png?amount=${amount}&addInfo=${encodeURIComponent(desc)}&accountName=${encodeURIComponent(accName)}`;
+
+      document.getElementById('vietqr-img').src = qrUrl;
+      document.getElementById('vietqr-bank-info').innerText = `${bankName} - ${bankAcc}`;
+      document.getElementById('vietqr-account-name').innerText = accName;
+      document.getElementById('vietqr-amount').innerText = amount.toLocaleString('vi-VN') + ' đ';
+      document.getElementById('vietqr-desc').innerText = desc;
+
+      document.getElementById('modal-vietqr').classList.remove('hidden');
+      lucide.createIcons();
     }
 
     function closeVietQRModal() {
@@ -908,416 +1151,328 @@ def build():
 
     function confirmVietQRSuccess() {
       closeVietQRModal();
-      saveReceiptRecord();
+      if (pendingReceipt) {
+        saveReceiptRecord(pendingReceipt);
+      }
     }
 
-    function saveReceiptRecord() {
-      const menu = getStored('menu', DEFAULT_MENU);
-      const service = menu.find(m => m.service_id === selectedComboId) || menu[0];
+    function saveReceiptRecord(receipt) {
       const receipts = getStored('receipts', []);
-      const customers = getStored('customers', DEFAULT_CUSTOMERS);
-
-      const rate = parsePercentage(currentUser?.commission_rate);
-      const comm = Math.round(service.price * (rate / 100));
-      const finalPrice = useVoucher ? 0 : service.price;
-      const phone = document.getElementById('pos-customer-phone').value.trim();
-      const name = document.getElementById('pos-customer-name').value.trim() || 'Khách vãng lai';
-
-      const receiptId = 'HD' + Date.now().toString().slice(-6);
-      const normPhone = normalizePhone(phone);
-      const staffPhone = normalizePhone(currentUser?.phone || '0949251144');
-      const staffCode = currentUser?.staff_id || 'KTV01';
-      const receiptData = {
-        receipt_id: receiptId,
-        date: formatAppDateTime(new Date()),
-        customer_phone: normPhone,
-        customer_name: name,
-        service_id: service.service_id,
-        service_name: service.service_name,
-        user_id: staffPhone,
-        staff_id: staffCode,
-        staff_phone: staffPhone,
-        staff_name: currentUser?.full_name || 'Miles',
-        price: service.price,
-        commission_amount: comm,
-        total_paid: finalPrice,
-        payment_method: paymentMethod,
-        is_voucher_used: useVoucher
-      };
-
-      receipts.unshift(receiptData);
+      receipts.unshift(receipt);
       setStored('receipts', receipts);
 
-      // Async push to Google Sheets
-      callGasApi('create_receipt', receiptData);
-
-      if (normPhone) {
-        let custIndex = customers.findIndex(c => normalizePhone(c.phone_number) === normPhone);
-        if (custIndex >= 0) {
-          let cur = customers[custIndex];
-          let updatedVisits = useVoucher ? cur.total_visits : (cur.total_visits + 1);
-          let updatedVouchers = cur.voucher_count || 0;
-          if (useVoucher) updatedVouchers = Math.max(0, updatedVouchers - 1);
-          else if (updatedVisits >= 10) {
-            updatedVouchers += 1;
-            updatedVisits -= 10;
-            confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
-            alert('🎉 CHÚC MỪNG! Khách hàng đã tích đủ 10 lần gội, đã cộng 1 Voucher Combo 1!');
+      if (receipt.customer_phone) {
+        const customers = getStored('customers', DEFAULT_CUSTOMERS);
+        const norm = normalizePhone(receipt.customer_phone);
+        let cust = customers.find(c => normalizePhone(c.phone_number) === norm);
+        if (cust) {
+          if (receipt.is_voucher_used) {
+            cust.voucher_count = Math.max(0, (cust.voucher_count || 1) - 1);
+          } else {
+            cust.total_visits = (cust.total_visits || 0) + 1;
+            if (cust.total_visits >= 10) {
+              cust.voucher_count = (cust.voucher_count || 0) + 1;
+              cust.total_visits -= 10;
+              confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
+              alert(`🎉 Chúc mừng! Khách hàng ${cust.customer_name} đã tích đủ 10 lần và nhận được 1 Voucher Combo 1 miễn phí!`);
+            }
           }
-          customers[custIndex] = { ...cur, customer_name: name, phone_number: normPhone, total_visits: updatedVisits, voucher_count: updatedVouchers };
+          if (receipt.customer_name && receipt.customer_name !== 'Khách vãng lai') {
+            cust.customer_name = receipt.customer_name;
+          }
         } else {
-          customers.push({ phone_number: normPhone, customer_name: name, total_visits: 1, voucher_count: 0, notes: '' });
+          customers.push({
+            phone_number: receipt.customer_phone,
+            customer_name: receipt.customer_name,
+            total_visits: receipt.is_voucher_used ? 0 : 1,
+            voucher_count: 0,
+            notes: ''
+          });
         }
         setStored('customers', customers);
       }
 
-      alert('✅ Đã lưu ca gội thành công & tự động đồng bộ Google Sheet! Hoa hồng: +' + comm.toLocaleString('vi-VN') + ' đ');
-      
+      callGasApi('create_receipt', receipt);
+
+      confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } });
+      alert(`✅ Đã lưu ca gội thành công!\n• Dịch vụ: ${receipt.service_name}\n• Khách hàng: ${receipt.customer_name}\n• Thu nhập KTV: +${receipt.commission_amount.toLocaleString('vi-VN')} đ`);
+
       document.getElementById('pos-customer-phone').value = '';
       document.getElementById('pos-customer-name').value = '';
       document.getElementById('pos-customer-card').classList.add('hidden');
       useVoucher = false;
-      document.getElementById('pos-use-voucher').checked = false;
-      updatePOSCalculations();
+      pendingReceipt = null;
+
+      showView('history');
     }
 
-    function getMonthWorkingDaysInfo(date = new Date()) {
-      const y = date.getFullYear();
-      const m = date.getMonth();
-      const totalDaysInMonth = new Date(y, m + 1, 0).getDate();
-      const standardDays = Math.max(24, totalDaysInMonth - 4);
-      return { year: y, month: m + 1, totalDaysInMonth, standardDays };
-    }
-
-    function normalizeDateKey(d) {
-      if (!d) return '';
-      let str = String(d).trim().split(' ')[0].split(' - ')[0].split('/').join('-');
-      const p = str.split('-');
-      if (p.length >= 3) {
-        const y = p[0];
-        const mo = p[1].padStart(2, '0');
-        const day = p[2].padStart(2, '0');
-        return `${y}-${mo}-${day}`;
-      }
-      return str;
-    }
-
-    function calculateStaffPayroll(staff, receipts, date = new Date()) {
-      const { year, month, totalDaysInMonth, standardDays } = getMonthWorkingDaysInfo(date);
-      const staffPhone = normalizePhone(staff?.phone || staff?.user_id);
-      const staffCode = String(staff?.staff_id || '').trim();
-      const staffName = String(staff?.full_name || '').trim();
+    function loadStaffHistoryList() {
+      const receipts = getStored('receipts', []);
+      const container = document.getElementById('staff-receipts-list');
+      const staffPhone = normalizePhone(currentUser?.phone);
+      const staffCode = String(currentUser?.staff_id || '').trim();
 
       const myReceipts = receipts.filter(r => {
-        return (r.staff_phone && normalizePhone(r.staff_phone) === staffPhone) ||
-               (r.staff_id && String(r.staff_id).trim() === staffCode) ||
-               (r.staff_name && r.staff_name === staffName);
+        const rPhone = normalizePhone(r.staff_phone);
+        const rCode = String(r.staff_id || '').trim();
+        return (staffPhone && rPhone === staffPhone) || (staffCode && rCode === staffCode);
       });
 
-      // Đếm số ngày làm việc thực tế trong tháng từ các ca làm (chuẩn hóa về YYYY-MM-DD)
-      const workedDates = new Set();
-      myReceipts.forEach(r => {
-        if (r.date) {
-          const dayKey = normalizeDateKey(r.date);
-          if (dayKey) workedDates.add(dayKey);
-        }
-      });
-
-      const workedDays = workedDates.size;
-      const totalMonthlyBase = Number(staff?.base_salary) || 0;
-      const isFixed = (staff?.salary_type === 'fixed' || staff?.salary_type === 'fixed_10pct' || totalMonthlyBase > 0);
-      
-      const dailyRate = (isFixed && standardDays > 0) ? Math.round(totalMonthlyBase / standardDays) : 0;
-      const earnedBase = (isFixed && standardDays > 0) ? Math.round(workedDays * dailyRate) : 0;
-      const totalComm = myReceipts.reduce((sum, r) => sum + (Number(r.commission_amount) || 0), 0);
-      const totalEarnings = earnedBase + totalComm;
-
-      return {
-        year, month, totalDaysInMonth, standardDays,
-        workedDays, totalMonthlyBase, dailyRate, earnedBase,
-        totalComm, totalEarnings, myReceipts
-      };
-    }
-
-    function loadStaffHistory() {
-      const receipts = getStored('receipts', []);
-      const payroll = calculateStaffPayroll(currentUser, receipts);
-
-      document.getElementById('staff-total-earnings').innerHTML = payroll.totalEarnings.toLocaleString('vi-VN') + ' <span class="text-xl text-[#E58A7B] font-normal">đ</span>';
-      document.getElementById('staff-total-tours').innerText = payroll.myReceipts.length + ' ca';
-      document.getElementById('staff-total-commission').innerText = payroll.totalComm.toLocaleString('vi-VN') + ' đ';
-      document.getElementById('staff-base-salary').innerText = payroll.earnedBase.toLocaleString('vi-VN') + ' đ';
-
-      // Cập nhật tiến trình ngày công
-      const pct = Math.min(100, Math.round((payroll.workedDays / payroll.standardDays) * 100));
-      document.getElementById('staff-days-progress-text').innerText = `${payroll.workedDays} / ${payroll.standardDays} ngày (${payroll.totalDaysInMonth} ngày - 4 ngày nghỉ)`;
-      document.getElementById('staff-days-progress-bar').style.width = pct + '%';
-      document.getElementById('staff-daily-rate-note').innerText = `Công: ${payroll.dailyRate.toLocaleString('vi-VN')} đ/ngày (Định mức ${payroll.totalMonthlyBase.toLocaleString('vi-VN')} đ)`;
-      document.getElementById('staff-days-pct-text').innerText = `${pct}% chỉ tiêu`;
-
-      // Timeline Routine List (Như màn hình Daily Routine trong ảnh mẫu)
-      const list = document.getElementById('staff-receipts-list');
-      if (payroll.myReceipts.length === 0) {
-        list.innerHTML = '<div class="spa-card p-8 text-center text-[#A39696] text-sm font-medium">Chưa có ca làm nào trong tháng này.</div>';
-      } else {
-        const pastelCards = [
-          'bg-[#FFF0EB] border-[#FCDFD7] text-[#D35400]',
-          'bg-[#E8F8F5] border-[#B7EBDD] text-[#2E7D6D]',
-          'bg-[#EBF5FB] border-[#D4E6F1] text-[#2980B9]',
-          'bg-[#F5EEF8] border-[#E8DAEF] text-[#8E44AD]'
-        ];
-
-        list.innerHTML = payroll.myReceipts.map((r, i) => {
-          let timePart = '12:00';
-          if (r.date && String(r.date).includes('-')) {
-            let parts = String(r.date).split('-');
-            if (parts.length > 1) timePart = parts[parts.length - 1].trim();
-          }
-          const theme = pastelCards[i % pastelCards.length];
-          return `
-          <div class="flex items-center gap-3">
-            <!-- Left Time Column -->
-            <div class="w-14 shrink-0 text-center">
-              <span class="text-xs font-bold text-[#2D2424] block">${timePart}</span>
-              <span class="text-[10px] text-[#A39696] block uppercase">Giờ làm</span>
+      if (myReceipts.length === 0) {
+        container.innerHTML = `
+          <div class="p-8 text-center spa-card space-y-3">
+            <div class="w-12 h-12 rounded-full bg-[#FFF0EB] text-[#E58A7B] flex items-center justify-center mx-auto">
+              <i data-lucide="calendar" class="w-6 h-6"></i>
             </div>
-            <!-- Right Routine Card -->
-            <div class="flex-1 p-4 rounded-3xl ${theme} border shadow-sm flex items-center justify-between gap-3">
-              <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-2xl bg-white/80 flex items-center justify-center shadow-xs">
-                  <i data-lucide="sparkles" class="w-5 h-5 text-current"></i>
-                </div>
+            <div class="text-sm font-bold text-[#2D2424]">Chưa có ca gội nào được ghi nhận</div>
+            <p class="text-xs text-[#7E7272]">Bấm tab "+" bên dưới để tạo ca gội đầu tiên của bạn!</p>
+          </div>
+        `;
+        return;
+      }
+
+      const pastelBorders = ['border-l-[#E58A7B] bg-[#FFF0EB]/40', 'border-l-[#2E7D6D] bg-[#E8F8F5]/40', 'border-l-[#2980B9] bg-[#EBF5FB]/40', 'border-l-[#8E44AD] bg-[#F5EEF8]/40'];
+
+      container.innerHTML = myReceipts.map((r, idx) => {
+        const time = r.time || '14:30';
+        const isQR = r.payment_method === 'Chuyển khoản';
+        const cardStyle = pastelBorders[idx % pastelBorders.length];
+
+        return `
+          <div class="flex items-start gap-3">
+            <div class="w-14 pt-3.5 text-right shrink-0">
+              <span class="text-xs font-extrabold text-[#2D2424] block">${time}</span>
+              <span class="text-[10px] text-[#A39696] block">${r.date?.slice(5) || '27/08'}</span>
+            </div>
+
+            <div class="flex-1 spa-card p-4 border-l-4 ${cardStyle} transition hover:shadow-md">
+              <div class="flex justify-between items-start">
                 <div>
-                  <div class="text-sm sm:text-base font-extrabold text-[#2D2424]">${r.service_name}</div>
-                  <div class="text-xs text-[#7E7272] mt-0.5 font-medium">Khách: <span class="font-bold text-[#2D2424]">${r.customer_name}</span></div>
+                  <h4 class="text-sm sm:text-base font-extrabold text-[#2D2424]">${r.service_name}</h4>
+                  <div class="flex items-center gap-2 mt-1 text-xs text-[#7E7272]">
+                    <span class="font-medium">👤 ${r.customer_name || 'Khách vãng lai'}</span>
+                    <span>•</span>
+                    <span class="inline-flex items-center gap-1 font-semibold ${isQR ? 'text-[#2E7D6D]' : 'text-[#D35400]'}">
+                      <i data-lucide="${isQR ? 'qr-code' : 'banknote'}" class="w-3.5 h-3.5"></i> ${r.payment_method}
+                    </span>
+                  </div>
                 </div>
-              </div>
-              <div class="text-right shrink-0">
-                <div class="text-sm sm:text-base font-extrabold text-[#2E7D6D] font-mono">+${(r.commission_amount || 0).toLocaleString('vi-VN')} đ</div>
-                <div class="text-[10px] text-[#7E7272] mt-0.5">Thu: ${(r.total_paid || 0).toLocaleString('vi-VN')} đ</div>
+                <div class="text-right">
+                  <span class="text-sm sm:text-base font-extrabold text-[#2E7D6D] block">+${(r.commission_amount || 0).toLocaleString('vi-VN')} đ</span>
+                  <span class="text-[10px] text-[#A39696]">${r.receipt_id}</span>
+                </div>
               </div>
             </div>
           </div>
-        `}).join('');
+        `;
+      }).join('');
+    }
+
+    function loadStaffPayrollStats() {
+      const receipts = getStored('receipts', []);
+      const payroll = calculateStaffPayroll(currentUser, receipts);
+
+      document.getElementById('staff-total-earnings').innerHTML = `${payroll.totalEarnings.toLocaleString('vi-VN')} <span class="text-xl text-[#E58A7B] font-normal">đ</span>`;
+      document.getElementById('staff-days-progress-text').innerText = `${payroll.workedDays} / ${payroll.standardDays} ngày`;
+      
+      const pct = Math.min(100, Math.round((payroll.workedDays / payroll.standardDays) * 100));
+      document.getElementById('staff-days-progress-bar').style.width = pct + '%';
+      document.getElementById('staff-days-pct-text').innerText = pct + '% chỉ tiêu';
+      
+      if (payroll.isFixed) {
+        document.getElementById('staff-daily-rate-note').innerText = `Công: ${payroll.dailyRate.toLocaleString('vi-VN')} đ/ngày (Định mức ${payroll.baseSalary.toLocaleString('vi-VN')} đ)`;
+      } else {
+        document.getElementById('staff-daily-rate-note').innerText = `Thuần tour (${payroll.rate}%), không có lương cứng`;
       }
+
+      document.getElementById('staff-total-tours').innerText = `${payroll.totalTours} ca`;
+      document.getElementById('staff-total-commission').innerText = `${payroll.totalCommission.toLocaleString('vi-VN')} đ`;
+      document.getElementById('staff-base-salary').innerText = `${payroll.earnedBase.toLocaleString('vi-VN')} đ`;
     }
 
     function loadAdminDashboard() {
       const receipts = getStored('receipts', []);
       const expenses = getStored('expenses', []);
       const users = getStored('users', DEFAULT_USERS);
-      const menu = getStored('menu', DEFAULT_MENU);
 
-      let cosmeticsMap = {};
-      menu.forEach(m => cosmeticsMap[m.service_id] = m.cosmetics_cost || 0);
+      let totalRevenue = 0;
+      let totalSalaries = 0;
 
-      const totalRev = receipts.reduce((sum, r) => sum + (r.total_paid || 0), 0);
-      const totalComm = receipts.reduce((sum, r) => sum + (r.commission_amount || 0), 0);
-      
-      // Tính tổng lương cứng thực tế tích lũy của toàn bộ thợ theo số ngày đã làm
-      const totalBase = users.filter(u => !isUserOwner(u)).reduce((sum, u) => {
-        const p = calculateStaffPayroll(u, receipts);
-        return sum + p.earnedBase;
-      }, 0);
+      receipts.forEach(r => {
+        totalRevenue += (Number(r.total_paid) || Number(r.price) || 0);
+      });
 
-      const totalExp = expenses.reduce((sum, e) => sum + (e.amount || 0), 0);
-      const totalCosmetics = receipts.reduce((sum, r) => sum + (cosmeticsMap[r.service_id] || 0), 0);
+      users.filter(u => !isUserOwner(u)).forEach(staff => {
+        const p = calculateStaffPayroll(staff, receipts);
+        totalSalaries += p.totalEarnings;
+      });
 
-      const totalSalaries = totalBase + totalComm;
-      const netProfit = totalRev - totalSalaries - totalExp - totalCosmetics;
+      let totalExpenses = 0;
+      expenses.forEach(e => {
+        totalExpenses += (Number(e.amount) || 0);
+      });
 
-      document.getElementById('kpi-revenue').innerText = totalRev.toLocaleString('vi-VN') + ' đ';
+      const netProfit = totalRevenue - totalSalaries - totalExpenses;
+
+      document.getElementById('kpi-revenue').innerText = totalRevenue.toLocaleString('vi-VN') + ' đ';
       document.getElementById('kpi-tours').innerText = receipts.length + ' ca phục vụ';
       document.getElementById('kpi-salaries').innerText = totalSalaries.toLocaleString('vi-VN') + ' đ';
-      document.getElementById('kpi-expenses').innerText = (totalExp + totalCosmetics).toLocaleString('vi-VN') + ' đ';
+      document.getElementById('kpi-expenses').innerText = totalExpenses.toLocaleString('vi-VN') + ' đ';
       document.getElementById('kpi-net-profit').innerText = netProfit.toLocaleString('vi-VN') + ' đ';
 
+      loadAdminUsersList();
+      loadAdminCustomersList();
+      lucide.createIcons();
+    }
+
+    function switchAdminTab(tab) {
+      const tabs = ['users', 'customers', 'settings'];
+      tabs.forEach(t => {
+        const el = document.getElementById('admin-subtab-' + t);
+        const btn = document.getElementById('tab-btn-' + t);
+        if (t === tab) {
+          el?.classList.remove('hidden');
+          btn?.classList.remove('bg-white', 'text-[#7E7272]', 'border', 'border-[#F0EAE1]');
+          btn?.classList.add('bg-[#E58A7B]', 'text-white', 'shadow-md', 'shadow-[#E58A7B]/25');
+        } else {
+          el?.classList.add('hidden');
+          btn?.classList.add('bg-white', 'text-[#7E7272]', 'border', 'border-[#F0EAE1]');
+          btn?.classList.remove('bg-[#E58A7B]', 'text-white', 'shadow-md', 'shadow-[#E58A7B]/25');
+        }
+      });
+      lucide.createIcons();
+    }
+
+    function loadAdminReceiptsList() {
+      const receipts = getStored('receipts', []);
       document.getElementById('admin-receipt-count').innerText = receipts.length + ' hóa đơn';
+
       const tableBody = document.getElementById('admin-receipts-table-body');
       const mobileCards = document.getElementById('admin-receipts-mobile-cards');
 
       if (receipts.length === 0) {
-        tableBody.innerHTML = '<tr><td colspan="6" class="py-10 text-center text-[#A39696] text-sm font-medium">Chưa có hóa đơn nào trên hệ thống</td></tr>';
-        if (mobileCards) mobileCards.innerHTML = '<div class="p-8 text-center text-[#A39696] text-sm">Chưa có hóa đơn nào.</div>';
-      } else {
-        tableBody.innerHTML = receipts.map(r => `
-          <tr class="hover:bg-[#FAF6F1] transition border-b border-[#F0EAE1]">
-            <td class="py-4 font-mono">
-              <div class="text-sm font-bold text-[#2D2424]">${r.receipt_id}</div>
-              <div class="text-xs text-[#E58A7B] mt-0.5">${formatAppDateTime(r.date)}</div>
-            </td>
-            <td class="py-4">
-              <div class="text-sm sm:text-base font-bold text-[#2D2424]">${r.service_name}</div>
-            </td>
-            <td class="py-4">
-              <div class="text-sm font-bold text-[#2D2424]">${r.customer_name}</div>
-              <div class="text-xs text-[#7E7272] font-mono">${normalizePhone(r.customer_phone)}</div>
-            </td>
-            <td class="py-4">
-              <span class="px-3 py-1 rounded-full bg-[#FFF0EB] text-[#E58A7B] text-xs font-bold border border-[#FCDFD7] whitespace-nowrap">${r.staff_name}</span>
-            </td>
-            <td class="py-4 text-right">
-              <span class="text-base font-extrabold text-[#2E7D6D] font-mono">${(r.total_paid || 0).toLocaleString('vi-VN')} đ</span>
-            </td>
-            <td class="py-4 text-right">
-              <span class="px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap ${r.payment_method === 'Chuyển khoản' || r.payment_method === 'Transfer' ? 'bg-[#FFF0EB] text-[#E58A7B] border border-[#FCDFD7]' : 'bg-[#E8F8F5] text-[#2E7D6D] border border-[#B7EBDD]'}">
-                ${r.payment_method === 'Chuyển khoản' || r.payment_method === 'Transfer' ? 'Chuyển khoản' : 'Tiền mặt'}
-              </span>
-            </td>
-          </tr>
-        `).join('');
-
-        if (mobileCards) {
-          mobileCards.innerHTML = receipts.map(r => `
-            <div class="p-4 sm:p-5 rounded-3xl bg-[#FAF6F1] border border-[#F0EAE1] space-y-3">
-              <div class="flex items-center justify-between">
-                <div>
-                  <div class="text-xs font-bold text-[#2D2424] font-mono">${r.receipt_id}</div>
-                  <div class="text-xs text-[#E58A7B] font-mono mt-0.5">${formatAppDateTime(r.date)}</div>
-                </div>
-                <span class="px-3 py-1 rounded-full text-xs font-bold ${r.payment_method === 'Chuyển khoản' || r.payment_method === 'Transfer' ? 'bg-[#FFF0EB] text-[#E58A7B] border border-[#FCDFD7]' : 'bg-[#E8F8F5] text-[#2E7D6D] border border-[#B7EBDD]'}">
-                  ${r.payment_method === 'Chuyển khoản' || r.payment_method === 'Transfer' ? 'QR Chuyển khoản' : 'Tiền mặt'}
-                </span>
-              </div>
-              <div class="text-base font-extrabold text-[#2D2424]">${r.service_name}</div>
-              <div class="flex items-center justify-between text-sm pt-2 border-t border-[#F0EAE1]">
-                <div class="text-[#7E7272]">
-                  <span>Khách:</span> <span class="font-bold text-[#2D2424]">${r.customer_name}</span>
-                  ${r.customer_phone ? `<span class="text-[#A39696] font-mono text-xs"> (${normalizePhone(r.customer_phone)})</span>` : ''}
-                </div>
-                <span class="px-2.5 py-0.5 rounded-full bg-[#FFF0EB] text-[#E58A7B] text-xs font-bold border border-[#FCDFD7]">${r.staff_name}</span>
-              </div>
-              <div class="flex items-center justify-between pt-2 border-t border-[#F0EAE1]">
-                <span class="text-xs sm:text-sm text-[#7E7272]">Thu thực tế:</span>
-                <span class="text-base sm:text-lg font-extrabold text-[#2E7D6D] font-mono">${(r.total_paid || 0).toLocaleString('vi-VN')} đ</span>
-              </div>
-            </div>
-          `).join('');
-        }
+        tableBody.innerHTML = `<tr><td colspan="6" class="py-8 text-center text-[#7E7272]">Chưa có hóa đơn nào</td></tr>`;
+        mobileCards.innerHTML = `<div class="p-6 text-center text-[#7E7272] spa-card">Chưa có hóa đơn nào</div>`;
+        return;
       }
 
-      const expContainer = document.getElementById('admin-expenses-list');
-      expContainer.innerHTML = expenses.map(e => `
-        <div class="p-5 rounded-3xl bg-[#FAF6F1] border border-[#F0EAE1] space-y-2">
-          <div class="flex justify-between items-center">
-            <span class="px-3 py-1 rounded-full bg-rose-100 text-rose-700 font-bold text-xs">${e.expense_type}</span>
-            <span class="text-xs text-[#A39696] font-mono">${formatAppDateTime(e.date)}</span>
-          </div>
-          <div class="text-2xl font-extrabold text-[#2D2424]">${e.amount.toLocaleString('vi-VN')} đ</div>
-          <div class="text-xs sm:text-sm text-[#7E7272]">${e.note || 'Không có ghi chú'}</div>
-        </div>
+      tableBody.innerHTML = receipts.map(r => `
+        <tr class="hover:bg-[#FAF6F1]/50 transition">
+          <td class="py-3.5 font-mono text-xs font-bold text-[#E58A7B]">${r.receipt_id}</td>
+          <td class="py-3.5 font-bold text-[#2D2424]">${r.service_name}</td>
+          <td class="py-3.5 text-[#7E7272]">${r.customer_name || 'Vãng lai'} <span class="font-mono text-xs block text-[#A39696]">${r.customer_phone || ''}</span></td>
+          <td class="py-3.5 text-[#2D2424] font-medium">${r.staff_name}</td>
+          <td class="py-3.5 text-right font-extrabold text-[#2E7D6D]">${(r.total_paid || 0).toLocaleString('vi-VN')} đ</td>
+          <td class="py-3.5 text-right">
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold ${r.payment_method === 'Chuyển khoản' ? 'bg-[#E8F8F5] text-[#2E7D6D]' : 'bg-[#FFF0EB] text-[#D35400]'}">
+              ${r.payment_method}
+            </span>
+          </td>
+        </tr>
       `).join('');
 
-      // Render Customers Tab
-      const customers = getStored('customers', DEFAULT_CUSTOMERS);
-      document.getElementById('admin-customer-count').innerText = customers.length + ' khách hàng';
-      const custList = document.getElementById('admin-customers-list');
-      custList.innerHTML = customers.map(c => {
-        let cleanNote = c.notes || '';
-        if (cleanNote.includes('GMT') || cleanNote.includes('00:00:00')) cleanNote = '';
-        return `
-        <div class="p-4 sm:p-5 rounded-3xl bg-[#FAF6F1] border border-[#F0EAE1] space-y-3">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-3">
-              <div class="w-11 h-11 rounded-2xl bg-[#FFF0EB] text-[#E58A7B] border border-[#FCDFD7] flex items-center justify-center font-bold text-base">
-                ${(c.customer_name || 'K')[0]}
-              </div>
-              <div>
-                <div class="text-sm sm:text-base font-bold text-[#2D2424]">${c.customer_name}</div>
-                <div class="text-xs text-[#A39696] font-mono mt-0.5">${normalizePhone(c.phone_number)}</div>
-              </div>
+      mobileCards.innerHTML = receipts.map(r => `
+        <div class="spa-card p-4 space-y-2">
+          <div class="flex justify-between items-start">
+            <div>
+              <span class="text-xs font-mono font-bold text-[#E58A7B]">${r.receipt_id}</span>
+              <h4 class="font-extrabold text-sm sm:text-base text-[#2D2424]">${r.service_name}</h4>
             </div>
-            ${c.voucher_count > 0 ? `<span class="px-3 py-1 rounded-full bg-[#E8F8F5] text-[#2E7D6D] text-xs font-bold border border-[#B7EBDD]">🎁 ${c.voucher_count} Voucher</span>` : ''}
+            <span class="text-sm font-extrabold text-[#2E7D6D]">${(r.total_paid || 0).toLocaleString('vi-VN')} đ</span>
           </div>
-          <div class="space-y-1.5">
-            <div class="flex justify-between text-xs text-[#7E7272]">
-              <span>Tiến trình tích điểm</span>
-              <span class="font-bold text-[#E58A7B] font-mono">${c.total_visits || 0}/10 lần</span>
-            </div>
-            <div class="w-full bg-white rounded-full h-2 overflow-hidden shadow-inner">
-              <div class="bg-gradient-to-r from-[#E58A7B] to-[#F09A8D] h-full rounded-full" style="width: ${Math.min(100, ((c.total_visits || 0) / 10) * 100)}%"></div>
-            </div>
+          <div class="flex justify-between items-center text-xs text-[#7E7272] pt-1 border-t border-[#F0EAE1]">
+            <span>👤 ${r.customer_name} • KTV: ${r.staff_name}</span>
+            <span class="font-bold ${r.payment_method === 'Chuyển khoản' ? 'text-[#2E7D6D]' : 'text-[#D35400]'}">${r.payment_method}</span>
           </div>
-          ${cleanNote ? `<div class="text-xs sm:text-sm text-[#7E7272] bg-white rounded-2xl p-3 border border-[#F0EAE1]">📝 ${cleanNote}</div>` : ''}
         </div>
-      `}).join('');
+      `).join('');
+    }
 
-      // Render Users Tab
-      const allUsers = getStored('users', DEFAULT_USERS);
-      const userCountElem = document.getElementById('admin-users-count');
-      if (userCountElem) userCountElem.innerText = allUsers.length + ' nhân sự';
-      const usersList = document.getElementById('admin-users-list');
-      if (usersList) {
-        usersList.innerHTML = allUsers.map(u => {
-          const p = calculateStaffPayroll(u, receipts);
-          const isOwner = isUserOwner(u);
-          return `
-          <div class="p-5 rounded-3xl bg-[#FAF6F1] border border-[#F0EAE1] space-y-3.5 shadow-sm">
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-3">
-                <div class="w-12 h-12 rounded-2xl ${isOwner ? 'bg-[#FFF0EB] text-[#E58A7B] border border-[#FCDFD7]' : 'bg-[#E8F8F5] text-[#2E7D6D] border border-[#B7EBDD]'} flex items-center justify-center font-bold text-lg">
-                  ${(u.full_name || 'U')[0]}
-                </div>
-                <div>
-                  <div class="text-base font-extrabold text-[#2D2424]">${u.full_name}</div>
-                  <div class="text-xs text-[#A39696] font-mono mt-0.5">${normalizePhone(u.phone)} • Mã: ${u.staff_id || u.user_id}</div>
-                </div>
+    function loadAdminCustomersList() {
+      const customers = getStored('customers', DEFAULT_CUSTOMERS);
+      document.getElementById('admin-customer-count').innerText = customers.length + ' khách';
+      const container = document.getElementById('admin-customers-list');
+
+      container.innerHTML = customers.map(c => `
+        <div class="p-4 rounded-3xl bg-[#F7F2EC] border border-[#EFE8DF] space-y-2">
+          <div class="flex justify-between items-center">
+            <div class="font-bold text-[#2D2424] text-sm">${c.customer_name}</div>
+            <span class="text-xs font-extrabold text-[#E58A7B] bg-[#FFF0EB] px-2.5 py-0.5 rounded-full">${c.total_visits || 0}/10 lần</span>
+          </div>
+          <div class="text-xs text-[#7E7272] font-mono">${c.phone_number}</div>
+          ${c.notes ? `<div class="text-xs text-[#D35400] bg-white/70 p-2 rounded-xl">📝 ${c.notes}</div>` : ''}
+          ${c.voucher_count > 0 ? `<div class="text-xs font-bold text-[#2E7D6D] bg-[#E8F8F5] p-2 rounded-xl flex items-center gap-1.5"><i data-lucide="gift" class="w-3.5 h-3.5"></i> Có ${c.voucher_count} Voucher Combo 1</div>` : ''}
+        </div>
+      `).join('');
+    }
+
+    function loadAdminUsersList() {
+      const users = getStored('users', DEFAULT_USERS);
+      const receipts = getStored('receipts', []);
+      document.getElementById('admin-users-count').innerText = users.length + ' nhân sự';
+      const container = document.getElementById('admin-users-list');
+
+      container.innerHTML = users.map(u => {
+        const isOwner = isUserOwner(u);
+        const payroll = calculateStaffPayroll(u, receipts);
+
+        return `
+          <div class="p-4 rounded-3xl bg-[#FAF6F1] border border-[#F0EAE1] space-y-3">
+            <div class="flex justify-between items-start">
+              <div>
+                <div class="font-extrabold text-sm sm:text-base text-[#2D2424]">${isOwner ? '👑' : '💆'} ${u.full_name}</div>
+                <div class="text-xs text-[#7E7272] font-mono">${u.phone} • ${u.staff_id}</div>
               </div>
-              <span class="px-3.5 py-1 rounded-full text-xs font-bold ${isOwner ? 'bg-[#FFF0EB] text-[#E58A7B] border border-[#FCDFD7]' : 'bg-[#E8F8F5] text-[#2E7D6D] border border-[#B7EBDD]'}">
-                ${isOwner ? '👑 Chủ' : '💆 KTV'}
+              <span class="text-xs font-bold px-2.5 py-1 rounded-full ${isOwner ? 'bg-[#FFF0EB] text-[#E58A7B]' : u.salary_type === 'fixed' || u.salary_type === 'fixed_10pct' ? 'bg-[#E8F8F5] text-[#2E7D6D]' : 'bg-[#EBF5FB] text-[#2980B9]'}">
+                ${isOwner ? 'Chủ tiệm' : u.salary_type === 'fixed' || u.salary_type === 'fixed_10pct' ? '10% + Lương cứng' : '20% Thuần tour'}
               </span>
             </div>
-            
+
             ${!isOwner ? `
-            <div class="text-xs sm:text-sm text-[#2D2424] bg-white rounded-2xl p-4 border border-[#F0EAE1] space-y-2">
-              <div class="flex justify-between items-center">
-                <span class="text-[#7E7272]">Ngày công tháng này:</span>
-                <span class="font-extrabold text-[#E58A7B] font-mono">${p.workedDays} / ${p.standardDays} ngày (${Math.round((p.workedDays/p.standardDays)*100)}%)</span>
+              <div class="p-3 rounded-2xl bg-white space-y-1.5 text-xs">
+                <div class="flex justify-between text-[#7E7272]">
+                  <span>Ngày công tháng này:</span>
+                  <span class="font-bold text-[#E58A7B] font-mono">${payroll.workedDays} / ${payroll.standardDays} ngày</span>
+                </div>
+                <div class="flex justify-between text-[#7E7272]">
+                  <span>Lương tour + Lương cứng:</span>
+                  <span class="font-bold text-[#2E7D6D]">${payroll.totalCommission.toLocaleString('vi-VN')} + ${payroll.earnedBase.toLocaleString('vi-VN')} đ</span>
+                </div>
+                <div class="flex justify-between text-[#2D2424] font-extrabold pt-1 border-t border-[#F0EAE1]">
+                  <span>Tổng lương tạm tính:</span>
+                  <span class="text-[#E58A7B] font-bold text-sm">${payroll.totalEarnings.toLocaleString('vi-VN')} đ</span>
+                </div>
               </div>
-              <div class="flex justify-between items-center">
-                <span class="text-[#7E7272]">Lương cứng đạt:</span>
-                <span class="font-bold text-[#2D2424] font-mono">${p.earnedBase.toLocaleString('vi-VN')} đ <span class="text-[#A39696] font-normal">/ ${p.totalMonthlyBase.toLocaleString('vi-VN')} đ</span></span>
-              </div>
-              <div class="flex justify-between items-center">
-                <span class="text-[#7E7272]">Hoa hồng (${p.myReceipts.length} ca):</span>
-                <span class="font-bold text-[#2E7D6D] font-mono">+${p.totalComm.toLocaleString('vi-VN')} đ</span>
-              </div>
-              <div class="pt-2.5 border-t border-[#F0EAE1] flex justify-between items-center text-sm">
-                <span class="text-[#2D2424] font-bold">Tổng thu nhập tháng:</span>
-                <span class="text-base sm:text-lg font-extrabold text-[#2E7D6D]">${p.totalEarnings.toLocaleString('vi-VN')} đ</span>
-              </div>
-            </div>
-            ` : `
-            <div class="text-xs sm:text-sm text-[#7E7272] bg-white rounded-2xl p-3.5 border border-[#F0EAE1]">
-              👑 Tài khoản Chủ Sáng Lập — Quản trị doanh thu & Lợi nhuận ròng tiệm.
-            </div>
-            `}
+            ` : ''}
           </div>
-        `}).join('');
+        `;
+      }).join('');
+    }
+
+    function loadAdminExpensesList() {
+      const expenses = getStored('expenses', []);
+      const container = document.getElementById('admin-expenses-list');
+      if (!container) return;
+
+      if (expenses.length === 0) {
+        container.innerHTML = `<div class="p-6 text-center text-[#7E7272] spa-card col-span-full">Chưa có chi phí nào trong tháng</div>`;
+        return;
       }
+
+      container.innerHTML = expenses.map(e => `
+        <div class="p-4 rounded-3xl bg-[#FAF6F1] border border-[#F0EAE1] flex justify-between items-center">
+          <div>
+            <span class="text-xs font-bold text-[#E58A7B] uppercase block">${e.expense_type || 'Chi phí'}</span>
+            <div class="text-sm font-bold text-[#2D2424]">${e.note || 'Chi phí vận hành'}</div>
+            <span class="text-[10px] text-[#A39696] font-mono">${e.date || ''}</span>
+          </div>
+          <div class="text-right">
+            <span class="text-base font-extrabold text-[#D35400]">${(Number(e.amount) || 0).toLocaleString('vi-VN')} đ</span>
+          </div>
+        </div>
+      `).join('');
     }
 
-    function switchAdminTab(tab) {
-      document.getElementById('admin-subtab-receipts').classList.add('hidden');
-      document.getElementById('admin-subtab-customers').classList.add('hidden');
-      document.getElementById('admin-subtab-users').classList.add('hidden');
-      document.getElementById('admin-subtab-expenses').classList.add('hidden');
-      document.getElementById('admin-subtab-settings').classList.add('hidden');
-
-      const tabs = ['receipts', 'customers', 'users', 'expenses', 'settings'];
-      tabs.forEach(t => {
-        const btn = document.getElementById('tab-btn-' + t);
-        if (btn) btn.className = 'px-5 py-2.5 rounded-full text-xs sm:text-sm font-bold bg-white hover:bg-[#FFF0EB] text-[#7E7272] border border-[#F0EAE1] transition cursor-pointer shrink-0';
-      });
-
-      const activeBtn = document.getElementById('tab-btn-' + tab);
-      if (activeBtn) activeBtn.className = 'px-5 py-2.5 rounded-full text-xs sm:text-sm font-bold bg-[#E58A7B] text-white shadow-md shadow-[#E58A7B]/25 transition cursor-pointer shrink-0';
-
-      const targetSubtab = document.getElementById('admin-subtab-' + tab);
-      if (targetSubtab) targetSubtab.classList.remove('hidden');
-    }
-
-    // Modal expense
     function openAddExpenseModal() {
       document.getElementById('modal-add-expense').classList.remove('hidden');
     }
@@ -1337,20 +1492,39 @@ def build():
         return;
       }
 
-      const expenses = getStored('expenses', []);
-      const newExp = {
-        expense_id: 'CP' + Date.now().toString().slice(-4),
-        date: formatAppDateTime(new Date()),
+      const now = new Date();
+      const dateStr = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}`;
+
+      const expense = {
+        expense_id: 'CP' + Date.now().toString().slice(-6),
         expense_type: type,
         amount: amount,
-        note: note
+        note: note,
+        date: dateStr,
+        created_at: dateStr + ' ' + now.toLocaleTimeString('vi-VN')
       };
 
-      expenses.unshift(newExp);
+      const expenses = getStored('expenses', []);
+      expenses.unshift(expense);
       setStored('expenses', expenses);
+
+      callGasApi('add_expense', expense);
+
       closeAddExpenseModal();
       loadAdminDashboard();
+      loadAdminExpensesList();
       alert('✅ Đã thêm chi phí ' + amount.toLocaleString('vi-VN') + ' đ thành công!');
+    }
+
+    const DEFAULT_GAS_URL = 'https://script.google.com/macros/s/AKfycbwQ-Dwr2zCWWWMPWBCyVIfwDirofgvjD8S7Ug-5OSNLHvM63Gw0nSCa10BqhpD5g8id/exec';
+
+    function getGasUrl() {
+      let url = localStorage.getItem('selena_gas_url') || DEFAULT_GAS_URL;
+      if (!url || url.includes('AKfycbyLuh0304rL-59hJq-wzP3h-a6lH-v9C-s')) {
+        url = DEFAULT_GAS_URL;
+        localStorage.setItem('selena_gas_url', DEFAULT_GAS_URL);
+      }
+      return url;
     }
 
     function saveGasUrl() {
@@ -1370,17 +1544,6 @@ def build():
       localStorage.removeItem('selena_gas_url');
       alert('🧹 Đã xóa cache thành công! Đang đồng bộ lại từ Google Sheets...');
       refreshDataFromGoogleSheets();
-    }
-
-    const DEFAULT_GAS_URL = 'https://script.google.com/macros/s/AKfycbwQ-Dwr2zCWWWMPWBCyVIfwDirofgvjD8S7Ug-5OSNLHvM63Gw0nSCa10BqhpD5g8id/exec';
-
-    function getGasUrl() {
-      let url = localStorage.getItem('selena_gas_url') || DEFAULT_GAS_URL;
-      if (!url || url.includes('AKfycbyLuh0304rL-59hJq-wzP3h-a6lH-v9C-s')) {
-        url = DEFAULT_GAS_URL;
-        localStorage.setItem('selena_gas_url', DEFAULT_GAS_URL);
-      }
-      return url;
     }
 
     async function callGasApi(action, payload = {}) {
@@ -1421,8 +1584,7 @@ def build():
           const freshUsers = getStored('users', DEFAULT_USERS);
           const me = freshUsers.find(u => normalizePhone(u.phone) === normalizePhone(currentUser.phone));
           if (me) currentUser = me;
-          if (isUserOwner(currentUser)) loadAdminDashboard();
-          else { updatePOSStaffInfo(); loadStaffHistory(); }
+          showView(currentTab);
         }
       }
 
@@ -1491,8 +1653,6 @@ def build():
           localStorage.removeItem('selena_active_session');
         }
       }
-
-      refreshDataFromGoogleSheets();
       lucide.createIcons();
     });
   </script>
@@ -1500,16 +1660,13 @@ def build():
 </html>
 """
 
-    full_html = p1_head + p2_login + p3_navbar + p4_staff_pos + p5_staff_history + p6_admin + p7_js
-    
-    with open(r'c:\Users\Miles\Downloads\Selena\selena-spa.html', 'w', encoding='utf-8') as f:
-        f.write(full_html)
-    with open(r'c:\Users\Miles\Downloads\Selena\index.html', 'w', encoding='utf-8') as f:
-        f.write(full_html)
-    
-    print('SUCCESS: Created selena-spa.html and index.html (Size: ' + str(len(full_html)) + ' bytes)')
+    html = p1_head + p2_login + p3_navbar + p4_view_home + p5_view_add + p6_view_history + p7_view_income + p8_bottom_dock + p9_js
+
+    with open('selena-spa.html', 'w', encoding='utf-8') as f:
+        f.write(html)
+    with open('index.html', 'w', encoding='utf-8') as f:
+        f.write(html)
+    print(f"SUCCESS: Created selena-spa.html and index.html (Size: {len(html)} bytes)")
 
 if __name__ == '__main__':
     build()
-
-
