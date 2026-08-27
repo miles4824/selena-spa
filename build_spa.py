@@ -80,7 +80,7 @@ def build():
 
       <div class="pt-1 flex items-center justify-center">
         <span class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#FFF0EB] border border-[#FCDFD7] text-[#E58A7B] text-xs font-semibold font-mono">
-          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-[#E58A7B]"></i> v0.0.0.8 • Selena Spa
+          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-[#E58A7B]"></i> v0.0.0.9 • Selena Spa
         </span>
       </div>
 
@@ -131,82 +131,21 @@ def build():
   </div>
 """
 
-    p3_navbar = """  <!-- 2. NAVBAR (LUXURY SPA THEME) -->
-  <header id="main-header" class="hidden sticky top-0 z-40 bg-[#FAF6F1]/90 border-b border-[#F0EAE1] px-4 sm:px-6 py-3.5 backdrop-blur-xl">
-    <div class="max-w-5xl mx-auto flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-2xl bg-[#FFF0EB] border border-[#FCDFD7] flex items-center justify-center text-[#E58A7B]">
-          <i data-lucide="sparkles" class="w-5 h-5"></i>
-        </div>
-        <div>
-          <div class="flex items-center gap-1.5">
-            <span class="font-extrabold text-base sm:text-lg tracking-tight text-[#2D2424]">Hi <span id="header-user-name">Mai Lan</span>,</span>
-          </div>
-          <span id="header-role-badge" class="text-xs text-[#E58A7B] font-semibold block -mt-0.5">Kỹ Thuật Viên</span>
-        </div>
-      </div>
-
-      <div class="flex items-center gap-3">
-        <button id="btn-sync-cloud" onclick="refreshDataFromGoogleSheets()" title="Đồng bộ Google Sheets 2 chiều" class="px-3.5 py-2 rounded-2xl bg-white hover:bg-[#FFF0EB] border border-[#F0EAE1] text-[#E58A7B] text-xs sm:text-sm font-bold flex items-center gap-2 transition shadow-sm cursor-pointer">
-          <i data-lucide="cloud-check" class="w-4 h-4 text-[#2E7D6D]"></i> <span class="hidden sm:inline">Đồng bộ Sheet</span>
-        </button>
-        <button onclick="logout()" title="Đăng xuất" class="p-2.5 rounded-2xl bg-white hover:bg-rose-50 text-[#7E7272] hover:text-rose-600 transition border border-[#F0EAE1] shadow-sm cursor-pointer">
-          <i data-lucide="log-out" class="w-4 h-4"></i>
-        </button>
-      </div>
-    </div>
-  </header>
-"""
-
     p4_view_home = """  <!-- TAB 1. HOME VIEW (TỔNG QUAN KTV HOẶC DASHBOARD CHỦ) -->
   <main id="view-home" class="hidden flex-1 p-4 sm:p-6 max-w-5xl w-full mx-auto space-y-6 pb-28">
     
     <!-- A. KTV HOME VIEW -->
     <div id="home-ktv-section" class="hidden space-y-5 max-w-2xl mx-auto">
-      <!-- Date Strip Pills -->
-      <div class="spa-card p-3.5 flex items-center justify-between gap-1 overflow-x-auto no-scrollbar" id="pos-date-strip">
-        <div class="flex items-center justify-between w-full gap-1.5 text-center">
-          <div class="flex-1 py-2 px-1 rounded-2xl bg-[#F7F2EC] text-[#7E7272] text-xs">
-            <span class="block text-[10px] text-[#A39696] uppercase font-bold">CN</span>
-            <span class="text-sm font-extrabold text-[#2D2424]">23</span>
-          </div>
-          <div class="flex-1 py-2 px-1 rounded-2xl bg-[#F7F2EC] text-[#7E7272] text-xs">
-            <span class="block text-[10px] text-[#A39696] uppercase font-bold">T2</span>
-            <span class="text-sm font-extrabold text-[#2D2424]">24</span>
-          </div>
-          <div class="flex-1 py-2 px-1 rounded-2xl bg-[#F7F2EC] text-[#7E7272] text-xs">
-            <span class="block text-[10px] text-[#A39696] uppercase font-bold">T3</span>
-            <span class="text-sm font-extrabold text-[#2D2424]">25</span>
-          </div>
-          <div class="flex-1 py-2 px-1 rounded-2xl bg-[#F7F2EC] text-[#7E7272] text-xs">
-            <span class="block text-[10px] text-[#A39696] uppercase font-bold">T4</span>
-            <span class="text-sm font-extrabold text-[#2D2424]">26</span>
-          </div>
-          <div class="flex-1 py-2 px-1 rounded-2xl bg-[#E58A7B] text-white shadow-md shadow-[#E58A7B]/25">
-            <span class="block text-[10px] text-white/80 uppercase font-bold">Hôm nay</span>
-            <span class="text-sm font-extrabold text-white">27</span>
-          </div>
-          <div class="flex-1 py-2 px-1 rounded-2xl bg-[#F7F2EC] text-[#7E7272] text-xs">
-            <span class="block text-[10px] text-[#A39696] uppercase font-bold">T6</span>
-            <span class="text-sm font-extrabold text-[#2D2424]">28</span>
-          </div>
-          <div class="flex-1 py-2 px-1 rounded-2xl bg-[#F7F2EC] text-[#7E7272] text-xs">
-            <span class="block text-[10px] text-[#A39696] uppercase font-bold">T7</span>
-            <span class="text-sm font-extrabold text-[#2D2424]">29</span>
-          </div>
-        </div>
-      </div>
-
       <!-- Welcome Wellness Card -->
-      <div class="spa-card p-6 sm:p-7 relative overflow-hidden bg-gradient-to-br from-[#FFF0EB] via-[#FFFFFF] to-[#FAF6F1]">
-        <div class="relative z-10 space-y-3">
+      <div class="spa-card p-6 sm:p-8 relative overflow-hidden bg-gradient-to-br from-[#FFF0EB] via-[#FFFFFF] to-[#FAF6F1]">
+        <div class="relative z-10 space-y-3.5">
           <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/90 border border-[#FCDFD7] text-[#E58A7B] text-xs font-bold shadow-sm">
-            <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> Daily Spa & Wellness
+            <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> Selena Spa & Wellness
           </div>
           <h2 class="text-2xl sm:text-3xl font-extrabold text-[#2D2424]">Chào bạn, hôm nay sẵn sàng tỏa sáng chưa? ✨</h2>
-          <p class="text-xs sm:text-sm text-[#7E7272] max-w-md">Mỗi ca gội là một trải nghiệm thư giãn tuyệt vời gửi gắm đến khách hàng.</p>
+          <p class="text-xs sm:text-sm text-[#7E7272] max-w-md">Mỗi ca gội là một trải nghiệm thư giãn tuyệt vời gửi gắm đến khách hàng thân yêu.</p>
           <div class="pt-2">
-            <button onclick="showView('add')" class="px-6 py-3.5 rounded-full bg-[#E58A7B] hover:bg-[#D9796A] text-white font-extrabold text-sm shadow-lg shadow-[#E58A7B]/25 transition flex items-center gap-2 cursor-pointer active:scale-95">
+            <button onclick="showView('add')" class="px-6 py-4 rounded-full bg-[#E58A7B] hover:bg-[#D9796A] text-white font-extrabold text-sm sm:text-base shadow-lg shadow-[#E58A7B]/25 transition flex items-center gap-2.5 cursor-pointer active:scale-95">
               <i data-lucide="plus-circle" class="w-5 h-5"></i> Vào Ca Gội Ngay
             </button>
           </div>
@@ -215,15 +154,28 @@ def build():
 
       <!-- Today Quick Stats -->
       <div class="grid grid-cols-2 gap-3.5">
-        <div class="spa-card p-4 sm:p-5 space-y-1 bg-[#E8F8F5] border-[#B7EBDD]">
+        <div class="spa-card p-5 space-y-1.5 bg-[#E8F8F5] border-[#B7EBDD]">
           <span class="text-xs font-bold text-[#2E7D6D] uppercase tracking-wider block">Ca gội hôm nay</span>
           <div class="text-2xl sm:text-3xl font-extrabold text-[#2D2424]" id="home-today-tours">0 ca</div>
-          <span class="text-[11px] text-[#2E7D6D] block">Đang phục vụ</span>
+          <span class="text-[11px] text-[#2E7D6D] block font-medium">Đang phục vụ trong ngày</span>
         </div>
-        <div class="spa-card p-4 sm:p-5 space-y-1 bg-[#FFF0EB] border-[#FCDFD7]">
+        <div class="spa-card p-5 space-y-1.5 bg-[#FFF0EB] border-[#FCDFD7]">
           <span class="text-xs font-bold text-[#E58A7B] uppercase tracking-wider block">Hoa hồng hôm nay</span>
           <div class="text-2xl sm:text-3xl font-extrabold text-[#2D2424]" id="home-today-comm">0 đ</div>
-          <span class="text-[11px] text-[#E58A7B] block">Tích lũy trong ngày</span>
+          <span class="text-[11px] text-[#E58A7B] block font-medium">Tích lũy trong ngày</span>
+        </div>
+      </div>
+
+      <!-- Quick Action / Wellness Banner -->
+      <div class="spa-card p-5 flex items-center justify-between bg-[#F7F2EC]">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-[#FFF0EB] border border-[#FCDFD7] flex items-center justify-center text-[#E58A7B]">
+            <i data-lucide="heart" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <div class="text-sm font-bold text-[#2D2424]">Quy chuẩn phục vụ Selena Spa</div>
+            <div class="text-xs text-[#7E7272]">Nụ cười tươi • Hỏi thăm nhiệt tình • Sấy tóc cẩn thận</div>
+          </div>
         </div>
       </div>
     </div>
@@ -431,16 +383,50 @@ def build():
   </main>
 """
 
-    p6_view_history = """  <!-- TAB 3. LỊCH SỬ (TIMELINE CHO KTV HOẶC HÓA ĐƠN TOÀN TIỆM CHO CHỦ) -->
+    p6_view_history = """  <!-- TAB 3. LỊCH SỬ (DATE STRIP + TIMELINE CHO KTV HOẶC HÓA ĐƠN CHO CHỦ) -->
   <main id="view-history" class="hidden flex-1 p-4 sm:p-6 max-w-4xl w-full mx-auto space-y-5 pb-28">
     <div class="flex justify-between items-center px-1">
       <div>
         <h2 class="text-2xl font-extrabold text-[#2D2424]">Nhật Ký & Lịch Sử Ca</h2>
-        <p class="text-xs sm:text-sm text-[#7E7272]">Danh sách ca làm và trạng thái thanh toán</p>
+        <p class="text-xs sm:text-sm text-[#7E7272]">Danh sách ca làm theo khung giờ và trạng thái</p>
       </div>
       <button onclick="loadHistoryView()" class="p-3 rounded-2xl bg-white hover:bg-[#FFF0EB] text-[#7E7272] hover:text-[#E58A7B] transition border border-[#F0EAE1] shadow-sm cursor-pointer">
         <i data-lucide="refresh-cw" class="w-4 h-4"></i>
       </button>
+    </div>
+
+    <!-- Date Strip Pills (Đã chuyển sang đây theo yêu cầu) -->
+    <div class="spa-card p-3.5 flex items-center justify-between gap-1 overflow-x-auto no-scrollbar" id="pos-date-strip">
+      <div class="flex items-center justify-between w-full gap-1.5 text-center">
+        <div class="flex-1 py-2 px-1 rounded-2xl bg-[#F7F2EC] text-[#7E7272] text-xs">
+          <span class="block text-[10px] text-[#A39696] uppercase font-bold">CN</span>
+          <span class="text-sm font-extrabold text-[#2D2424]">23</span>
+        </div>
+        <div class="flex-1 py-2 px-1 rounded-2xl bg-[#F7F2EC] text-[#7E7272] text-xs">
+          <span class="block text-[10px] text-[#A39696] uppercase font-bold">T2</span>
+          <span class="text-sm font-extrabold text-[#2D2424]">24</span>
+        </div>
+        <div class="flex-1 py-2 px-1 rounded-2xl bg-[#F7F2EC] text-[#7E7272] text-xs">
+          <span class="block text-[10px] text-[#A39696] uppercase font-bold">T3</span>
+          <span class="text-sm font-extrabold text-[#2D2424]">25</span>
+        </div>
+        <div class="flex-1 py-2 px-1 rounded-2xl bg-[#F7F2EC] text-[#7E7272] text-xs">
+          <span class="block text-[10px] text-[#A39696] uppercase font-bold">T4</span>
+          <span class="text-sm font-extrabold text-[#2D2424]">26</span>
+        </div>
+        <div class="flex-1 py-2 px-1 rounded-2xl bg-[#E58A7B] text-white shadow-md shadow-[#E58A7B]/25">
+          <span class="block text-[10px] text-white/80 uppercase font-bold">Hôm nay</span>
+          <span class="text-sm font-extrabold text-white">27</span>
+        </div>
+        <div class="flex-1 py-2 px-1 rounded-2xl bg-[#F7F2EC] text-[#7E7272] text-xs">
+          <span class="block text-[10px] text-[#A39696] uppercase font-bold">T6</span>
+          <span class="text-sm font-extrabold text-[#2D2424]">28</span>
+        </div>
+        <div class="flex-1 py-2 px-1 rounded-2xl bg-[#F7F2EC] text-[#7E7272] text-xs">
+          <span class="block text-[10px] text-[#A39696] uppercase font-bold">T7</span>
+          <span class="text-sm font-extrabold text-[#2D2424]">29</span>
+        </div>
+      </div>
     </div>
 
     <!-- KTV View: Daily Routine Timeline -->
@@ -478,9 +464,34 @@ def build():
   </main>
 """
 
-    p7_view_income = """  <!-- TAB 4. THU NHẬP (BẢNG LƯƠNG KTV HOẶC CHI PHÍ & LỢI NHUẬN CHỦ) -->
+    p7_view_income = """  <!-- TAB 4. THU NHẬP (HEADER NẰM ĐẦU TIÊN + BẢNG LƯƠNG KTV HOẶC CHI PHÍ CHỦ) -->
   <main id="view-income" class="hidden flex-1 p-4 sm:p-6 max-w-4xl w-full mx-auto space-y-5 pb-28">
-    <div class="flex justify-between items-center px-1">
+    
+    <!-- MAIN HEADER ĐƯỢC ĐƯA VÀO ĐẦU TAB THU NHẬP -->
+    <div id="main-header" class="spa-card p-4 sm:p-5 flex items-center justify-between">
+      <div class="flex items-center gap-3.5">
+        <div class="w-11 h-11 rounded-2xl bg-[#FFF0EB] border border-[#FCDFD7] flex items-center justify-center text-[#E58A7B] font-extrabold text-lg shadow-sm">
+          <i data-lucide="sparkles" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-1.5">
+            <span class="font-extrabold text-base sm:text-lg tracking-tight text-[#2D2424]">Hi <span id="header-user-name">Mai Lan</span>,</span>
+          </div>
+          <span id="header-role-badge" class="text-xs text-[#E58A7B] font-semibold block -mt-0.5">Kỹ Thuật Viên</span>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2.5">
+        <button id="btn-sync-cloud" onclick="refreshDataFromGoogleSheets()" title="Đồng bộ Google Sheets 2 chiều" class="px-3.5 py-2.5 rounded-2xl bg-[#F7F2EC] hover:bg-[#FFF0EB] border border-[#EFE8DF] text-[#E58A7B] text-xs sm:text-sm font-bold flex items-center gap-2 transition shadow-sm cursor-pointer">
+          <i data-lucide="cloud-check" class="w-4 h-4 text-[#2E7D6D]"></i> <span class="hidden sm:inline">Đồng bộ Sheet</span>
+        </button>
+        <button onclick="logout()" title="Đăng xuất" class="p-2.5 rounded-2xl bg-[#F7F2EC] hover:bg-rose-50 text-[#7E7272] hover:text-rose-600 transition border border-[#EFE8DF] shadow-sm cursor-pointer">
+          <i data-lucide="log-out" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="flex justify-between items-center px-1 pt-1">
       <div>
         <h2 class="text-2xl font-extrabold text-[#2D2424]">Thu Nhập & Tài Chính</h2>
         <p class="text-xs sm:text-sm text-[#7E7272]">Chi tiết lương ngày công & chi phí vận hành</p>
@@ -829,12 +840,13 @@ def build():
     function loginSuccess(user) {
       currentUser = user;
       document.getElementById('screen-login').classList.add('hidden');
-      document.getElementById('main-header').classList.remove('hidden');
       document.getElementById('mobile-nav').classList.remove('hidden');
 
       const isOwner = isUserOwner(user);
-      document.getElementById('header-user-name').innerText = user.full_name;
-      document.getElementById('header-role-badge').innerText = isOwner ? '👑 Chủ Sáng Lập' : '💆 Kỹ Thuật Viên';
+      const headerName = document.getElementById('header-user-name');
+      const headerRole = document.getElementById('header-role-badge');
+      if (headerName) headerName.innerText = user.full_name;
+      if (headerRole) headerRole.innerText = isOwner ? '👑 Chủ Sáng Lập' : '💆 Kỹ Thuật Viên';
 
       showView('home');
     }
@@ -843,7 +855,6 @@ def build():
       currentUser = null;
       localStorage.removeItem('selena_active_session');
       document.getElementById('screen-login').classList.remove('hidden');
-      document.getElementById('main-header').classList.add('hidden');
       document.getElementById('mobile-nav').classList.add('hidden');
       hideAllViews();
     }
@@ -879,6 +890,10 @@ def build():
         loadHistoryView();
       } else if (view === 'income') {
         document.getElementById('view-income').classList.remove('hidden');
+        const headerName = document.getElementById('header-user-name');
+        const headerRole = document.getElementById('header-role-badge');
+        if (headerName) headerName.innerText = currentUser?.full_name || 'Mai Lan';
+        if (headerRole) headerRole.innerText = isOwner ? '👑 Chủ Sáng Lập' : '💆 Kỹ Thuật Viên';
         loadIncomeView();
       }
 
@@ -1660,7 +1675,7 @@ def build():
 </html>
 """
 
-    html = p1_head + p2_login + p3_navbar + p4_view_home + p5_view_add + p6_view_history + p7_view_income + p8_bottom_dock + p9_js
+    html = p1_head + p2_login + p4_view_home + p5_view_add + p6_view_history + p7_view_income + p8_bottom_dock + p9_js
 
     with open('selena-spa.html', 'w', encoding='utf-8') as f:
         f.write(html)
