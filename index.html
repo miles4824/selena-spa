@@ -246,12 +246,30 @@
       </button>
     </div>
 
-    <div class="glass-card rounded-3xl p-6 shadow-2xl border border-purple-500/20 bg-gradient-to-br from-purple-950/40 via-[#141724] to-[#0f111a]">
-      <span class="text-xs font-semibold text-purple-400 uppercase tracking-wider block">Tổng Thu Nhập Tạm Tính</span>
-      <div class="text-3xl sm:text-4xl font-extrabold text-white font-heading mt-1" id="staff-total-earnings">
-        0 <span class="text-lg text-purple-400 font-normal">đ</span>
+    <div class="glass-card rounded-3xl p-5 sm:p-6 shadow-2xl border border-purple-500/20 bg-gradient-to-br from-purple-950/40 via-[#141724] to-[#0f111a] space-y-4">
+      <div>
+        <span class="text-xs font-semibold text-purple-400 uppercase tracking-wider block">Tổng Thu Nhập Tháng Tạm Tính</span>
+        <div class="text-3xl sm:text-4xl font-extrabold text-white font-heading mt-1" id="staff-total-earnings">
+          0 <span class="text-lg text-purple-400 font-normal">đ</span>
+        </div>
       </div>
-      <div class="grid grid-cols-3 gap-2 pt-4 mt-4 border-t border-white/5 text-center">
+
+      <!-- Tiến Trình Ngày Công Theo Tháng -->
+      <div class="p-3.5 rounded-2xl bg-white/5 border border-white/5 space-y-2">
+        <div class="flex justify-between items-center text-xs">
+          <span class="text-slate-300 font-medium">Tiến trình ngày công tháng này:</span>
+          <span class="font-bold text-purple-300 font-mono" id="staff-days-progress-text">0 / 27 ngày</span>
+        </div>
+        <div class="w-full bg-white/10 rounded-full h-2.5 overflow-hidden">
+          <div id="staff-days-progress-bar" class="bg-gradient-to-r from-purple-500 to-emerald-400 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+        </div>
+        <div class="flex justify-between text-[11px] text-slate-400">
+          <span id="staff-daily-rate-note">Công: 0 đ/ngày (Chuẩn 2.000.000 đ)</span>
+          <span class="font-bold text-emerald-400" id="staff-days-pct-text">0%</span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-3 gap-2 pt-2 border-t border-white/5 text-center">
         <div class="p-2.5 rounded-xl bg-white/5">
           <span class="text-[10px] text-slate-400 block uppercase">Số ca gội</span>
           <span class="text-sm font-bold text-white font-heading" id="staff-total-tours">0 ca</span>
@@ -261,8 +279,8 @@
           <span class="text-sm font-bold text-emerald-400 font-heading" id="staff-total-commission">0 đ</span>
         </div>
         <div class="p-2.5 rounded-xl bg-white/5">
-          <span class="text-[10px] text-slate-400 block uppercase">Lương Cứng</span>
-          <span class="text-sm font-bold text-slate-300 font-heading" id="staff-base-salary">0 đ</span>
+          <span class="text-[10px] text-slate-400 block uppercase">Lương Cứng Đạt</span>
+          <span class="text-sm font-bold text-slate-200 font-heading" id="staff-base-salary">0 đ</span>
         </div>
       </div>
     </div>
@@ -1056,28 +1074,72 @@
       updatePOSCalculations();
     }
 
+    function getMonthWorkingDaysInfo(date = new Date()) {
+      const y = date.getFullYear();
+      const m = date.getMonth(); // 0-indexed (7 là tháng 8)
+      const totalDaysInMonth = new Date(y, m + 1, 0).getDate(); // 28, 30, hoặc 31 ngày
+      const standardDays = Math.max(24, totalDaysInMonth - 4); // Ví dụ: 31-4 = 27 ngày; 30-4 = 26 ngày; 28-4 = 24 ngày
+      return { year: y, month: m + 1, totalDaysInMonth, standardDays };
+    }
+
+    function calculateStaffPayroll(staff, receipts, date = new Date()) {
+      const { year, month, totalDaysInMonth, standardDays } = getMonthWorkingDaysInfo(date);
+      const staffPhone = normalizePhone(staff?.phone || staff?.user_id);
+      const staffCode = String(staff?.staff_id || '').trim();
+      const staffName = String(staff?.full_name || '').trim();
+
+      const myReceipts = receipts.filter(r => {
+        return (r.staff_phone && normalizePhone(r.staff_phone) === staffPhone) ||
+               (r.staff_id && String(r.staff_id).trim() === staffCode) ||
+               (r.staff_name && r.staff_name === staffName);
+      });
+
+      // Đếm số ngày làm việc thực tế trong tháng từ các ca làm
+      const workedDates = new Set();
+      myReceipts.forEach(r => {
+        if (r.date) {
+          const dayPart = String(r.date).split(' ')[0].split(' - ')[0];
+          if (dayPart) workedDates.add(dayPart);
+        }
+      });
+
+      const workedDays = workedDates.size;
+      const totalMonthlyBase = Number(staff?.base_salary) || 0;
+      const isFixed = (staff?.salary_type === 'fixed' || staff?.salary_type === 'fixed_10pct' || totalMonthlyBase > 0);
+      
+      const dailyRate = (isFixed && standardDays > 0) ? Math.round(totalMonthlyBase / standardDays) : 0;
+      const earnedBase = (isFixed && standardDays > 0) ? Math.round(workedDays * dailyRate) : 0;
+      const totalComm = myReceipts.reduce((sum, r) => sum + (Number(r.commission_amount) || 0), 0);
+      const totalEarnings = earnedBase + totalComm;
+
+      return {
+        year, month, totalDaysInMonth, standardDays,
+        workedDays, totalMonthlyBase, dailyRate, earnedBase,
+        totalComm, totalEarnings, myReceipts
+      };
+    }
+
     function loadStaffHistory() {
       const receipts = getStored('receipts', []);
-      const myPhone = normalizePhone(currentUser?.phone);
-      const myName = currentUser?.full_name;
-      const myReceipts = receipts.filter(r => 
-        (r.staff_phone && normalizePhone(r.staff_phone) === myPhone) ||
-        (r.staff_id && normalizePhone(r.staff_id) === myPhone) ||
-        (r.staff_name && r.staff_name === myName)
-      );
-      const totalComm = myReceipts.reduce((sum, r) => sum + (r.commission_amount || 0), 0);
-      const baseSalary = currentUser?.base_salary || 0;
+      const payroll = calculateStaffPayroll(currentUser, receipts);
 
-      document.getElementById('staff-total-earnings').innerHTML = (baseSalary + totalComm).toLocaleString('vi-VN') + ' <span class="text-lg text-purple-400 font-normal">đ</span>';
-      document.getElementById('staff-total-tours').innerText = myReceipts.length + ' ca';
-      document.getElementById('staff-total-commission').innerText = totalComm.toLocaleString('vi-VN') + ' đ';
-      document.getElementById('staff-base-salary').innerText = baseSalary.toLocaleString('vi-VN') + ' đ';
+      document.getElementById('staff-total-earnings').innerHTML = payroll.totalEarnings.toLocaleString('vi-VN') + ' <span class="text-lg text-purple-400 font-normal">đ</span>';
+      document.getElementById('staff-total-tours').innerText = payroll.myReceipts.length + ' ca';
+      document.getElementById('staff-total-commission').innerText = payroll.totalComm.toLocaleString('vi-VN') + ' đ';
+      document.getElementById('staff-base-salary').innerText = payroll.earnedBase.toLocaleString('vi-VN') + ' đ';
+
+      // Cập nhật tiến trình ngày công
+      const pct = Math.min(100, Math.round((payroll.workedDays / payroll.standardDays) * 100));
+      document.getElementById('staff-days-progress-text').innerText = `${payroll.workedDays} / ${payroll.standardDays} ngày (${payroll.totalDaysInMonth} ngày - 4 ngày nghỉ)`;
+      document.getElementById('staff-days-progress-bar').style.width = pct + '%';
+      document.getElementById('staff-daily-rate-note').innerText = `Công: ${payroll.dailyRate.toLocaleString('vi-VN')} đ/ngày (Định mức ${payroll.totalMonthlyBase.toLocaleString('vi-VN')} đ)`;
+      document.getElementById('staff-days-pct-text').innerText = `${pct}% chỉ tiêu`;
 
       const list = document.getElementById('staff-receipts-list');
-      if (myReceipts.length === 0) {
+      if (payroll.myReceipts.length === 0) {
         list.innerHTML = '<div class="glass-card rounded-2xl p-6 text-center text-slate-500 text-xs">Chưa có ca làm nào trong tháng này.</div>';
       } else {
-        list.innerHTML = myReceipts.map((r, i) => `
+        list.innerHTML = payroll.myReceipts.map((r, i) => `
           <div class="glass-card rounded-2xl p-3.5 border border-white/5 flex items-center justify-between">
             <div class="flex items-center gap-3">
               <div class="w-9 h-9 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center font-bold text-xs font-heading">${i+1}</div>
@@ -1087,8 +1149,8 @@
               </div>
             </div>
             <div class="text-right">
-              <div class="text-xs font-bold text-emerald-400 font-heading">+${r.commission_amount.toLocaleString('vi-VN')} đ</div>
-              <div class="text-[10px] text-slate-400">Thu: ${r.total_paid.toLocaleString('vi-VN')} đ (${r.payment_method === 'Chuyển khoản' || r.payment_method === 'Transfer' ? 'QR' : 'Tiền mặt'})</div>
+              <div class="text-xs font-bold text-emerald-400 font-heading">+${(r.commission_amount || 0).toLocaleString('vi-VN')} đ</div>
+              <div class="text-[10px] text-slate-400">Thu: ${(r.total_paid || 0).toLocaleString('vi-VN')} đ (${r.payment_method === 'Chuyển khoản' || r.payment_method === 'Transfer' ? 'QR' : 'Tiền mặt'})</div>
             </div>
           </div>
         `).join('');
@@ -1106,7 +1168,13 @@
 
       const totalRev = receipts.reduce((sum, r) => sum + (r.total_paid || 0), 0);
       const totalComm = receipts.reduce((sum, r) => sum + (r.commission_amount || 0), 0);
-      const totalBase = users.filter(u => u.role !== 'admin' && u.role !== 'Chủ tiệm' && u.role !== 'Chủ Sáng Lập').reduce((sum, u) => sum + (u.base_salary || 0), 0);
+      
+      // Tính tổng lương cứng thực tế tích lũy của toàn bộ thợ theo số ngày đã làm
+      const totalBase = users.filter(u => !isUserOwner(u)).reduce((sum, u) => {
+        const p = calculateStaffPayroll(u, receipts);
+        return sum + p.earnedBase;
+      }, 0);
+
       const totalExp = expenses.reduce((sum, e) => sum + (e.amount || 0), 0);
       const totalCosmetics = receipts.reduce((sum, r) => sum + (cosmeticsMap[r.service_id] || 0), 0);
 
@@ -1235,11 +1303,14 @@
       if (userCountElem) userCountElem.innerText = allUsers.length + ' nhân sự';
       const usersList = document.getElementById('admin-users-list');
       if (usersList) {
-        usersList.innerHTML = allUsers.map(u => `
-          <div class="glass-card rounded-2xl p-4 border border-white/5 space-y-2.5">
+        usersList.innerHTML = allUsers.map(u => {
+          const p = calculateStaffPayroll(u, receipts);
+          const isOwner = isUserOwner(u);
+          return `
+          <div class="glass-card rounded-2xl p-4 border border-white/5 space-y-3">
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-2.5">
-                <div class="w-10 h-10 rounded-xl ${u.role === 'admin' ? 'bg-purple-500/20 text-purple-300' : 'bg-emerald-500/20 text-emerald-300'} flex items-center justify-center font-bold text-xs font-heading">
+                <div class="w-10 h-10 rounded-xl ${isOwner ? 'bg-purple-500/20 text-purple-300' : 'bg-emerald-500/20 text-emerald-300'} flex items-center justify-center font-bold text-xs font-heading">
                   ${(u.full_name || 'U')[0]}
                 </div>
                 <div>
@@ -1247,16 +1318,37 @@
                   <div class="text-xs text-slate-400 font-mono">${normalizePhone(u.phone)} • Mã: ${u.staff_id || u.user_id}</div>
                 </div>
               </div>
-              <span class="px-2.5 py-0.5 rounded-full text-xs font-bold ${u.role === 'admin' ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30' : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'}">
-                ${u.role === 'admin' ? '👑 Chủ' : '💆 KTV'}
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-bold ${isOwner ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30' : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'}">
+                ${isOwner ? '👑 Chủ' : '💆 KTV'}
               </span>
             </div>
-            <div class="text-xs text-slate-300 bg-white/5 rounded-xl p-2.5 border border-white/5 space-y-1">
-              <div><span class="text-slate-400">Hoa hồng:</span> <span class="font-bold text-purple-300">${u.commission_rate || (u.salary_type?.includes('20') ? 20 : 10)}% / ca</span> (${u.salary_type === 'fixed' || u.salary_type === 'fixed_10pct' ? 'Có lương cứng' : u.role === 'admin' ? 'Chủ tiệm' : 'Thuần hoa hồng'})</div>
-              <div><span class="text-slate-400">Lương cứng:</span> <span class="font-bold text-emerald-400 font-heading">${(u.base_salary || 0).toLocaleString('vi-VN')} đ</span></div>
+            
+            ${!isOwner ? `
+            <div class="text-xs text-slate-300 bg-white/5 rounded-xl p-3 border border-white/5 space-y-1.5">
+              <div class="flex justify-between">
+                <span class="text-slate-400">Ngày công tháng này:</span>
+                <span class="font-bold text-purple-300 font-mono">${p.workedDays} / ${p.standardDays} ngày (${Math.round((p.workedDays/p.standardDays)*100)}%)</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-400">Lương cứng đạt:</span>
+                <span class="font-bold text-slate-200 font-mono">${p.earnedBase.toLocaleString('vi-VN')} đ <span class="text-slate-500 font-normal">/ ${p.totalMonthlyBase.toLocaleString('vi-VN')} đ</span></span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-400">Hoa hồng (${p.myReceipts.length} ca):</span>
+                <span class="font-bold text-emerald-400 font-mono">+${p.totalComm.toLocaleString('vi-VN')} đ</span>
+              </div>
+              <div class="pt-1.5 border-t border-white/5 flex justify-between items-center text-xs">
+                <span class="text-slate-300 font-semibold">Tổng thu nhập tháng:</span>
+                <span class="text-sm font-extrabold text-emerald-400 font-heading">${p.totalEarnings.toLocaleString('vi-VN')} đ</span>
+              </div>
             </div>
+            ` : `
+            <div class="text-xs text-slate-400 bg-white/5 rounded-xl p-2.5 border border-white/5">
+              👑 Tài khoản Chủ Sáng Lập — Nhận toàn bộ lợi nhuận sau khi trừ chi phí & lương KTV.
+            </div>
+            `}
           </div>
-        `).join('');
+        `}).join('');
       }
     }
 
