@@ -465,6 +465,29 @@
     let currentCustomer = null;
     let useVoucher = false;
 
+    const DEFAULT_GAS_URL = 'https://script.google.com/macros/s/AKfycbwQ-Dwr2zCWWWMPWBCyVIfwDirofgvjD8S7Ug-5OSNLHvM63Gw0nSCa10BqhpD5g8id/exec';
+
+    function getGasUrl() {
+      return localStorage.getItem('selena_gas_url') || DEFAULT_GAS_URL;
+    }
+
+    async function callGasApi(action, data = {}) {
+      const url = getGasUrl();
+      if (!url) return null;
+      try {
+        const payload = JSON.stringify({ action, ...data });
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: payload
+        });
+        return await res.json();
+      } catch (err) {
+        console.warn('Lỗi gọi API Google Sheets (đang lưu offline):', err);
+        return null;
+      }
+    }
+
     function getStored(key, def) {
       const v = localStorage.getItem('selena_' + key);
       return v ? JSON.parse(v) : def;
@@ -491,7 +514,7 @@
     window.addEventListener('DOMContentLoaded', () => {
       lucide.createIcons();
       initMenuUI();
-      document.getElementById('setting-gas-url').value = localStorage.getItem('selena_gas_url') || '';
+      document.getElementById('setting-gas-url').value = getGasUrl();
 
       // Check auto-login saved session
       const savedUser = localStorage.getItem('selena_active_session');
@@ -761,8 +784,7 @@
       const phone = document.getElementById('pos-customer-phone').value.trim();
       const name = document.getElementById('pos-customer-name').value.trim() || 'Khách vãng lai';
 
-      const receiptId = 'HD' + Date.now().toString().slice(-6);
-      receipts.unshift({
+      const receiptData = {
         receipt_id: receiptId,
         date: new Date().toISOString().split('T')[0],
         customer_phone: phone,
@@ -776,8 +798,13 @@
         total_paid: finalPrice,
         payment_method: paymentMethod,
         is_voucher_used: useVoucher
-      });
+      };
+
+      receipts.unshift(receiptData);
       setStored('receipts', receipts);
+
+      // Async push to Google Sheets
+      callGasApi('create_receipt', receiptData);
 
       if (phone) {
         let custIndex = customers.findIndex(c => c.phone_number === phone);
@@ -799,7 +826,8 @@
         setStored('customers', customers);
       }
 
-      alert('✅ Đã lưu ca gội thành công! Hoa hồng của bạn: +' + comm.toLocaleString('vi-VN') + ' đ');
+      alert('✅ Đã lưu ca gội thành công & tự động đồng bộ Google Sheet!
+Hoa hồng của bạn: +' + comm.toLocaleString('vi-VN') + ' đ');
       
       document.getElementById('pos-customer-phone').value = '';
       document.getElementById('pos-customer-name').value = '';
@@ -927,15 +955,21 @@
       const amount = Number(document.getElementById('input-exp-amount').value);
       const note = document.getElementById('input-exp-note').value;
 
-      const expenses = getStored('expenses', []);
-      expenses.unshift({
+      const expenseData = {
         expense_id: 'EXP' + Date.now().toString().slice(-4),
         date: new Date().toISOString().split('T')[0],
         expense_type: type,
         amount: amount,
         note: note
-      });
+      };
+
+      const expenses = getStored('expenses', []);
+      expenses.unshift(expenseData);
       setStored('expenses', expenses);
+
+      // Async push to Google Sheets
+      callGasApi('add_expense', expenseData);
+
       closeAddExpenseModal();
       loadAdminDashboard();
     }
