@@ -80,7 +80,7 @@ def build():
 
       <div class="pt-1 flex items-center justify-center">
         <span class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#FFF0EB] border border-[#FCDFD7] text-[#E58A7B] text-xs font-semibold font-mono">
-          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-[#E58A7B]"></i> v0.0.0.9 • Selena Spa
+          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-[#E58A7B]"></i> v0.0.1.0 • Selena Spa
         </span>
       </div>
 
@@ -136,19 +136,40 @@ def build():
     
     <!-- A. KTV HOME VIEW -->
     <div id="home-ktv-section" class="hidden space-y-5 max-w-2xl mx-auto">
-      <!-- Welcome Wellness Card -->
+      <!-- Welcome Wellness Card (Lấy Tên User Động) -->
       <div class="spa-card p-6 sm:p-8 relative overflow-hidden bg-gradient-to-br from-[#FFF0EB] via-[#FFFFFF] to-[#FAF6F1]">
         <div class="relative z-10 space-y-3.5">
           <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/90 border border-[#FCDFD7] text-[#E58A7B] text-xs font-bold shadow-sm">
             <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> Selena Spa & Wellness
           </div>
-          <h2 class="text-2xl sm:text-3xl font-extrabold text-[#2D2424]">Chào bạn, hôm nay sẵn sàng tỏa sáng chưa? ✨</h2>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-[#2D2424]">
+            Chào <span id="home-greeting-name" class="text-[#E58A7B]">Mai Lan</span>, hôm nay sẵn sàng tỏa sáng chưa? ✨
+          </h2>
           <p class="text-xs sm:text-sm text-[#7E7272] max-w-md">Mỗi ca gội là một trải nghiệm thư giãn tuyệt vời gửi gắm đến khách hàng thân yêu.</p>
           <div class="pt-2">
             <button onclick="showView('add')" class="px-6 py-4 rounded-full bg-[#E58A7B] hover:bg-[#D9796A] text-white font-extrabold text-sm sm:text-base shadow-lg shadow-[#E58A7B]/25 transition flex items-center gap-2.5 cursor-pointer active:scale-95">
               <i data-lucide="plus-circle" class="w-5 h-5"></i> Vào Ca Gội Ngay
             </button>
           </div>
+        </div>
+      </div>
+
+      <!-- Thông Báo Từ Chủ Tiệm Đến Kỹ Thuật Viên (Sync từ Google Sheet tb_config) -->
+      <div id="home-announcement-card" class="spa-card p-5 sm:p-6 bg-gradient-to-br from-[#FFF0EB]/80 via-[#FFFFFF] to-[#FAF6F1] border border-[#FCDFD7] space-y-3 shadow-sm">
+        <div class="flex items-center justify-between">
+          <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#FFF0EB] border border-[#FCDFD7] text-[#E58A7B] text-xs font-bold shadow-sm">
+            <i data-lucide="megaphone" class="w-3.5 h-3.5 text-[#E58A7B]"></i> Thông Báo Từ Chủ Tiệm
+          </div>
+          <span class="text-[11px] text-[#A39696] font-mono" id="home-announcement-date">Hôm nay</span>
+        </div>
+        <div class="text-sm sm:text-base font-bold text-[#2D2424] leading-relaxed" id="home-announcement-content">
+          ✨ Chúc các kỹ thuật viên một ngày làm việc tràn đầy năng lượng! Hãy luôn giữ nụ cười tươi, vệ sinh bồn gội sạch sẽ và tư vấn chu đáo cho khách nhé.
+        </div>
+        <div class="flex items-center justify-between text-xs text-[#7E7272] pt-2 border-t border-[#FCDFD7]/60">
+          <span class="font-bold flex items-center gap-1.5 text-[#2D2424]">
+            <i data-lucide="crown" class="w-3.5 h-3.5 text-[#E58A7B]"></i> <span id="home-announcement-author">Miles (Chủ sáng lập)</span>
+          </span>
+          <span class="text-[10px] text-[#2E7D6D] bg-[#E8F8F5] px-2.5 py-0.5 rounded-full font-semibold">Đồng bộ từ Google Sheet</span>
         </div>
       </div>
 
@@ -165,19 +186,6 @@ def build():
           <span class="text-[11px] text-[#E58A7B] block font-medium">Tích lũy trong ngày</span>
         </div>
       </div>
-
-      <!-- Quick Action / Wellness Banner -->
-      <div class="spa-card p-5 flex items-center justify-between bg-[#F7F2EC]">
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-2xl bg-[#FFF0EB] border border-[#FCDFD7] flex items-center justify-center text-[#E58A7B]">
-            <i data-lucide="heart" class="w-5 h-5"></i>
-          </div>
-          <div>
-            <div class="text-sm font-bold text-[#2D2424]">Quy chuẩn phục vụ Selena Spa</div>
-            <div class="text-xs text-[#7E7272]">Nụ cười tươi • Hỏi thăm nhiệt tình • Sấy tóc cẩn thận</div>
-          </div>
-        </div>
-      </div>
     </div>
 
     <!-- B. OWNER (ADMIN) HOME DASHBOARD -->
@@ -190,6 +198,25 @@ def build():
         <button onclick="loadAdminDashboard()" class="px-4 py-2.5 rounded-2xl bg-white hover:bg-[#FFF0EB] text-[#2D2424] hover:text-[#E58A7B] text-xs sm:text-sm font-bold flex items-center gap-2 transition border border-[#F0EAE1] shadow-sm cursor-pointer">
           <i data-lucide="refresh-cw" class="w-4 h-4 text-[#E58A7B]"></i> Làm mới
         </button>
+      </div>
+
+      <!-- Thông Báo Đang Phát Cho Nhân Viên (Chủ có thể sửa) -->
+      <div class="spa-card p-5 sm:p-6 bg-gradient-to-br from-[#FFF0EB]/80 via-[#FFFFFF] to-[#FAF6F1] border border-[#FCDFD7] space-y-3 shadow-sm">
+        <div class="flex items-center justify-between">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FFF0EB] border border-[#FCDFD7] text-[#E58A7B] text-xs font-bold shadow-sm">
+            <i data-lucide="megaphone" class="w-3.5 h-3.5 text-[#E58A7B]"></i> Thông Báo Đang Phát Cho KTV
+          </div>
+          <button onclick="openEditAnnouncementModal()" class="px-3.5 py-1.5 rounded-full bg-[#E58A7B] hover:bg-[#D9796A] text-white text-xs font-bold transition shadow-sm flex items-center gap-1.5 cursor-pointer">
+            <i data-lucide="edit-3" class="w-3.5 h-3.5"></i> Sửa Thông Báo
+          </button>
+        </div>
+        <div class="text-sm sm:text-base font-bold text-[#2D2424] leading-relaxed" id="admin-announcement-content">
+          ✨ Chúc các kỹ thuật viên một ngày làm việc tràn đầy năng lượng! Hãy luôn giữ nụ cười tươi, vệ sinh bồn gội sạch sẽ và tư vấn chu đáo cho khách nhé.
+        </div>
+        <div class="flex items-center justify-between text-xs text-[#7E7272] pt-2 border-t border-[#FCDFD7]/60">
+          <span class="text-[11px] text-[#A39696]">Chỉ cần nhập trên Google Sheet (tab tb_config) hoặc bấm "Sửa" ở trên</span>
+          <span class="text-[11px] font-mono text-[#E58A7B]" id="admin-announcement-date">27/08/2026</span>
+        </div>
       </div>
 
       <!-- 4 Pastel Financial KPI Cards -->
@@ -395,7 +422,7 @@ def build():
       </button>
     </div>
 
-    <!-- Date Strip Pills (Đã chuyển sang đây theo yêu cầu) -->
+    <!-- Date Strip Pills (Nằm đầu Tab Lịch Sử) -->
     <div class="spa-card p-3.5 flex items-center justify-between gap-1 overflow-x-auto no-scrollbar" id="pos-date-strip">
       <div class="flex items-center justify-between w-full gap-1.5 text-center">
         <div class="flex-1 py-2 px-1 rounded-2xl bg-[#F7F2EC] text-[#7E7272] text-xs">
@@ -635,9 +662,37 @@ def build():
       </form>
     </div>
   </div>
+
+  <!-- 9. EDIT ANNOUNCEMENT MODAL (DÀNH CHO CHỦ) -->
+  <div id="modal-edit-announcement" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-md">
+    <div class="w-full max-w-md spa-modal p-6 sm:p-7 relative space-y-4">
+      <div class="flex justify-between items-center">
+        <h3 class="text-lg font-extrabold text-[#2D2424] flex items-center gap-2">
+          <i data-lucide="megaphone" class="w-5 h-5 text-[#E58A7B]"></i> Cập Nhật Thông Báo Nội Bộ
+        </h3>
+        <button onclick="closeEditAnnouncementModal()" class="p-2 rounded-full bg-[#F7F2EC] hover:bg-[#FFF0EB] text-[#7E7272] hover:text-[#E58A7B] transition cursor-pointer">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+      <p class="text-xs text-[#7E7272]">Nội dung sẽ được hiển thị ngay lập tức trên màn hình Home của toàn bộ Kỹ Thuật Viên và đồng bộ về Google Sheet (tab tb_config).</p>
+      
+      <form onsubmit="handleSaveAnnouncement(event)" class="space-y-3.5">
+        <div>
+          <label class="block text-xs font-bold text-[#2D2424] mb-1.5">Nội dung thông báo:</label>
+          <textarea id="input-announcement-content" rows="4" placeholder="Nhập thông báo gửi đến toàn thể kỹ thuật viên..." class="w-full bg-[#F7F2EC] border border-[#EFE8DF] rounded-2xl p-3.5 text-sm text-[#2D2424] focus:outline-none focus:border-[#E58A7B] focus:bg-white transition leading-relaxed" required></textarea>
+        </div>
+        <div class="flex gap-2 pt-2">
+          <button type="button" onclick="closeEditAnnouncementModal()" class="flex-1 py-3.5 rounded-full bg-[#F7F2EC] hover:bg-[#EFE8DF] text-[#7E7272] font-bold text-xs sm:text-sm cursor-pointer">Đóng</button>
+          <button type="submit" class="flex-1 py-3.5 rounded-full bg-[#E58A7B] hover:bg-[#D9796A] text-white font-bold text-xs sm:text-sm shadow-md shadow-[#E58A7B]/20 flex items-center justify-center gap-1.5 cursor-pointer">
+            <i data-lucide="send" class="w-4 h-4"></i> Phát Thông Báo
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
 """
 
-    p9_js = """  <!-- 9. JAVASCRIPT LOGIC -->
+    p9_js = """  <!-- 10. JAVASCRIPT LOGIC -->
   <script>
     // -------------------------------------------------------------
     // DEFAULT DATA (FALLBACK)
@@ -659,6 +714,12 @@ def build():
       { phone_number: '0912345678', customer_name: 'Chị Mai Lan', total_visits: 8, voucher_count: 0, notes: 'Da đầu dầu, thích sấy mát' },
       { phone_number: '0988776655', customer_name: 'Anh Nam', total_visits: 3, voucher_count: 0, notes: 'Thích bấm huyệt thái dương' }
     ];
+
+    const DEFAULT_ANNOUNCEMENT = {
+      content: '✨ Chúc các kỹ thuật viên một ngày làm việc tràn đầy năng lượng! Hãy luôn giữ nụ cười tươi, vệ sinh bồn gội sạch sẽ và tư vấn chu đáo cho khách nhé.',
+      author: 'Miles (Chủ sáng lập)',
+      date: '27/08/2026'
+    };
 
     // State Variables
     let currentUser = null;
@@ -696,9 +757,9 @@ def build():
     function normalizeDateKey(dateStr) {
       if (!dateStr) return '';
       let s = String(dateStr).trim();
-      s = s.replace(/\//g, '-');
+      s = s.replace(/-/g, '-');
       let parts = s.split(' ');
-      let datePart = parts[0];
+      let datePart = parts[0].replace(/\//g, '-');
       let subParts = datePart.split('-');
       if (subParts.length === 3) {
         if (subParts[0].length === 4) {
@@ -882,6 +943,7 @@ def build():
           document.getElementById('home-ktv-section').classList.remove('hidden');
           loadKTVHomeStats();
         }
+        renderAnnouncement();
       } else if (view === 'add') {
         document.getElementById('view-add').classList.remove('hidden');
         updatePOSStaffInfo();
@@ -928,11 +990,70 @@ def build():
       }).join('');
     }
 
+    function renderAnnouncement() {
+      const ann = getStored('announcement', DEFAULT_ANNOUNCEMENT);
+      
+      const ktvContent = document.getElementById('home-announcement-content');
+      const ktvAuthor = document.getElementById('home-announcement-author');
+      const ktvDate = document.getElementById('home-announcement-date');
+
+      if (ktvContent) ktvContent.innerText = ann.content || DEFAULT_ANNOUNCEMENT.content;
+      if (ktvAuthor) ktvAuthor.innerText = ann.author || 'Miles (Chủ sáng lập)';
+      if (ktvDate) ktvDate.innerText = ann.date || 'Hôm nay';
+
+      const admContent = document.getElementById('admin-announcement-content');
+      const admDate = document.getElementById('admin-announcement-date');
+      if (admContent) admContent.innerText = ann.content || DEFAULT_ANNOUNCEMENT.content;
+      if (admDate) admDate.innerText = ann.date || 'Hôm nay';
+    }
+
+    function openEditAnnouncementModal() {
+      const ann = getStored('announcement', DEFAULT_ANNOUNCEMENT);
+      document.getElementById('input-announcement-content').value = ann.content || '';
+      document.getElementById('modal-edit-announcement').classList.remove('hidden');
+    }
+
+    function closeEditAnnouncementModal() {
+      document.getElementById('modal-edit-announcement').classList.add('hidden');
+    }
+
+    function handleSaveAnnouncement(e) {
+      e.preventDefault();
+      const content = document.getElementById('input-announcement-content').value.trim();
+      if (!content) return;
+
+      const now = new Date();
+      const dateStr = `${now.getDate().toString().padStart(2, '0')}/${(now.getMonth() + 1).toString().padStart(2, '0')}/${now.getFullYear()}`;
+      const ann = {
+        content: content,
+        author: currentUser?.full_name || 'Miles (Chủ sáng lập)',
+        date: dateStr
+      };
+
+      setStored('announcement', ann);
+      renderAnnouncement();
+      closeEditAnnouncementModal();
+
+      callGasApi('update_announcement', {
+        content: content,
+        author: ann.author
+      });
+
+      alert('✅ Đã cập nhật thông báo thành công! Nội dung đã được lưu và gửi đồng bộ đến Google Sheets.');
+    }
+
     function loadKTVHomeStats() {
       const receipts = getStored('receipts', []);
       const todayStr = normalizeDateKey(new Date());
       const staffPhone = normalizePhone(currentUser?.phone);
       const staffCode = String(currentUser?.staff_id || '').trim();
+
+      // Update Greeting Name
+      const greetingNameEl = document.getElementById('home-greeting-name');
+      if (greetingNameEl) {
+        let displayName = currentUser?.full_name || 'bạn';
+        greetingNameEl.innerText = displayName;
+      }
 
       let todayTours = 0;
       let todayComm = 0;
@@ -1556,6 +1677,7 @@ def build():
       localStorage.removeItem('selena_expenses');
       localStorage.removeItem('selena_users');
       localStorage.removeItem('selena_menu');
+      localStorage.removeItem('selena_announcement');
       localStorage.removeItem('selena_gas_url');
       alert('🧹 Đã xóa cache thành công! Đang đồng bộ lại từ Google Sheets...');
       refreshDataFromGoogleSheets();
@@ -1592,9 +1714,11 @@ def build():
         if (result.data.customers) setStored('customers', result.data.customers);
         if (result.data.receipts) setStored('receipts', result.data.receipts);
         if (result.data.expenses) setStored('expenses', result.data.expenses);
+        if (result.data.announcement) setStored('announcement', result.data.announcement);
         
         initMenuUI();
         renderQuickAccounts();
+        renderAnnouncement();
         if (currentUser) {
           const freshUsers = getStored('users', DEFAULT_USERS);
           const me = freshUsers.find(u => normalizePhone(u.phone) === normalizePhone(currentUser.phone));
@@ -1655,6 +1779,7 @@ def build():
     window.addEventListener('DOMContentLoaded', () => {
       initMenuUI();
       renderQuickAccounts();
+      renderAnnouncement();
 
       const inp = document.getElementById('setting-gas-url');
       if (inp) inp.value = getGasUrl();

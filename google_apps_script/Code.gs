@@ -70,6 +70,10 @@ function handleRequest(e) {
         result = updateSpaWifiIP(params.client_ip);
         break;
 
+      case 'update_announcement':
+        result = updateAnnouncement(params);
+        break;
+
       default:
         result = { success: false, error: 'ACTION_NOT_SUPPORTED', action: action };
     }
@@ -728,27 +732,61 @@ function syncAllData() {
     }
   }
 
-  // 5. Expenses
-  const sheetExp = ss.getSheetByName('tb_expenses');
-  let expenses = [];
-  if (sheetExp) {
-    const data = sheetExp.getDataRange().getValues();
-    for (let i = data.length - 1; i >= 1; i--) {
-      let r = data[i];
-      if (r[0]) {
-        expenses.push({
-          expense_id: String(r[0]),
-          date: String(r[1]),
-          expense_type: String(r[2]),
-          amount: Number(r[3]) || 0,
-          note: String(r[4] || '')
-        });
+  // 6. Config & Announcements (tb_config)
+  const sheetConfig = ss.getSheetByName('tb_config');
+  let configMap = {};
+  let announcement = {
+    content: '✨ Chúc các kỹ thuật viên một ngày làm việc tràn đầy năng lượng! Hãy luôn giữ nụ cười tươi, phục vụ tận tâm và chăm sóc khách chu đáo nhé.',
+    author: 'Miles (Chủ sáng lập)',
+    date: formatDate(new Date())
+  };
+
+  if (sheetConfig) {
+    const data = sheetConfig.getDataRange().getValues();
+    for (let i = 1; i < data.length; i++) {
+      let k = String(data[i][0] || '').trim();
+      let v = String(data[i][1] || '').trim();
+      let note = String(data[i][2] || '').trim();
+      let d = String(data[i][3] || '').trim();
+      if (k) configMap[k] = v;
+      if (k === 'ANNOUNCEMENT' || k === 'THONG_BAO') {
+        announcement = {
+          content: v,
+          author: note ? note.replace('Thông báo từ ', '') : 'Miles (Chủ sáng lập)',
+          date: d || formatDate(new Date())
+        };
       }
     }
   }
 
   return {
     success: true,
-    data: { menu, users, customers, receipts, expenses }
+    data: { menu, users, customers, receipts, expenses, announcement, config: configMap }
   };
+}
+
+function updateAnnouncement(params) {
+  const content = String(params.content || '').trim();
+  const author = String(params.author || 'Miles (Chủ sáng lập)').trim();
+  if (!content) return { success: false, error: 'CONTENT_EMPTY' };
+  
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheetConfig = ss.getSheetByName('tb_config');
+  if (!sheetConfig) {
+    sheetConfig = ss.insertSheet('tb_config');
+    sheetConfig.appendRow(['config_key', 'config_value', 'description', 'updated_at']);
+  }
+  
+  const data = sheetConfig.getDataRange().getValues();
+  const dateStr = formatDate(new Date());
+  for (let i = 1; i < data.length; i++) {
+    if (String(data[i][0]).trim() === 'ANNOUNCEMENT') {
+      sheetConfig.getRange(i + 1, 2).setValue(content);
+      sheetConfig.getRange(i + 1, 3).setValue('Thông báo từ ' + author);
+      sheetConfig.getRange(i + 1, 4).setValue(dateStr);
+      return { success: true, message: 'Updated announcement', content: content, author: author, date: dateStr };
+    }
+  }
+  sheetConfig.appendRow(['ANNOUNCEMENT', content, 'Thông báo từ ' + author, dateStr]);
+  return { success: true, message: 'Created announcement', content: content, author: author, date: dateStr };
 }
