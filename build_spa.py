@@ -68,7 +68,7 @@ def build():
 
       <div class="mt-3 flex items-center justify-center gap-1.5 text-xs">
         <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-300 font-medium">
-          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-purple-400"></i> v1.2 • Đã kết nối Google Sheet
+          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-purple-400"></i> v1.3 • Đã kết nối Google Sheet
         </span>
       </div>
 
@@ -809,6 +809,7 @@ def build():
       const phone = document.getElementById('pos-customer-phone').value.trim();
       const name = document.getElementById('pos-customer-name').value.trim() || 'Khách vãng lai';
 
+      const receiptId = 'HD' + Date.now().toString().slice(-6);
       const receiptData = {
         receipt_id: receiptId,
         date: new Date().toISOString().split('T')[0],
@@ -816,8 +817,8 @@ def build():
         customer_name: name,
         service_id: service.service_id,
         service_name: service.service_name,
-        staff_id: currentUser.user_id,
-        staff_name: currentUser.full_name,
+        staff_id: currentUser?.user_id || 'FOUNDER_01',
+        staff_name: currentUser?.full_name || 'Miles',
         price: service.price,
         commission_amount: comm,
         total_paid: finalPrice,
