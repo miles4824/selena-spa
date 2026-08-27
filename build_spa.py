@@ -851,7 +851,7 @@ def build():
         setStored('customers', customers);
       }
 
-      alert('✅ Đã lưu ca gội thành công & tự động đồng bộ Google Sheet!\nHoa hồng của bạn: +' + comm.toLocaleString('vi-VN') + ' đ');
+      alert('✅ Đã lưu ca gội thành công & tự động đồng bộ Google Sheet! Hoa hồng: +' + comm.toLocaleString('vi-VN') + ' đ');
       
       document.getElementById('pos-customer-phone').value = '';
       document.getElementById('pos-customer-name').value = '';
