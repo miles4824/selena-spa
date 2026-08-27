@@ -356,9 +356,6 @@ function createReceipt(params) {
     }
   }
 
-  return { success: true, receipt_id: receiptId, total_paid: totalPaid, commission_earned: commissionAmount };
-}
-
   return {
     success: true,
     receipt_id: receiptId,
