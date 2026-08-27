@@ -734,6 +734,25 @@ function syncAllData() {
     }
   }
 
+  // 5. Expenses
+  const sheetExp = ss.getSheetByName('tb_expenses');
+  let expenses = [];
+  if (sheetExp) {
+    const data = sheetExp.getDataRange().getValues();
+    for (let i = data.length - 1; i >= 1; i--) {
+      let r = data[i];
+      if (r[0]) {
+        expenses.push({
+          expense_id: String(r[0]),
+          date: String(r[1]),
+          expense_type: String(r[2]),
+          amount: Number(r[3]) || 0,
+          note: String(r[4] || '')
+        });
+      }
+    }
+  }
+
   // 6. Config & Announcements (tb_config)
   const sheetConfig = ss.getSheetByName('tb_config');
   let configMap = {};
