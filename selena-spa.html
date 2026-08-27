@@ -62,7 +62,7 @@
 
       <div class="mt-3 flex items-center justify-center gap-1.5 text-xs">
         <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-300 font-medium">
-          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-purple-400"></i> v1.5 • Đồng Bộ 2 Chiều Google Sheet
+          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-purple-400"></i> v1.6 • Đồng Bộ Toàn Diện (Users, Menu, CRM)
         </span>
       </div>
 
@@ -312,9 +312,10 @@
     </div>
 
     <div class="flex items-center gap-2 overflow-x-auto pb-1 border-b border-white/5">
-      <button onclick="switchAdminTab('receipts')" id="tab-btn-receipts" class="px-4 py-2 rounded-2xl text-xs font-bold bg-purple-600 text-white shadow-md shadow-purple-600/30 transition cursor-pointer">📜 Hóa Đơn Toàn Tiệm</button>
-      <button onclick="switchAdminTab('expenses')" id="tab-btn-expenses" class="px-4 py-2 rounded-2xl text-xs font-bold bg-white/5 hover:bg-white/10 text-slate-400 transition cursor-pointer">⚡ Chi Phí Vận Hành</button>
-      <button onclick="switchAdminTab('settings')" id="tab-btn-settings" class="px-4 py-2 rounded-2xl text-xs font-bold bg-white/5 hover:bg-white/10 text-slate-400 transition cursor-pointer">⚙️ Kết Nối Google Sheets</button>
+      <button onclick="switchAdminTab('receipts')" id="tab-btn-receipts" class="px-4 py-2 rounded-2xl text-xs font-bold bg-purple-600 text-white shadow-md shadow-purple-600/30 transition cursor-pointer shrink-0">📜 Hóa Đơn Toàn Tiệm</button>
+      <button onclick="switchAdminTab('customers')" id="tab-btn-customers" class="px-4 py-2 rounded-2xl text-xs font-bold bg-white/5 hover:bg-white/10 text-slate-400 transition cursor-pointer shrink-0">👥 Khách Hàng (tb_customers)</button>
+      <button onclick="switchAdminTab('expenses')" id="tab-btn-expenses" class="px-4 py-2 rounded-2xl text-xs font-bold bg-white/5 hover:bg-white/10 text-slate-400 transition cursor-pointer shrink-0">⚡ Chi Phí Vận Hành</button>
+      <button onclick="switchAdminTab('settings')" id="tab-btn-settings" class="px-4 py-2 rounded-2xl text-xs font-bold bg-white/5 hover:bg-white/10 text-slate-400 transition cursor-pointer shrink-0">⚙️ Kết Nối Google Sheets</button>
     </div>
 
     <div id="admin-subtab-receipts" class="glass-card rounded-3xl p-5 sm:p-6 border border-white/10 space-y-4">
@@ -337,6 +338,17 @@
           <tbody id="admin-receipts-table-body" class="divide-y divide-white/5"></tbody>
         </table>
       </div>
+    </div>
+
+    <div id="admin-subtab-customers" class="hidden glass-card rounded-3xl p-5 sm:p-6 border border-white/10 space-y-4">
+      <div class="flex justify-between items-center">
+        <div>
+          <h3 class="text-sm font-bold text-white font-heading">Danh Sách Khách Hàng (tb_customers)</h3>
+          <p class="text-xs text-slate-400">Tự động đồng bộ với Google Sheets</p>
+        </div>
+        <span class="text-xs text-purple-400 font-bold" id="admin-customer-count">0 khách</span>
+      </div>
+      <div id="admin-customers-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
     </div>
 
     <div id="admin-subtab-expenses" class="hidden glass-card rounded-3xl p-5 sm:p-6 border border-white/10 space-y-4">
@@ -570,16 +582,28 @@
       }
     }
 
-    function handlePhoneLogin(e) {
+    async function handlePhoneLogin(e) {
       if (e && e.preventDefault) e.preventDefault();
       const phone = (document.getElementById('login-phone').value || '').trim();
       const pwd = (document.getElementById('login-password').value || '').trim();
       const remember = document.getElementById('login-remember')?.checked;
 
-      const users = getStored('users', DEFAULT_USERS);
-      let user = users.find(u => (u.phone === phone || u.user_id === phone) && u.password === pwd);
+      let users = getStored('users', DEFAULT_USERS);
+      let user = users.find(u => (u.phone === phone || u.user_id === phone) && String(u.password) === pwd);
 
-      // Direct fallback matching for demo accounts
+      // If not found, try dynamic online sync from Google Sheets
+      if (!user) {
+        document.getElementById('login-error').classList.remove('hidden');
+        document.getElementById('login-error-text').innerText = 'Đang kiểm tra tài khoản từ Google Sheets...';
+        const res = await callGasApi('sync_all_data');
+        if (res && res.success && res.data?.users) {
+          setStored('users', res.data.users);
+          users = res.data.users;
+          user = users.find(u => (u.phone === phone || u.user_id === phone) && String(u.password) === pwd);
+        }
+      }
+
+      // Direct fallback matching for default demo accounts
       if (!user) {
         if (phone === '0949251144' && (pwd === '123456' || pwd === '1234' || !pwd)) user = DEFAULT_USERS[0];
         else if (phone === '0912345678' && (pwd === '123456' || pwd === '1234' || !pwd)) user = DEFAULT_USERS[1];
@@ -587,6 +611,7 @@
       }
 
       if (user) {
+        document.getElementById('login-error').classList.add('hidden');
         localStorage.setItem('selena_active_session', JSON.stringify(user));
         loginSuccess(user);
       } else {
@@ -966,26 +991,62 @@
           <div class="text-xs text-slate-400">${e.note || 'Không có ghi chú'}</div>
         </div>
       `).join('');
+
+      // Render Customers Tab
+      const customers = getStored('customers', DEFAULT_CUSTOMERS);
+      document.getElementById('admin-customer-count').innerText = customers.length + ' khách hàng';
+      const custList = document.getElementById('admin-customers-list');
+      custList.innerHTML = customers.map(c => `
+        <div class="glass-card rounded-2xl p-4 border border-white/5 space-y-2.5">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <div class="w-9 h-9 rounded-xl bg-purple-500/20 text-purple-300 flex items-center justify-center font-bold text-xs">
+                ${(c.customer_name || 'K')[0]}
+              </div>
+              <div>
+                <div class="text-xs font-bold text-white">${c.customer_name}</div>
+                <div class="text-[11px] text-slate-400 font-mono">${c.phone_number}</div>
+              </div>
+            </div>
+            ${c.voucher_count > 0 ? `<span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-bold border border-emerald-500/30">🎁 ${c.voucher_count} Voucher</span>` : ''}
+          </div>
+          <div>
+            <div class="flex justify-between text-[10px] text-slate-400 mb-1">
+              <span>Tiến trình tích điểm</span>
+              <span class="font-bold text-purple-400">${c.total_visits || 0}/10 lần</span>
+            </div>
+            <div class="w-full bg-white/5 rounded-full h-1.5 overflow-hidden">
+              <div class="bg-gradient-to-r from-purple-500 to-rose-400 h-full rounded-full" style="width: ${Math.min(100, ((c.total_visits || 0) / 10) * 100)}%"></div>
+            </div>
+          </div>
+          ${c.notes ? `<div class="text-[11px] text-slate-300 bg-white/5 rounded-xl p-2 border border-white/5">📝 ${c.notes}</div>` : ''}
+        </div>
+      `).join('');
     }
 
     function switchAdminTab(tab) {
       document.getElementById('admin-subtab-receipts').classList.add('hidden');
+      document.getElementById('admin-subtab-customers').classList.add('hidden');
       document.getElementById('admin-subtab-expenses').classList.add('hidden');
       document.getElementById('admin-subtab-settings').classList.add('hidden');
 
-      document.getElementById('tab-btn-receipts').className = 'px-4 py-2 rounded-2xl text-xs font-bold bg-white/5 hover:bg-white/10 text-slate-400 transition cursor-pointer';
-      document.getElementById('tab-btn-expenses').className = 'px-4 py-2 rounded-2xl text-xs font-bold bg-white/5 hover:bg-white/10 text-slate-400 transition cursor-pointer';
-      document.getElementById('tab-btn-settings').className = 'px-4 py-2 rounded-2xl text-xs font-bold bg-white/5 hover:bg-white/10 text-slate-400 transition cursor-pointer';
+      document.getElementById('tab-btn-receipts').className = 'px-4 py-2 rounded-2xl text-xs font-bold bg-white/5 hover:bg-white/10 text-slate-400 transition cursor-pointer shrink-0';
+      document.getElementById('tab-btn-customers').className = 'px-4 py-2 rounded-2xl text-xs font-bold bg-white/5 hover:bg-white/10 text-slate-400 transition cursor-pointer shrink-0';
+      document.getElementById('tab-btn-expenses').className = 'px-4 py-2 rounded-2xl text-xs font-bold bg-white/5 hover:bg-white/10 text-slate-400 transition cursor-pointer shrink-0';
+      document.getElementById('tab-btn-settings').className = 'px-4 py-2 rounded-2xl text-xs font-bold bg-white/5 hover:bg-white/10 text-slate-400 transition cursor-pointer shrink-0';
 
       if (tab === 'receipts') {
         document.getElementById('admin-subtab-receipts').classList.remove('hidden');
-        document.getElementById('tab-btn-receipts').className = 'px-4 py-2 rounded-2xl text-xs font-bold bg-purple-600 text-white shadow-md shadow-purple-600/30 transition cursor-pointer';
+        document.getElementById('tab-btn-receipts').className = 'px-4 py-2 rounded-2xl text-xs font-bold bg-purple-600 text-white shadow-md shadow-purple-600/30 transition cursor-pointer shrink-0';
+      } else if (tab === 'customers') {
+        document.getElementById('admin-subtab-customers').classList.remove('hidden');
+        document.getElementById('tab-btn-customers').className = 'px-4 py-2 rounded-2xl text-xs font-bold bg-purple-600 text-white shadow-md shadow-purple-600/30 transition cursor-pointer shrink-0';
       } else if (tab === 'expenses') {
         document.getElementById('admin-subtab-expenses').classList.remove('hidden');
-        document.getElementById('tab-btn-expenses').className = 'px-4 py-2 rounded-2xl text-xs font-bold bg-purple-600 text-white shadow-md shadow-purple-600/30 transition cursor-pointer';
+        document.getElementById('tab-btn-expenses').className = 'px-4 py-2 rounded-2xl text-xs font-bold bg-purple-600 text-white shadow-md shadow-purple-600/30 transition cursor-pointer shrink-0';
       } else if (tab === 'settings') {
         document.getElementById('admin-subtab-settings').classList.remove('hidden');
-        document.getElementById('tab-btn-settings').className = 'px-4 py-2 rounded-2xl text-xs font-bold bg-purple-600 text-white shadow-md shadow-purple-600/30 transition cursor-pointer';
+        document.getElementById('tab-btn-settings').className = 'px-4 py-2 rounded-2xl text-xs font-bold bg-purple-600 text-white shadow-md shadow-purple-600/30 transition cursor-pointer shrink-0';
       }
       lucide.createIcons();
     }
