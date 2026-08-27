@@ -90,6 +90,11 @@ function handleRequest(e) {
   }
 }
 
+function normalizePhone(p) {
+  if (!p) return '';
+  return String(p).replace(/[^0-9]/g, '');
+}
+
 function parsePercentage(val) {
   if (val === undefined || val === null || val === '') return 10;
   if (typeof val === 'number') {
