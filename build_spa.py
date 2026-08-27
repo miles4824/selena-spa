@@ -17,7 +17,7 @@ def build():
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400..800;1,7..72,400..800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -31,12 +31,13 @@ def build():
       -webkit-tap-highlight-color: transparent;
       overscroll-behavior-y: contain;
     }
-    h1, h2, h3, h4, h5, h6, .font-heading {
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      letter-spacing: -0.02em;
+    h1, h2, h3, .font-heading, .font-serif-luxury {
+      font-family: 'Literata', serif;
+      letter-spacing: -0.01em;
     }
-    .font-serif-luxury {
-      font-family: 'Playfair Display', serif;
+    h4, h5, h6 {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      letter-spacing: -0.01em;
     }
     .spa-card {
       background: #FFFFFF;
@@ -74,12 +75,12 @@ def build():
       <div class="inline-flex p-4 rounded-3xl bg-[#FFF0EB] border border-[#FCDFD7] shadow-sm mb-2">
         <i data-lucide="sparkles" class="w-9 h-9 text-[#E58A7B]"></i>
       </div>
-      <h1 class="text-3xl font-extrabold text-[#2D2424] tracking-tight font-serif-luxury">SELENA SPA</h1>
+      <h1 class="text-3xl sm:text-4xl font-extrabold text-[#2D2424] tracking-tight font-serif-luxury">SELENA SPA</h1>
       <p class="text-sm text-[#7E7272] font-medium">Hệ Thống Quản Trị & Chăm Sóc Sức Khỏe</p>
 
       <div class="pt-1 flex items-center justify-center">
         <span class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#FFF0EB] border border-[#FCDFD7] text-[#E58A7B] text-xs font-semibold font-mono">
-          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-[#E58A7B]"></i> v0.0.0.5 • Selena Spa
+          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-[#E58A7B]"></i> v0.0.0.6 • Selena Spa
         </span>
       </div>
 
@@ -281,15 +282,15 @@ def build():
       </div>
 
       <!-- 4. Price & Submit -->
-      <div class="pt-3 border-t border-[#F0EAE1] space-y-3.5">
+      <div class="pt-4 border-t border-[#F0EAE1] space-y-4">
         <div class="flex justify-between items-center">
           <span class="text-sm sm:text-base text-[#7E7272] font-semibold">Tổng tiền khách trả:</span>
           <div class="text-right">
             <span id="pos-price-display" class="text-3xl font-extrabold text-[#2D2424]">64.000 đ</span>
           </div>
         </div>
-        <button type="button" onclick="submitPOSReceipt()" class="w-full py-4.5 rounded-full bg-[#E58A7B] hover:bg-[#D9796A] text-white font-extrabold text-base sm:text-lg shadow-xl shadow-[#E58A7B]/30 flex items-center justify-center gap-2 transition active:scale-95 cursor-pointer">
-          <i data-lucide="check-circle" class="w-5 h-5"></i>
+        <button type="button" onclick="submitPOSReceipt()" class="w-full py-5 sm:py-6 px-6 rounded-full bg-[#E58A7B] hover:bg-[#D9796A] text-white font-extrabold text-lg sm:text-xl shadow-xl shadow-[#E58A7B]/30 flex items-center justify-center gap-3 transition active:scale-95 cursor-pointer">
+          <i data-lucide="check-circle" class="w-6 h-6 shrink-0"></i>
           <span id="pos-submit-btn-text">Hiện Mã VietQR & Lưu Ca</span>
         </button>
       </div>
