@@ -585,11 +585,11 @@ function updateSpaWifiIP(newIp) {
 
 // Helper formats
 function formatDate(d) {
-  return Utilities.formatDate(d, 'GMT+7', 'yyyy-MM-dd');
+  return Utilities.formatDate(d, 'GMT+7', 'yyyy/MM/dd');
 }
 
 function formatDateTime(d) {
-  return Utilities.formatDate(d, 'GMT+7', 'yyyy-MM-dd HH:mm:ss');
+  return Utilities.formatDate(d, 'GMT+7', 'yyyy/MM/dd - HH:mm');
 }
 
 // -------------------------------------------------------------
@@ -647,12 +647,23 @@ function syncAllData() {
     for (let i = 1; i < data.length; i++) {
       let r = data[i];
       if (r[0]) {
+        let phone = String(r[0]).trim().replace(/\D/g, '');
+        if (phone.length > 0 && !phone.startsWith('0')) phone = '0' + phone;
+        let lastVisit = '';
+        if (r[4]) {
+          try {
+            lastVisit = Utilities.formatDate(new Date(r[4]), 'GMT+7', 'yyyy/MM/dd');
+          } catch(e) {
+            lastVisit = String(r[4]);
+          }
+        }
         customers.push({
-          phone_number: String(r[0]),
+          phone_number: phone,
           customer_name: String(r[1]),
           total_visits: Number(r[2]) || 0,
           voucher_count: Number(r[3]) || 0,
-          notes: String(r[4] || '')
+          last_visit_date: lastVisit,
+          notes: String(r[5] || '')
         });
       }
     }

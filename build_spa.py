@@ -68,7 +68,7 @@ def build():
 
       <div class="mt-3 flex items-center justify-center gap-1.5 text-xs">
         <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-300 font-medium">
-          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-purple-400"></i> v1.6 • Đồng Bộ Toàn Diện (Users, Menu, CRM)
+          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-purple-400"></i> v1.7 • Chuẩn Hóa SĐT 09x & Định Dạng Ngày Giờ
         </span>
       </div>
 
@@ -496,6 +496,33 @@ def build():
     let currentCustomer = null;
     let useVoucher = false;
 
+    function normalizePhone(p) {
+      if (!p) return '';
+      let s = String(p).trim().replace(/\\D/g, '');
+      if (s.startsWith('84') && s.length >= 11) s = '0' + s.slice(2);
+      if (s.length > 0 && !s.startsWith('0') && (s.length === 9 || s.length === 10)) s = '0' + s;
+      return s;
+    }
+
+    function formatAppDateTime(d = new Date()) {
+      if (!d) return '';
+      const dateObj = (d instanceof Date) ? d : new Date(d);
+      if (isNaN(dateObj.getTime())) {
+        let str = String(d).trim();
+        if (str.includes('GMT')) {
+          const parsed = new Date(str);
+          if (!isNaN(parsed.getTime())) return formatAppDateTime(parsed);
+        }
+        return str.replace(/-/g, '/');
+      }
+      const y = dateObj.getFullYear();
+      const m = String(dateObj.getMonth() + 1).padStart(2, '0');
+      const day = String(dateObj.getDate()).padStart(2, '0');
+      const h = String(dateObj.getHours()).padStart(2, '0');
+      const min = String(dateObj.getMinutes()).padStart(2, '0');
+      return `${y}/${m}/${day} - ${h}:${min}`;
+    }
+
     const DEFAULT_GAS_URL = 'https://script.google.com/macros/s/AKfycbwQ-Dwr2zCWWWMPWBCyVIfwDirofgvjD8S7Ug-5OSNLHvM63Gw0nSCa10BqhpD5g8id/exec';
 
     function getGasUrl() {
@@ -768,24 +795,36 @@ def build():
     }
 
     function onCustomerPhoneInput(val) {
-      const phone = val.trim();
+      const rawInput = val.trim();
+      const normInput = normalizePhone(rawInput);
       const card = document.getElementById('pos-customer-card');
       const customers = getStored('customers', DEFAULT_CUSTOMERS);
 
-      if (phone.length >= 9) {
-        const cust = customers.find(c => c.phone_number === phone);
+      if (rawInput.length >= 7) {
+        const cust = customers.find(c => {
+          const cNorm = normalizePhone(c.phone_number);
+          return cNorm === normInput || 
+                 cNorm.endsWith(normInput) || 
+                 normInput.endsWith(cNorm) || 
+                 String(c.phone_number).includes(rawInput);
+        });
+
         if (cust) {
           currentCustomer = cust;
           card.classList.remove('hidden');
           document.getElementById('pos-customer-name').value = cust.customer_name;
           document.getElementById('pos-cust-name-badge').innerText = cust.customer_name;
-          document.getElementById('pos-cust-phone-badge').innerText = '(' + cust.phone_number + ')';
-          document.getElementById('pos-cust-visits-badge').innerText = cust.total_visits + ' / 10 Lần gội';
-          document.getElementById('pos-cust-progress-bar').style.width = Math.min(100, (cust.total_visits / 10) * 100) + '%';
+          document.getElementById('pos-cust-phone-badge').innerText = '(' + normalizePhone(cust.phone_number) + ')';
+          document.getElementById('pos-cust-visits-badge').innerText = (cust.total_visits || 0) + ' / 10 Lần gội';
+          document.getElementById('pos-cust-progress-bar').style.width = Math.min(100, ((cust.total_visits || 0) / 10) * 100) + '%';
           
-          if (cust.notes) {
+          let noteText = cust.notes || '';
+          if (noteText.includes('GMT') || noteText.includes('00:00:00')) {
+            noteText = '';
+          }
+          if (noteText) {
             document.getElementById('pos-cust-notes-box').classList.remove('hidden');
-            document.getElementById('pos-cust-notes-text').innerText = cust.notes;
+            document.getElementById('pos-cust-notes-text').innerText = noteText;
           } else {
             document.getElementById('pos-cust-notes-box').classList.add('hidden');
           }
@@ -870,10 +909,11 @@ def build():
       const name = document.getElementById('pos-customer-name').value.trim() || 'Khách vãng lai';
 
       const receiptId = 'HD' + Date.now().toString().slice(-6);
+      const normPhone = normalizePhone(phone);
       const receiptData = {
         receipt_id: receiptId,
-        date: new Date().toISOString().split('T')[0],
-        customer_phone: phone,
+        date: formatAppDateTime(new Date()),
+        customer_phone: normPhone,
         customer_name: name,
         service_id: service.service_id,
         service_name: service.service_name,
@@ -892,8 +932,8 @@ def build():
       // Async push to Google Sheets
       callGasApi('create_receipt', receiptData);
 
-      if (phone) {
-        let custIndex = customers.findIndex(c => c.phone_number === phone);
+      if (normPhone) {
+        let custIndex = customers.findIndex(c => normalizePhone(c.phone_number) === normPhone);
         if (custIndex >= 0) {
           let cur = customers[custIndex];
           let updatedVisits = useVoucher ? cur.total_visits : (cur.total_visits + 1);
@@ -905,9 +945,9 @@ def build():
             confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
             alert('🎉 CHÚC MỪNG! Khách hàng đã tích đủ 10 lần gội, đã cộng 1 Voucher Combo 1!');
           }
-          customers[custIndex] = { ...cur, customer_name: name, total_visits: updatedVisits, voucher_count: updatedVouchers };
+          customers[custIndex] = { ...cur, customer_name: name, phone_number: normPhone, total_visits: updatedVisits, voucher_count: updatedVouchers };
         } else {
-          customers.push({ phone_number: phone, customer_name: name, total_visits: 1, voucher_count: 0, notes: '' });
+          customers.push({ phone_number: normPhone, customer_name: name, total_visits: 1, voucher_count: 0, notes: '' });
         }
         setStored('customers', customers);
       }
@@ -943,12 +983,12 @@ def build():
               <div class="w-9 h-9 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center font-bold text-xs font-heading">${i+1}</div>
               <div>
                 <div class="text-xs font-bold text-white">${r.service_name}</div>
-                <div class="text-[11px] text-slate-400">${r.date} • Khách: ${r.customer_name}</div>
+                <div class="text-[11px] text-slate-400 font-mono">${formatAppDateTime(r.date)} • Khách: ${r.customer_name}</div>
               </div>
             </div>
             <div class="text-right">
               <div class="text-xs font-bold text-emerald-400 font-heading">+${r.commission_amount.toLocaleString('vi-VN')} đ</div>
-              <div class="text-[10px] text-slate-400">Thu: ${r.total_paid.toLocaleString('vi-VN')} đ (${r.payment_method === 'Transfer' ? 'QR' : 'Tiền mặt'})</div>
+              <div class="text-[10px] text-slate-400">Thu: ${r.total_paid.toLocaleString('vi-VN')} đ (${r.payment_method === 'Chuyển khoản' || r.payment_method === 'Transfer' ? 'QR' : 'Tiền mặt'})</div>
             </div>
           </div>
         `).join('');
@@ -983,9 +1023,9 @@ def build():
       const tableBody = document.getElementById('admin-receipts-table-body');
       tableBody.innerHTML = receipts.map(r => `
         <tr class="hover:bg-white/5 transition">
-          <td class="py-3 font-mono text-[11px] text-slate-400">${r.receipt_id}</td>
+          <td class="py-3 font-mono text-[11px] text-slate-400">${r.receipt_id}<br><span class="text-[10px] text-slate-500 font-mono">${formatAppDateTime(r.date)}</span></td>
           <td class="py-3 font-medium text-white">${r.service_name}</td>
-          <td class="py-3 text-slate-300">${r.customer_name}</td>
+          <td class="py-3 text-slate-300">${r.customer_name}<br><span class="text-[10px] text-slate-500 font-mono">${normalizePhone(r.customer_phone)}</span></td>
           <td class="py-3"><span class="px-2 py-0.5 rounded-md bg-purple-500/10 text-purple-300 text-[11px]">${r.staff_name}</span></td>
           <td class="py-3 text-right font-bold text-emerald-400 font-heading">${r.total_paid.toLocaleString('vi-VN')} đ</td>
           <td class="py-3 text-right">
@@ -1001,7 +1041,7 @@ def build():
         <div class="p-4 rounded-2xl bg-white/5 border border-white/5 space-y-1.5">
           <div class="flex justify-between items-center">
             <span class="px-2 py-0.5 rounded-md bg-red-500/10 text-red-300 font-bold text-xs">${e.expense_type}</span>
-            <span class="text-[11px] text-slate-400">${e.date}</span>
+            <span class="text-[11px] text-slate-400 font-mono">${formatAppDateTime(e.date)}</span>
           </div>
           <div class="text-lg font-extrabold text-white font-heading">${e.amount.toLocaleString('vi-VN')} đ</div>
           <div class="text-xs text-slate-400">${e.note || 'Không có ghi chú'}</div>
@@ -1012,7 +1052,10 @@ def build():
       const customers = getStored('customers', DEFAULT_CUSTOMERS);
       document.getElementById('admin-customer-count').innerText = customers.length + ' khách hàng';
       const custList = document.getElementById('admin-customers-list');
-      custList.innerHTML = customers.map(c => `
+      custList.innerHTML = customers.map(c => {
+        let cleanNote = c.notes || '';
+        if (cleanNote.includes('GMT') || cleanNote.includes('00:00:00')) cleanNote = '';
+        return `
         <div class="glass-card rounded-2xl p-4 border border-white/5 space-y-2.5">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2.5">
@@ -1021,7 +1064,7 @@ def build():
               </div>
               <div>
                 <div class="text-xs font-bold text-white">${c.customer_name}</div>
-                <div class="text-[11px] text-slate-400 font-mono">${c.phone_number}</div>
+                <div class="text-[11px] text-slate-400 font-mono">${normalizePhone(c.phone_number)}</div>
               </div>
             </div>
             ${c.voucher_count > 0 ? `<span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-bold border border-emerald-500/30">🎁 ${c.voucher_count} Voucher</span>` : ''}
@@ -1035,9 +1078,9 @@ def build():
               <div class="bg-gradient-to-r from-purple-500 to-rose-400 h-full rounded-full" style="width: ${Math.min(100, ((c.total_visits || 0) / 10) * 100)}%"></div>
             </div>
           </div>
-          ${c.notes ? `<div class="text-[11px] text-slate-300 bg-white/5 rounded-xl p-2 border border-white/5">📝 ${c.notes}</div>` : ''}
+          ${cleanNote ? `<div class="text-[11px] text-slate-300 bg-white/5 rounded-xl p-2 border border-white/5">📝 ${cleanNote}</div>` : ''}
         </div>
-      `).join('');
+      `}).join('');
     }
 
     function switchAdminTab(tab) {
