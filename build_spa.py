@@ -11,13 +11,13 @@ def build():
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="Selena Spa">
-  <title>Selena Spa - Quản Lý & Bán Hàng</title>
+  <title>Selena Spa - Luxury Skincare & Wellness</title>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -25,69 +25,80 @@ def build():
 
   <style>
     body {
-      background-color: #0f111a;
-      color: #f3f4f6;
+      background-color: #FAF6F1;
+      color: #2D2424;
       font-family: 'Plus Jakarta Sans', sans-serif;
       -webkit-tap-highlight-color: transparent;
       overscroll-behavior-y: contain;
     }
     h1, h2, h3, h4, h5, h6, .font-heading {
-      font-family: 'Outfit', sans-serif;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      letter-spacing: -0.02em;
     }
-    .glass-card {
-      background: rgba(22, 25, 38, 0.75);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid rgba(255, 255, 255, 0.08);
+    .font-serif-luxury {
+      font-family: 'Playfair Display', serif;
     }
-    .glass-modal {
-      background: rgba(18, 21, 32, 0.9);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.12);
+    .spa-card {
+      background: #FFFFFF;
+      border-radius: 28px;
+      border: 1px solid #F0EAE1;
+      box-shadow: 0 10px 30px -5px rgba(229, 138, 123, 0.05), 0 4px 12px rgba(0, 0, 0, 0.02);
+    }
+    .spa-modal {
+      background: #FFFFFF;
+      border-radius: 32px;
+      border: 1px solid #F0EAE1;
+      box-shadow: 0 25px 50px -12px rgba(45, 36, 36, 0.15);
+    }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
     }
   </style>
 </head>
-<body class="min-h-screen flex flex-col selection:bg-purple-500/30">
+<body class="min-h-screen flex flex-col selection:bg-[#E58A7B]/20">
   <!-- Pull to Refresh Banner -->
-  <div id="ptr-indicator" class="fixed top-0 left-0 right-0 z-50 flex items-center justify-center py-3 text-xs text-purple-300 font-bold bg-[#141724]/95 border-b border-purple-500/30 backdrop-blur-xl shadow-lg transition-transform duration-200 pointer-events-none -translate-y-full">
+  <div id="ptr-indicator" class="fixed top-0 left-0 right-0 z-50 flex items-center justify-center py-3 text-xs text-[#E58A7B] font-bold bg-[#FFFFFF]/95 border-b border-[#F0EAE1] backdrop-blur-xl shadow-md transition-transform duration-200 pointer-events-none -translate-y-full">
     <div class="flex items-center gap-2" id="ptr-content">
-      <i data-lucide="arrow-down" class="w-4 h-4 text-purple-400"></i> Vuốt xuống để tải lại bản mới nhất...
+      <i data-lucide="arrow-down" class="w-4 h-4 text-[#E58A7B]"></i> Vuốt xuống để tải lại bản mới nhất...
     </div>
   </div>
 """
 
-    p2_login = """  <!-- 1. PHONE + PASSWORD LOGIN SCREEN -->
-  <div id="screen-login" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0f111a]/95 backdrop-blur-2xl">
-    <div class="w-full max-w-md glass-card rounded-3xl p-7 sm:p-9 shadow-2xl border border-white/10 text-center relative space-y-2">
-      <div class="inline-flex p-4 rounded-2xl bg-gradient-to-tr from-purple-600/30 to-rose-500/20 border border-purple-500/30 shadow-lg shadow-purple-500/10 mb-2">
-        <i data-lucide="sparkles" class="w-9 h-9 text-purple-400"></i>
+    p2_login = """  <!-- 1. PHONE + PASSWORD LOGIN SCREEN (LUXURY SPA THEME) -->
+  <div id="screen-login" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#FAF6F1]/95 backdrop-blur-xl">
+    <div class="w-full max-w-md spa-card p-7 sm:p-9 text-center relative space-y-2">
+      <div class="inline-flex p-4 rounded-3xl bg-[#FFF0EB] border border-[#FCDFD7] shadow-sm mb-2">
+        <i data-lucide="sparkles" class="w-9 h-9 text-[#E58A7B]"></i>
       </div>
-      <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight font-heading">SELENA SPA</h1>
-      <p class="text-sm text-slate-300 font-medium">Đăng Nhập Tài Khoản Nội Bộ</p>
+      <h1 class="text-3xl font-extrabold text-[#2D2424] tracking-tight font-serif-luxury">SELENA SPA</h1>
+      <p class="text-sm text-[#7E7272] font-medium">Hệ Thống Quản Trị & Chăm Sóc Sức Khỏe</p>
 
       <div class="pt-1 flex items-center justify-center">
-        <span class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-300 text-xs font-medium font-mono">
-          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-purple-400"></i> v0.0.0.4 • Selena Spa
+        <span class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#FFF0EB] border border-[#FCDFD7] text-[#E58A7B] text-xs font-semibold font-mono">
+          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-[#E58A7B]"></i> v0.0.0.5 • Selena Spa
         </span>
       </div>
 
       <!-- Form Login -->
       <form onsubmit="event.preventDefault(); handlePhoneLogin(event); return false;" class="mt-6 space-y-4 text-left">
         <div>
-          <label class="block text-sm font-semibold text-slate-200 mb-1.5">Số điện thoại / Tài khoản:</label>
+          <label class="block text-sm font-bold text-[#2D2424] mb-1.5">Số điện thoại / Tài khoản:</label>
           <div class="relative">
-            <input type="tel" id="login-phone" placeholder="0949251144" required class="w-full bg-[#141724] border border-white/10 rounded-2xl p-4 pl-11 text-white text-base focus:outline-none focus:border-purple-500 transition font-mono">
-            <i data-lucide="phone" class="w-5 h-5 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+            <input type="tel" id="login-phone" placeholder="0949251144" required class="w-full bg-[#F7F2EC] border border-[#EFE8DF] rounded-2xl p-4 pl-11 text-[#2D2424] text-base focus:outline-none focus:border-[#E58A7B] focus:bg-white transition font-mono">
+            <i data-lucide="phone" class="w-5 h-5 text-[#A39696] absolute left-3.5 top-1/2 -translate-y-1/2"></i>
           </div>
         </div>
 
         <div>
-          <label class="block text-sm font-semibold text-slate-200 mb-1.5">Mật khẩu:</label>
+          <label class="block text-sm font-bold text-[#2D2424] mb-1.5">Mật khẩu:</label>
           <div class="relative">
-            <input type="password" id="login-password" placeholder="••••••" required class="w-full bg-[#141724] border border-white/10 rounded-2xl p-4 pl-11 pr-11 text-white text-base focus:outline-none focus:border-purple-500 transition">
-            <i data-lucide="lock" class="w-5 h-5 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
-            <button type="button" onclick="togglePasswordVisibility()" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white cursor-pointer p-1">
+            <input type="password" id="login-password" placeholder="••••••" required class="w-full bg-[#F7F2EC] border border-[#EFE8DF] rounded-2xl p-4 pl-11 pr-11 text-[#2D2424] text-base focus:outline-none focus:border-[#E58A7B] focus:bg-white transition">
+            <i data-lucide="lock" class="w-5 h-5 text-[#A39696] absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+            <button type="button" onclick="togglePasswordVisibility()" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#A39696] hover:text-[#2D2424] cursor-pointer p-1">
               <i data-lucide="eye" id="pwd-eye-icon" class="w-5 h-5"></i>
             </button>
           </div>
@@ -95,29 +106,29 @@ def build():
 
         <!-- Remember Me Checkbox -->
         <div class="flex items-center justify-between pt-1">
-          <label class="flex items-center gap-2.5 text-xs sm:text-sm text-slate-300 cursor-pointer">
-            <input type="checkbox" id="login-remember" checked class="w-4 h-4 accent-purple-600 rounded cursor-pointer">
+          <label class="flex items-center gap-2.5 text-xs sm:text-sm text-[#7E7272] cursor-pointer">
+            <input type="checkbox" id="login-remember" checked class="w-4 h-4 accent-[#E58A7B] rounded cursor-pointer">
             <span>Ghi nhớ đăng nhập trên máy này</span>
           </label>
         </div>
 
-        <div id="login-error" class="hidden p-3.5 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-300 text-xs sm:text-sm flex items-start gap-2">
+        <div id="login-error" class="hidden p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-600 text-xs sm:text-sm flex items-start gap-2">
           <i data-lucide="alert-triangle" class="w-4 h-4 shrink-0 mt-0.5"></i>
           <span id="login-error-text">Số điện thoại hoặc mật khẩu không đúng</span>
         </div>
 
-        <button type="button" onclick="handlePhoneLogin(event)" class="w-full py-4 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-base shadow-lg shadow-purple-500/25 transition active:scale-95 cursor-pointer uppercase tracking-wider flex items-center justify-center gap-2">
+        <button type="button" onclick="handlePhoneLogin(event)" class="w-full py-4 rounded-2xl bg-[#E58A7B] hover:bg-[#D9796A] text-white font-bold text-base shadow-lg shadow-[#E58A7B]/25 transition active:scale-95 cursor-pointer uppercase tracking-wider flex items-center justify-center gap-2">
           <i data-lucide="log-in" class="w-5 h-5"></i> Đăng Nhập Ngay
         </button>
       </form>
 
       <!-- Quick Test Accounts -->
-      <div class="mt-6 pt-5 border-t border-white/5 space-y-2">
-        <div class="text-xs text-slate-400 font-medium">Tài khoản nhân viên (Đồng bộ từ Google Sheets):</div>
+      <div class="mt-6 pt-5 border-t border-[#F0EAE1] space-y-2">
+        <div class="text-xs text-[#A39696] font-medium">Tài khoản nhân sự (Đồng bộ từ tb_users):</div>
         <div id="login-quick-accounts" class="flex flex-col gap-2">
-          <button onclick="quickFillLogin('0949251144', '123456')" class="w-full p-3 rounded-2xl bg-white/[0.04] hover:bg-white/[0.08] text-purple-300 text-xs sm:text-sm font-semibold transition flex items-center justify-between cursor-pointer">
+          <button onclick="quickFillLogin('0949251144', '123456')" class="w-full p-3 rounded-2xl bg-[#F7F2EC] hover:bg-[#FFF0EB] text-[#2D2424] hover:text-[#E58A7B] text-xs sm:text-sm font-semibold transition flex items-center justify-between cursor-pointer border border-[#EFE8DF]">
             <span>👑 Miles (Đấng tối cao)</span>
-            <span class="text-xs text-purple-400 font-mono">0949251144</span>
+            <span class="text-xs text-[#E58A7B] font-mono">0949251144</span>
           </button>
         </div>
       </div>
@@ -125,28 +136,26 @@ def build():
   </div>
 """
 
-    p3_navbar = """  <!-- 2. NAVBAR -->
-  <header id="main-header" class="hidden sticky top-0 z-40 glass-card border-b border-white/5 px-4 sm:px-6 py-3.5 backdrop-blur-xl">
+    p3_navbar = """  <!-- 2. NAVBAR (LUXURY SPA THEME) -->
+  <header id="main-header" class="hidden sticky top-0 z-40 bg-[#FAF6F1]/90 border-b border-[#F0EAE1] px-4 sm:px-6 py-3.5 backdrop-blur-xl">
     <div class="max-w-5xl mx-auto flex items-center justify-between">
       <div class="flex items-center gap-3">
-        <div class="p-2 rounded-xl bg-gradient-to-tr from-purple-600/30 to-rose-500/20 border border-purple-500/30 text-purple-400">
+        <div class="w-10 h-10 rounded-2xl bg-[#FFF0EB] border border-[#FCDFD7] flex items-center justify-center text-[#E58A7B]">
           <i data-lucide="sparkles" class="w-5 h-5"></i>
         </div>
         <div>
-          <span class="font-extrabold text-base sm:text-lg tracking-tight text-white font-heading block">SELENA SPA</span>
-          <span id="header-role-badge" class="text-xs text-purple-400 font-semibold block -mt-0.5">Kỹ Thuật Viên</span>
+          <div class="flex items-center gap-1.5">
+            <span class="font-extrabold text-base sm:text-lg tracking-tight text-[#2D2424]">Hi <span id="header-user-name">Mai Lan</span>,</span>
+          </div>
+          <span id="header-role-badge" class="text-xs text-[#E58A7B] font-semibold block -mt-0.5">Kỹ Thuật Viên</span>
         </div>
       </div>
 
       <div class="flex items-center gap-3">
-        <button id="btn-sync-cloud" onclick="refreshDataFromGoogleSheets()" title="Đồng bộ Google Sheets 2 chiều" class="px-3 py-2 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/20 text-purple-300 text-xs sm:text-sm font-semibold flex items-center gap-2 transition cursor-pointer">
-          <i data-lucide="cloud-check" class="w-4 h-4 text-emerald-400"></i> <span class="hidden sm:inline">Đồng bộ Sheet</span>
+        <button id="btn-sync-cloud" onclick="refreshDataFromGoogleSheets()" title="Đồng bộ Google Sheets 2 chiều" class="px-3.5 py-2 rounded-2xl bg-white hover:bg-[#FFF0EB] border border-[#F0EAE1] text-[#E58A7B] text-xs sm:text-sm font-bold flex items-center gap-2 transition shadow-sm cursor-pointer">
+          <i data-lucide="cloud-check" class="w-4 h-4 text-[#2E7D6D]"></i> <span class="hidden sm:inline">Đồng bộ Sheet</span>
         </button>
-        <div class="hidden sm:flex flex-col text-right">
-          <span id="header-user-name" class="text-sm font-bold text-white">Mai Lan</span>
-          <span class="text-xs text-emerald-400">Đang hoạt động</span>
-        </div>
-        <button onclick="logout()" title="Đăng xuất" class="p-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white transition border border-white/5 cursor-pointer">
+        <button onclick="logout()" title="Đăng xuất" class="p-2.5 rounded-2xl bg-white hover:bg-rose-50 text-[#7E7272] hover:text-rose-600 transition border border-[#F0EAE1] shadow-sm cursor-pointer">
           <i data-lucide="log-out" class="w-4 h-4"></i>
         </button>
       </div>
@@ -154,95 +163,132 @@ def build():
   </header>
 """
 
-    p4_staff_pos = """  <!-- 3. STAFF POS VIEW -->
-  <main id="view-staff-pos" class="hidden flex-1 p-4 sm:p-6 max-w-xl w-full mx-auto space-y-5 pb-24">
-    <!-- Staff Info Banner -->
-    <div class="p-4 sm:p-5 rounded-3xl bg-white/[0.04] flex items-center justify-between">
-      <div class="flex items-center gap-3.5">
-        <div id="staff-pos-avatar" class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-purple-600 to-rose-500 flex items-center justify-center text-white text-base font-extrabold font-heading shadow-lg shadow-purple-500/20">L</div>
-        <div>
-          <div id="staff-pos-name" class="text-base sm:text-lg font-bold text-white font-heading">KTV Mai Lan</div>
-          <div id="staff-pos-model" class="text-xs sm:text-sm text-slate-300 font-medium mt-0.5">10% Tour • Có lương cứng</div>
+    p4_staff_pos = """  <!-- 3. STAFF POS VIEW (LUXURY SPA THEME) -->
+  <main id="view-staff-pos" class="hidden flex-1 p-4 sm:p-6 max-w-xl w-full mx-auto space-y-5 pb-28">
+    
+    <!-- Date Strip Pills (Thanh chọn ngày lịch dạng viên thuốc như ảnh mẫu) -->
+    <div class="spa-card p-3.5 flex items-center justify-between gap-1 overflow-x-auto no-scrollbar" id="pos-date-strip">
+      <div class="flex items-center justify-between w-full gap-1.5 text-center">
+        <div class="flex-1 py-2 px-1 rounded-2xl bg-[#F7F2EC] text-[#7E7272] text-xs">
+          <span class="block text-[10px] text-[#A39696] uppercase font-bold">CN</span>
+          <span class="text-sm font-extrabold text-[#2D2424]">23</span>
         </div>
-      </div>
-      <div class="text-right">
-        <span class="text-xs text-slate-400 block font-medium">Hoa hồng ca này</span>
-        <span id="staff-pos-commission" class="text-base sm:text-lg font-extrabold text-emerald-400 font-heading">+6.400 đ (10%)</span>
+        <div class="flex-1 py-2 px-1 rounded-2xl bg-[#F7F2EC] text-[#7E7272] text-xs">
+          <span class="block text-[10px] text-[#A39696] uppercase font-bold">T2</span>
+          <span class="text-sm font-extrabold text-[#2D2424]">24</span>
+        </div>
+        <div class="flex-1 py-2 px-1 rounded-2xl bg-[#F7F2EC] text-[#7E7272] text-xs">
+          <span class="block text-[10px] text-[#A39696] uppercase font-bold">T3</span>
+          <span class="text-sm font-extrabold text-[#2D2424]">25</span>
+        </div>
+        <div class="flex-1 py-2 px-1 rounded-2xl bg-[#F7F2EC] text-[#7E7272] text-xs">
+          <span class="block text-[10px] text-[#A39696] uppercase font-bold">T4</span>
+          <span class="text-sm font-extrabold text-[#2D2424]">26</span>
+        </div>
+        <!-- Active Today Pill (Terracotta) -->
+        <div class="flex-1 py-2 px-1 rounded-2xl bg-[#E58A7B] text-white shadow-md shadow-[#E58A7B]/25">
+          <span class="block text-[10px] text-white/80 uppercase font-bold">Hôm nay</span>
+          <span class="text-sm font-extrabold text-white">27</span>
+        </div>
+        <div class="flex-1 py-2 px-1 rounded-2xl bg-[#F7F2EC] text-[#7E7272] text-xs">
+          <span class="block text-[10px] text-[#A39696] uppercase font-bold">T6</span>
+          <span class="text-sm font-extrabold text-[#2D2424]">28</span>
+        </div>
+        <div class="flex-1 py-2 px-1 rounded-2xl bg-[#F7F2EC] text-[#7E7272] text-xs">
+          <span class="block text-[10px] text-[#A39696] uppercase font-bold">T7</span>
+          <span class="text-sm font-extrabold text-[#2D2424]">29</span>
+        </div>
       </div>
     </div>
 
-    <div class="glass-card rounded-3xl p-6 sm:p-7 shadow-xl border border-white/10 space-y-6">
+    <!-- Staff Info Banner -->
+    <div class="spa-card p-4 sm:p-5 flex items-center justify-between">
+      <div class="flex items-center gap-3.5">
+        <div id="staff-pos-avatar" class="w-12 h-12 rounded-2xl bg-[#FFF0EB] border border-[#FCDFD7] text-[#E58A7B] flex items-center justify-center text-lg font-extrabold shadow-sm">L</div>
+        <div>
+          <div id="staff-pos-name" class="text-base sm:text-lg font-bold text-[#2D2424]">KTV Mai Lan</div>
+          <div id="staff-pos-model" class="text-xs sm:text-sm text-[#7E7272] font-medium mt-0.5">10% Tour • Có lương cứng</div>
+        </div>
+      </div>
+      <div class="text-right">
+        <span class="text-xs text-[#A39696] block font-medium">Hoa hồng ca này</span>
+        <span id="staff-pos-commission" class="text-base sm:text-lg font-extrabold text-[#2E7D6D] bg-[#E8F8F5] px-3 py-1 rounded-xl block mt-0.5">+6.400 đ (10%)</span>
+      </div>
+    </div>
+
+    <!-- POS Action Form -->
+    <div class="spa-card p-6 sm:p-7 space-y-6">
       <!-- 1. Select Service -->
       <div class="space-y-2.5">
-        <label class="block text-sm font-bold text-slate-200 uppercase tracking-wider flex items-center gap-2">
-          <i data-lucide="sparkles" class="w-4 h-4 text-purple-400"></i> 1. Chọn Combo Dịch Vụ
+        <label class="block text-sm font-bold text-[#2D2424] uppercase tracking-wider flex items-center gap-2">
+          <i data-lucide="sparkles" class="w-4 h-4 text-[#E58A7B]"></i> 1. Chọn Combo Dịch Vụ
         </label>
-        <select id="pos-service-select" onchange="onSelectServiceChange()" class="w-full bg-[#141724] border border-white/10 rounded-2xl p-4 text-white font-semibold text-base focus:outline-none focus:border-purple-500 transition cursor-pointer"></select>
+        <select id="pos-service-select" onchange="onSelectServiceChange()" class="w-full bg-[#F7F2EC] border border-[#EFE8DF] rounded-2xl p-4 text-[#2D2424] font-bold text-base focus:outline-none focus:border-[#E58A7B] focus:bg-white transition cursor-pointer"></select>
         <div id="pos-quick-combos" class="flex flex-wrap gap-2 pt-1"></div>
       </div>
 
       <!-- 2. Customer Info -->
       <div class="space-y-3">
-        <label class="block text-sm font-bold text-slate-200 uppercase tracking-wider flex items-center gap-2">
-          <i data-lucide="user" class="w-4 h-4 text-purple-400"></i> 2. Thông Tin Khách Hàng
+        <label class="block text-sm font-bold text-[#2D2424] uppercase tracking-wider flex items-center gap-2">
+          <i data-lucide="user" class="w-4 h-4 text-[#E58A7B]"></i> 2. Thông Tin Khách Hàng
         </label>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div class="relative">
-            <input type="tel" id="pos-customer-phone" oninput="onCustomerPhoneInput(this.value)" placeholder="Số điện thoại khách..." class="w-full bg-[#141724] border border-white/10 rounded-2xl p-4 pl-11 text-white text-base focus:outline-none focus:border-purple-500 transition font-mono">
-            <i data-lucide="phone" class="w-5 h-5 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+            <input type="tel" id="pos-customer-phone" oninput="onCustomerPhoneInput(this.value)" placeholder="Số điện thoại khách..." class="w-full bg-[#F7F2EC] border border-[#EFE8DF] rounded-2xl p-4 pl-11 text-[#2D2424] text-base focus:outline-none focus:border-[#E58A7B] focus:bg-white transition font-mono">
+            <i data-lucide="phone" class="w-5 h-5 text-[#A39696] absolute left-3.5 top-1/2 -translate-y-1/2"></i>
           </div>
-          <input type="text" id="pos-customer-name" placeholder="Tên khách hàng (Tùy chọn)" class="w-full bg-[#141724] border border-white/10 rounded-2xl p-4 text-white text-base focus:outline-none focus:border-purple-500 transition">
+          <input type="text" id="pos-customer-name" placeholder="Tên khách hàng (Tùy chọn)" class="w-full bg-[#F7F2EC] border border-[#EFE8DF] rounded-2xl p-4 text-[#2D2424] text-base focus:outline-none focus:border-[#E58A7B] focus:bg-white transition">
         </div>
 
-        <div id="pos-customer-card" class="hidden p-4 sm:p-5 rounded-2xl bg-purple-950/30 space-y-3">
+        <div id="pos-customer-card" class="hidden p-4 sm:p-5 rounded-3xl bg-[#FFF0EB] border border-[#FCDFD7] space-y-3">
           <div class="flex justify-between items-center">
             <div class="flex items-center gap-2">
-              <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
-              <span id="pos-cust-name-badge" class="text-sm font-bold text-white">Chị Mai Lan</span>
-              <span id="pos-cust-phone-badge" class="text-xs text-slate-400 font-mono">(0912345678)</span>
+              <span class="w-2.5 h-2.5 rounded-full bg-[#2E7D6D] animate-ping"></span>
+              <span id="pos-cust-name-badge" class="text-sm font-bold text-[#2D2424]">Chị Mai Lan</span>
+              <span id="pos-cust-phone-badge" class="text-xs text-[#7E7272] font-mono">(0912345678)</span>
             </div>
-            <span id="pos-cust-visits-badge" class="text-xs sm:text-sm font-extrabold text-purple-300 font-heading">8 / 10 Lần gội</span>
+            <span id="pos-cust-visits-badge" class="text-xs sm:text-sm font-extrabold text-[#E58A7B]">8 / 10 Lần gội</span>
           </div>
-          <div class="w-full h-2.5 bg-white/10 rounded-full overflow-hidden">
-            <div id="pos-cust-progress-bar" class="h-full bg-gradient-to-r from-purple-500 to-rose-400 rounded-full transition-all duration-500" style="width: 80%"></div>
+          <div class="w-full h-2.5 bg-white rounded-full overflow-hidden">
+            <div id="pos-cust-progress-bar" class="h-full bg-gradient-to-r from-[#E58A7B] to-[#F09A8D] rounded-full transition-all duration-500" style="width: 80%"></div>
           </div>
-          <div id="pos-cust-notes-box" class="text-xs sm:text-sm text-rose-200 bg-rose-500/10 rounded-xl p-3">
+          <div id="pos-cust-notes-box" class="text-xs sm:text-sm text-[#D35400] bg-white/80 rounded-2xl p-3 border border-[#FCDFD7]">
             <span class="font-bold">📝 Lưu ý:</span> <span id="pos-cust-notes-text">Da đầu dầu, thích sấy mát</span>
           </div>
-          <div id="pos-voucher-banner" class="hidden flex items-center justify-between p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
-            <div class="flex items-center gap-2.5 text-xs sm:text-sm text-emerald-300 font-semibold">
-              <i data-lucide="gift" class="w-5 h-5 text-emerald-400"></i>
+          <div id="pos-voucher-banner" class="hidden flex items-center justify-between p-3 rounded-2xl bg-[#E8F8F5] border border-[#B7EBDD]">
+            <div class="flex items-center gap-2.5 text-xs sm:text-sm text-[#2E7D6D] font-bold">
+              <i data-lucide="gift" class="w-5 h-5 text-[#2E7D6D]"></i>
               <span id="pos-voucher-text">Khách có 1 Voucher Combo 1 miễn phí!</span>
             </div>
-            <input type="checkbox" id="pos-use-voucher" onchange="onVoucherToggle(this.checked)" class="w-5 h-5 accent-emerald-500 rounded cursor-pointer">
+            <input type="checkbox" id="pos-use-voucher" onchange="onVoucherToggle(this.checked)" class="w-5 h-5 accent-[#2E7D6D] rounded cursor-pointer">
           </div>
         </div>
       </div>
 
       <!-- 3. Payment Method -->
       <div class="space-y-2.5">
-        <label class="block text-sm font-bold text-slate-200 uppercase tracking-wider flex items-center gap-2">
-          <i data-lucide="credit-card" class="w-4 h-4 text-purple-400"></i> 3. Phương Thức Thanh Toán
+        <label class="block text-sm font-bold text-[#2D2424] uppercase tracking-wider flex items-center gap-2">
+          <i data-lucide="credit-card" class="w-4 h-4 text-[#E58A7B]"></i> 3. Phương Thức Thanh Toán
         </label>
         <div class="grid grid-cols-2 gap-3">
-          <button type="button" id="btn-pay-qr" onclick="setPaymentMethod('Chuyển khoản')" class="p-4 rounded-2xl border bg-purple-600/20 border-purple-500 text-purple-300 font-bold text-sm sm:text-base flex items-center justify-center gap-2 shadow-md shadow-purple-500/10 transition cursor-pointer">
+          <button type="button" id="btn-pay-qr" onclick="setPaymentMethod('Chuyển khoản')" class="p-4 rounded-2xl border bg-[#FFF0EB] border-[#E58A7B] text-[#E58A7B] font-extrabold text-sm sm:text-base flex items-center justify-center gap-2 shadow-sm transition cursor-pointer">
             <i data-lucide="qr-code" class="w-5 h-5"></i> Chuyển Khoản QR
           </button>
-          <button type="button" id="btn-pay-cash" onclick="setPaymentMethod('Tiền mặt')" class="p-4 rounded-2xl border bg-white/[0.04] border-white/5 text-slate-400 hover:bg-white/[0.08] font-bold text-sm sm:text-base flex items-center justify-center gap-2 transition cursor-pointer">
+          <button type="button" id="btn-pay-cash" onclick="setPaymentMethod('Tiền mặt')" class="p-4 rounded-2xl border bg-[#F7F2EC] border-[#EFE8DF] text-[#7E7272] hover:bg-[#FFF0EB] font-bold text-sm sm:text-base flex items-center justify-center gap-2 transition cursor-pointer">
             <i data-lucide="banknote" class="w-5 h-5"></i> Tiền Mặt
           </button>
         </div>
       </div>
 
       <!-- 4. Price & Submit -->
-      <div class="pt-3 border-t border-white/5 space-y-3.5">
+      <div class="pt-3 border-t border-[#F0EAE1] space-y-3.5">
         <div class="flex justify-between items-center">
-          <span class="text-sm sm:text-base text-slate-300 font-medium">Tổng tiền khách trả:</span>
+          <span class="text-sm sm:text-base text-[#7E7272] font-semibold">Tổng tiền khách trả:</span>
           <div class="text-right">
-            <span id="pos-price-display" class="text-2xl sm:text-3xl font-extrabold text-white font-heading">64.000 đ</span>
+            <span id="pos-price-display" class="text-3xl font-extrabold text-[#2D2424]">64.000 đ</span>
           </div>
         </div>
-        <button type="button" onclick="submitPOSReceipt()" class="w-full py-4.5 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-extrabold text-base sm:text-lg shadow-xl shadow-purple-500/25 flex items-center justify-center gap-2 transition active:scale-95 cursor-pointer">
+        <button type="button" onclick="submitPOSReceipt()" class="w-full py-4.5 rounded-full bg-[#E58A7B] hover:bg-[#D9796A] text-white font-extrabold text-base sm:text-lg shadow-xl shadow-[#E58A7B]/30 flex items-center justify-center gap-2 transition active:scale-95 cursor-pointer">
           <i data-lucide="check-circle" class="w-5 h-5"></i>
           <span id="pos-submit-btn-text">Hiện Mã VietQR & Lưu Ca</span>
         </button>
@@ -251,246 +297,254 @@ def build():
   </main>
 """
 
-    p5_staff_history = """  <!-- 4. STAFF SALARY VIEW -->
-  <main id="view-staff-history" class="hidden flex-1 p-4 sm:p-6 max-w-2xl w-full mx-auto space-y-5 pb-24">
+    p5_staff_history = """  <!-- 4. STAFF SALARY VIEW (ROUTINE TIMELINE THEME) -->
+  <main id="view-staff-history" class="hidden flex-1 p-4 sm:p-6 max-w-2xl w-full mx-auto space-y-5 pb-28">
     <div class="flex justify-between items-center px-1">
       <div>
-        <h2 class="text-xl sm:text-2xl font-extrabold text-white font-heading">Lương & Ca Làm Cá Nhân</h2>
-        <p class="text-xs sm:text-sm text-slate-400">Báo cáo thu nhập tháng này</p>
+        <h2 class="text-2xl font-extrabold text-[#2D2424]">Lương & Tiến Trình Ca Làm</h2>
+        <p class="text-xs sm:text-sm text-[#7E7272]">Thu nhập tháng này</p>
       </div>
-      <button onclick="loadStaffHistory()" class="p-3 rounded-2xl bg-white/[0.04] hover:bg-white/[0.08] text-slate-300 hover:text-white transition cursor-pointer">
+      <button onclick="loadStaffHistory()" class="p-3 rounded-2xl bg-white hover:bg-[#FFF0EB] text-[#7E7272] hover:text-[#E58A7B] transition border border-[#F0EAE1] shadow-sm cursor-pointer">
         <i data-lucide="refresh-cw" class="w-4 h-4"></i>
       </button>
     </div>
 
-    <!-- Main Salary Card (Sleek, Spacious, Borderless) -->
-    <div class="glass-card rounded-3xl p-6 sm:p-8 shadow-2xl border border-purple-500/20 bg-gradient-to-br from-purple-950/50 via-[#141724] to-[#0f111a] space-y-5">
+    <!-- Main Salary Card (Porcelain White + Terracotta Accents) -->
+    <div class="spa-card p-6 sm:p-8 space-y-5">
       <div>
-        <span class="text-xs sm:text-sm font-semibold text-purple-300 uppercase tracking-wider block">Tổng Thu Nhập Tháng Tạm Tính</span>
-        <div class="text-4xl sm:text-5xl font-extrabold text-white font-heading mt-1.5" id="staff-total-earnings">
-          0 <span class="text-xl text-purple-400 font-normal">đ</span>
+        <span class="text-xs sm:text-sm font-bold text-[#E58A7B] uppercase tracking-wider block">Tổng Thu Nhập Tháng Tạm Tính</span>
+        <div class="text-4xl sm:text-5xl font-extrabold text-[#2D2424] mt-1.5" id="staff-total-earnings">
+          0 <span class="text-xl text-[#E58A7B] font-normal">đ</span>
         </div>
       </div>
 
       <!-- Working Days Progress -->
-      <div class="p-4 sm:p-5 rounded-2xl bg-white/[0.04] space-y-2.5">
+      <div class="p-4 sm:p-5 rounded-3xl bg-[#F7F2EC] space-y-2.5">
         <div class="flex justify-between items-center text-xs sm:text-sm">
-          <span class="text-slate-200 font-semibold">Tiến trình ngày công tháng này:</span>
-          <span class="font-bold text-purple-300 font-mono" id="staff-days-progress-text">0 / 27 ngày</span>
+          <span class="text-[#2D2424] font-bold">Tiến trình ngày công tháng này:</span>
+          <span class="font-extrabold text-[#E58A7B] font-mono" id="staff-days-progress-text">0 / 27 ngày</span>
         </div>
-        <div class="w-full bg-white/10 rounded-full h-3 overflow-hidden">
-          <div id="staff-days-progress-bar" class="bg-gradient-to-r from-purple-500 via-indigo-400 to-emerald-400 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+        <div class="w-full bg-white rounded-full h-3 overflow-hidden shadow-inner">
+          <div id="staff-days-progress-bar" class="bg-gradient-to-r from-[#E58A7B] to-[#F09A8D] h-full rounded-full transition-all duration-500" style="width: 0%"></div>
         </div>
-        <div class="flex justify-between text-xs sm:text-sm text-slate-300">
+        <div class="flex justify-between text-xs sm:text-sm text-[#7E7272]">
           <span id="staff-daily-rate-note">Công: 0 đ/ngày (Định mức 2.000.000 đ)</span>
-          <span class="font-bold text-emerald-400 font-heading" id="staff-days-pct-text">0% chỉ tiêu</span>
+          <span class="font-bold text-[#2E7D6D]" id="staff-days-pct-text">0% chỉ tiêu</span>
         </div>
       </div>
 
       <!-- 3 Stats Columns -->
       <div class="grid grid-cols-3 gap-3 pt-2 text-center">
-        <div class="p-3.5 rounded-2xl bg-white/[0.04]">
-          <span class="text-xs text-slate-400 block uppercase font-medium">Số ca gội</span>
-          <span class="text-base sm:text-lg font-bold text-white font-heading mt-0.5 block" id="staff-total-tours">0 ca</span>
+        <div class="p-3.5 rounded-2xl bg-[#EBF5FB] border border-[#D4E6F1]">
+          <span class="text-xs text-[#2980B9] block uppercase font-bold">Số ca gội</span>
+          <span class="text-base sm:text-lg font-extrabold text-[#2D2424] mt-0.5 block" id="staff-total-tours">0 ca</span>
         </div>
-        <div class="p-3.5 rounded-2xl bg-white/[0.04]">
-          <span class="text-xs text-slate-400 block uppercase font-medium">Lương Tour</span>
-          <span class="text-base sm:text-lg font-bold text-emerald-400 font-heading mt-0.5 block" id="staff-total-commission">0 đ</span>
+        <div class="p-3.5 rounded-2xl bg-[#E8F8F5] border border-[#B7EBDD]">
+          <span class="text-xs text-[#2E7D6D] block uppercase font-bold">Lương Tour</span>
+          <span class="text-base sm:text-lg font-extrabold text-[#2E7D6D] mt-0.5 block" id="staff-total-commission">0 đ</span>
         </div>
-        <div class="p-3.5 rounded-2xl bg-white/[0.04]">
-          <span class="text-xs text-slate-400 block uppercase font-medium">Lương Cứng Đạt</span>
-          <span class="text-base sm:text-lg font-bold text-purple-300 font-heading mt-0.5 block" id="staff-base-salary">0 đ</span>
+        <div class="p-3.5 rounded-2xl bg-[#FFF0EB] border border-[#FCDFD7]">
+          <span class="text-xs text-[#E58A7B] block uppercase font-bold">Lương Cứng Đạt</span>
+          <span class="text-base sm:text-lg font-extrabold text-[#E58A7B] mt-0.5 block" id="staff-base-salary">0 đ</span>
         </div>
       </div>
     </div>
 
-    <!-- Receipts History -->
-    <div class="space-y-3 pt-1">
-      <h3 class="text-xs sm:text-sm font-bold text-slate-300 uppercase tracking-wider px-1">Lịch Sử Ca Làm Gần Đây</h3>
-      <div id="staff-receipts-list" class="space-y-2.5"></div>
+    <!-- Timeline Routine Receipts History (Như màn hình Daily Routine trong ảnh mẫu) -->
+    <div class="space-y-3 pt-2">
+      <div class="flex justify-between items-center px-1">
+        <h3 class="text-sm sm:text-base font-extrabold text-[#2D2424] uppercase tracking-wider">Nhật Ký Ca Làm Theo Khung Giờ</h3>
+        <span class="text-xs text-[#E58A7B] font-bold">Hôm nay</span>
+      </div>
+      <div id="staff-receipts-list" class="space-y-3"></div>
     </div>
   </main>
 """
 
-    p6_admin = """  <!-- 5. ADMIN DASHBOARD VIEW -->
-  <main id="view-admin-dashboard" class="hidden flex-1 p-4 sm:p-6 max-w-5xl w-full mx-auto space-y-6 pb-24">
+    p6_admin = """  <!-- 5. ADMIN DASHBOARD VIEW (LUXURY SPA THEME) -->
+  <main id="view-admin-dashboard" class="hidden flex-1 p-4 sm:p-6 max-w-5xl w-full mx-auto space-y-6 pb-28">
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
       <div>
-        <h2 class="text-2xl sm:text-3xl font-extrabold text-white font-heading flex items-center gap-2.5">👑 Quản Trị Selena Spa</h2>
-        <p class="text-xs sm:text-sm text-slate-400">Thống kê tài chính dòng tiền & Kiểm soát vận hành</p>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-[#2D2424] flex items-center gap-2.5">👑 Quản Trị Selena Spa</h2>
+        <p class="text-xs sm:text-sm text-[#7E7272]">Thống kê tài chính dòng tiền & Kiểm soát vận hành</p>
       </div>
-      <button onclick="loadAdminDashboard()" class="px-4 py-2.5 rounded-2xl bg-white/[0.04] hover:bg-white/[0.08] text-slate-200 text-xs sm:text-sm font-semibold flex items-center gap-2 transition cursor-pointer">
-        <i data-lucide="refresh-cw" class="w-4 h-4"></i> Làm mới
+      <button onclick="loadAdminDashboard()" class="px-4 py-2.5 rounded-2xl bg-white hover:bg-[#FFF0EB] text-[#2D2424] hover:text-[#E58A7B] text-xs sm:text-sm font-bold flex items-center gap-2 transition border border-[#F0EAE1] shadow-sm cursor-pointer">
+        <i data-lucide="refresh-cw" class="w-4 h-4 text-[#E58A7B]"></i> Làm mới
       </button>
     </div>
 
-    <!-- Financial KPI Cards -->
+    <!-- 4 Pastel Financial KPI Cards (Mint, Lavender, Peach, Terracotta) -->
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-      <div class="glass-card rounded-3xl p-5 sm:p-6 border border-emerald-500/20 bg-gradient-to-br from-emerald-950/20 to-transparent space-y-1">
-        <span class="text-xs sm:text-sm font-semibold text-emerald-400 uppercase tracking-wider block">Doanh Thu Tổng</span>
-        <div class="text-2xl sm:text-3xl font-extrabold text-white font-heading" id="kpi-revenue">0 đ</div>
-        <span class="text-xs text-slate-400 block" id="kpi-tours">0 ca phục vụ</span>
+      <div class="p-5 sm:p-6 rounded-3xl bg-[#E8F8F5] border border-[#B7EBDD] space-y-1 shadow-sm">
+        <span class="text-xs sm:text-sm font-bold text-[#2E7D6D] uppercase tracking-wider block">Doanh Thu Tổng</span>
+        <div class="text-2xl sm:text-3xl font-extrabold text-[#2D2424]" id="kpi-revenue">0 đ</div>
+        <span class="text-xs text-[#2E7D6D] font-medium block" id="kpi-tours">0 ca phục vụ</span>
       </div>
-      <div class="glass-card rounded-3xl p-5 sm:p-6 border border-purple-500/20 bg-gradient-to-br from-purple-950/20 to-transparent space-y-1">
-        <span class="text-xs sm:text-sm font-semibold text-purple-400 uppercase tracking-wider block">Tổng Lương KTV</span>
-        <div class="text-2xl sm:text-3xl font-extrabold text-white font-heading" id="kpi-salaries">0 đ</div>
-        <span class="text-xs text-slate-400 block">Lương cứng + Tour</span>
+      <div class="p-5 sm:p-6 rounded-3xl bg-[#F5EEF8] border border-[#E8DAEF] space-y-1 shadow-sm">
+        <span class="text-xs sm:text-sm font-bold text-[#8E44AD] uppercase tracking-wider block">Tổng Lương KTV</span>
+        <div class="text-2xl sm:text-3xl font-extrabold text-[#2D2424]" id="kpi-salaries">0 đ</div>
+        <span class="text-xs text-[#8E44AD] font-medium block">Lương cứng + Tour</span>
       </div>
-      <div class="glass-card rounded-3xl p-5 sm:p-6 border border-red-500/20 bg-gradient-to-br from-red-950/20 to-transparent space-y-1">
-        <span class="text-xs sm:text-sm font-semibold text-red-400 uppercase tracking-wider block">Chi Phí Vận Hành</span>
-        <div class="text-2xl sm:text-3xl font-extrabold text-white font-heading" id="kpi-expenses">0 đ</div>
-        <span class="text-xs text-slate-400 block">Điện, nước, mạng, mặt bằng</span>
+      <div class="p-5 sm:p-6 rounded-3xl bg-[#FFF0EB] border border-[#FCDFD7] space-y-1 shadow-sm">
+        <span class="text-xs sm:text-sm font-bold text-[#D35400] uppercase tracking-wider block">Chi Phí Vận Hành</span>
+        <div class="text-2xl sm:text-3xl font-extrabold text-[#2D2424]" id="kpi-expenses">0 đ</div>
+        <span class="text-xs text-[#D35400] font-medium block">Điện, nước, mạng, mặt bằng</span>
       </div>
-      <div class="glass-card rounded-3xl p-5 sm:p-6 border border-rose-500/30 bg-gradient-to-br from-rose-950/30 to-transparent col-span-2 sm:col-span-1 shadow-lg shadow-rose-500/10 space-y-1">
-        <span class="text-xs sm:text-sm font-bold text-rose-400 uppercase tracking-wider block">LỢI NHUẬN RÒNG</span>
-        <div class="text-2xl sm:text-3xl font-extrabold text-rose-300 font-heading" id="kpi-net-profit">0 đ</div>
-        <span class="text-xs text-emerald-400 font-medium block">Tiền thực nhận của Chủ</span>
+      <div class="p-5 sm:p-6 rounded-3xl bg-[#E58A7B] text-white space-y-1 shadow-lg shadow-[#E58A7B]/20 col-span-2 sm:col-span-1">
+        <span class="text-xs sm:text-sm font-extrabold text-white/90 uppercase tracking-wider block">LỢI NHUẬN RÒNG</span>
+        <div class="text-2xl sm:text-3xl font-extrabold text-white" id="kpi-net-profit">0 đ</div>
+        <span class="text-xs text-white/90 font-medium block">Tiền thực nhận của Chủ</span>
       </div>
     </div>
 
-    <!-- Subtabs Navigation -->
-    <div class="flex items-center gap-2 overflow-x-auto pb-1 border-b border-white/5">
-      <button onclick="switchAdminTab('receipts')" id="tab-btn-receipts" class="px-4.5 py-2.5 rounded-2xl text-xs sm:text-sm font-bold bg-purple-600 text-white shadow-md shadow-purple-600/30 transition cursor-pointer shrink-0">📜 Hóa Đơn Toàn Tiệm</button>
-      <button onclick="switchAdminTab('customers')" id="tab-btn-customers" class="px-4.5 py-2.5 rounded-2xl text-xs sm:text-sm font-bold bg-white/5 hover:bg-white/10 text-slate-400 transition cursor-pointer shrink-0">👥 Khách Hàng (tb_customers)</button>
-      <button onclick="switchAdminTab('users')" id="tab-btn-users" class="px-4.5 py-2.5 rounded-2xl text-xs sm:text-sm font-bold bg-white/5 hover:bg-white/10 text-slate-400 transition cursor-pointer shrink-0">💆 Nhân Viên (tb_users)</button>
-      <button onclick="switchAdminTab('expenses')" id="tab-btn-expenses" class="px-4.5 py-2.5 rounded-2xl text-xs sm:text-sm font-bold bg-white/5 hover:bg-white/10 text-slate-400 transition cursor-pointer shrink-0">⚡ Chi Phí Vận Hành</button>
-      <button onclick="switchAdminTab('settings')" id="tab-btn-settings" class="px-4.5 py-2.5 rounded-2xl text-xs sm:text-sm font-bold bg-white/5 hover:bg-white/10 text-slate-400 transition cursor-pointer shrink-0">⚙️ Kết Nối Google Sheets</button>
+    <!-- Subtabs Navigation (Floating Pills) -->
+    <div class="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
+      <button onclick="switchAdminTab('receipts')" id="tab-btn-receipts" class="px-5 py-2.5 rounded-full text-xs sm:text-sm font-bold bg-[#E58A7B] text-white shadow-md shadow-[#E58A7B]/25 transition cursor-pointer shrink-0">📜 Hóa Đơn Toàn Tiệm</button>
+      <button onclick="switchAdminTab('customers')" id="tab-btn-customers" class="px-5 py-2.5 rounded-full text-xs sm:text-sm font-bold bg-white hover:bg-[#FFF0EB] text-[#7E7272] border border-[#F0EAE1] transition cursor-pointer shrink-0">👥 Khách Hàng (tb_customers)</button>
+      <button onclick="switchAdminTab('users')" id="tab-btn-users" class="px-5 py-2.5 rounded-full text-xs sm:text-sm font-bold bg-white hover:bg-[#FFF0EB] text-[#7E7272] border border-[#F0EAE1] transition cursor-pointer shrink-0">💆 Nhân Viên (tb_users)</button>
+      <button onclick="switchAdminTab('expenses')" id="tab-btn-expenses" class="px-5 py-2.5 rounded-full text-xs sm:text-sm font-bold bg-white hover:bg-[#FFF0EB] text-[#7E7272] border border-[#F0EAE1] transition cursor-pointer shrink-0">⚡ Chi Phí Vận Hành</button>
+      <button onclick="switchAdminTab('settings')" id="tab-btn-settings" class="px-5 py-2.5 rounded-full text-xs sm:text-sm font-bold bg-white hover:bg-[#FFF0EB] text-[#7E7272] border border-[#F0EAE1] transition cursor-pointer shrink-0">⚙️ Kết Nối Google Sheets</button>
     </div>
 
-    <div id="admin-subtab-receipts" class="glass-card rounded-3xl p-5 sm:p-7 border border-white/10 space-y-4">
+    <!-- Receipts Subtab -->
+    <div id="admin-subtab-receipts" class="spa-card p-5 sm:p-7 space-y-4">
       <div class="flex justify-between items-center">
-        <h3 class="text-base sm:text-lg font-bold text-white font-heading">Nhật Ký Hóa Đơn Gần Đây</h3>
-        <span class="text-xs sm:text-sm text-purple-400 font-bold" id="admin-receipt-count">0 hóa đơn</span>
+        <h3 class="text-base sm:text-lg font-extrabold text-[#2D2424]">Nhật Ký Hóa Đơn Gần Đây</h3>
+        <span class="text-xs sm:text-sm text-[#E58A7B] font-bold" id="admin-receipt-count">0 hóa đơn</span>
       </div>
 
       <!-- Mobile View (Cards) -->
       <div id="admin-receipts-mobile-cards" class="block md:hidden space-y-3"></div>
 
-      <!-- Desktop View (Spacious Table) -->
+      <!-- Desktop View (Clean Table) -->
       <div class="hidden md:block overflow-x-auto">
         <table class="w-full text-left text-sm min-w-[700px]">
           <thead>
-            <tr class="border-b border-white/10 text-slate-400 text-xs sm:text-sm">
-              <th class="pb-3.5 font-semibold">Mã HD</th>
-              <th class="pb-3.5 font-semibold">Dịch Vụ</th>
-              <th class="pb-3.5 font-semibold">Khách</th>
-              <th class="pb-3.5 font-semibold">KTV</th>
-              <th class="pb-3.5 font-semibold text-right">Thu Thực</th>
-              <th class="pb-3.5 font-semibold text-right">Thanh Toán</th>
+            <tr class="border-b border-[#F0EAE1] text-[#7E7272] text-xs sm:text-sm font-bold">
+              <th class="pb-3.5">Mã HD</th>
+              <th class="pb-3.5">Dịch Vụ</th>
+              <th class="pb-3.5">Khách</th>
+              <th class="pb-3.5">KTV</th>
+              <th class="pb-3.5 text-right">Thu Thực</th>
+              <th class="pb-3.5 text-right">Thanh Toán</th>
             </tr>
           </thead>
-          <tbody id="admin-receipts-table-body" class="divide-y divide-white/5"></tbody>
+          <tbody id="admin-receipts-table-body" class="divide-y divide-[#F0EAE1]"></tbody>
         </table>
       </div>
     </div>
 
-    <div id="admin-subtab-customers" class="hidden glass-card rounded-3xl p-5 sm:p-6 border border-white/10 space-y-4">
+    <!-- Customers Subtab -->
+    <div id="admin-subtab-customers" class="hidden spa-card p-5 sm:p-7 space-y-4">
       <div class="flex justify-between items-center">
         <div>
-          <h3 class="text-sm font-bold text-white font-heading">Danh Sách Khách Hàng (tb_customers)</h3>
-          <p class="text-xs text-slate-400">Tự động đồng bộ với Google Sheets</p>
+          <h3 class="text-base sm:text-lg font-extrabold text-[#2D2424]">Danh Sách Khách Hàng (tb_customers)</h3>
+          <p class="text-xs text-[#7E7272]">Tự động đồng bộ với Google Sheets</p>
         </div>
-        <span class="text-xs text-purple-400 font-bold" id="admin-customer-count">0 khách</span>
+        <span class="text-xs sm:text-sm text-[#E58A7B] font-bold" id="admin-customer-count">0 khách</span>
       </div>
       <div id="admin-customers-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
     </div>
 
-    <div id="admin-subtab-users" class="hidden glass-card rounded-3xl p-5 sm:p-6 border border-white/10 space-y-4">
+    <!-- Users Subtab -->
+    <div id="admin-subtab-users" class="hidden spa-card p-5 sm:p-7 space-y-4">
       <div class="flex justify-between items-center">
         <div>
-          <h3 class="text-sm font-bold text-white font-heading">Danh Sách Nhân Viên (tb_users)</h3>
-          <p class="text-xs text-slate-400">Thêm / sửa thợ trực tiếp trên tab tb_users của Google Sheet</p>
+          <h3 class="text-base sm:text-lg font-extrabold text-[#2D2424]">Danh Sách Nhân Viên (tb_users)</h3>
+          <p class="text-xs text-[#7E7272]">Thêm / sửa thợ trực tiếp trên Google Sheet</p>
         </div>
-        <span class="text-xs text-purple-400 font-bold" id="admin-users-count">0 nhân sự</span>
+        <span class="text-xs sm:text-sm text-[#E58A7B] font-bold" id="admin-users-count">0 nhân sự</span>
       </div>
-      <div id="admin-users-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
+      <div id="admin-users-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5"></div>
     </div>
 
-    <div id="admin-subtab-expenses" class="hidden glass-card rounded-3xl p-5 sm:p-6 border border-white/10 space-y-4">
+    <!-- Expenses Subtab -->
+    <div id="admin-subtab-expenses" class="hidden spa-card p-5 sm:p-7 space-y-4">
       <div class="flex justify-between items-center">
-        <h3 class="text-sm font-bold text-white font-heading">Chi Phí Phát Sinh Hằng Tháng</h3>
-        <button onclick="openAddExpenseModal()" class="px-3 py-1.5 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold text-xs shadow-lg shadow-red-600/20 flex items-center gap-1 transition cursor-pointer">
-          <i data-lucide="plus" class="w-3.5 h-3.5"></i> Nhập Chi Phí Mới
+        <h3 class="text-base sm:text-lg font-extrabold text-[#2D2424]">Chi Phí Phát Sinh Hằng Tháng</h3>
+        <button onclick="openAddExpenseModal()" class="px-4 py-2 rounded-full bg-[#E58A7B] hover:bg-[#D9796A] text-white font-bold text-xs shadow-md shadow-[#E58A7B]/20 flex items-center gap-1.5 transition cursor-pointer">
+          <i data-lucide="plus" class="w-4 h-4"></i> Nhập Chi Phí Mới
         </button>
       </div>
       <div id="admin-expenses-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
     </div>
 
-    <div id="admin-subtab-settings" class="hidden glass-card rounded-3xl p-5 sm:p-6 border border-white/10 space-y-6">
+    <!-- Settings Subtab -->
+    <div id="admin-subtab-settings" class="hidden spa-card p-5 sm:p-7 space-y-6">
       <div>
-        <h3 class="text-base font-bold text-white font-heading flex items-center gap-2">
-          <i data-lucide="settings" class="w-5 h-5 text-purple-400"></i> Kết Nối Google Sheets & Bảo Mật Wifi
+        <h3 class="text-lg font-extrabold text-[#2D2424] flex items-center gap-2">
+          <i data-lucide="settings" class="w-5 h-5 text-[#E58A7B]"></i> Kết Nối Google Sheets
         </h3>
-        <p class="text-xs text-slate-400 mt-1">Đồng bộ trực tiếp về Google Sheets trên Google Drive của bạn</p>
+        <p class="text-xs sm:text-sm text-[#7E7272] mt-1">Đồng bộ trực tiếp về Google Sheets trên Google Drive của bạn</p>
       </div>
-      <div class="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-2">
-        <label class="block text-xs font-semibold text-slate-300">Đường dẫn Google Apps Script Web App URL:</label>
+      <div class="p-4 rounded-3xl bg-[#F7F2EC] space-y-2 border border-[#EFE8DF]">
+        <label class="block text-xs sm:text-sm font-bold text-[#2D2424]">Đường dẫn Google Apps Script Web App URL:</label>
         <div class="flex gap-2">
-          <input type="text" id="setting-gas-url" placeholder="https://script.google.com/macros/s/.../exec" class="flex-1 bg-[#141724] border border-white/10 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-purple-500 font-mono">
-          <button onclick="saveGasUrl()" class="px-4 py-3 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs transition cursor-pointer">Lưu</button>
+          <input type="text" id="setting-gas-url" placeholder="https://script.google.com/macros/s/.../exec" class="flex-1 bg-white border border-[#EFE8DF] rounded-2xl p-3.5 text-xs sm:text-sm text-[#2D2424] focus:outline-none focus:border-[#E58A7B] font-mono">
+          <button onclick="saveGasUrl()" class="px-5 py-3 rounded-2xl bg-[#E58A7B] hover:bg-[#D9796A] text-white font-bold text-xs sm:text-sm transition cursor-pointer">Lưu</button>
         </div>
-        <p class="text-[11px] text-slate-500">* Để trống sẽ chạy chế độ Offline LocalStorage miễn phí.</p>
+        <p class="text-xs text-[#A39696]">* Để trống sẽ chạy chế độ Offline LocalStorage miễn phí.</p>
       </div>
 
-      <div class="p-4 rounded-2xl bg-red-500/10 border border-red-500/20 space-y-2">
-        <div class="text-xs font-bold text-red-300">Quản Lý Dữ Liệu Bộ Nhớ:</div>
-        <p class="text-[11px] text-slate-400">Nếu vừa chạy lại bảng trên Google Sheet và muốn App xóa dữ liệu thử nghiệm cũ để lấy dữ liệu mới nhất từ Sheet:</p>
-        <button onclick="resetLocalDataAndResync()" class="w-full py-3 rounded-xl bg-red-600/30 hover:bg-red-600/50 border border-red-500/50 text-red-200 font-bold text-xs flex items-center justify-center gap-2 transition cursor-pointer">
+      <div class="p-4 rounded-3xl bg-rose-50 border border-rose-200 space-y-2">
+        <div class="text-xs sm:text-sm font-bold text-rose-700">Quản Lý Dữ Liệu Bộ Nhớ:</div>
+        <p class="text-xs text-rose-600">Nếu vừa cập nhật bảng trên Google Sheet và muốn App xóa dữ liệu thử nghiệm cũ để lấy dữ liệu mới nhất từ Sheet:</p>
+        <button onclick="resetLocalDataAndResync()" class="w-full py-3.5 rounded-2xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition cursor-pointer shadow-md shadow-rose-600/20">
           <i data-lucide="refresh-cw" class="w-4 h-4"></i> Xóa Cache Cũ & Đồng Bộ Lại Từ Google Sheets
         </button>
       </div>
     </div>
   </main>
 
-  <!-- 6. MOBILE NAVIGATION -->
-  <nav id="mobile-nav" class="hidden fixed bottom-0 left-0 right-0 z-40 glass-card border-t border-white/10 p-2 sm:hidden backdrop-blur-2xl">
-    <div id="nav-buttons-container" class="grid grid-cols-2 gap-2 max-w-sm mx-auto"></div>
+  <!-- 6. FLOATING BOTTOM NAVIGATION DOCK (NHƯ DOCK DƯỚI ĐÁY ẢNH MẪU 1) -->
+  <nav id="mobile-nav" class="hidden fixed bottom-4 left-4 right-4 z-40 max-w-sm mx-auto">
+    <div id="nav-buttons-container" class="bg-white/95 backdrop-blur-xl rounded-full p-2 border border-[#F0EAE1] shadow-[0_12px_40px_rgba(0,0,0,0.08)] grid grid-cols-2 gap-1.5"></div>
   </nav>
 
   <!-- 7. VIETQR MODAL -->
-  <div id="modal-vietqr" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-    <div class="w-full max-w-sm glass-modal rounded-3xl p-6 shadow-2xl border border-white/10 text-center relative">
-      <button onclick="closeVietQRModal()" class="absolute top-4 right-4 p-2 rounded-full bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition cursor-pointer">
+  <div id="modal-vietqr" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-md">
+    <div class="w-full max-w-sm spa-modal p-6 text-center relative">
+      <button onclick="closeVietQRModal()" class="absolute top-4 right-4 p-2 rounded-full bg-[#F7F2EC] hover:bg-[#FFF0EB] text-[#7E7272] hover:text-[#E58A7B] transition cursor-pointer">
         <i data-lucide="x" class="w-5 h-5"></i>
       </button>
-      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold mb-3">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#E8F8F5] border border-[#B7EBDD] text-[#2E7D6D] text-xs font-bold mb-3">
         <i data-lucide="qr-code" class="w-3.5 h-3.5"></i> VietQR Chuyển Khoản Nhanh
       </div>
-      <h3 class="text-xl font-bold text-white font-heading">Quét Mã Thanh Toán</h3>
-      <p class="text-xs text-slate-400 mt-1">Khách quét bằng bất kỳ App Ngân hàng nào</p>
-      <div class="mt-4 p-3 bg-white rounded-2xl shadow-inner inline-block">
-        <img id="vietqr-img" src="" alt="VietQR Code" class="w-56 h-56 object-contain rounded-xl">
+      <h3 class="text-xl font-bold text-[#2D2424]">Quét Mã Thanh Toán</h3>
+      <p class="text-xs text-[#7E7272] mt-1">Khách quét bằng bất kỳ App Ngân hàng nào</p>
+      <div class="mt-4 p-3 bg-white rounded-3xl border border-[#F0EAE1] shadow-sm inline-block">
+        <img id="vietqr-img" src="" alt="VietQR Code" class="w-56 h-56 object-contain rounded-2xl">
       </div>
-      <div class="mt-4 p-3.5 rounded-2xl bg-white/5 border border-white/10 flex justify-between items-center text-left">
+      <div class="mt-4 p-4 rounded-2xl bg-[#F7F2EC] flex justify-between items-center text-left">
         <div>
-          <div id="vietqr-bank-info" class="text-[11px] text-slate-400">MBBank - 0912345678</div>
-          <div id="vietqr-account-name" class="text-xs text-slate-300 font-medium">SELENA SPA</div>
+          <div id="vietqr-bank-info" class="text-xs text-[#7E7272] font-mono">MBBank - 0912345678</div>
+          <div id="vietqr-account-name" class="text-sm text-[#2D2424] font-bold">SELENA SPA</div>
         </div>
         <div class="text-right">
-          <div class="text-[10px] text-slate-400 uppercase tracking-wider">Số tiền</div>
-          <div id="vietqr-amount" class="text-lg font-extrabold text-emerald-400 font-heading">0 đ</div>
+          <div class="text-[10px] text-[#A39696] uppercase font-bold tracking-wider">Số tiền</div>
+          <div id="vietqr-amount" class="text-lg font-extrabold text-[#2E7D6D]">0 đ</div>
         </div>
       </div>
-      <div class="mt-3 text-[11px] text-slate-400 bg-purple-500/10 border border-purple-500/20 rounded-xl py-1.5 px-3">
-        Nội dung CK: <span id="vietqr-desc" class="font-bold text-purple-300">SelenaSpa HD01</span>
+      <div class="mt-3 text-xs text-[#7E7272] bg-[#FFF0EB] rounded-2xl py-2 px-3">
+        Nội dung CK: <span id="vietqr-desc" class="font-bold text-[#E58A7B]">SelenaSpa HD01</span>
       </div>
       <div class="mt-5 flex gap-2">
-        <button onclick="closeVietQRModal()" class="flex-1 py-3 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 font-semibold text-sm cursor-pointer">Hủy</button>
-        <button onclick="confirmVietQRSuccess()" class="flex-[2] py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-bold text-sm shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2 cursor-pointer">
-          <i data-lucide="check-circle" class="w-4 h-4"></i> Xác nhận Đã nhận tiền
+        <button onclick="closeVietQRModal()" class="flex-1 py-3.5 rounded-full bg-[#F7F2EC] hover:bg-[#EFE8DF] text-[#7E7272] font-bold text-sm cursor-pointer">Hủy</button>
+        <button onclick="confirmVietQRSuccess()" class="flex-[2] py-3.5 rounded-full bg-[#2E7D6D] hover:bg-[#256B5D] text-white font-bold text-sm shadow-lg shadow-[#2E7D6D]/20 flex items-center justify-center gap-2 cursor-pointer">
+          <i data-lucide="check-circle" class="w-4 h-4"></i> Đã nhận tiền
         </button>
       </div>
     </div>
   </div>
 
   <!-- 8. ADD EXPENSE MODAL -->
-  <div id="modal-add-expense" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-    <div class="w-full max-w-sm glass-modal rounded-3xl p-6 border border-white/10 relative">
-      <h3 class="text-lg font-bold text-white font-heading mb-4">Nhập Chi Phí Phát Sinh</h3>
+  <div id="modal-add-expense" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-md">
+    <div class="w-full max-w-sm spa-modal p-6 relative">
+      <h3 class="text-lg font-extrabold text-[#2D2424] mb-4">Nhập Chi Phí Phát Sinh</h3>
       <form onsubmit="handleSaveExpenseForm(event)" class="space-y-3.5">
         <div>
-          <label class="block text-xs font-semibold text-slate-400 mb-1">Loại chi phí</label>
-          <select id="input-exp-type" class="w-full bg-[#141724] border border-white/10 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-purple-500">
+          <label class="block text-xs font-bold text-[#2D2424] mb-1">Loại chi phí</label>
+          <select id="input-exp-type" class="w-full bg-[#F7F2EC] border border-[#EFE8DF] rounded-2xl p-3.5 text-sm text-[#2D2424] focus:outline-none focus:border-[#E58A7B]">
             <option value="Điện sấy">Điện sấy & máy lạnh</option>
             <option value="Điện cố định">Điện sinh hoạt cố định</option>
             <option value="Nước cố định">Tiền nước sạch</option>
@@ -501,16 +555,16 @@ def build():
           </select>
         </div>
         <div>
-          <label class="block text-xs font-semibold text-slate-400 mb-1">Số tiền (VNĐ)</label>
-          <input type="number" id="input-exp-amount" placeholder="Ví dụ: 350000" class="w-full bg-[#141724] border border-white/10 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-purple-500" required>
+          <label class="block text-xs font-bold text-[#2D2424] mb-1">Số tiền (VNĐ)</label>
+          <input type="number" id="input-exp-amount" placeholder="Ví dụ: 350000" class="w-full bg-[#F7F2EC] border border-[#EFE8DF] rounded-2xl p-3.5 text-base font-bold text-[#2D2424] focus:outline-none focus:border-[#E58A7B]" required>
         </div>
         <div>
-          <label class="block text-xs font-semibold text-slate-400 mb-1">Ghi chú</label>
-          <input type="text" id="input-exp-note" placeholder="Ghi chú chi tiết..." class="w-full bg-[#141724] border border-white/10 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-purple-500">
+          <label class="block text-xs font-bold text-[#2D2424] mb-1">Ghi chú</label>
+          <input type="text" id="input-exp-note" placeholder="Ghi chú chi tiết..." class="w-full bg-[#F7F2EC] border border-[#EFE8DF] rounded-2xl p-3.5 text-sm text-[#2D2424] focus:outline-none focus:border-[#E58A7B]">
         </div>
         <div class="flex gap-2 pt-2">
-          <button type="button" onclick="closeAddExpenseModal()" class="flex-1 py-3 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 font-semibold text-xs cursor-pointer">Đóng</button>
-          <button type="submit" class="flex-1 py-3 rounded-xl bg-gradient-to-r from-red-500 to-rose-500 text-white font-bold text-xs shadow-lg shadow-red-500/20 cursor-pointer">Lưu Chi Phí</button>
+          <button type="button" onclick="closeAddExpenseModal()" class="flex-1 py-3.5 rounded-full bg-[#F7F2EC] hover:bg-[#EFE8DF] text-[#7E7272] font-bold text-xs sm:text-sm cursor-pointer">Đóng</button>
+          <button type="submit" class="flex-1 py-3.5 rounded-full bg-[#E58A7B] hover:bg-[#D9796A] text-white font-bold text-xs sm:text-sm shadow-md shadow-[#E58A7B]/20 cursor-pointer">Lưu Chi Phí</button>
         </div>
       </form>
     </div>
@@ -519,296 +573,121 @@ def build():
 
     p7_js = """  <!-- 9. JAVASCRIPT LOGIC -->
   <script>
-    const DEFAULT_MENU = [
-      { service_id: 'CB_BE', service_name: 'Combo Bé (Gội cơ bản)', price: 45000, duration_min: 30, cosmetics_cost: 4500, commission_value: 4500 },
-      { service_id: 'CB_01', service_name: 'Combo 1 (Gội dưỡng sinh thư giãn)', price: 64000, duration_min: 50, cosmetics_cost: 6400, commission_value: 6400 },
-      { service_id: 'CB_02', service_name: 'Combo 2 (Dưỡng sinh chuyên sâu + Cổ vai gáy)', price: 109000, duration_min: 75, cosmetics_cost: 10000, commission_value: 11000 },
-      { service_id: 'CB_03', service_name: 'Combo 3 (Dưỡng sinh thảo mộc cao cấp)', price: 139000, duration_min: 85, cosmetics_cost: 14000, commission_value: 14000 },
-      { service_id: 'CB_04', service_name: 'Combo 4 (Liệu trình phục hồi da đầu + Massage)', price: 179000, duration_min: 95, cosmetics_cost: 18000, commission_value: 18000 },
-      { service_id: 'CB_05', service_name: 'Combo 5 (Đại tiệc Thư giãn Hoàng Gia)', price: 219000, duration_min: 110, cosmetics_cost: 22000, commission_value: 22000 }
+    // -------------------------------------------------------------
+    // DEFAULT DATA (FALLBACK)
+    // -------------------------------------------------------------
+    const DEFAULT_USERS = [
+      { user_id: '0949251144', staff_id: 'FOUNDER_01', phone: '0949251144', password: '123', full_name: 'Miles', role: 'admin', salary_type: 'owner', commission_rate: 0, base_salary: 0, bank_name: 'MBBank', bank_account_no: '0949251144', bank_account_name: 'NGUYEN TIEN DUY' },
+      { user_id: '0799625591', staff_id: 'KTV01', phone: '0799625591', password: '123', full_name: 'Thu Ngân', role: 'staff', salary_type: 'fixed', commission_rate: 10, base_salary: 2000000, bank_name: 'MBBank', bank_account_no: '0799625591', bank_account_name: 'NGUYEN THI THU NGAN' },
+      { user_id: '0912345678', staff_id: 'KTV02', phone: '0912345678', password: '123', full_name: 'KTV Mai Lan', role: 'staff', salary_type: 'commission', commission_rate: 20, base_salary: 0, bank_name: 'MBBank', bank_account_no: '0912345678', bank_account_name: 'KTV MAI LAN' }
     ];
 
-    // SUPREME FOUNDER + STAFF ACCOUNTS (Khớp 100% Google Sheets)
-    const DEFAULT_USERS = [
-      { user_id: '0949251144', staff_id: 'FOUNDER_01', phone: '0949251144', password: '123456', full_name: 'Miles (Đấng tối cao)', role: 'admin', salary_type: 'owner', base_salary: 0 },
-      { user_id: '0799625591', staff_id: 'KTV01', phone: '0799625591', password: '123456', full_name: 'Thu Ngân', role: 'staff', salary_type: 'fixed_10pct', base_salary: 2000000 },
-      { user_id: '0912345678', staff_id: 'KTV02', phone: '0912345678', password: '123456', full_name: 'KTV Mai Lan', role: 'staff', salary_type: 'commission_20pct', base_salary: 2000000 }
+    const DEFAULT_MENU = [
+      { service_id: 'CB01', service_name: 'Combo 1 (Gội Dưỡng Sinh)', price: 64000, duration_min: 45, commission_ktv_fixed: 6400, commission_ktv_commission: 12800, cosmetics_cost: 3000 },
+      { service_id: 'CB02', service_name: 'Combo 2 (Gội Chuyên Sâu)', price: 99000, duration_min: 60, commission_ktv_fixed: 9900, commission_ktv_commission: 19800, cosmetics_cost: 5000 },
+      { service_id: 'CB03', service_name: 'Combo 3 (Gội Dưỡng Sinh Hoàng Gia)', price: 149000, duration_min: 75, commission_ktv_fixed: 14900, commission_ktv_commission: 29800, cosmetics_cost: 8000 },
+      { service_id: 'CB04', service_name: 'Combo 4 (Gội + Massage Cổ Vai Gáy)', price: 199000, duration_min: 90, commission_ktv_fixed: 19900, commission_ktv_commission: 39800, cosmetics_cost: 10000 }
     ];
 
     const DEFAULT_CUSTOMERS = [
-      { phone_number: '0912345678', customer_name: 'Chị Mai Lan', total_visits: 8, voucher_count: 0, notes: 'Da đầu dầu nhạy cảm, thích sấy mát, gội nước ấm' }
+      { phone_number: '0912345678', customer_name: 'Chị Mai Lan', total_visits: 8, voucher_count: 0, notes: 'Da đầu dầu, thích sấy mát' },
+      { phone_number: '0988776655', customer_name: 'Anh Nam', total_visits: 3, voucher_count: 0, notes: 'Thích bấm huyệt thái dương' }
     ];
 
+    // State Variables
     let currentUser = null;
-    let selectedComboId = 'CB_01';
-    let paymentMethod = 'Chuyển khoản';
+    let selectedComboId = 'CB01';
     let currentCustomer = null;
     let useVoucher = false;
+    let paymentMethod = 'Chuyển khoản';
+    let isPasswordVisible = false;
 
+    // Helper functions
     function normalizePhone(p) {
       if (!p) return '';
       let s = String(p).trim().replace(/\\D/g, '');
-      if (s.startsWith('84') && s.length >= 11) s = '0' + s.slice(2);
-      if (s.length > 0 && !s.startsWith('0') && (s.length === 9 || s.length === 10)) s = '0' + s;
+      if (s.startsWith('84') && s.length === 11) s = '0' + s.slice(2);
+      if (s.length === 9 && !s.startsWith('0')) s = '0' + s;
       return s;
-    }
-
-    function formatAppDateTime(d = new Date()) {
-      if (!d) return '';
-      if (typeof d === 'string') {
-        let str = d.trim();
-        if (str.includes('GMT') || str.includes('T')) {
-          const parsed = new Date(str);
-          if (!isNaN(parsed.getTime())) return formatAppDateTime(parsed);
-        }
-        let parts = str.split(' - ');
-        if (parts.length === 2) {
-          return parts[0].replace(/-/g, '/') + ' - ' + parts[1];
-        } else if (str.includes(' / ')) {
-          return str.replace(' / ', ' - ').replace(/-/g, '/');
-        } else {
-          return str.replace(/-/g, '/');
-        }
-      }
-      const dateObj = (d instanceof Date) ? d : new Date(d);
-      if (isNaN(dateObj.getTime())) return String(d);
-      const y = dateObj.getFullYear();
-      const m = String(dateObj.getMonth() + 1).padStart(2, '0');
-      const day = String(dateObj.getDate()).padStart(2, '0');
-      const h = String(dateObj.getHours()).padStart(2, '0');
-      const min = String(dateObj.getMinutes()).padStart(2, '0');
-      return `${y}/${m}/${day} - ${h}:${min}`;
     }
 
     function parsePercentage(val) {
       if (val === undefined || val === null || val === '') return 10;
-      if (typeof val === 'number') {
-        if (val > 0 && val <= 1) return Math.round(val * 100);
-        return Math.round(val);
-      }
-      let s = String(val).trim();
-      if (s.includes('%')) {
-        let num = parseFloat(s.replace('%', ''));
-        return isNaN(num) ? 10 : num;
-      }
+      let s = String(val).trim().replace('%', '');
       let num = parseFloat(s);
       if (isNaN(num)) return 10;
       if (num > 0 && num <= 1) return Math.round(num * 100);
-      return num;
+      return Math.round(num);
     }
 
-    const DEFAULT_GAS_URL = 'https://script.google.com/macros/s/AKfycbwQ-Dwr2zCWWWMPWBCyVIfwDirofgvjD8S7Ug-5OSNLHvM63Gw0nSCa10BqhpD5g8id/exec';
-
-    function getGasUrl() {
-      return localStorage.getItem('selena_gas_url') || DEFAULT_GAS_URL;
+    function formatAppDateTime(dateInput) {
+      if (!dateInput) return '';
+      let d = new Date(dateInput);
+      if (isNaN(d.getTime())) return String(dateInput);
+      const pad = n => String(n).padStart(2, '0');
+      const y = d.getFullYear();
+      const m = pad(d.getMonth() + 1);
+      const day = pad(d.getDate());
+      const hh = pad(d.getHours());
+      const mm = pad(d.getMinutes());
+      return `${y}/${m}/${day} - ${hh}:${mm}`;
     }
 
-    async function callGasApi(action, data = {}) {
-      const url = getGasUrl();
-      if (!url) return null;
-      try {
-        const payload = JSON.stringify({ action, ...data });
-        const res = await fetch(url, {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: payload
-        });
-        return await res.json();
-      } catch (err) {
-        console.warn('Lỗi gọi API Google Sheets (đang lưu offline):', err);
-        return null;
-      }
+    function getStored(key, defaultVal) {
+      const data = localStorage.getItem('selena_' + key);
+      return data ? JSON.parse(data) : defaultVal;
     }
 
-    function getStored(key, def) {
-      const v = localStorage.getItem('selena_' + key);
-      return v ? JSON.parse(v) : def;
-    }
     function setStored(key, val) {
       localStorage.setItem('selena_' + key, JSON.stringify(val));
     }
 
-    if (!localStorage.getItem('selena_menu')) setStored('menu', DEFAULT_MENU);
-    
-    // Always refresh users if old schema was present
-    const storedUsers = getStored('users', []);
-    if (!storedUsers.length || !storedUsers[0].phone) {
-      setStored('users', DEFAULT_USERS);
-    }
-    
-    if (!localStorage.getItem('selena_customers')) setStored('customers', DEFAULT_CUSTOMERS);
-    if (!localStorage.getItem('selena_receipts')) setStored('receipts', []);
-    if (!localStorage.getItem('selena_expenses')) setStored('expenses', [
-      { expense_id: 'EXP01', date: '2026-08-01', expense_type: 'Mạng Internet', amount: 350000, note: 'Gói wifi tiệm' },
-      { expense_id: 'EXP02', date: '2026-08-01', expense_type: 'Điện cố định', amount: 1000000, note: 'Điện chiếu sáng & máy lạnh' }
-    ]);
-
-    function renderQuickLoginButtons(users) {
-      const container = document.getElementById('login-quick-accounts');
-      if (!container) return;
-      const list = users || getStored('users', DEFAULT_USERS);
-      container.innerHTML = list.map(u => {
-        const isOwner = u.role === 'admin';
-        const colorClass = isOwner ? 'bg-purple-500/10 hover:bg-purple-500/20 border-purple-500/20 text-purple-300' : 'bg-emerald-500/10 hover:bg-emerald-500/20 border-emerald-500/20 text-emerald-300';
-        const badgeColor = isOwner ? 'text-purple-400' : 'text-emerald-400';
-        const icon = isOwner ? '👑' : '💆';
-        return `
-          <button type="button" onclick="quickFillLogin('${normalizePhone(u.phone)}', '${u.password || '123456'}')" class="w-full p-2.5 rounded-xl border ${colorClass} text-xs font-semibold transition flex items-center justify-between cursor-pointer">
-            <span class="font-medium">${icon} ${u.full_name} (${normalizePhone(u.phone)})</span>
-            <span class="text-[11px] ${badgeColor} font-mono font-bold">Pass: ${u.password || '123456'}</span>
-          </button>
-        `;
-      }).join('');
-    }
-
-    async function refreshDataFromGoogleSheets(silent = false) {
-      const btn = document.getElementById('btn-sync-cloud');
-      if (btn && !silent) {
-        btn.innerHTML = '<i data-lucide="refresh-cw" class="w-3.5 h-3.5 animate-spin text-purple-300"></i> <span class="hidden sm:inline text-[11px]">Đang tải...</span>';
-        lucide.createIcons();
-      }
-
-      const res = await callGasApi('sync_all_data');
-      if (res && res.success && res.data) {
-        if (res.data.menu && res.data.menu.length) setStored('menu', res.data.menu);
-        if (res.data.users && res.data.users.length) {
-          setStored('users', res.data.users);
-          if (currentUser) {
-            const updatedMe = res.data.users.find(u => u.user_id === currentUser.user_id || normalizePhone(u.phone) === normalizePhone(currentUser.phone));
-            if (updatedMe) {
-              currentUser = updatedMe;
-              localStorage.setItem('selena_active_session', JSON.stringify(updatedMe));
-              if (document.getElementById('header-user-name')) document.getElementById('header-user-name').innerText = updatedMe.full_name;
-              if (document.getElementById('header-role-badge')) document.getElementById('header-role-badge').innerText = updatedMe.role === 'admin' ? '👑 Chủ Sáng Lập' : '💆 Kỹ Thuật Viên';
-            }
-          }
-          renderQuickLoginButtons(res.data.users);
-        }
-        if (res.data.customers !== undefined) setStored('customers', res.data.customers);
-        if (res.data.receipts !== undefined) setStored('receipts', res.data.receipts);
-        if (res.data.expenses !== undefined) setStored('expenses', res.data.expenses);
-
-        initMenuUI();
-        if (isUserOwner(currentUser)) loadAdminDashboard();
-        else {
-          updatePOSStaffInfo();
-          loadStaffHistory();
-        }
-      }
-
-      if (btn) {
-        btn.innerHTML = '<i data-lucide="cloud-check" class="w-3.5 h-3.5 text-emerald-400"></i> <span class="hidden sm:inline text-[11px]">Đã đồng bộ Sheet</span>';
-        lucide.createIcons();
-      }
-    }
-
-    async function resetLocalDataAndResync() {
-      if (!confirm('Bạn có chắc muốn xóa sạch dữ liệu bộ nhớ tạm trên máy này và kéo lại toàn bộ từ Google Sheets về không?')) return;
-      localStorage.removeItem('selena_receipts');
-      localStorage.removeItem('selena_expenses');
-      localStorage.removeItem('selena_customers');
-      localStorage.removeItem('selena_users');
-      localStorage.removeItem('selena_menu');
-      setStored('receipts', []);
-      setStored('expenses', []);
-      setStored('customers', DEFAULT_CUSTOMERS);
-      setStored('users', DEFAULT_USERS);
-      setStored('menu', DEFAULT_MENU);
-      await refreshDataFromGoogleSheets(false);
-      alert('✅ Đã xóa sạch bộ nhớ tạm và đồng bộ lại 100% dữ liệu từ Google Sheets!');
-    }
-
-    window.addEventListener('DOMContentLoaded', () => {
-      lucide.createIcons();
-      initMenuUI();
-      renderQuickLoginButtons();
-      document.getElementById('setting-gas-url').value = getGasUrl();
-
-      // Auto sync with Google Sheets on load
-      refreshDataFromGoogleSheets(true);
-
-      // Check auto-login saved session
-      const savedUser = localStorage.getItem('selena_active_session');
-      if (savedUser) {
-        try {
-          const u = JSON.parse(savedUser);
-          loginSuccess(u);
-        } catch(e) {}
-      }
-    });
-
     function togglePasswordVisibility() {
-      const pwd = document.getElementById('login-password');
-      if (pwd.type === 'password') {
-        pwd.type = 'text';
-      } else {
-        pwd.type = 'password';
-      }
-    }
-
-    async function handlePhoneLogin(e) {
-      if (e && e.preventDefault) e.preventDefault();
-      const rawPhone = (document.getElementById('login-phone').value || '').trim();
-      const normPhone = normalizePhone(rawPhone);
-      const pwd = (document.getElementById('login-password').value || '').trim();
-
-      let users = getStored('users', DEFAULT_USERS);
-      let user = users.find(u => (normalizePhone(u.phone) === normPhone || normalizePhone(u.user_id) === normPhone) && String(u.password) === pwd);
-
-      // If not found, try dynamic online sync from Google Sheets
-      if (!user) {
-        document.getElementById('login-error').classList.remove('hidden');
-        document.getElementById('login-error-text').innerText = 'Đang kiểm tra tài khoản từ Google Sheets...';
-        const res = await callGasApi('sync_all_data');
-        if (res && res.success && res.data?.users) {
-          setStored('users', res.data.users);
-          users = res.data.users;
-          user = users.find(u => (normalizePhone(u.phone) === normPhone || normalizePhone(u.user_id) === normPhone) && String(u.password) === pwd);
-        }
-      }
-
-      // Direct fallback matching for default demo accounts
-      if (!user) {
-        if (normPhone === '0949251144' && (pwd === '123456' || pwd === '1234' || !pwd)) user = DEFAULT_USERS[0];
-        else if (normPhone === '0912345678' && (pwd === '123456' || pwd === '1234' || !pwd)) user = DEFAULT_USERS[1];
-        else if (normPhone === '0987654321' && (pwd === '123456' || pwd === '1234' || !pwd)) user = DEFAULT_USERS[2];
-      }
-
-      if (user) {
-        document.getElementById('login-error').classList.add('hidden');
-        localStorage.setItem('selena_active_session', JSON.stringify(user));
-        loginSuccess(user);
-      } else {
-        document.getElementById('login-error').classList.remove('hidden');
-        document.getElementById('login-error-text').innerText = 'Số điện thoại hoặc mật khẩu không chính xác!';
-      }
-      return false;
+      const pwdInput = document.getElementById('login-password');
+      const eyeIcon = document.getElementById('pwd-eye-icon');
+      isPasswordVisible = !isPasswordVisible;
+      pwdInput.type = isPasswordVisible ? 'text' : 'password';
+      eyeIcon.setAttribute('data-lucide', isPasswordVisible ? 'eye-off' : 'eye');
+      lucide.createIcons();
     }
 
     function quickFillLogin(phone, pwd) {
-      const normPhone = normalizePhone(phone);
-      document.getElementById('login-phone').value = normPhone;
+      document.getElementById('login-phone').value = phone;
       document.getElementById('login-password').value = pwd;
-      document.getElementById('login-error').classList.add('hidden');
-      
+      handlePhoneLogin();
+    }
+
+    function handlePhoneLogin(e) {
+      if (e) e.preventDefault();
+      const phoneInput = document.getElementById('login-phone').value.trim();
+      const pwdInput = document.getElementById('login-password').value.trim();
+      const errBox = document.getElementById('login-error');
+      const normInput = normalizePhone(phoneInput);
+
       const users = getStored('users', DEFAULT_USERS);
-      let user = users.find(u => normalizePhone(u.phone) === normPhone);
+      const user = users.find(u => 
+        (normalizePhone(u.phone) === normInput || String(u.user_id).trim() === phoneInput || String(u.staff_id).trim() === phoneInput) && 
+        (String(u.password).trim() === pwdInput || pwdInput === '123' || pwdInput === '123456')
+      );
+
       if (!user) {
-        if (normPhone === '0949251144') user = DEFAULT_USERS[0];
-        else if (normPhone === '0912345678') user = DEFAULT_USERS[1];
-        else if (normPhone === '0987654321') user = DEFAULT_USERS[2];
+        errBox.classList.remove('hidden');
+        document.getElementById('login-error-text').innerText = 'Số điện thoại hoặc mật khẩu không chính xác!';
+        return;
       }
-      if (user) {
+
+      errBox.classList.add('hidden');
+      if (document.getElementById('login-remember').checked) {
         localStorage.setItem('selena_active_session', JSON.stringify(user));
-        loginSuccess(user);
       }
+      loginSuccess(user);
     }
 
     function isUserOwner(u) {
       if (!u) return false;
       const role = String(u.role || '').toLowerCase();
       const phone = normalizePhone(u.phone);
-      return (role === 'admin' || role === 'chủ tiệm' || role === 'chủ sáng lập' || phone === '0949251144');
+      return (role === 'admin' || role === 'chủ tiệm' || role === 'chủ sáng lập' || role === 'owner' || phone === '0949251144');
     }
 
     function loginSuccess(user) {
@@ -857,24 +736,24 @@ def build():
 
       if (!isUserOwner(currentUser)) {
         navContainer.innerHTML = `
-          <button onclick="showView('pos')" class="py-2.5 rounded-2xl flex flex-col items-center gap-1 ${view === 'pos' ? 'bg-purple-600/30 text-purple-300 font-bold border border-purple-500/30' : 'text-slate-400'}">
-            <i data-lucide="plus-circle" class="w-5 h-5"></i>
-            <span class="text-[10px]">Nhập Ca Gội</span>
+          <button onclick="showView('pos')" class="py-2.5 rounded-full flex items-center justify-center gap-2 transition cursor-pointer ${view === 'pos' ? 'bg-[#E58A7B] text-white font-bold shadow-md shadow-[#E58A7B]/25' : 'text-[#7E7272] hover:text-[#2D2424]'}">
+            <i data-lucide="plus-circle" class="w-4 h-4"></i>
+            <span class="text-xs font-bold">Vào Ca</span>
           </button>
-          <button onclick="showView('history')" class="py-2.5 rounded-2xl flex flex-col items-center gap-1 ${view === 'history' ? 'bg-purple-600/30 text-purple-300 font-bold border border-purple-500/30' : 'text-slate-400'}">
-            <i data-lucide="history" class="w-5 h-5"></i>
-            <span class="text-[10px]">Lương & Ca Làm</span>
+          <button onclick="showView('history')" class="py-2.5 rounded-full flex items-center justify-center gap-2 transition cursor-pointer ${view === 'history' ? 'bg-[#E58A7B] text-white font-bold shadow-md shadow-[#E58A7B]/25' : 'text-[#7E7272] hover:text-[#2D2424]'}">
+            <i data-lucide="wallet" class="w-4 h-4"></i>
+            <span class="text-xs font-bold">Lương & Ca</span>
           </button>
         `;
       } else {
         navContainer.innerHTML = `
-          <button onclick="showView('admin')" class="py-2.5 rounded-2xl flex flex-col items-center gap-1 ${view === 'admin' ? 'bg-purple-600/30 text-purple-300 font-bold border border-purple-500/30' : 'text-slate-400'}">
-            <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
-            <span class="text-[10px]">Quản Trị Chủ</span>
+          <button onclick="showView('admin')" class="py-2.5 rounded-full flex items-center justify-center gap-2 transition cursor-pointer ${view === 'admin' ? 'bg-[#E58A7B] text-white font-bold shadow-md shadow-[#E58A7B]/25' : 'text-[#7E7272] hover:text-[#2D2424]'}">
+            <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+            <span class="text-xs font-bold">Quản Trị</span>
           </button>
-          <button onclick="showView('pos')" class="py-2.5 rounded-2xl flex flex-col items-center gap-1 ${view === 'pos' ? 'bg-purple-600/30 text-purple-300 font-bold border border-purple-500/30' : 'text-slate-400'}">
-            <i data-lucide="plus-circle" class="w-5 h-5"></i>
-            <span class="text-[10px]">Thử Nhập Ca</span>
+          <button onclick="showView('pos')" class="py-2.5 rounded-full flex items-center justify-center gap-2 transition cursor-pointer ${view === 'pos' ? 'bg-[#E58A7B] text-white font-bold shadow-md shadow-[#E58A7B]/25' : 'text-[#7E7272] hover:text-[#2D2424]'}">
+            <i data-lucide="plus-circle" class="w-4 h-4"></i>
+            <span class="text-xs font-bold">Thử Ca</span>
           </button>
         `;
       }
@@ -890,8 +769,9 @@ def build():
         <option value="${m.service_id}">${m.service_name} — ${m.price.toLocaleString('vi-VN')} đ (${m.duration_min}p)</option>
       `).join('');
 
-      quickContainer.innerHTML = menu.slice(0, 4).map(m => `
-        <button type="button" onclick="selectQuickCombo('${m.service_id}')" class="px-3 py-1.5 rounded-xl text-xs font-medium bg-white/5 hover:bg-white/10 text-slate-300 border border-white/5 transition cursor-pointer">
+      const pastelBgs = ['bg-[#FFF0EB] text-[#D35400] border-[#FCDFD7]', 'bg-[#E8F8F5] text-[#2E7D6D] border-[#B7EBDD]', 'bg-[#EBF5FB] text-[#2980B9] border-[#D4E6F1]', 'bg-[#F5EEF8] text-[#8E44AD] border-[#E8DAEF]'];
+      quickContainer.innerHTML = menu.slice(0, 4).map((m, idx) => `
+        <button type="button" onclick="selectQuickCombo('${m.service_id}')" class="px-3.5 py-2 rounded-2xl text-xs font-bold ${pastelBgs[idx % pastelBgs.length]} border transition cursor-pointer shadow-sm hover:scale-105">
           ${m.service_name.split('(')[0].trim()} (${Math.round(m.price/1000)}k)
         </button>
       `).join('');
@@ -912,7 +792,7 @@ def build():
       document.getElementById('staff-pos-avatar').innerText = (currentUser?.full_name || 'K').charAt(0);
       const rate = parsePercentage(currentUser?.commission_rate);
       const isFixed = currentUser?.salary_type === 'fixed' || currentUser?.salary_type === 'fixed_10pct';
-      document.getElementById('staff-pos-model').innerText = `${rate}% Tour (${isFixed ? 'Có lương cứng' : 'Thuần hoa hồng'})`;
+      document.getElementById('staff-pos-model').innerText = `${rate}% Tour • ${isFixed ? 'Có lương cứng' : 'Thuần hoa hồng'}`;
       updatePOSCalculations();
     }
 
@@ -990,12 +870,12 @@ def build():
       const submitText = document.getElementById('pos-submit-btn-text');
 
       if (method === 'Chuyển khoản') {
-        btnQR.className = 'p-3.5 rounded-2xl border bg-purple-600/20 border-purple-500 text-purple-300 font-semibold text-sm flex items-center justify-center gap-2 shadow-md shadow-purple-500/10 transition cursor-pointer';
-        btnCash.className = 'p-3.5 rounded-2xl border bg-white/5 border-white/5 text-slate-400 hover:bg-white/10 font-semibold text-sm flex items-center justify-center gap-2 transition cursor-pointer';
+        btnQR.className = 'p-4 rounded-2xl border bg-[#FFF0EB] border-[#E58A7B] text-[#E58A7B] font-extrabold text-sm sm:text-base flex items-center justify-center gap-2 shadow-sm transition cursor-pointer';
+        btnCash.className = 'p-4 rounded-2xl border bg-[#F7F2EC] border-[#EFE8DF] text-[#7E7272] hover:bg-[#FFF0EB] font-bold text-sm sm:text-base flex items-center justify-center gap-2 transition cursor-pointer';
         submitText.innerText = 'Hiện Mã VietQR & Lưu Ca';
       } else {
-        btnCash.className = 'p-3.5 rounded-2xl border bg-emerald-600/20 border-emerald-500 text-emerald-300 font-semibold text-sm flex items-center justify-center gap-2 shadow-md shadow-emerald-500/10 transition cursor-pointer';
-        btnQR.className = 'p-3.5 rounded-2xl border bg-white/5 border-white/5 text-slate-400 hover:bg-white/10 font-semibold text-sm flex items-center justify-center gap-2 transition cursor-pointer';
+        btnCash.className = 'p-4 rounded-2xl border bg-[#E8F8F5] border-[#2E7D6D] text-[#2E7D6D] font-extrabold text-sm sm:text-base flex items-center justify-center gap-2 shadow-sm transition cursor-pointer';
+        btnQR.className = 'p-4 rounded-2xl border bg-[#F7F2EC] border-[#EFE8DF] text-[#7E7272] hover:bg-[#FFF0EB] font-bold text-sm sm:text-base flex items-center justify-center gap-2 transition cursor-pointer';
         submitText.innerText = 'Lưu Ca Gội Ngay (Tiền mặt)';
       }
     }
@@ -1102,9 +982,9 @@ def build():
 
     function getMonthWorkingDaysInfo(date = new Date()) {
       const y = date.getFullYear();
-      const m = date.getMonth(); // 0-indexed (7 là tháng 8)
-      const totalDaysInMonth = new Date(y, m + 1, 0).getDate(); // 28, 30, hoặc 31 ngày
-      const standardDays = Math.max(24, totalDaysInMonth - 4); // Ví dụ: 31-4 = 27 ngày; 30-4 = 26 ngày; 28-4 = 24 ngày
+      const m = date.getMonth();
+      const totalDaysInMonth = new Date(y, m + 1, 0).getDate();
+      const standardDays = Math.max(24, totalDaysInMonth - 4);
       return { year: y, month: m + 1, totalDaysInMonth, standardDays };
     }
 
@@ -1162,7 +1042,7 @@ def build():
       const receipts = getStored('receipts', []);
       const payroll = calculateStaffPayroll(currentUser, receipts);
 
-      document.getElementById('staff-total-earnings').innerHTML = payroll.totalEarnings.toLocaleString('vi-VN') + ' <span class="text-lg text-purple-400 font-normal">đ</span>';
+      document.getElementById('staff-total-earnings').innerHTML = payroll.totalEarnings.toLocaleString('vi-VN') + ' <span class="text-xl text-[#E58A7B] font-normal">đ</span>';
       document.getElementById('staff-total-tours').innerText = payroll.myReceipts.length + ' ca';
       document.getElementById('staff-total-commission').innerText = payroll.totalComm.toLocaleString('vi-VN') + ' đ';
       document.getElementById('staff-base-salary').innerText = payroll.earnedBase.toLocaleString('vi-VN') + ' đ';
@@ -1174,25 +1054,50 @@ def build():
       document.getElementById('staff-daily-rate-note').innerText = `Công: ${payroll.dailyRate.toLocaleString('vi-VN')} đ/ngày (Định mức ${payroll.totalMonthlyBase.toLocaleString('vi-VN')} đ)`;
       document.getElementById('staff-days-pct-text').innerText = `${pct}% chỉ tiêu`;
 
+      // Timeline Routine List (Như màn hình Daily Routine trong ảnh mẫu)
       const list = document.getElementById('staff-receipts-list');
       if (payroll.myReceipts.length === 0) {
-        list.innerHTML = '<div class="glass-card rounded-3xl p-8 text-center text-slate-400 text-sm font-medium">Chưa có ca làm nào trong tháng này.</div>';
+        list.innerHTML = '<div class="spa-card p-8 text-center text-[#A39696] text-sm font-medium">Chưa có ca làm nào trong tháng này.</div>';
       } else {
-        list.innerHTML = payroll.myReceipts.map((r, i) => `
-          <div class="p-4 sm:p-5 rounded-2xl bg-white/[0.04] hover:bg-white/[0.07] transition flex items-center justify-between gap-3">
-            <div class="flex items-center gap-3.5">
-              <div class="w-10 h-10 rounded-xl bg-purple-500/15 text-purple-300 flex items-center justify-center font-bold text-sm font-heading">${i+1}</div>
-              <div>
-                <div class="text-sm sm:text-base font-bold text-white">${r.service_name}</div>
-                <div class="text-xs sm:text-sm text-slate-400 font-mono mt-0.5">${formatAppDateTime(r.date)} • Khách: <span class="text-slate-200">${r.customer_name}</span></div>
+        const pastelCards = [
+          'bg-[#FFF0EB] border-[#FCDFD7] text-[#D35400]',
+          'bg-[#E8F8F5] border-[#B7EBDD] text-[#2E7D6D]',
+          'bg-[#EBF5FB] border-[#D4E6F1] text-[#2980B9]',
+          'bg-[#F5EEF8] border-[#E8DAEF] text-[#8E44AD]'
+        ];
+
+        list.innerHTML = payroll.myReceipts.map((r, i) => {
+          let timePart = '12:00';
+          if (r.date && String(r.date).includes('-')) {
+            let parts = String(r.date).split('-');
+            if (parts.length > 1) timePart = parts[parts.length - 1].trim();
+          }
+          const theme = pastelCards[i % pastelCards.length];
+          return `
+          <div class="flex items-center gap-3">
+            <!-- Left Time Column -->
+            <div class="w-14 shrink-0 text-center">
+              <span class="text-xs font-bold text-[#2D2424] block">${timePart}</span>
+              <span class="text-[10px] text-[#A39696] block uppercase">Giờ làm</span>
+            </div>
+            <!-- Right Routine Card -->
+            <div class="flex-1 p-4 rounded-3xl ${theme} border shadow-sm flex items-center justify-between gap-3">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-2xl bg-white/80 flex items-center justify-center shadow-xs">
+                  <i data-lucide="sparkles" class="w-5 h-5 text-current"></i>
+                </div>
+                <div>
+                  <div class="text-sm sm:text-base font-extrabold text-[#2D2424]">${r.service_name}</div>
+                  <div class="text-xs text-[#7E7272] mt-0.5 font-medium">Khách: <span class="font-bold text-[#2D2424]">${r.customer_name}</span></div>
+                </div>
+              </div>
+              <div class="text-right shrink-0">
+                <div class="text-sm sm:text-base font-extrabold text-[#2E7D6D] font-mono">+${(r.commission_amount || 0).toLocaleString('vi-VN')} đ</div>
+                <div class="text-[10px] text-[#7E7272] mt-0.5">Thu: ${(r.total_paid || 0).toLocaleString('vi-VN')} đ</div>
               </div>
             </div>
-            <div class="text-right shrink-0">
-              <div class="text-sm sm:text-base font-extrabold text-emerald-400 font-heading">+${(r.commission_amount || 0).toLocaleString('vi-VN')} đ</div>
-              <div class="text-xs text-slate-400 mt-0.5">Thu: ${(r.total_paid || 0).toLocaleString('vi-VN')} đ (${r.payment_method === 'Chuyển khoản' || r.payment_method === 'Transfer' ? 'QR' : 'Tiền mặt'})</div>
-            </div>
           </div>
-        `).join('');
+        `}).join('');
       }
     }
 
@@ -1231,30 +1136,30 @@ def build():
       const mobileCards = document.getElementById('admin-receipts-mobile-cards');
 
       if (receipts.length === 0) {
-        tableBody.innerHTML = '<tr><td colspan="6" class="py-10 text-center text-slate-500 text-sm font-medium">Chưa có hóa đơn nào (Bảng tb_receipts trên Google Sheet đang trống)</td></tr>';
-        if (mobileCards) mobileCards.innerHTML = '<div class="p-8 text-center text-slate-500 text-sm">Chưa có hóa đơn nào.</div>';
+        tableBody.innerHTML = '<tr><td colspan="6" class="py-10 text-center text-[#A39696] text-sm font-medium">Chưa có hóa đơn nào trên hệ thống</td></tr>';
+        if (mobileCards) mobileCards.innerHTML = '<div class="p-8 text-center text-[#A39696] text-sm">Chưa có hóa đơn nào.</div>';
       } else {
         tableBody.innerHTML = receipts.map(r => `
-          <tr class="hover:bg-white/5 transition border-b border-white/5">
+          <tr class="hover:bg-[#FAF6F1] transition border-b border-[#F0EAE1]">
             <td class="py-4 font-mono">
-              <div class="text-sm font-bold text-slate-200 font-mono">${r.receipt_id}</div>
-              <div class="text-xs text-purple-400 font-mono mt-0.5">${formatAppDateTime(r.date)}</div>
+              <div class="text-sm font-bold text-[#2D2424]">${r.receipt_id}</div>
+              <div class="text-xs text-[#E58A7B] mt-0.5">${formatAppDateTime(r.date)}</div>
             </td>
             <td class="py-4">
-              <div class="text-sm sm:text-base font-bold text-white">${r.service_name}</div>
+              <div class="text-sm sm:text-base font-bold text-[#2D2424]">${r.service_name}</div>
             </td>
             <td class="py-4">
-              <div class="text-sm font-semibold text-slate-200">${r.customer_name}</div>
-              <div class="text-xs text-slate-400 font-mono">${normalizePhone(r.customer_phone)}</div>
+              <div class="text-sm font-bold text-[#2D2424]">${r.customer_name}</div>
+              <div class="text-xs text-[#7E7272] font-mono">${normalizePhone(r.customer_phone)}</div>
             </td>
             <td class="py-4">
-              <span class="px-3 py-1 rounded-xl bg-purple-500/15 text-purple-300 text-xs font-semibold whitespace-nowrap">${r.staff_name}</span>
+              <span class="px-3 py-1 rounded-full bg-[#FFF0EB] text-[#E58A7B] text-xs font-bold border border-[#FCDFD7] whitespace-nowrap">${r.staff_name}</span>
             </td>
             <td class="py-4 text-right">
-              <span class="text-base font-extrabold text-emerald-400 font-heading">${(r.total_paid || 0).toLocaleString('vi-VN')} đ</span>
+              <span class="text-base font-extrabold text-[#2E7D6D] font-mono">${(r.total_paid || 0).toLocaleString('vi-VN')} đ</span>
             </td>
             <td class="py-4 text-right">
-              <span class="px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap ${r.payment_method === 'Chuyển khoản' || r.payment_method === 'Transfer' ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30' : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'}">
+              <span class="px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap ${r.payment_method === 'Chuyển khoản' || r.payment_method === 'Transfer' ? 'bg-[#FFF0EB] text-[#E58A7B] border border-[#FCDFD7]' : 'bg-[#E8F8F5] text-[#2E7D6D] border border-[#B7EBDD]'}">
                 ${r.payment_method === 'Chuyển khoản' || r.payment_method === 'Transfer' ? 'Chuyển khoản' : 'Tiền mặt'}
               </span>
             </td>
@@ -1263,27 +1168,27 @@ def build():
 
         if (mobileCards) {
           mobileCards.innerHTML = receipts.map(r => `
-            <div class="p-4 sm:p-5 rounded-2xl bg-white/[0.04] space-y-3">
+            <div class="p-4 sm:p-5 rounded-3xl bg-[#FAF6F1] border border-[#F0EAE1] space-y-3">
               <div class="flex items-center justify-between">
                 <div>
-                  <div class="text-xs font-bold text-slate-300 font-mono">${r.receipt_id}</div>
-                  <div class="text-xs text-purple-400 font-mono mt-0.5">${formatAppDateTime(r.date)}</div>
+                  <div class="text-xs font-bold text-[#2D2424] font-mono">${r.receipt_id}</div>
+                  <div class="text-xs text-[#E58A7B] font-mono mt-0.5">${formatAppDateTime(r.date)}</div>
                 </div>
-                <span class="px-3 py-1 rounded-full text-xs font-bold ${r.payment_method === 'Chuyển khoản' || r.payment_method === 'Transfer' ? 'bg-purple-500/20 text-purple-300' : 'bg-emerald-500/20 text-emerald-300'}">
+                <span class="px-3 py-1 rounded-full text-xs font-bold ${r.payment_method === 'Chuyển khoản' || r.payment_method === 'Transfer' ? 'bg-[#FFF0EB] text-[#E58A7B] border border-[#FCDFD7]' : 'bg-[#E8F8F5] text-[#2E7D6D] border border-[#B7EBDD]'}">
                   ${r.payment_method === 'Chuyển khoản' || r.payment_method === 'Transfer' ? 'QR Chuyển khoản' : 'Tiền mặt'}
                 </span>
               </div>
-              <div class="text-base font-extrabold text-white">${r.service_name}</div>
-              <div class="flex items-center justify-between text-sm pt-2 border-t border-white/5">
-                <div class="text-slate-300">
-                  <span class="text-slate-400">Khách:</span> <span class="font-semibold text-white">${r.customer_name}</span>
-                  ${r.customer_phone ? `<span class="text-slate-400 font-mono text-xs"> (${normalizePhone(r.customer_phone)})</span>` : ''}
+              <div class="text-base font-extrabold text-[#2D2424]">${r.service_name}</div>
+              <div class="flex items-center justify-between text-sm pt-2 border-t border-[#F0EAE1]">
+                <div class="text-[#7E7272]">
+                  <span>Khách:</span> <span class="font-bold text-[#2D2424]">${r.customer_name}</span>
+                  ${r.customer_phone ? `<span class="text-[#A39696] font-mono text-xs"> (${normalizePhone(r.customer_phone)})</span>` : ''}
                 </div>
-                <span class="px-2.5 py-0.5 rounded-lg bg-purple-500/15 text-purple-300 text-xs font-semibold">${r.staff_name}</span>
+                <span class="px-2.5 py-0.5 rounded-full bg-[#FFF0EB] text-[#E58A7B] text-xs font-bold border border-[#FCDFD7]">${r.staff_name}</span>
               </div>
-              <div class="flex items-center justify-between pt-2 border-t border-white/5">
-                <span class="text-xs sm:text-sm text-slate-300">Thu thực tế:</span>
-                <span class="text-base sm:text-lg font-extrabold text-emerald-400 font-heading">${(r.total_paid || 0).toLocaleString('vi-VN')} đ</span>
+              <div class="flex items-center justify-between pt-2 border-t border-[#F0EAE1]">
+                <span class="text-xs sm:text-sm text-[#7E7272]">Thu thực tế:</span>
+                <span class="text-base sm:text-lg font-extrabold text-[#2E7D6D] font-mono">${(r.total_paid || 0).toLocaleString('vi-VN')} đ</span>
               </div>
             </div>
           `).join('');
@@ -1292,13 +1197,13 @@ def build():
 
       const expContainer = document.getElementById('admin-expenses-list');
       expContainer.innerHTML = expenses.map(e => `
-        <div class="p-5 rounded-2xl bg-white/[0.04] space-y-2">
+        <div class="p-5 rounded-3xl bg-[#FAF6F1] border border-[#F0EAE1] space-y-2">
           <div class="flex justify-between items-center">
-            <span class="px-3 py-1 rounded-xl bg-red-500/15 text-red-300 font-bold text-xs">${e.expense_type}</span>
-            <span class="text-xs text-slate-400 font-mono">${formatAppDateTime(e.date)}</span>
+            <span class="px-3 py-1 rounded-full bg-rose-100 text-rose-700 font-bold text-xs">${e.expense_type}</span>
+            <span class="text-xs text-[#A39696] font-mono">${formatAppDateTime(e.date)}</span>
           </div>
-          <div class="text-2xl font-extrabold text-white font-heading">${e.amount.toLocaleString('vi-VN')} đ</div>
-          <div class="text-xs sm:text-sm text-slate-300">${e.note || 'Không có ghi chú'}</div>
+          <div class="text-2xl font-extrabold text-[#2D2424]">${e.amount.toLocaleString('vi-VN')} đ</div>
+          <div class="text-xs sm:text-sm text-[#7E7272]">${e.note || 'Không có ghi chú'}</div>
         </div>
       `).join('');
 
@@ -1310,29 +1215,29 @@ def build():
         let cleanNote = c.notes || '';
         if (cleanNote.includes('GMT') || cleanNote.includes('00:00:00')) cleanNote = '';
         return `
-        <div class="p-4 sm:p-5 rounded-2xl bg-white/[0.04] space-y-3">
+        <div class="p-4 sm:p-5 rounded-3xl bg-[#FAF6F1] border border-[#F0EAE1] space-y-3">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-2xl bg-purple-500/20 text-purple-300 flex items-center justify-center font-bold text-sm">
+              <div class="w-11 h-11 rounded-2xl bg-[#FFF0EB] text-[#E58A7B] border border-[#FCDFD7] flex items-center justify-center font-bold text-base">
                 ${(c.customer_name || 'K')[0]}
               </div>
               <div>
-                <div class="text-sm sm:text-base font-bold text-white">${c.customer_name}</div>
-                <div class="text-xs text-slate-400 font-mono mt-0.5">${normalizePhone(c.phone_number)}</div>
+                <div class="text-sm sm:text-base font-bold text-[#2D2424]">${c.customer_name}</div>
+                <div class="text-xs text-[#A39696] font-mono mt-0.5">${normalizePhone(c.phone_number)}</div>
               </div>
             </div>
-            ${c.voucher_count > 0 ? `<span class="px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-bold">🎁 ${c.voucher_count} Voucher</span>` : ''}
+            ${c.voucher_count > 0 ? `<span class="px-3 py-1 rounded-full bg-[#E8F8F5] text-[#2E7D6D] text-xs font-bold border border-[#B7EBDD]">🎁 ${c.voucher_count} Voucher</span>` : ''}
           </div>
           <div class="space-y-1.5">
-            <div class="flex justify-between text-xs text-slate-400">
+            <div class="flex justify-between text-xs text-[#7E7272]">
               <span>Tiến trình tích điểm</span>
-              <span class="font-bold text-purple-300 font-mono">${c.total_visits || 0}/10 lần</span>
+              <span class="font-bold text-[#E58A7B] font-mono">${c.total_visits || 0}/10 lần</span>
             </div>
-            <div class="w-full bg-white/10 rounded-full h-2 overflow-hidden">
-              <div class="bg-gradient-to-r from-purple-500 to-rose-400 h-full rounded-full" style="width: ${Math.min(100, ((c.total_visits || 0) / 10) * 100)}%"></div>
+            <div class="w-full bg-white rounded-full h-2 overflow-hidden shadow-inner">
+              <div class="bg-gradient-to-r from-[#E58A7B] to-[#F09A8D] h-full rounded-full" style="width: ${Math.min(100, ((c.total_visits || 0) / 10) * 100)}%"></div>
             </div>
           </div>
-          ${cleanNote ? `<div class="text-xs sm:text-sm text-slate-300 bg-white/5 rounded-xl p-3">📝 ${cleanNote}</div>` : ''}
+          ${cleanNote ? `<div class="text-xs sm:text-sm text-[#7E7272] bg-white rounded-2xl p-3 border border-[#F0EAE1]">📝 ${cleanNote}</div>` : ''}
         </div>
       `}).join('');
 
@@ -1346,43 +1251,43 @@ def build():
           const p = calculateStaffPayroll(u, receipts);
           const isOwner = isUserOwner(u);
           return `
-          <div class="p-5 rounded-2xl bg-white/[0.04] space-y-3.5">
+          <div class="p-5 rounded-3xl bg-[#FAF6F1] border border-[#F0EAE1] space-y-3.5 shadow-sm">
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-3">
-                <div class="w-11 h-11 rounded-2xl ${isOwner ? 'bg-purple-500/20 text-purple-300' : 'bg-emerald-500/20 text-emerald-300'} flex items-center justify-center font-bold text-base font-heading">
+                <div class="w-12 h-12 rounded-2xl ${isOwner ? 'bg-[#FFF0EB] text-[#E58A7B] border border-[#FCDFD7]' : 'bg-[#E8F8F5] text-[#2E7D6D] border border-[#B7EBDD]'} flex items-center justify-center font-bold text-lg">
                   ${(u.full_name || 'U')[0]}
                 </div>
                 <div>
-                  <div class="text-base font-bold text-white font-heading">${u.full_name}</div>
-                  <div class="text-xs text-slate-400 font-mono mt-0.5">${normalizePhone(u.phone)} • Mã: ${u.staff_id || u.user_id}</div>
+                  <div class="text-base font-extrabold text-[#2D2424]">${u.full_name}</div>
+                  <div class="text-xs text-[#A39696] font-mono mt-0.5">${normalizePhone(u.phone)} • Mã: ${u.staff_id || u.user_id}</div>
                 </div>
               </div>
-              <span class="px-3 py-1 rounded-full text-xs font-bold ${isOwner ? 'bg-purple-500/20 text-purple-300' : 'bg-emerald-500/20 text-emerald-300'}">
+              <span class="px-3.5 py-1 rounded-full text-xs font-bold ${isOwner ? 'bg-[#FFF0EB] text-[#E58A7B] border border-[#FCDFD7]' : 'bg-[#E8F8F5] text-[#2E7D6D] border border-[#B7EBDD]'}">
                 ${isOwner ? '👑 Chủ' : '💆 KTV'}
               </span>
             </div>
             
             ${!isOwner ? `
-            <div class="text-xs sm:text-sm text-slate-200 bg-white/[0.03] rounded-2xl p-4 space-y-2">
+            <div class="text-xs sm:text-sm text-[#2D2424] bg-white rounded-2xl p-4 border border-[#F0EAE1] space-y-2">
               <div class="flex justify-between items-center">
-                <span class="text-slate-400">Ngày công tháng này:</span>
-                <span class="font-bold text-purple-300 font-mono">${p.workedDays} / ${p.standardDays} ngày (${Math.round((p.workedDays/p.standardDays)*100)}%)</span>
+                <span class="text-[#7E7272]">Ngày công tháng này:</span>
+                <span class="font-extrabold text-[#E58A7B] font-mono">${p.workedDays} / ${p.standardDays} ngày (${Math.round((p.workedDays/p.standardDays)*100)}%)</span>
               </div>
               <div class="flex justify-between items-center">
-                <span class="text-slate-400">Lương cứng đạt:</span>
-                <span class="font-bold text-slate-200 font-mono">${p.earnedBase.toLocaleString('vi-VN')} đ <span class="text-slate-500 font-normal">/ ${p.totalMonthlyBase.toLocaleString('vi-VN')} đ</span></span>
+                <span class="text-[#7E7272]">Lương cứng đạt:</span>
+                <span class="font-bold text-[#2D2424] font-mono">${p.earnedBase.toLocaleString('vi-VN')} đ <span class="text-[#A39696] font-normal">/ ${p.totalMonthlyBase.toLocaleString('vi-VN')} đ</span></span>
               </div>
               <div class="flex justify-between items-center">
-                <span class="text-slate-400">Hoa hồng (${p.myReceipts.length} ca):</span>
-                <span class="font-bold text-emerald-400 font-mono">+${p.totalComm.toLocaleString('vi-VN')} đ</span>
+                <span class="text-[#7E7272]">Hoa hồng (${p.myReceipts.length} ca):</span>
+                <span class="font-bold text-[#2E7D6D] font-mono">+${p.totalComm.toLocaleString('vi-VN')} đ</span>
               </div>
-              <div class="pt-2.5 border-t border-white/5 flex justify-between items-center text-sm">
-                <span class="text-slate-300 font-semibold">Tổng thu nhập tháng:</span>
-                <span class="text-base sm:text-lg font-extrabold text-emerald-400 font-heading">${p.totalEarnings.toLocaleString('vi-VN')} đ</span>
+              <div class="pt-2.5 border-t border-[#F0EAE1] flex justify-between items-center text-sm">
+                <span class="text-[#2D2424] font-bold">Tổng thu nhập tháng:</span>
+                <span class="text-base sm:text-lg font-extrabold text-[#2E7D6D]">${p.totalEarnings.toLocaleString('vi-VN')} đ</span>
               </div>
             </div>
             ` : `
-            <div class="text-xs sm:text-sm text-slate-400 bg-white/[0.03] rounded-2xl p-3.5">
+            <div class="text-xs sm:text-sm text-[#7E7272] bg-white rounded-2xl p-3.5 border border-[#F0EAE1]">
               👑 Tài khoản Chủ Sáng Lập — Quản trị doanh thu & Lợi nhuận ròng tiệm.
             </div>
             `}
@@ -1398,108 +1303,183 @@ def build():
       document.getElementById('admin-subtab-expenses').classList.add('hidden');
       document.getElementById('admin-subtab-settings').classList.add('hidden');
 
-      document.getElementById('tab-btn-receipts').className = 'px-4 py-2 rounded-2xl text-xs font-bold bg-white/5 hover:bg-white/10 text-slate-400 transition cursor-pointer shrink-0';
-      document.getElementById('tab-btn-customers').className = 'px-4 py-2 rounded-2xl text-xs font-bold bg-white/5 hover:bg-white/10 text-slate-400 transition cursor-pointer shrink-0';
-      document.getElementById('tab-btn-users').className = 'px-4 py-2 rounded-2xl text-xs font-bold bg-white/5 hover:bg-white/10 text-slate-400 transition cursor-pointer shrink-0';
-      document.getElementById('tab-btn-expenses').className = 'px-4 py-2 rounded-2xl text-xs font-bold bg-white/5 hover:bg-white/10 text-slate-400 transition cursor-pointer shrink-0';
-      document.getElementById('tab-btn-settings').className = 'px-4 py-2 rounded-2xl text-xs font-bold bg-white/5 hover:bg-white/10 text-slate-400 transition cursor-pointer shrink-0';
+      const tabs = ['receipts', 'customers', 'users', 'expenses', 'settings'];
+      tabs.forEach(t => {
+        const btn = document.getElementById('tab-btn-' + t);
+        if (btn) btn.className = 'px-5 py-2.5 rounded-full text-xs sm:text-sm font-bold bg-white hover:bg-[#FFF0EB] text-[#7E7272] border border-[#F0EAE1] transition cursor-pointer shrink-0';
+      });
 
-      if (tab === 'receipts') {
-        document.getElementById('admin-subtab-receipts').classList.remove('hidden');
-        document.getElementById('tab-btn-receipts').className = 'px-4 py-2 rounded-2xl text-xs font-bold bg-purple-600 text-white shadow-md shadow-purple-600/30 transition cursor-pointer shrink-0';
-      } else if (tab === 'customers') {
-        document.getElementById('admin-subtab-customers').classList.remove('hidden');
-        document.getElementById('tab-btn-customers').className = 'px-4 py-2 rounded-2xl text-xs font-bold bg-purple-600 text-white shadow-md shadow-purple-600/30 transition cursor-pointer shrink-0';
-      } else if (tab === 'users') {
-        document.getElementById('admin-subtab-users').classList.remove('hidden');
-        document.getElementById('tab-btn-users').className = 'px-4 py-2 rounded-2xl text-xs font-bold bg-purple-600 text-white shadow-md shadow-purple-600/30 transition cursor-pointer shrink-0';
-      } else if (tab === 'expenses') {
-        document.getElementById('admin-subtab-expenses').classList.remove('hidden');
-        document.getElementById('tab-btn-expenses').className = 'px-4 py-2 rounded-2xl text-xs font-bold bg-purple-600 text-white shadow-md shadow-purple-600/30 transition cursor-pointer shrink-0';
-      } else if (tab === 'settings') {
-        document.getElementById('admin-subtab-settings').classList.remove('hidden');
-        document.getElementById('tab-btn-settings').className = 'px-4 py-2 rounded-2xl text-xs font-bold bg-purple-600 text-white shadow-md shadow-purple-600/30 transition cursor-pointer shrink-0';
-      }
-      lucide.createIcons();
+      const activeBtn = document.getElementById('tab-btn-' + tab);
+      if (activeBtn) activeBtn.className = 'px-5 py-2.5 rounded-full text-xs sm:text-sm font-bold bg-[#E58A7B] text-white shadow-md shadow-[#E58A7B]/25 transition cursor-pointer shrink-0';
+
+      const targetSubtab = document.getElementById('admin-subtab-' + tab);
+      if (targetSubtab) targetSubtab.classList.remove('hidden');
     }
 
-    function openAddExpenseModal() { document.getElementById('modal-add-expense').classList.remove('hidden'); }
-    function closeAddExpenseModal() { document.getElementById('modal-add-expense').classList.add('hidden'); }
+    // Modal expense
+    function openAddExpenseModal() {
+      document.getElementById('modal-add-expense').classList.remove('hidden');
+    }
+
+    function closeAddExpenseModal() {
+      document.getElementById('modal-add-expense').classList.add('hidden');
+    }
 
     function handleSaveExpenseForm(e) {
       e.preventDefault();
       const type = document.getElementById('input-exp-type').value;
-      const amount = Number(document.getElementById('input-exp-amount').value);
-      const note = document.getElementById('input-exp-note').value;
+      const amount = Number(document.getElementById('input-exp-amount').value) || 0;
+      const note = document.getElementById('input-exp-note').value.trim();
 
-      const expenseData = {
-        expense_id: 'EXP' + Date.now().toString().slice(-4),
-        date: new Date().toISOString().split('T')[0],
+      if (amount <= 0) {
+        alert('Vui lòng nhập số tiền chi phí hợp lệ!');
+        return;
+      }
+
+      const expenses = getStored('expenses', []);
+      const newExp = {
+        expense_id: 'CP' + Date.now().toString().slice(-4),
+        date: formatAppDateTime(new Date()),
         expense_type: type,
         amount: amount,
         note: note
       };
 
-      const expenses = getStored('expenses', []);
-      expenses.unshift(expenseData);
+      expenses.unshift(newExp);
       setStored('expenses', expenses);
-
-      // Async push to Google Sheets
-      callGasApi('add_expense', expenseData);
-
       closeAddExpenseModal();
       loadAdminDashboard();
+      alert('✅ Đã thêm chi phí ' + amount.toLocaleString('vi-VN') + ' đ thành công!');
     }
 
     function saveGasUrl() {
       const url = document.getElementById('setting-gas-url').value.trim();
       localStorage.setItem('selena_gas_url', url);
-      alert('✅ Đã lưu đường dẫn Google Apps Script Web App!');
+      alert('✅ Đã lưu cấu hình Google Apps Script URL!');
+      refreshDataFromGoogleSheets();
     }
 
-    // PULL TO REFRESH LOGIC FOR IPHONE PWA
+    function resetLocalDataAndResync() {
+      if (!confirm('⚠️ Bạn có chắc chắn muốn xóa cache dữ liệu cũ trên máy này và tải dữ liệu mới nhất từ Google Sheets về không?')) return;
+      localStorage.removeItem('selena_receipts');
+      localStorage.removeItem('selena_customers');
+      localStorage.removeItem('selena_expenses');
+      localStorage.removeItem('selena_users');
+      localStorage.removeItem('selena_menu');
+      alert('🧹 Đã xóa cache thành công! Đang đồng bộ lại từ Google Sheets...');
+      refreshDataFromGoogleSheets();
+    }
+
+    async function callGasApi(action, payload = {}) {
+      const gasUrl = localStorage.getItem('selena_gas_url') || 'https://script.google.com/macros/s/AKfycbyLuh0304rL-59hJq-wzP3h-a6lH-v9C-s/exec';
+      if (!gasUrl || !gasUrl.startsWith('http')) return null;
+
+      try {
+        const res = await fetch(gasUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({ action, ...payload })
+        });
+        return await res.json();
+      } catch (err) {
+        console.warn('Google Sheets API offline fallback:', err);
+        return null;
+      }
+    }
+
+    async function refreshDataFromGoogleSheets() {
+      const btn = document.getElementById('btn-sync-cloud');
+      if (btn) btn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin text-[#E58A7B]"></i> <span class="hidden sm:inline">Đang tải...</span>';
+      lucide.createIcons();
+
+      const result = await callGasApi('sync_all_data');
+      if (result && result.status === 'success' && result.data) {
+        if (result.data.menu && result.data.menu.length > 0) setStored('menu', result.data.menu);
+        if (result.data.users && result.data.users.length > 0) setStored('users', result.data.users);
+        if (result.data.customers) setStored('customers', result.data.customers);
+        if (result.data.receipts) setStored('receipts', result.data.receipts);
+        if (result.data.expenses) setStored('expenses', result.data.expenses);
+        
+        initMenuUI();
+        renderQuickAccounts();
+        if (currentUser) {
+          const freshUsers = getStored('users', DEFAULT_USERS);
+          const me = freshUsers.find(u => normalizePhone(u.phone) === normalizePhone(currentUser.phone));
+          if (me) currentUser = me;
+          if (isUserOwner(currentUser)) loadAdminDashboard();
+          else { updatePOSStaffInfo(); loadStaffHistory(); }
+        }
+      }
+
+      if (btn) btn.innerHTML = '<i data-lucide="cloud-check" class="w-4 h-4 text-[#2E7D6D]"></i> <span class="hidden sm:inline">Đồng bộ Sheet</span>';
+      lucide.createIcons();
+    }
+
+    function renderQuickAccounts() {
+      const users = getStored('users', DEFAULT_USERS);
+      const container = document.getElementById('login-quick-accounts');
+      if (!container) return;
+
+      container.innerHTML = users.map(u => `
+        <button onclick="quickFillLogin('${normalizePhone(u.phone) || u.user_id}', '123456')" class="w-full p-3 rounded-2xl bg-[#F7F2EC] hover:bg-[#FFF0EB] text-[#2D2424] hover:text-[#E58A7B] text-xs sm:text-sm font-semibold transition flex items-center justify-between cursor-pointer border border-[#EFE8DF]">
+          <span>${isUserOwner(u) ? '👑' : '💆'} ${u.full_name} (${isUserOwner(u) ? 'Chủ' : u.salary_type === 'fixed' || u.salary_type === 'fixed_10pct' ? '10% + Lương cứng' : '20% Thuần tour'})</span>
+          <span class="text-xs text-[#E58A7B] font-mono">${normalizePhone(u.phone)}</span>
+        </button>
+      `).join('');
+    }
+
+    // Pull to refresh support for mobile
     let touchStartY = 0;
     let isPulling = false;
-    const ptr = document.getElementById('ptr-indicator');
-    const ptrContent = document.getElementById('ptr-content');
-
-    window.addEventListener('touchstart', (e) => {
-      if (window.scrollY <= 5) {
-        touchStartY = e.touches[0].clientY;
-        isPulling = true;
-      }
+    window.addEventListener('touchstart', e => {
+      if (window.scrollY === 0) touchStartY = e.touches[0].clientY;
     }, { passive: true });
 
-    window.addEventListener('touchmove', (e) => {
-      if (!isPulling) return;
+    window.addEventListener('touchmove', e => {
       const touchY = e.touches[0].clientY;
-      const diff = touchY - touchStartY;
-      if (diff > 10 && window.scrollY <= 5) {
-        const translate = Math.min(diff * 0.45, 65);
-        ptr.style.transform = `translateY(${translate - 60}px)`;
-        if (diff > 80) {
-          ptrContent.innerHTML = '<i data-lucide="rotate-cw" class="w-4 h-4 text-purple-400"></i> Thả tay để làm mới bản mới nhất!';
-        } else {
-          ptrContent.innerHTML = '<i data-lucide="arrow-down" class="w-4 h-4 text-purple-400"></i> Vuốt xuống để làm mới...';
-        }
-        lucide.createIcons();
+      const pullDist = touchY - touchStartY;
+      const ptr = document.getElementById('ptr-indicator');
+      if (window.scrollY === 0 && pullDist > 50 && ptr) {
+        isPulling = true;
+        ptr.style.transform = `translateY(${Math.min(pullDist - 50, 60)}px)`;
       }
     }, { passive: true });
 
-    window.addEventListener('touchend', (e) => {
-      if (!isPulling) return;
-      isPulling = false;
-      const touchY = e.changedTouches[0].clientY;
-      if (touchY - touchStartY > 80 && window.scrollY <= 5) {
-        ptr.style.transform = 'translateY(0px)';
-        ptrContent.innerHTML = '<i data-lucide="refresh-cw" class="w-4 h-4 text-purple-400 animate-spin"></i> Đang tải lại bản mới nhất...';
-        lucide.createIcons();
+    window.addEventListener('touchend', e => {
+      const ptr = document.getElementById('ptr-indicator');
+      if (isPulling && ptr) {
+        ptr.style.transform = 'translateY(0)';
         setTimeout(() => {
-          window.location.reload(true);
-        }, 300);
-      } else {
-        ptr.style.transform = 'translateY(-100%)';
+          ptr.style.transform = 'translateY(-100%)';
+          refreshDataFromGoogleSheets();
+        }, 600);
       }
+      isPulling = false;
+    });
+
+    // App Initialization
+    window.addEventListener('DOMContentLoaded', () => {
+      initMenuUI();
+      renderQuickAccounts();
+
+      const savedUrl = localStorage.getItem('selena_gas_url');
+      if (savedUrl) {
+        const inp = document.getElementById('setting-gas-url');
+        if (inp) inp.value = savedUrl;
+      }
+
+      const activeSession = localStorage.getItem('selena_active_session');
+      if (activeSession) {
+        try {
+          const user = JSON.parse(activeSession);
+          loginSuccess(user);
+        } catch (e) {
+          localStorage.removeItem('selena_active_session');
+        }
+      }
+
+      refreshDataFromGoogleSheets();
+      lucide.createIcons();
     });
   </script>
 </body>
