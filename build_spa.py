@@ -68,7 +68,7 @@ def build():
 
       <div class="mt-3 flex items-center justify-center gap-1.5 text-xs">
         <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-300 font-medium">
-          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-purple-400"></i> v1.8 • Tăng Font Chữ Rõ Nét & Chuẩn Format 2026/08/27 - 16:46
+          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-purple-400"></i> v1.9 • Cập Nhật Tên KTV Tức Thì & Quản Lý Nhân Viên
         </span>
       </div>
 
@@ -113,15 +113,11 @@ def build():
 
       <!-- Quick Test Accounts -->
       <div class="mt-5 pt-4 border-t border-white/5">
-        <div class="text-[11px] text-slate-400 mb-2 font-medium">Bấm thử đăng nhập nhanh (Demo):</div>
-        <div class="flex flex-col gap-1.5">
+        <div class="text-[11px] text-slate-400 mb-2 font-medium">Tài khoản nhân viên (Đồng bộ từ tb_users):</div>
+        <div id="login-quick-accounts" class="flex flex-col gap-1.5">
           <button onclick="quickFillLogin('0949251144', '123456')" class="w-full p-2 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/20 text-purple-300 text-xs font-semibold transition flex items-center justify-between cursor-pointer">
-            <span>👑 Chủ Sáng Lập (0949251144)</span>
-            <span class="text-[10px] text-purple-400 font-mono">Pass: 123456</span>
-          </button>
-          <button onclick="quickFillLogin('0912345678', '123456')" class="w-full p-2 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 text-emerald-300 text-xs font-semibold transition flex items-center justify-between cursor-pointer">
-            <span>💆 KTV Mai Lan (0912345678)</span>
-            <span class="text-[10px] text-emerald-400 font-mono">Pass: 123456</span>
+            <span>👑 Miles (Chủ Sáng Lập)</span>
+            <span class="text-[10px] text-purple-400 font-mono">0949251144</span>
           </button>
         </div>
       </div>
@@ -328,6 +324,7 @@ def build():
     <div class="flex items-center gap-2 overflow-x-auto pb-1 border-b border-white/5">
       <button onclick="switchAdminTab('receipts')" id="tab-btn-receipts" class="px-4 py-2 rounded-2xl text-xs font-bold bg-purple-600 text-white shadow-md shadow-purple-600/30 transition cursor-pointer shrink-0">📜 Hóa Đơn Toàn Tiệm</button>
       <button onclick="switchAdminTab('customers')" id="tab-btn-customers" class="px-4 py-2 rounded-2xl text-xs font-bold bg-white/5 hover:bg-white/10 text-slate-400 transition cursor-pointer shrink-0">👥 Khách Hàng (tb_customers)</button>
+      <button onclick="switchAdminTab('users')" id="tab-btn-users" class="px-4 py-2 rounded-2xl text-xs font-bold bg-white/5 hover:bg-white/10 text-slate-400 transition cursor-pointer shrink-0">💆 Nhân Viên (tb_users)</button>
       <button onclick="switchAdminTab('expenses')" id="tab-btn-expenses" class="px-4 py-2 rounded-2xl text-xs font-bold bg-white/5 hover:bg-white/10 text-slate-400 transition cursor-pointer shrink-0">⚡ Chi Phí Vận Hành</button>
       <button onclick="switchAdminTab('settings')" id="tab-btn-settings" class="px-4 py-2 rounded-2xl text-xs font-bold bg-white/5 hover:bg-white/10 text-slate-400 transition cursor-pointer shrink-0">⚙️ Kết Nối Google Sheets</button>
     </div>
@@ -363,6 +360,17 @@ def build():
         <span class="text-xs text-purple-400 font-bold" id="admin-customer-count">0 khách</span>
       </div>
       <div id="admin-customers-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
+    </div>
+
+    <div id="admin-subtab-users" class="hidden glass-card rounded-3xl p-5 sm:p-6 border border-white/10 space-y-4">
+      <div class="flex justify-between items-center">
+        <div>
+          <h3 class="text-sm font-bold text-white font-heading">Danh Sách Nhân Viên (tb_users)</h3>
+          <p class="text-xs text-slate-400">Thêm / sửa thợ trực tiếp trên tab tb_users của Google Sheet</p>
+        </div>
+        <span class="text-xs text-purple-400 font-bold" id="admin-users-count">0 nhân sự</span>
+      </div>
+      <div id="admin-users-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
     </div>
 
     <div id="admin-subtab-expenses" class="hidden glass-card rounded-3xl p-5 sm:p-6 border border-white/10 space-y-4">
@@ -577,6 +585,24 @@ def build():
       { expense_id: 'EXP02', date: '2026-08-01', expense_type: 'Điện cố định', amount: 1000000, note: 'Điện chiếu sáng & máy lạnh' }
     ]);
 
+    function renderQuickLoginButtons(users) {
+      const container = document.getElementById('login-quick-accounts');
+      if (!container) return;
+      const list = users || getStored('users', DEFAULT_USERS);
+      container.innerHTML = list.map(u => {
+        const isOwner = u.role === 'admin';
+        const colorClass = isOwner ? 'bg-purple-500/10 hover:bg-purple-500/20 border-purple-500/20 text-purple-300' : 'bg-emerald-500/10 hover:bg-emerald-500/20 border-emerald-500/20 text-emerald-300';
+        const badgeColor = isOwner ? 'text-purple-400' : 'text-emerald-400';
+        const icon = isOwner ? '👑' : '💆';
+        return `
+          <button type="button" onclick="quickFillLogin('${normalizePhone(u.phone)}', '${u.password || '123456'}')" class="w-full p-2.5 rounded-xl border ${colorClass} text-xs font-semibold transition flex items-center justify-between cursor-pointer">
+            <span class="font-medium">${icon} ${u.full_name} (${normalizePhone(u.phone)})</span>
+            <span class="text-[11px] ${badgeColor} font-mono font-bold">Pass: ${u.password || '123456'}</span>
+          </button>
+        `;
+      }).join('');
+    }
+
     async function refreshDataFromGoogleSheets(silent = false) {
       const btn = document.getElementById('btn-sync-cloud');
       if (btn && !silent) {
@@ -587,7 +613,19 @@ def build():
       const res = await callGasApi('sync_all_data');
       if (res && res.success && res.data) {
         if (res.data.menu && res.data.menu.length) setStored('menu', res.data.menu);
-        if (res.data.users && res.data.users.length) setStored('users', res.data.users);
+        if (res.data.users && res.data.users.length) {
+          setStored('users', res.data.users);
+          if (currentUser) {
+            const updatedMe = res.data.users.find(u => u.user_id === currentUser.user_id || normalizePhone(u.phone) === normalizePhone(currentUser.phone));
+            if (updatedMe) {
+              currentUser = updatedMe;
+              localStorage.setItem('selena_active_session', JSON.stringify(updatedMe));
+              if (document.getElementById('header-user-name')) document.getElementById('header-user-name').innerText = updatedMe.full_name;
+              if (document.getElementById('header-role-badge')) document.getElementById('header-role-badge').innerText = updatedMe.role === 'admin' ? '👑 Chủ Sáng Lập' : '💆 Kỹ Thuật Viên';
+            }
+          }
+          renderQuickLoginButtons(res.data.users);
+        }
         if (res.data.customers && res.data.customers.length) setStored('customers', res.data.customers);
         if (res.data.receipts) setStored('receipts', res.data.receipts);
         if (res.data.expenses) setStored('expenses', res.data.expenses);
@@ -609,6 +647,7 @@ def build():
     window.addEventListener('DOMContentLoaded', () => {
       lucide.createIcons();
       initMenuUI();
+      renderQuickLoginButtons();
       document.getElementById('setting-gas-url').value = getGasUrl();
 
       // Auto sync with Google Sheets on load
@@ -1101,16 +1140,48 @@ def build():
           ${cleanNote ? `<div class="text-[11px] text-slate-300 bg-white/5 rounded-xl p-2 border border-white/5">📝 ${cleanNote}</div>` : ''}
         </div>
       `}).join('');
+
+      // Render Users Tab
+      const allUsers = getStored('users', DEFAULT_USERS);
+      const userCountElem = document.getElementById('admin-users-count');
+      if (userCountElem) userCountElem.innerText = allUsers.length + ' nhân sự';
+      const usersList = document.getElementById('admin-users-list');
+      if (usersList) {
+        usersList.innerHTML = allUsers.map(u => `
+          <div class="glass-card rounded-2xl p-4 border border-white/5 space-y-2.5">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2.5">
+                <div class="w-10 h-10 rounded-xl ${u.role === 'admin' ? 'bg-purple-500/20 text-purple-300' : 'bg-emerald-500/20 text-emerald-300'} flex items-center justify-center font-bold text-xs font-heading">
+                  ${(u.full_name || 'U')[0]}
+                </div>
+                <div>
+                  <div class="text-sm font-bold text-white">${u.full_name}</div>
+                  <div class="text-xs text-slate-400 font-mono">${normalizePhone(u.phone)} • ${u.user_id}</div>
+                </div>
+              </div>
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-bold ${u.role === 'admin' ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30' : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'}">
+                ${u.role === 'admin' ? '👑 Chủ' : '💆 KTV'}
+              </span>
+            </div>
+            <div class="text-xs text-slate-300 bg-white/5 rounded-xl p-2.5 border border-white/5 space-y-1">
+              <div><span class="text-slate-400">Chế độ lương:</span> <span class="font-bold text-purple-300">${u.salary_type === 'commission_20pct' ? '20% Tour (Không lương cứng)' : u.salary_type === 'fixed_10pct' ? '10% Tour + Lương cứng' : 'Chủ tiệm'}</span></div>
+              <div><span class="text-slate-400">Lương cứng:</span> <span class="font-bold text-emerald-400 font-heading">${(u.base_salary || 0).toLocaleString('vi-VN')} đ</span></div>
+            </div>
+          </div>
+        `).join('');
+      }
     }
 
     function switchAdminTab(tab) {
       document.getElementById('admin-subtab-receipts').classList.add('hidden');
       document.getElementById('admin-subtab-customers').classList.add('hidden');
+      document.getElementById('admin-subtab-users').classList.add('hidden');
       document.getElementById('admin-subtab-expenses').classList.add('hidden');
       document.getElementById('admin-subtab-settings').classList.add('hidden');
 
       document.getElementById('tab-btn-receipts').className = 'px-4 py-2 rounded-2xl text-xs font-bold bg-white/5 hover:bg-white/10 text-slate-400 transition cursor-pointer shrink-0';
       document.getElementById('tab-btn-customers').className = 'px-4 py-2 rounded-2xl text-xs font-bold bg-white/5 hover:bg-white/10 text-slate-400 transition cursor-pointer shrink-0';
+      document.getElementById('tab-btn-users').className = 'px-4 py-2 rounded-2xl text-xs font-bold bg-white/5 hover:bg-white/10 text-slate-400 transition cursor-pointer shrink-0';
       document.getElementById('tab-btn-expenses').className = 'px-4 py-2 rounded-2xl text-xs font-bold bg-white/5 hover:bg-white/10 text-slate-400 transition cursor-pointer shrink-0';
       document.getElementById('tab-btn-settings').className = 'px-4 py-2 rounded-2xl text-xs font-bold bg-white/5 hover:bg-white/10 text-slate-400 transition cursor-pointer shrink-0';
 
@@ -1120,6 +1191,9 @@ def build():
       } else if (tab === 'customers') {
         document.getElementById('admin-subtab-customers').classList.remove('hidden');
         document.getElementById('tab-btn-customers').className = 'px-4 py-2 rounded-2xl text-xs font-bold bg-purple-600 text-white shadow-md shadow-purple-600/30 transition cursor-pointer shrink-0';
+      } else if (tab === 'users') {
+        document.getElementById('admin-subtab-users').classList.remove('hidden');
+        document.getElementById('tab-btn-users').className = 'px-4 py-2 rounded-2xl text-xs font-bold bg-purple-600 text-white shadow-md shadow-purple-600/30 transition cursor-pointer shrink-0';
       } else if (tab === 'expenses') {
         document.getElementById('admin-subtab-expenses').classList.remove('hidden');
         document.getElementById('tab-btn-expenses').className = 'px-4 py-2 rounded-2xl text-xs font-bold bg-purple-600 text-white shadow-md shadow-purple-600/30 transition cursor-pointer shrink-0';
