@@ -258,16 +258,19 @@ function createReceipt(params) {
     }
   }
 
-  // 2. Tìm thông tin nhân viên & cách tính lương qua SĐT (Khóa liên kết)
+  // 2. Tìm thông tin nhân viên & cách tính lương qua SĐT hoặc staff_id
   let staffName = String(params.staff_name || '');
-  let staffSalaryType = '10% + Lương cứng';
+  let staffCode = String(params.staff_id || 'KTV01');
+  let staffSalaryType = 'fixed_10pct';
   if (sheetUsers) {
     const usersData = sheetUsers.getDataRange().getValues();
     for (let i = 1; i < usersData.length; i++) {
-      let uPhone = normalizePhone(usersData[i][0]);
-      if (uPhone === staffPhone || normalizePhone(usersData[i][1]) === staffPhone) {
-        staffName = String(usersData[i][2] || usersData[i][3] || staffName);
-        staffSalaryType = String(usersData[i][4] || usersData[i][5] || staffSalaryType);
+      let uPhone = normalizePhone(usersData[i][0] || usersData[i][2]);
+      let uStaffId = String(usersData[i][1] || '').trim();
+      if (uPhone === staffPhone || uStaffId === staffCode) {
+        staffCode = uStaffId || staffCode;
+        staffName = String(usersData[i][4] || usersData[i][3] || staffName);
+        staffSalaryType = String(usersData[i][6] || usersData[i][5] || staffSalaryType);
         break;
       }
     }
@@ -276,7 +279,7 @@ function createReceipt(params) {
   // 3. Tính tiền hoa hồng KTV (Commission)
   let commissionAmount = Number(params.commission_amount) || 0;
   if (!commissionAmount) {
-    if (staffSalaryType.includes('20%')) {
+    if (staffSalaryType.includes('20') || staffSalaryType === 'commission_20pct') {
       commissionAmount = Math.round(price * 0.20);
     } else {
       commissionAmount = Math.round(price * 0.10);
@@ -287,12 +290,12 @@ function createReceipt(params) {
   let discountAmount = isVoucherUsed ? price : 0;
   let totalPaid = isVoucherUsed ? 0 : price;
 
-  // 5. Ghi vào tb_receipts (Bảo toàn số 0 đầu bằng nháy đơn)
+  // 5. Ghi vào tb_receipts (Chuẩn 18 cột của Sheet)
   sheetReceipts.appendRow([
-    receiptId, timeStr, timeStr, "'" + phone, customerName,
-    serviceId, serviceName, "'" + staffPhone, staffName, price,
-    commissionAmount, discountAmount, totalPaid, paymentMethod,
-    isVoucherUsed, note
+    receiptId, timeStr, formatDate(now), "'" + phone, customerName,
+    serviceId, serviceName, "'" + staffPhone, staffCode, staffName,
+    price, commissionAmount, discountAmount, totalPaid,
+    paymentMethod, isVoucherUsed, 'completed', note
   ]);
 
   // 6. Xử lý tích điểm & Voucher khách hàng trong tb_customers
@@ -611,51 +614,33 @@ function syncAllData() {
     }
   }
 
-  // 2. Users (tb_users)
+  // 2. Users (tb_users: user_id, staff_id, phone, password, full_name, role, salary_type, base_salary...)
   const sheetUsers = ss.getSheetByName('tb_users');
   let users = [];
   if (sheetUsers) {
     const data = sheetUsers.getDataRange().getValues();
     for (let i = 1; i < data.length; i++) {
       let r = data[i];
-      if (r[0]) {
-        let userId = String(r[0]);
-        let phone = '';
-        let pwd = '123456';
-        let fullName = '';
-        let role = 'Kỹ thuật viên';
-        let salaryType = '10% + Lương cứng';
-        let baseSalary = 0;
+      if (r[0] || r[1] || r[2]) {
+        let userId = normalizePhone(r[0]);
+        let staffId = String(r[1] || '').trim();
+        let phone = normalizePhone(r[2] || r[0]);
+        let pwd = String(r[3] || '123456').trim();
+        let fullName = String(r[4] || '').trim();
+        let role = String(r[5] || 'staff').trim();
+        let salaryType = String(r[6] || 'fixed_10pct').trim();
+        let baseSalary = Number(String(r[7] || 0).replace(/[^\d]/g, '')) || 0;
 
-        // Nếu Cột 0 là User ID (FOUNDER_01, KTV01...) -> Đọc chuẩn layout 7 cột
-        if (isNaN(Number(String(r[0]).replace(/\D/g, ''))) || String(r[0]).includes('FOUNDER') || String(r[0]).includes('KTV') || r.length >= 7) {
-          userId = String(r[0]);
-          phone = normalizePhone(r[1]);
-          pwd = String(r[2] || '123456');
-          fullName = String(r[3] || '');
-          role = String(r[4] || 'Kỹ thuật viên').trim();
-          salaryType = String(r[5] || '10% + Lương cứng').trim();
-          baseSalary = Number(r[6]) || 0;
-        } else {
-          // Layout SĐT là cột đầu tiên
-          phone = normalizePhone(r[0]);
-          userId = phone;
-          pwd = String(r[1] || '123456');
-          fullName = String(r[2] || '');
-          role = String(r[3] || 'Kỹ thuật viên').trim();
-          salaryType = String(r[4] || '10% + Lương cứng').trim();
-          baseSalary = Number(r[5]) || 0;
-        }
-
-        const isOwner = (role.toLowerCase() === 'admin' || role === 'Chủ tiệm' || role === 'Chủ Sáng Lập' || phone === '0949251144' || userId === 'FOUNDER_01');
+        const isOwner = (role.toLowerCase() === 'admin' || role === 'Chủ tiệm' || role === 'Chủ Sáng Lập' || phone === '0949251144' || staffId === 'FOUNDER_01');
 
         users.push({
           user_id: userId || phone,
+          staff_id: staffId || userId || phone,
           phone: phone,
           password: pwd,
-          full_name: fullName || (isOwner ? 'Miles (Chủ Sáng Lập)' : 'KTV'),
+          full_name: fullName || (isOwner ? 'Miles (Đấng tối cao)' : 'KTV'),
           role: isOwner ? 'Chủ tiệm' : 'Kỹ thuật viên',
-          salary_type: isOwner ? 'Chủ tiệm' : salaryType,
+          salary_type: salaryType,
           base_salary: baseSalary
         });
       }
@@ -691,7 +676,7 @@ function syncAllData() {
     }
   }
 
-  // 4. Receipts
+  // 4. Receipts (tb_receipts: receipt_id, timestamp, date, customer_phone, customer_name, service_id, service_name, user_id, staff_id, staff_name, price, commission_amount, discount_amount, total_paid, payment_method, is_voucher_used...)
   const sheetRec = ss.getSheetByName('tb_receipts');
   let receipts = [];
   if (sheetRec) {
@@ -699,20 +684,27 @@ function syncAllData() {
     for (let i = data.length - 1; i >= 1; i--) {
       let r = data[i];
       if (r[0]) {
+        let price = Number(String(r[10] || 0).replace(/[^\d]/g, '')) || 0;
+        let comm = Number(String(r[11] || 0).replace(/[^\d]/g, '')) || 0;
+        let totalPaid = Number(String(r[13] || 0).replace(/[^\d]/g, '')) || 0;
+        let isVoucher = (r[15] === true || String(r[15]).toUpperCase() === 'TRUE');
+
         receipts.push({
           receipt_id: String(r[0]),
-          date: String(r[2]),
+          date: String(r[1] || r[2]),
           customer_phone: normalizePhone(r[3]),
           customer_name: String(r[4]),
           service_id: String(r[5]),
           service_name: String(r[6]),
+          user_id: normalizePhone(r[7]),
+          staff_id: String(r[8] || r[7]),
           staff_phone: normalizePhone(r[7]),
-          staff_name: String(r[8]),
-          price: Number(r[9]) || 0,
-          commission_amount: Number(r[10]) || 0,
-          total_paid: Number(r[12]) || 0,
-          payment_method: String(r[13]),
-          is_voucher_used: Boolean(r[14])
+          staff_name: String(r[9] || 'KTV'),
+          price: price,
+          commission_amount: comm,
+          total_paid: totalPaid,
+          payment_method: String(r[14]),
+          is_voucher_used: isVoucher
         });
       }
     }

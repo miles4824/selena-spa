@@ -500,11 +500,11 @@ def build():
       { service_id: 'CB_05', service_name: 'Combo 5 (Đại tiệc Thư giãn Hoàng Gia)', price: 219000, duration_min: 110, cosmetics_cost: 22000, commission_value: 22000 }
     ];
 
-    // SUPREME FOUNDER + STAFF ACCOUNTS (100% Tiếng Việt Thân Thiện)
+    // SUPREME FOUNDER + STAFF ACCOUNTS (Khớp 100% Google Sheets)
     const DEFAULT_USERS = [
-      { user_id: '0949251144', phone: '0949251144', password: '123456', full_name: 'Miles (Chủ Sáng Lập)', role: 'Chủ tiệm', salary_type: 'Chủ tiệm', base_salary: 0 },
-      { user_id: '0912345678', phone: '0912345678', password: '123456', full_name: 'KTV Mai Lan', role: 'Kỹ thuật viên', salary_type: '10% + Lương cứng', base_salary: 2000000 },
-      { user_id: '0987654321', phone: '0987654321', password: '123456', full_name: 'KTV Kim Hoa', role: 'Kỹ thuật viên', salary_type: '20% (Không lương)', base_salary: 0 }
+      { user_id: '0949251144', staff_id: 'FOUNDER_01', phone: '0949251144', password: '123456', full_name: 'Miles (Đấng tối cao)', role: 'admin', salary_type: 'owner', base_salary: 0 },
+      { user_id: '0799625591', staff_id: 'KTV01', phone: '0799625591', password: '123456', full_name: 'Thu Ngân', role: 'staff', salary_type: 'fixed_10pct', base_salary: 2000000 },
+      { user_id: '0912345678', staff_id: 'KTV02', phone: '0912345678', password: '123456', full_name: 'KTV Mai Lan', role: 'staff', salary_type: 'commission_20pct', base_salary: 2000000 }
     ];
 
     const DEFAULT_CUSTOMERS = [
