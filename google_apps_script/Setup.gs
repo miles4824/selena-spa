@@ -17,12 +17,12 @@ function initDatabase() {
   let sheetUsers = getOrCreateSheet(ss, 'tb_users');
   sheetUsers.clear();
   sheetUsers.appendRow([
-    'user_id', 'username', 'password_hash', 'full_name', 'role', 
+    'user_id', 'phone', 'password', 'full_name', 'role', 
     'salary_type', 'base_salary', 'bank_name', 'bank_account_no', 'bank_account_name'
   ]);
-  sheetUsers.appendRow(['ADMIN01', 'admin', '8888', 'Chủ Tiệm Selena Spa', 'admin', 'owner', 0, 'MBBank', '0912345678', 'CHU TIEM']);
-  sheetUsers.appendRow(['KTV01', 'ktv_lan', '1234', 'KTV Mai Lan', 'staff', 'fixed_10pct', 2000000, 'Vietcombank', '1012345678', 'MAI LAN']);
-  sheetUsers.appendRow(['KTV02', 'ktv_hoa', '1234', 'KTV Kim Hoa', 'staff', 'commission_20pct', 0, 'Techcombank', '19012345678', 'KIM HOA']);
+  sheetUsers.appendRow(['FOUNDER_01', '0949251144', '123456', 'Miles (Chủ Sáng Lập)', 'admin', 'owner', 0, 'MBBank', '0912345678', 'MILES']);
+  sheetUsers.appendRow(['KTV01', '0912345678', '123456', 'KTV Mai Lan', 'staff', 'fixed_10pct', 2000000, 'Vietcombank', '1012345678', 'MAI LAN']);
+  sheetUsers.appendRow(['KTV02', '0987654321', '123456', 'KTV Kim Hoa', 'staff', 'commission_20pct', 0, 'Techcombank', '19012345678', 'KIM HOA']);
   formatHeader(sheetUsers, '#7c6cf0');
 
   // 2. BẢNG tb_menu (Danh mục Combo & Dịch vụ)
