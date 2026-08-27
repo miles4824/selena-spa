@@ -611,7 +611,7 @@ function syncAllData() {
     }
   }
 
-  // 2. Users (tb_users: sdt_tai_khoan, mat_khau, ho_ten, vai_tro, che_do_luong, luong_cung, ...)
+  // 2. Users (tb_users)
   const sheetUsers = ss.getSheetByName('tb_users');
   let users = [];
   if (sheetUsers) {
@@ -619,27 +619,38 @@ function syncAllData() {
     for (let i = 1; i < data.length; i++) {
       let r = data[i];
       if (r[0]) {
-        let phone = normalizePhone(r[0]);
-        let pwd = String(r[1] || '123456');
-        let fullName = String(r[2] || '');
-        let role = String(r[3] || 'Kỹ thuật viên').trim();
-        let salaryType = String(r[4] || '10% + Lương cứng').trim();
-        let baseSalary = Number(r[5]) || 0;
+        let userId = String(r[0]);
+        let phone = '';
+        let pwd = '123456';
+        let fullName = '';
+        let role = 'Kỹ thuật viên';
+        let salaryType = '10% + Lương cứng';
+        let baseSalary = 0;
 
-        // Old layout fallback if user still has old columns
-        if (r.length >= 7 && (String(r[4]).toLowerCase() === 'admin' || String(r[4]).toLowerCase() === 'staff')) {
+        // Nếu Cột 0 là User ID (FOUNDER_01, KTV01...) -> Đọc chuẩn layout 7 cột
+        if (isNaN(Number(String(r[0]).replace(/\D/g, ''))) || String(r[0]).includes('FOUNDER') || String(r[0]).includes('KTV') || r.length >= 7) {
+          userId = String(r[0]);
           phone = normalizePhone(r[1]);
-          pwd = String(r[2]);
-          fullName = String(r[3]);
-          role = String(r[4]);
-          salaryType = String(r[5]);
+          pwd = String(r[2] || '123456');
+          fullName = String(r[3] || '');
+          role = String(r[4] || 'Kỹ thuật viên').trim();
+          salaryType = String(r[5] || '10% + Lương cứng').trim();
           baseSalary = Number(r[6]) || 0;
+        } else {
+          // Layout SĐT là cột đầu tiên
+          phone = normalizePhone(r[0]);
+          userId = phone;
+          pwd = String(r[1] || '123456');
+          fullName = String(r[2] || '');
+          role = String(r[3] || 'Kỹ thuật viên').trim();
+          salaryType = String(r[4] || '10% + Lương cứng').trim();
+          baseSalary = Number(r[5]) || 0;
         }
 
-        const isOwner = (role.toLowerCase() === 'admin' || role === 'Chủ tiệm' || role === 'Chủ Sáng Lập' || phone === '0949251144');
+        const isOwner = (role.toLowerCase() === 'admin' || role === 'Chủ tiệm' || role === 'Chủ Sáng Lập' || phone === '0949251144' || userId === 'FOUNDER_01');
 
         users.push({
-          user_id: phone,
+          user_id: userId || phone,
           phone: phone,
           password: pwd,
           full_name: fullName || (isOwner ? 'Miles (Chủ Sáng Lập)' : 'KTV'),
