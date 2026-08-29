@@ -1,5 +1,5 @@
 // =============================================================
-// TAB 2: ADD - POS CHECKOUT, 2-PHASE DISCREET CHECKOUT & TIPS
+// TAB 2: ADD - POS CHECKOUT, LIVE SESSION TIMER & 2-PHASE CHECKOUT
 // =============================================================
 let isStaff2Enabled = false;
 let currentCheckoutTip = 0;
@@ -195,6 +195,121 @@ function startLiveSession() {
   const staff2 = isStaff2Enabled ? users.find(u => normalizePhone(u.phone) === normalizePhone(s2Phone)) : null;
 
   const now = new Date();
+  const startTimeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+  const startDateStr = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}`;
+
+  currentLiveSession = {
+    session_id: 'SS' + Date.now(),
+    service_id: service.service_id,
+    service_name: service.service_name,
+    price: service.price,
+    duration_target_min: service.duration_min || 45,
+    start_timestamp: Date.now(),
+    start_time: startTimeStr,
+    date: startDateStr,
+    customer_phone: phone,
+    customer_name: name,
+    staff_1_user_id: staff1?.user_id || staff1?.phone || '',
+    staff_1_phone: staff1?.phone || '',
+    staff_1_id: staff1?.staff_id || 'KTV01',
+    staff_1_name: staff1?.full_name || 'KTV 1',
+    has_staff_2: Boolean(isStaff2Enabled && staff2),
+    staff_2_user_id: staff2?.user_id || staff2?.phone || '-',
+    staff_2_phone: staff2?.phone || '-',
+    staff_2_id: staff2?.staff_id || '-',
+    staff_2_name: staff2?.full_name || '-',
+    use_voucher: useVoucher
+  };
+
+  localStorage.setItem('selena_active_live_session', JSON.stringify(currentLiveSession));
+  renderLiveSessionUI();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function renderLiveSessionUI() {
+  const liveCard = document.getElementById('live-session-card');
+  const formBox = document.getElementById('pos-form-box');
+
+  if (!currentLiveSession) {
+    if (liveCard) liveCard.classList.add('hidden');
+    if (formBox) formBox.classList.remove('hidden');
+    clearInterval(liveTimerInterval);
+    return;
+  }
+
+  if (liveCard) liveCard.classList.remove('hidden');
+  if (formBox) formBox.classList.add('hidden');
+
+  document.getElementById('live-service-name').innerText = currentLiveSession.service_name;
+  document.getElementById('live-customer-badge').innerText = '👤 ' + (currentLiveSession.customer_name || 'Khách vãng lai');
+  document.getElementById('live-staff-badge').innerText = '💆 ' + currentLiveSession.staff_1_name + (currentLiveSession.has_staff_2 ? ` & ${currentLiveSession.staff_2_name}` : '');
+  document.getElementById('live-start-time-text').innerText = currentLiveSession.start_time;
+  document.getElementById('live-target-time-text').innerText = currentLiveSession.duration_target_min + ' phút';
+
+  clearInterval(liveTimerInterval);
+  updateLiveTimerTick();
+  liveTimerInterval = setInterval(updateLiveTimerTick, 1000);
+  lucide.createIcons();
+}
+
+function updateLiveTimerTick() {
+  if (!currentLiveSession) return;
+  const elapsedSec = Math.max(0, Math.floor((Date.now() - currentLiveSession.start_timestamp) / 1000));
+  const elapsedMin = Math.floor(elapsedSec / 60);
+  const remSec = elapsedSec % 60;
+
+  const timerEl = document.getElementById('live-timer-display');
+  const barEl = document.getElementById('live-progress-bar');
+  const hintEl = document.getElementById('live-status-hint');
+
+  if (timerEl) {
+    timerEl.innerText = `${elapsedMin.toString().padStart(2, '0')}:${remSec.toString().padStart(2, '0')}`;
+  }
+
+  const targetMin = currentLiveSession.duration_target_min || 45;
+  const pct = Math.min(100, Math.round((elapsedMin / targetMin) * 100));
+  if (barEl) barEl.style.width = pct + '%';
+
+  if (hintEl) {
+    if (elapsedMin >= targetMin) {
+      hintEl.innerText = '🔔 Đã đạt đủ thời gian liệu trình (' + targetMin + ' phút). Bấm nút bên dưới để thanh toán!';
+      hintEl.className = 'text-xs text-[#E58A7B] font-extrabold animate-bounce';
+    } else {
+      hintEl.innerText = `⏱️ Còn khoảng ${targetMin - elapsedMin} phút theo liệu trình`;
+      hintEl.className = 'text-xs text-[#2E7D6D] font-medium';
+    }
+  }
+}
+
+function cancelLiveSession() {
+  if (confirm('Bạn có chắc muốn hủy ca đang phục vụ này không?')) {
+    localStorage.removeItem('selena_active_live_session');
+    currentLiveSession = null;
+    clearInterval(liveTimerInterval);
+    renderLiveSessionUI();
+  }
+}
+
+function restoreLiveSessionIfExists() {
+  const saved = localStorage.getItem('selena_active_live_session');
+  if (saved) {
+    try {
+      currentLiveSession = JSON.parse(saved);
+      renderLiveSessionUI();
+    } catch(e) {
+      localStorage.removeItem('selena_active_live_session');
+    }
+  }
+}
+
+// =============================================================
+// BƯỚC 3: MỞ MODAL THANH TOÁN (PHA 1: KHÁCH XEM)
+// =============================================================
+
+function openCheckoutModal() {
+  if (!currentLiveSession) return;
+
+  const now = new Date();
   const endTimeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
   
   // LỰA CHỌN 3: Tính số phút thập phân chính xác từng giây (VD: 1.4 phút, 45.5 phút)
@@ -206,7 +321,7 @@ function startLiveSession() {
 
   document.getElementById('chk-service-name').innerText = currentLiveSession.service_name;
   document.getElementById('chk-service-price').innerText = currentLiveSession.use_voucher ? '0 đ (Voucher)' : currentLiveSession.price.toLocaleString('vi-VN') + ' đ';
-  document.getElementById('chk-time-range').innerText = `${currentLiveSession.start_time} - ${endTimeStr} (${elapsedMinutes} phút)`;
+  document.getElementById('chk-time-range').innerText = `${currentLiveSession.start_time} - ${endTimeStr} (${currentLiveSession.duration_actual_min} phút)`;
   document.getElementById('chk-customer-name').innerText = currentLiveSession.customer_name || 'Khách vãng lai';
 
   // Hiển thị Pha 1 (Khách xem) và ẩn Pha 2 (KTV nhập Tips)
@@ -331,8 +446,8 @@ function confirmSaveReceiptFromCheckout() {
     customer_name: currentLiveSession.customer_name,
     
     // KTV 1
-    staff_1_id: staff1?.staff_id || staff1?.phone || 'KTV01',
     staff_1_user_id: staff1?.user_id || staff1?.phone || '',
+    staff_1_id: staff1?.staff_id || staff1?.phone || 'KTV01',
     staff_1_phone: staff1?.phone || '',
     staff_1_name: staff1?.full_name || 'KTV 1',
     staff_1_comm: comm1,
@@ -340,10 +455,10 @@ function confirmSaveReceiptFromCheckout() {
 
     // KTV 2
     has_staff_2: currentLiveSession.has_staff_2,
-    staff_2_id: staff2?.staff_id || staff2?.phone || '',
     staff_2_user_id: staff2?.user_id || staff2?.phone || '-',
+    staff_2_id: staff2?.staff_id || staff2?.phone || '-',
     staff_2_phone: staff2?.phone || '-',
-    staff_2_name: staff2?.full_name || '',
+    staff_2_name: staff2?.full_name || '-',
     staff_2_comm: comm2,
     staff_2_tip: tip2,
 
@@ -353,13 +468,14 @@ function confirmSaveReceiptFromCheckout() {
     staff_name: staff1?.full_name || 'KTV',
     commission_amount: comm1 + tip1,
 
-    payment_method: checkoutPaymentMethod,
-    is_voucher_used: currentLiveSession.use_voucher,
-    date: currentLiveSession.date,
     start_time: currentLiveSession.start_time,
     end_time: currentLiveSession.end_time || currentLiveSession.start_time,
     duration_min: currentLiveSession.duration_actual_min || currentLiveSession.duration_target_min || 45,
     time: currentLiveSession.start_time,
+
+    payment_method: checkoutPaymentMethod,
+    is_voucher_used: currentLiveSession.use_voucher,
+    date: currentLiveSession.date,
     created_at: currentLiveSession.date + ' ' + currentLiveSession.start_time
   };
 
@@ -392,7 +508,7 @@ function confirmSaveReceiptFromCheckout() {
   callGasApi('create_receipt', receipt);
   confetti({ particleCount: 60, spread: 70, origin: { y: 0.6 } });
 
-  let successMsg = `✅ Đã hoàn tất và lưu hóa đơn ca gội!\n• Khách thanh toán: ${grandTotal.toLocaleString('vi-VN')} đ (${checkoutPaymentMethod})`;
+  let successMsg = `✅ Đã hoàn tất và lưu hóa đơn ca gội!\n• Thời gian: ${receipt.start_time} - ${receipt.end_time} (${receipt.duration_min} phút)\n• Khách thanh toán: ${grandTotal.toLocaleString('vi-VN')} đ (${checkoutPaymentMethod})`;
   if (receipt.tip_amount > 0) successMsg += `\n• Tiền Tips: +${receipt.tip_amount.toLocaleString('vi-VN')} đ`;
   successMsg += `\n• KTV 1 (${receipt.staff_1_name}): +${(comm1 + tip1).toLocaleString('vi-VN')} đ`;
   if (receipt.has_staff_2) successMsg += `\n• KTV 2 (${receipt.staff_2_name}): +${(comm2 + tip2).toLocaleString('vi-VN')} đ`;
