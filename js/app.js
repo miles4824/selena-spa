@@ -20,7 +20,7 @@ async function showView(view) {
 
   // Đảm bảo chỉ nạp đúng bộ View của Role đó
   const isOwner = isUserOwner(currentUser);
-  const targetRole = isOwner ? 'owner' : 'ktv';
+  const targetRole = isOwner ? 'owner' : 'staff';
   if (loadedRole !== targetRole) {
     await loadRoleSpecificViews(isOwner);
   }
@@ -103,15 +103,15 @@ function loadIncomeView() {
   lucide.createIcons();
 }
 
-// NẠP ĐỘNG ĐÚNG BỘ VIEW CỦA ROLE (CÔ LẬP BẢO MẬT 100%)
+// NẠP ĐỘNG ĐÚNG BỘ VIEW CỦA ROLE TỪ VIEWS/OWNER HOẶC VIEWS/STAFF (CHUẨN MINDMAP)
 async function loadRoleSpecificViews(isOwner) {
-  const roleSuffix = isOwner ? '_owner.html' : '_ktv.html';
-  loadedRole = isOwner ? 'owner' : 'ktv';
+  const folder = isOwner ? 'views/owner' : 'views/staff';
+  loadedRole = isOwner ? 'owner' : 'staff';
 
   await Promise.all([
-    loadViewTemplate('container-home', `views/home${roleSuffix}`),
-    loadViewTemplate('container-history', `views/history${roleSuffix}`),
-    loadViewTemplate('container-wallet', `views/wallet${roleSuffix}`)
+    loadViewTemplate('container-home', `${folder}/home.html`),
+    loadViewTemplate('container-history', `${folder}/history.html`),
+    loadViewTemplate('container-wallet', `${folder}/wallet.html`)
   ]);
   lucide.createIcons();
 }
@@ -132,13 +132,13 @@ async function loadViewTemplate(containerId, filePath) {
 
 // App Initialization
 window.addEventListener('DOMContentLoaded', async () => {
-  // 1. Tải trước các thành phần dùng chung (Login, Add POS, Nav, Modals)
+  // 1. Tải các thành phần chung (views/login.html, views/add.html, views/components/*)
   await Promise.all([
-    loadViewTemplate('container-ptr', 'components/pull_to_refresh.html'),
+    loadViewTemplate('container-ptr', 'views/components/pull_to_refresh.html'),
     loadViewTemplate('container-login', 'views/login.html'),
     loadViewTemplate('container-add', 'views/add.html'),
-    loadViewTemplate('container-nav', 'components/bottom_nav.html'),
-    loadViewTemplate('container-modals', 'components/modals.html')
+    loadViewTemplate('container-nav', 'views/components/bottom_nav.html'),
+    loadViewTemplate('container-modals', 'views/components/modals.html')
   ]);
 
   initMenuUI();
