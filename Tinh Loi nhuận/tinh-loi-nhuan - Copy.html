@@ -1,0 +1,1581 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Selena Spa - Bảng Tính Lợi Nhuận & Điểm Hòa Vốn</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <style>
+    :root {
+      --bg-gradient: linear-gradient(135deg, #0f111a 0%, #171926 100%);
+      --card-bg: rgba(26, 29, 43, 0.7);
+      --card-border: rgba(255, 255, 255, 0.06);
+      --accent: #7c6cf0;
+      --accent-light: #9d90f5;
+      --accent-glow: rgba(124, 108, 240, 0.15);
+      --text: #f3f4f6;
+      --text-muted: #9ca3af;
+      --green: #10b981;
+      --green-glow: rgba(16, 185, 129, 0.15);
+      --red: #ef4444;
+      --red-glow: rgba(239, 68, 68, 0.15);
+      --amber: #f59e0b;
+      --radius: 16px;
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-gradient);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 40px 20px;
+      line-height: 1.5;
+    }
+
+    h1, h2, h3, h4 {
+      font-family: 'Outfit', sans-serif;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    header h1 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #a78bfa, #f472b6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+      letter-spacing: -0.5px;
+    }
+
+    header p {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+    }
+
+    /* GRID LAYOUT */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+    }
+
+    @media (max-width: 968px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* CARDS */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 30px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+      transition: var(--transition);
+    }
+
+    .card:hover {
+      border-color: rgba(124, 108, 240, 0.2);
+    }
+
+    .card-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--accent-light);
+      border-bottom: 1px solid var(--card-border);
+      padding-bottom: 12px;
+    }
+
+    .card-title i {
+      color: var(--accent);
+    }
+
+    /* FORM ELEMENTS */
+    .input-group {
+      margin-bottom: 20px;
+    }
+
+    .input-label-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .input-label {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .input-desc {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 6px;
+      display: block;
+      line-height: 1.3;
+    }
+
+    .input-value-badge {
+      background: var(--accent-glow);
+      color: var(--accent-light);
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      font-family: 'Outfit', sans-serif;
+      border: 1px solid rgba(124, 108, 240, 0.2);
+    }
+
+    .input-field-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+      width: 100%;
+    }
+
+    .input-field-wrapper span {
+      position: absolute;
+      right: 15px;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      pointer-events: none;
+    }
+
+    input[type="text"], input[type="number"] {
+      width: 100%;
+      background: rgba(15, 17, 26, 0.5);
+      border: 1px solid var(--card-border);
+      padding: 10px 35px 10px 12px;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 0.95rem;
+      font-weight: 600;
+      font-family: 'Outfit', sans-serif;
+      transition: var(--transition);
+    }
+
+    input[type="text"]:focus, input[type="number"]:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 8px var(--accent-glow);
+    }
+
+    /* Hiding spinner buttons for number inputs */
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    input[type=number] {
+      -moz-appearance: textfield;
+    }
+
+    /* SLIDERS */
+    .slider-container {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: rgba(255,255,255,0.1);
+      outline: none;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--accent);
+      cursor: pointer;
+      transition: var(--transition);
+      box-shadow: 0 0 10px var(--accent);
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+    }
+
+    /* RESULTS CARD */
+    .results-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 25px;
+    }
+
+    @media (max-width: 480px) {
+      .results-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .result-block {
+      background: rgba(15, 17, 26, 0.4);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .result-block.highlight-green {
+      background: var(--green-glow);
+      border-color: rgba(16, 185, 129, 0.2);
+    }
+
+    .result-block.highlight-red {
+      background: var(--red-glow);
+      border-color: rgba(239, 68, 68, 0.2);
+    }
+
+    .result-block.highlight-accent {
+      background: var(--accent-glow);
+      border-color: rgba(124, 108, 240, 0.2);
+    }
+
+    .result-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+
+    .result-value {
+      font-size: 1.8rem;
+      font-weight: 800;
+      font-family: 'Outfit', sans-serif;
+      margin-bottom: 2px;
+    }
+
+    .result-block.highlight-green .result-value {
+      color: var(--green);
+    }
+
+    .result-block.highlight-red .result-value {
+      color: var(--red);
+    }
+
+    .result-block.highlight-accent .result-value {
+      color: var(--accent-light);
+    }
+
+    .result-unit {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    /* TABLE FOR SIMULATION */
+    .simulation-table-wrapper {
+      margin-top: 25px;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.9rem;
+    }
+
+    th, td {
+      padding: 12px 15px;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    th {
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.5px;
+    }
+
+    tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .badge-status {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .badge-profit {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--green);
+    }
+
+    .badge-loss {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--red);
+    }
+
+    /* SUMMARY BULLETS */
+    .bullet-list {
+      list-style: none;
+      margin-top: 20px;
+    }
+
+    .bullet-item {
+      padding: 8px 0;
+      font-size: 0.9rem;
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px dashed var(--card-border);
+    }
+
+    .bullet-item:last-child {
+      border-bottom: none;
+    }
+
+    .bullet-val {
+      font-weight: 600;
+      font-family: 'Outfit', sans-serif;
+    }
+
+    /* TAB SWITCHES */
+    .tab-container {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 25px;
+    }
+
+    .tab-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--card-border);
+      padding: 8px 16px;
+      border-radius: 20px;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: var(--transition);
+    }
+
+    .tab-btn.active {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+      box-shadow: 0 0 10px var(--accent-glow);
+    }
+
+    .grid-three {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    @media (max-width: 580px) {
+      .grid-three {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <h1>🧖 SELENA SPA</h1>
+      <p>Công Cụ Tính Chi Phí Chi Tiết &amp; Lợi Nhuận Dịch Vụ</p>
+    </header>
+
+    <div class="dashboard-grid">
+      <!-- INPUTS COLUMN -->
+      <div class="card">
+        <h2 class="card-title"><i data-lucide="sliders"></i>Thông số tính toán</h2>
+        
+        <!-- Preset Combos -->
+        <span class="input-label" style="margin-bottom: 8px; display: block;">Chọn Combo mẫu (Lyn Beauty):</span>
+        <div id="combo-presets" class="tab-container" style="flex-wrap: wrap; gap: 8px; margin-bottom: 20px;">
+          <button class="tab-btn" onclick="loadPreset('combo_be', this)">Combo Bé (45k)</button>
+          <button class="tab-btn active" onclick="loadPreset('combo1', this)">Combo 1 (64k - 50p)</button>
+          <button class="tab-btn" onclick="loadPreset('combo2', this)">Combo 2 (109k - 1h15p)</button>
+          <button class="tab-btn" onclick="loadPreset('combo3', this)">Combo 3 (139k - 1h25p)</button>
+          <button class="tab-btn" onclick="loadPreset('combo4', this)">Combo 4 (179k - 1h35p)</button>
+          <button class="tab-btn" onclick="loadPreset('combo5', this)">Combo 5 (219k - 1h50p)</button>
+        </div>
+
+        <!-- Salary Model Selector -->
+        <div class="input-group" style="margin-bottom: 25px;">
+          <span class="input-label" style="margin-bottom: 10px; display: block;">Mô hình trả lương KTV:</span>
+          <div class="tab-container" style="margin-bottom: 0; flex-wrap: wrap; gap: 8px;">
+            <button id="btn-model-salary" class="tab-btn active" onclick="setSalaryModel('fixed', this)">Có lương cứng (10% Tour + Lương cứng)</button>
+            <button id="btn-model-nosalary" class="tab-btn" onclick="setSalaryModel('commission', this)">Không lương cứng (20% Tour)</button>
+          </div>
+        </div>
+
+        <!-- 1. GIÁ DỊCH VỤ -->
+        <div class="input-group">
+          <div class="input-label-container">
+            <span class="input-label">Giá bán Combo / Dịch vụ</span>
+            <span class="input-value-badge" id="val-price-display">45.000 đ</span>
+          </div>
+          <div class="input-field-wrapper">
+            <input type="text" id="input-price" value="45.000" onkeydown="handlePriceKeyDown(event, this)" oninput="onPriceChange(this)">
+            <span>đ</span>
+          </div>
+          <span class="input-desc">Giá bán combo</span>
+        </div>
+
+        <!-- 2. BIẾN PHÍ TRÊN MỖI LẦT GỘI -->
+        <h3 class="input-label" style="margin: 25px 0 15px 0; font-size: 1rem; border-bottom: 1px dashed var(--card-border); padding-bottom: 8px; color: var(--accent-light);">
+          Biến phí trên mỗi khách
+        </h3>
+
+        <div class="grid-three">
+          <!-- COMMISSION -->
+          <div class="input-group">
+            <div class="input-label-container">
+              <span class="input-label" style="font-size: 0.8rem; font-weight: 700;">Tour nhân viên</span>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+              <div class="input-field-wrapper">
+                <input type="text" id="input-commission" value="4.500" onkeydown="handleCashKeyDown(event, this, 'pct-commission')" oninput="formatAndCalcCash(this, 'pct-commission')">
+                <span>đ</span>
+              </div>
+              <div class="input-field-wrapper">
+                <input type="number" step="1" id="pct-commission" value="10" onkeydown="handlePctKeyDown(event, this, 'input-commission')" oninput="calcPctToCash(this, 'input-commission')">
+                <span>%</span>
+              </div>
+            </div>
+            <span class="input-desc">Đang chọn: 10% (Có lương cứng)</span>
+          </div>
+
+          <!-- COSMETICS -->
+          <div class="input-group">
+            <div class="input-label-container">
+              <span class="input-label" style="font-size: 0.8rem;">Dầu gội & Mỹ phẩm</span>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+              <div class="input-field-wrapper">
+                <input type="text" id="input-cosmetics" value="2.000" onkeydown="handleCashKeyDown(event, this, 'pct-cosmetics')" oninput="formatAndCalcCash(this, 'pct-cosmetics')">
+                <span>đ</span>
+              </div>
+              <div class="input-field-wrapper">
+                <input type="number" step="1" id="pct-cosmetics" value="4.4" onkeydown="handlePctKeyDown(event, this, 'input-cosmetics')" oninput="calcPctToCash(this, 'input-cosmetics')">
+                <span>%</span>
+              </div>
+            </div>
+            <span class="input-desc">Dầu gội, dầu xả, thảo dược...</span>
+          </div>
+
+          <!-- CONSUMABLES -->
+          <div class="input-group">
+            <div class="input-label-container">
+              <span class="input-label" style="font-size: 0.8rem;">Đồ tiêu hao khác</span>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+              <div class="input-field-wrapper">
+                <input type="text" id="input-consumables" value="1.500" onkeydown="handleCashKeyDown(event, this, 'pct-consumables')" oninput="formatAndCalcCash(this, 'pct-consumables')">
+                <span>đ</span>
+              </div>
+              <div class="input-field-wrapper">
+                <input type="number" step="1" id="pct-consumables" value="3.3" onkeydown="handlePctKeyDown(event, this, 'input-consumables')" oninput="calcPctToCash(this, 'input-consumables')">
+                <span>%</span>
+              </div>
+            </div>
+            <span class="input-desc">Khăn giấy, tăm bông, trà mời...</span>
+          </div>
+        </div>
+
+        <div class="grid-three">
+          <!-- ELECTRICITY -->
+          <div class="input-group">
+            <div class="input-label-container">
+              <span class="input-label" style="font-size: 0.8rem;">Tiền điện gội & sấy</span>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+              <div class="input-field-wrapper">
+                <input type="text" id="input-electricity" value="3.000" onkeydown="handleCashKeyDown(event, this, 'pct-electricity')" oninput="formatAndCalcCash(this, 'pct-electricity')">
+                <span>đ</span>
+              </div>
+              <div class="input-field-wrapper">
+                <input type="number" step="1" id="pct-electricity" value="6.7" onkeydown="handlePctKeyDown(event, this, 'input-electricity')" oninput="calcPctToCash(this, 'input-electricity')">
+                <span>%</span>
+              </div>
+            </div>
+            <span class="input-desc">Bình nóng lạnh + Sấy tóc 15p</span>
+          </div>
+
+          <!-- WATER -->
+          <div class="input-group">
+            <div class="input-label-container">
+              <span class="input-label" style="font-size: 0.8rem;">Tiền nước sạch</span>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+              <div class="input-field-wrapper">
+                <input type="text" id="input-water" value="600" onkeydown="handleCashKeyDown(event, this, 'pct-water')" oninput="formatAndCalcCash(this, 'pct-water')">
+                <span>đ</span>
+              </div>
+              <div class="input-field-wrapper">
+                <input type="number" step="1" id="pct-water" value="1.3" onkeydown="handlePctKeyDown(event, this, 'input-water')" oninput="calcPctToCash(this, 'input-water')">
+                <span>%</span>
+              </div>
+            </div>
+            <span class="input-desc">Ước tính ~40L nước/khách</span>
+          </div>
+
+          <!-- OTHER VARIABLE (LAUNDRY) -->
+          <div class="input-group">
+            <div class="input-label-container">
+              <span class="input-label" style="font-size: 0.8rem;">Khác (Giặt khăn)</span>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+              <div class="input-field-wrapper">
+                <input type="text" id="input-other-var" value="1.000" onkeydown="handleCashKeyDown(event, this, 'pct-other-var')" oninput="formatAndCalcCash(this, 'pct-other-var')">
+                <span>đ</span>
+              </div>
+              <div class="input-field-wrapper">
+                <input type="number" step="1" id="pct-other-var" value="2.2" onkeydown="handlePctKeyDown(event, this, 'input-other-var')" oninput="calcPctToCash(this, 'input-other-var')">
+                <span>%</span>
+              </div>
+            </div>
+            <span class="input-desc">Bột giặt, nước xả, điện giặt sấy</span>
+          </div>
+        </div>
+
+        <!-- 3. ĐỊNH PHÍ CỐ ĐỊNH HÀNG THÁNG -->
+        <h3 class="input-label" style="margin: 25px 0 5px 0; font-size: 1rem; border-bottom: 1px dashed var(--card-border); padding-bottom: 8px; color: var(--accent-light);">
+          Định phí hàng tháng (Cố định)
+        </h3>
+        <span id="daily-fixed-cost-display" style="font-size: 0.75rem; color: var(--accent-light); margin-bottom: 15px; display: block; font-weight: 600;">Định phí trung bình ngày: 0 đ</span>
+
+        <!-- Row 1 -->
+        <div class="grid-three">
+          <div class="input-group">
+            <div class="input-label-container">
+              <span class="input-label" style="font-size: 0.8rem;">Mặt bằng</span>
+            </div>
+            <div class="input-field-wrapper">
+              <input type="text" id="input-rent" value="0" onkeydown="handleCashGenericKeyDown(event, this)" oninput="formatAndCalc(this)">
+              <span>đ</span>
+            </div>
+            <span class="input-desc" id="daily-rent-desc">0 đ/ngày</span>
+          </div>
+
+          <div class="input-group">
+            <div class="input-label-container">
+              <span class="input-label" style="font-size: 0.8rem; font-weight: 700;">Lương cứng KTV</span>
+            </div>
+            <div class="input-field-wrapper">
+              <input type="text" id="input-salary-fixed" value="2.000.000" onkeydown="handleCashGenericKeyDown(event, this)" oninput="formatAndCalc(this)">
+              <span>đ</span>
+            </div>
+            <span class="input-desc" id="daily-salary-fixed-desc">0 đ/ngày</span>
+          </div>
+
+          <div class="input-group">
+            <div class="input-label-container">
+              <span class="input-label" style="font-size: 0.8rem; font-weight: 700;">Số KTV thuê</span>
+            </div>
+            <div class="input-field-wrapper">
+              <input type="text" id="input-ktv-count" value="1" onkeydown="handleCountGenericKeyDown(event, this)" oninput="onKtvCountChange(this)">
+              <span>người</span>
+            </div>
+            <span class="input-desc" id="daily-ktv-count-desc">Lương cứng: 2.000.000 đ/người</span>
+          </div>
+        </div>
+
+        <!-- Row 2 -->
+        <div class="grid-three">
+          <div class="input-group">
+            <div class="input-label-container">
+              <span class="input-label" style="font-size: 0.8rem;">Khấu hao Setup (2 năm)</span>
+            </div>
+            <div class="input-field-wrapper">
+              <input type="text" id="input-depreciation" value="9.100.000" onkeydown="handleCashGenericKeyDown(event, this)" oninput="formatAndCalc(this)">
+              <span>đ</span>
+            </div>
+            <span class="input-desc" id="daily-depreciation-desc">0 đ/ngày</span>
+          </div>
+
+          <div class="input-group">
+            <div class="input-label-container">
+              <span class="input-label" style="font-size: 0.8rem;">Phần mềm</span>
+            </div>
+            <div class="input-field-wrapper">
+              <input type="text" id="input-software" value="0" onkeydown="handleCashGenericKeyDown(event, this)" oninput="formatAndCalc(this)">
+              <span>đ</span>
+            </div>
+            <span class="input-desc" id="daily-software-desc">0 đ/ngày</span>
+          </div>
+
+          <div class="input-group">
+            <div class="input-label-container">
+              <span class="input-label" style="font-size: 0.8rem;">Internet</span>
+            </div>
+            <div class="input-field-wrapper">
+              <input type="text" id="input-wifi" value="350.000" onkeydown="handleCashGenericKeyDown(event, this)" oninput="formatAndCalc(this)">
+              <span>đ</span>
+            </div>
+            <span class="input-desc" id="daily-wifi-desc">0 đ/ngày</span>
+          </div>
+        </div>
+
+        <!-- Row 3 -->
+        <div class="grid-three">
+          <div class="input-group">
+            <div class="input-label-container">
+              <span class="input-label" style="font-size: 0.8rem;">Quảng cáo & MKT</span>
+            </div>
+            <div class="input-field-wrapper">
+              <input type="text" id="input-marketing" value="1.000.000" onkeydown="handleCashGenericKeyDown(event, this)" oninput="formatAndCalc(this)">
+              <span>đ</span>
+            </div>
+            <span class="input-desc" id="daily-marketing-desc">0 đ/ngày</span>
+          </div>
+
+          <div class="input-group">
+            <div class="input-label-container">
+              <span class="input-label" style="font-size: 0.8rem;">Điện cố định</span>
+            </div>
+            <div class="input-field-wrapper">
+              <input type="text" id="input-fixed-elec" value="1.000.000" onkeydown="handleCashGenericKeyDown(event, this)" oninput="formatAndCalc(this)">
+              <span>đ</span>
+            </div>
+            <span class="input-desc" id="daily-fixed-elec-desc">0 đ/ngày</span>
+          </div>
+
+          <div class="input-group">
+            <div class="input-label-container">
+              <span class="input-label" style="font-size: 0.8rem;">Nước cố định</span>
+            </div>
+            <div class="input-field-wrapper">
+              <input type="text" id="input-fixed-water" value="250.000" onkeydown="handleCashGenericKeyDown(event, this)" oninput="formatAndCalc(this)">
+              <span>đ</span>
+            </div>
+            <span class="input-desc" id="daily-fixed-water-desc">0 đ/ngày</span>
+          </div>
+        </div>
+
+        <!-- Row 4 -->
+        <div class="grid-three" style="margin-bottom: 0;">
+          <div class="input-group">
+            <div class="input-label-container">
+              <span class="input-label" style="font-size: 0.8rem;">Dự phòng</span>
+            </div>
+            <div class="input-field-wrapper">
+              <input type="text" id="input-fixed-reserve" value="500.000" onkeydown="handleCashGenericKeyDown(event, this)" oninput="formatAndCalc(this)">
+              <span>đ</span>
+            </div>
+            <span class="input-desc" id="daily-fixed-reserve-desc">0 đ/ngày</span>
+          </div>
+
+          <div class="input-group">
+            <div class="input-label-container">
+              <span class="input-label" style="font-size: 0.8rem;">Khác</span>
+            </div>
+            <div class="input-field-wrapper">
+              <input type="text" id="input-fixed-other" value="0" onkeydown="handleCashGenericKeyDown(event, this)" oninput="formatAndCalc(this)">
+              <span>đ</span>
+            </div>
+            <span class="input-desc" id="daily-fixed-other-desc">0 đ/ngày</span>
+          </div>
+
+          <div class="input-group" style="visibility: hidden;"></div>
+        </div>
+
+        <!-- 4. LƯỢNG KHÁCH MỤC TIÊU -->
+        <div class="input-group" style="margin-top: 25px;">
+          <div class="input-label-container">
+            <span class="input-label">Lượng khách trung bình / Ngày</span>
+            <span class="input-value-badge" id="val-guests-display" style="background: var(--green-glow); color: var(--green)">10 khách / ngày</span>
+          </div>
+          <div class="slider-container">
+            <input type="range" id="input-guests" min="3" max="50" step="1" value="10" oninput="updateGuestSlider()">
+          </div>
+          <span class="input-desc" id="guests-day-desc">Tổng số khách phục vụ cả tháng: 300 khách</span>
+        </div>
+
+      </div>
+
+      <!-- RESULTS COLUMN -->
+      <div class="card">
+        <h2 class="card-title"><i data-lucide="bar-chart-3"></i>Kết quả phân tích lợi nhuận</h2>
+
+        <div class="results-grid">
+          <div class="result-block highlight-accent">
+            <span class="result-label">Lợi nhuận gộp / Khách</span>
+            <span class="result-value" id="res-gross-profit">36.900</span>
+            <span class="result-unit">VND</span>
+          </div>
+          <div class="result-block">
+            <span class="result-label">Tỷ suất lợi nhuận gộp</span>
+            <span class="result-value" id="res-gross-margin" style="color: var(--amber)">57.7%</span>
+            <span class="result-unit">trên giá bán</span>
+          </div>
+        </div>
+
+        <div class="results-grid">
+          <div class="result-block highlight-green">
+            <span class="result-label">Tổng lợi nhuận ròng / Tháng</span>
+            <span class="result-value" id="res-net-profit">12.140.000</span>
+            <span class="result-unit">VND</span>
+          </div>
+          <div class="result-block" style="border-color: var(--amber);">
+            <span class="result-label">Điểm hòa vốn (Tháng)</span>
+            <span class="result-value" id="res-break-even" style="color: var(--amber)">816</span>
+            <span class="result-unit">khách cần phục vụ</span>
+          </div>
+        </div>
+
+        <div class="results-grid" style="grid-template-columns: 1fr;">
+          <div class="result-block" style="align-items: flex-start; text-align: left; padding: 25px;">
+            <span class="result-label" style="margin-bottom: 12px; font-weight: 700; color: var(--accent-light);">Chi tiết cấu thành 1 lượt khách:</span>
+            
+            <div style="width: 100%;">
+              <div class="bullet-item">
+                <span class="bullet-lbl">💵 Doanh thu (Giá combo)</span>
+                <span class="bullet-val" id="bullet-price" style="color: #fff;">+64.000 đ</span>
+              </div>
+              <div class="bullet-item" style="color: var(--red);">
+                <span class="bullet-lbl">💸 Lương tour nhân viên (KTV)</span>
+                <span class="bullet-val" id="bullet-commission">-15.000 đ</span>
+              </div>
+              <div class="bullet-item" style="color: var(--red);">
+                <span class="bullet-lbl">🧴 Chi phí hóa mỹ phẩm gội</span>
+                <span class="bullet-val" id="bullet-cosmetics">-4.000 đ</span>
+              </div>
+              <div class="bullet-item" style="color: var(--red);">
+                <span class="bullet-lbl">⚡ Điện nước & Đồ tiêu hao</span>
+                <span class="bullet-val" id="bullet-utilities">-8.100 đ</span>
+              </div>
+              <div class="bullet-item" style="border-top: 1px solid var(--card-border); padding-top: 10px; font-weight: 700;">
+                <span class="bullet-lbl" style="color: var(--accent-light);">👉 Lợi nhuận gộp thu được</span>
+                <span class="bullet-val" id="bullet-gross-profit" style="color: var(--green);">+36.900 đ</span>
+              </div>
+              <div class="bullet-item" style="color: var(--text-muted); border-bottom: none;">
+                <span class="bullet-lbl">🏢 Định phí phân bổ (Khấu hao, nhà, lương cứng)</span>
+                <span class="bullet-val" id="bullet-fixed-allocated">-50.167 đ</span>
+              </div>
+              <div class="bullet-item" style="border-top: 2px double var(--card-border); padding-top: 12px; font-weight: 800; font-size: 1.05rem;">
+                <span class="bullet-lbl">🔥 Lợi nhuận ròng thực tế/khách</span>
+                <span class="bullet-val" id="bullet-net-profit" style="color: var(--red);">-13.267 đ</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- STAFF SALARY CALCULATOR -->
+        <div class="results-grid" style="grid-template-columns: 1fr; margin-top: 10px;">
+          <div class="result-block" style="align-items: flex-start; text-align: left; padding: 25px; background: rgba(124, 108, 240, 0.05); border-color: rgba(124, 108, 240, 0.15);">
+            <span class="result-label" style="margin-bottom: 12px; font-weight: 700; color: var(--accent-light); display: flex; align-items: center; gap: 8px;">
+              <i data-lucide="users" style="width:18px;"></i>Tính Lương Thực Nhận của KTV Trong Tháng
+            </span>
+            
+            <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; margin-bottom: 15px; border-bottom: 1px dashed rgba(124, 108, 240, 0.15); padding-bottom: 12px;">
+              <span class="input-label" style="font-size: 0.85rem; font-weight: 600;">Vợ chủ spa cùng làm phụ KTV</span>
+              <label class="switch-container" style="display: inline-flex; align-items: center; cursor: pointer; gap: 8px;">
+                <input type="checkbox" id="input-wife-helps" checked onchange="updateKtvSplit()" style="cursor: pointer; width: 18px; height: 18px; accent-color: var(--accent-light);">
+                <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">Có làm phụ</span>
+              </label>
+            </div>
+
+            <div class="input-group" style="width: 100%; margin-bottom: 15px;">
+              <div class="input-label-container">
+                <span class="input-label" style="font-size: 0.85rem;">Số khách KTV này phục vụ / Ngày làm việc</span>
+                <span class="input-value-badge" id="val-ktv-guests-display" style="background: var(--accent-glow); color: var(--accent-light)">6 khách</span>
+              </div>
+              <div class="slider-container">
+                <input type="range" id="input-ktv-guests" min="1" max="12" step="1" value="6" oninput="updateKtvSlider()">
+              </div>
+              <span class="input-desc" id="ktv-guests-day-desc">Tổng số khách phục vụ cả tháng: 156 khách (làm 26 ngày)</span>
+            </div>
+
+            <div style="width: 100%;">
+              <div class="bullet-item">
+                <span>🏢 Lương cứng cơ bản</span>
+                <span class="bullet-val" id="salary-base-display" style="color: #fff;">2.000.000 đ</span>
+              </div>
+              <div class="bullet-item">
+                <span>🎟️ Tiền hoa hồng tour</span>
+                <span class="bullet-val" id="salary-tour-display" style="color: #fff;">810.000 đ</span>
+              </div>
+              <div class="bullet-item" style="border-top: 1px solid var(--card-border); padding-top: 10px; font-weight: 700; font-size: 1.1rem;">
+                <span style="color: var(--accent-light);">💰 TỔNG LƯƠNG KTV THỰC NHẬN</span>
+                <span class="bullet-val" id="salary-total-display" style="color: var(--green);">2.810.000 đ</span>
+              </div>
+            </div>
+            
+            <span class="input-desc" style="margin-top: 12px; font-weight: 600;" id="salary-warning-desc">
+              * Lương KTV: Đang tính toán...
+            </span>
+          </div>
+        </div>
+
+        <h3 class="input-label" style="margin: 20px 0 10px 0;">Bảng mô phỏng kinh doanh theo số lượng khách thực tế</h3>
+        <div class="simulation-table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Khách/Ngày</th>
+                <th>Khách/Tháng</th>
+                <th>Doanh Thu</th>
+                <th>Lợi Nhuận Ròng</th>
+                <th>Trạng Thái</th>
+              </tr>
+            </thead>
+            <tbody id="simulation-rows">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Initialize Lucide Icons
+    lucide.createIcons();
+
+    // Presets based on Lyn Beauty Menu (Prices and variables only)
+    const presets = {
+      'combo_be': {
+        price: 45000,
+        cosmetics: 2000,
+        consumables: 1000,
+        electricity: 2000,
+        water: 500,
+        otherVar: 1000,
+        rent: 0,
+        salaryFixed: 2000000,
+        depreciation: 9100000,
+        software: 0,
+        wifi: 350000,
+        marketing: 1000000,
+        fixedElec: 1000000,
+        fixedWater: 250000,
+        fixedReserve: 500000,
+        fixedOther: 0,
+        guests: 10
+      },
+      'combo1': {
+        price: 64000,
+        cosmetics: 3500,
+        consumables: 2000,
+        electricity: 3000,
+        water: 600,
+        otherVar: 1500,
+        rent: 0,
+        salaryFixed: 2000000,
+        depreciation: 9100000,
+        software: 0,
+        wifi: 350000,
+        marketing: 1000000,
+        fixedElec: 1000000,
+        fixedWater: 250000,
+        fixedReserve: 500000,
+        fixedOther: 0,
+        guests: 10
+      },
+      'combo2': {
+        price: 109000,
+        cosmetics: 9000,
+        consumables: 3500,
+        electricity: 4000,
+        water: 600,
+        otherVar: 2000,
+        rent: 0,
+        salaryFixed: 2000000,
+        depreciation: 9100000,
+        software: 0,
+        wifi: 350000,
+        marketing: 1000000,
+        fixedElec: 1000000,
+        fixedWater: 250000,
+        fixedReserve: 500000,
+        fixedOther: 0,
+        guests: 10
+      },
+      'combo3': {
+        price: 139000,
+        cosmetics: 16000,
+        consumables: 4000,
+        electricity: 4000,
+        water: 600,
+        otherVar: 2000,
+        rent: 0,
+        salaryFixed: 2000000,
+        depreciation: 9100000,
+        software: 0,
+        wifi: 350000,
+        marketing: 1000000,
+        fixedElec: 1000000,
+        fixedWater: 250000,
+        fixedReserve: 500000,
+        fixedOther: 0,
+        guests: 10
+      },
+      'combo4': {
+        price: 179000,
+        cosmetics: 22000,
+        consumables: 4000,
+        electricity: 5000,
+        water: 600,
+        otherVar: 2500,
+        rent: 0,
+        salaryFixed: 2000000,
+        depreciation: 9100000,
+        software: 0,
+        wifi: 350000,
+        marketing: 1000000,
+        fixedElec: 1000000,
+        fixedWater: 250000,
+        fixedReserve: 500000,
+        fixedOther: 0,
+        guests: 10
+      },
+      'combo5': {
+        price: 219000,
+        cosmetics: 26000,
+        consumables: 5000,
+        electricity: 5500,
+        water: 600,
+        otherVar: 4500,
+        rent: 0,
+        salaryFixed: 2000000,
+        depreciation: 9100000,
+        software: 0,
+        wifi: 350000,
+        marketing: 1000000,
+        fixedElec: 1000000,
+        fixedWater: 250000,
+        fixedReserve: 500000,
+        fixedOther: 0,
+        guests: 10
+      }
+    };
+
+    // Helper function to calculate progressive tour commission dynamically based on price and model
+    function getCommissionForPreset(key, salaryModel, price) {
+      const fixedRates = {
+        'combo_be': 0.11, // 11%
+        'combo1': 0.10,   // 10%
+        'combo2': 0.12,   // 12%
+        'combo3': 0.14,   // 14%
+        'combo4': 0.16,   // 16%
+        'combo5': 0.18    // 18%
+      };
+      const rate = salaryModel === 'fixed' ? (fixedRates[key] || 0.1) : 0.2; // 20% flat for commission only
+      return Math.round(price * rate);
+    }
+
+    // Current active combo key
+    let activePresetKey = 'combo_be';
+
+    // Current active salary model: 'fixed' (lương cứng + 10% tour) or 'commission' (không lương cứng + 20% tour)
+    let currentSalaryModel = 'fixed';
+    
+    // Track previous KTV count to scale base salary dynamically
+    let previousKtvCount = 1;
+
+    // Format input values as thousands separators (using dot '.')
+    function formatNumberString(str) {
+      let clean = str.replace(/[^0-9]/g, '');
+      if (clean === '') return '';
+      return new Intl.NumberFormat('vi-VN').format(parseInt(clean, 10));
+    }
+
+    function getRawValue(id) {
+      let valStr = document.getElementById(id).value;
+      let cleanStr = valStr.replace(/[^0-9]/g, '');
+      return parseFloat(cleanStr) || 0;
+    }
+
+    function setFormattedValue(id, value) {
+      document.getElementById(id).value = new Intl.NumberFormat('vi-VN').format(value);
+    }
+
+    function getComboDuration() {
+      const durations = {
+        'combo_be': 40,
+        'combo1': 50,
+        'combo2': 75,
+        'combo3': 85,
+        'combo4': 95,
+        'combo5': 110
+      };
+      return durations[activePresetKey] || 45;
+    }
+
+    // Toggle staff salary model
+    function setSalaryModel(modelType, btnElement) {
+      const buttons = btnElement.parentElement.querySelectorAll('.tab-btn');
+      buttons.forEach(btn => btn.classList.remove('active'));
+      btnElement.classList.add('active');
+
+      currentSalaryModel = modelType;
+
+      let price = getRawValue('input-price');
+      let pctInput = document.getElementById('pct-commission');
+      let descLabel = document.getElementById('input-commission').closest('.input-group').querySelector('.input-desc');
+      let ktvCount = parseFloat(document.getElementById('input-ktv-count').value) || 1;
+
+      let commissionCash = getCommissionForPreset(activePresetKey, modelType, price);
+      setFormattedValue('input-commission', commissionCash);
+      
+      let commPct = price > 0 ? (commissionCash / price) * 100 : 0;
+      pctInput.value = parseFloat(commPct.toFixed(1));
+
+      if (modelType === 'fixed') {
+        descLabel.innerText = `Đang chọn: ${formatNumber(commissionCash)} đ/khách (${pctInput.value}%)`;
+        
+        // Set salary fixed to 2,000,000 * ktvCount if it was 0
+        if (getRawValue('input-salary-fixed') === 0) {
+          setFormattedValue('input-salary-fixed', 2000000 * ktvCount);
+        }
+      } else {
+        descLabel.innerText = `Đang chọn: ${formatNumber(commissionCash)} đ/khách (${pctInput.value}%)`;
+        
+        // Set salary fixed to 0
+        setFormattedValue('input-salary-fixed', 0);
+      }
+      
+      previousKtvCount = ktvCount;
+      calculate();
+    }
+
+    // Intercept keyboard arrow keys for simple counts (like number of KTVs) -> Step size 1
+    function handleCountGenericKeyDown(e, input) {
+      if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+        e.preventDefault();
+        let prevCount = parseInt(input.value) || 1;
+        let newCount = prevCount;
+        if (e.key === 'ArrowUp') {
+          newCount += 1;
+        } else {
+          newCount = Math.max(1, newCount - 1);
+        }
+        input.value = newCount;
+        
+        // Scale total salary
+        let currentTotal = getRawValue('input-salary-fixed');
+        let salaryPerKtv = currentTotal / prevCount;
+        let newTotal = salaryPerKtv * newCount;
+        setFormattedValue('input-salary-fixed', newTotal);
+        
+        previousKtvCount = newCount;
+        updateKtvSplit();
+        calculate();
+      }
+    }
+
+    function onKtvCountChange(input) {
+      let newCount = parseInt(input.value) || 1;
+      let prevCount = previousKtvCount;
+      if (newCount !== prevCount) {
+        let currentTotal = getRawValue('input-salary-fixed');
+        let salaryPerKtv = currentTotal / prevCount;
+        let newTotal = salaryPerKtv * newCount;
+        setFormattedValue('input-salary-fixed', newTotal);
+        previousKtvCount = newCount;
+      }
+      updateKtvSplit();
+      calculate();
+    }
+
+    // INTERCEPT KEYDOWN EVENTS FOR ARROW KEYS
+
+    // Intercept keyboard arrow keys for cash inputs (Price, Rent, etc.) -> Step size 1.000 đ
+    function handleCashGenericKeyDown(e, input) {
+      if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+        e.preventDefault();
+        let currentVal = getRawValue(input.id);
+        let step = 1000;
+        if (e.key === 'ArrowUp') {
+          currentVal += step;
+        } else {
+          currentVal = Math.max(0, currentVal - step);
+        }
+        setFormattedValue(input.id, currentVal);
+        formatAndCalc(input);
+      }
+    }
+
+    // Intercept keyboard arrow keys for main Price input -> Step size 1.000 đ
+    function handlePriceKeyDown(e, input) {
+      if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+        e.preventDefault();
+        let currentVal = getRawValue(input.id);
+        let step = 1000;
+        if (e.key === 'ArrowUp') {
+          currentVal += step;
+        } else {
+          currentVal = Math.max(0, currentVal - step);
+        }
+        setFormattedValue(input.id, currentVal);
+        onPriceChange(input);
+      }
+    }
+
+    // Intercept keyboard arrow keys for variable cash inputs -> Step size 1.000 đ
+    function handleCashKeyDown(e, input, pctId) {
+      if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+        e.preventDefault();
+        let currentVal = getRawValue(input.id);
+        let step = 1000;
+        if (e.key === 'ArrowUp') {
+          currentVal += step;
+        } else {
+          currentVal = Math.max(0, currentVal - step);
+        }
+        setFormattedValue(input.id, currentVal);
+        formatAndCalcCash(input, pctId);
+      }
+    }
+
+    // Intercept keyboard arrow keys for percentage inputs -> Step size 1%
+    function handlePctKeyDown(e, pctInput, cashId) {
+      if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+        e.preventDefault();
+        let currentVal = parseFloat(pctInput.value) || 0;
+        let step = 1;
+        if (e.key === 'ArrowUp') {
+          currentVal += step;
+        } else {
+          currentVal = Math.max(0, currentVal - step);
+        }
+        pctInput.value = parseFloat(currentVal.toFixed(1));
+        calcPctToCash(pctInput, cashId);
+      }
+    }
+
+    // FORM INPUT LOGIC
+
+    function formatAndCalc(input) {
+      let cursorPosition = input.selectionStart;
+      let originalLength = input.value.length;
+
+      let formatted = formatNumberString(input.value);
+      input.value = formatted;
+
+      let newLength = input.value.length;
+      cursorPosition = cursorPosition + (newLength - originalLength);
+      input.setSelectionRange(cursorPosition, cursorPosition);
+
+      calculate();
+    }
+
+    function formatAndCalcCash(cashInput, pctId) {
+      let cursorPosition = cashInput.selectionStart;
+      let originalLength = cashInput.value.length;
+
+      let formatted = formatNumberString(cashInput.value);
+      cashInput.value = formatted;
+
+      let newLength = cashInput.value.length;
+      cursorPosition = cursorPosition + (newLength - originalLength);
+      cashInput.setSelectionRange(cursorPosition, cursorPosition);
+
+      let price = getRawValue('input-price');
+      let cash = getRawValue(cashInput.id);
+      let pctInput = document.getElementById(pctId);
+      
+      if (price > 0) {
+        let pct = (cash / price) * 100;
+        pctInput.value = parseFloat(pct.toFixed(1));
+      } else {
+        pctInput.value = 0;
+      }
+
+      calculate();
+    }
+
+    function calcPctToCash(pctInput, cashId) {
+      let price = getRawValue('input-price');
+      let pct = parseFloat(pctInput.value) || 0;
+      let cashVal = (pct / 100) * price;
+      
+      setFormattedValue(cashId, cashVal);
+      calculate();
+    }
+
+    // When price changes, commission scales with percentage, other variables keep cash constant
+    function onPriceChange(priceInput) {
+      let cursorPosition = priceInput.selectionStart;
+      let originalLength = priceInput.value.length;
+      let formatted = formatNumberString(priceInput.value);
+      priceInput.value = formatted;
+      let newLength = priceInput.value.length;
+      cursorPosition = cursorPosition + (newLength - originalLength);
+      priceInput.setSelectionRange(cursorPosition, cursorPosition);
+
+      let price = getRawValue('input-price');
+      
+      // Update commission cash based on its percentage
+      let commissionPct = parseFloat(document.getElementById('pct-commission').value) || 0;
+      let commissionCash = (commissionPct / 100) * price;
+      setFormattedValue('input-commission', commissionCash);
+
+      // Other variables keep cash constant, update percentage
+      const varMappings = [
+        { cashId: 'input-cosmetics', pctId: 'pct-cosmetics' },
+        { cashId: 'input-consumables', pctId: 'pct-consumables' },
+        { cashId: 'input-electricity', pctId: 'pct-electricity' },
+        { cashId: 'input-water', pctId: 'pct-water' },
+        { cashId: 'input-other-var', pctId: 'pct-other-var' }
+      ];
+
+      varMappings.forEach(mapping => {
+        let cash = getRawValue(mapping.cashId);
+        let pctInput = document.getElementById(mapping.pctId);
+        if (price > 0) {
+          let pct = (cash / price) * 100;
+          pctInput.value = parseFloat(pct.toFixed(1));
+        } else {
+          pctInput.value = 0;
+        }
+      });
+
+      calculate();
+    }
+
+    function loadPreset(key, btnElement) {
+      if (btnElement) {
+        const buttons = document.querySelectorAll('#combo-presets .tab-btn');
+        buttons.forEach(btn => btn.classList.remove('active'));
+        btnElement.classList.add('active');
+      }
+
+      activePresetKey = key;
+      const data = presets[key];
+      
+      setFormattedValue('input-price', data.price);
+      
+      // Set commission dynamically based on active model and price
+      let commissionCash = getCommissionForPreset(key, currentSalaryModel, data.price);
+      setFormattedValue('input-commission', commissionCash);
+      
+      let commPct = data.price > 0 ? (commissionCash / data.price) * 100 : 0;
+      document.getElementById('pct-commission').value = parseFloat(commPct.toFixed(1));
+      
+      let descLabel = document.getElementById('input-commission').closest('.input-group').querySelector('.input-desc');
+      descLabel.innerText = `Đang chọn: ${formatNumber(commissionCash)} đ/khách (${commPct.toFixed(1)}%)`;
+
+      setFormattedValue('input-cosmetics', data.cosmetics);
+      setFormattedValue('input-consumables', data.consumables);
+      setFormattedValue('input-electricity', data.electricity);
+      setFormattedValue('input-water', data.water);
+      setFormattedValue('input-other-var', data.otherVar);
+      
+      // Fixed costs
+      setFormattedValue('input-rent', data.rent);
+      
+      let ktvCount = parseFloat(document.getElementById('input-ktv-count').value) || 1;
+      let baseSalary = currentSalaryModel === 'fixed' ? data.salaryFixed : 0;
+      let totalSalaryFixedVal = baseSalary * ktvCount;
+      setFormattedValue('input-salary-fixed', totalSalaryFixedVal);
+      previousKtvCount = ktvCount;
+      
+      setFormattedValue('input-depreciation', data.depreciation);
+      setFormattedValue('input-software', data.software);
+      setFormattedValue('input-wifi', data.wifi);
+      setFormattedValue('input-marketing', data.marketing);
+      setFormattedValue('input-fixed-elec', data.fixedElec);
+      setFormattedValue('input-fixed-water', data.fixedWater);
+      setFormattedValue('input-fixed-reserve', data.fixedReserve);
+      setFormattedValue('input-fixed-other', data.fixedOther);
+
+      document.getElementById('input-guests').value = data.guests;
+      
+      // Recalculate percentages for non-commission variables
+      const price = data.price;
+      const varMappings = [
+        { pctId: 'pct-cosmetics', val: data.cosmetics },
+        { pctId: 'pct-consumables', val: data.consumables },
+        { pctId: 'pct-electricity', val: data.electricity },
+        { pctId: 'pct-water', val: data.water },
+        { pctId: 'pct-other-var', val: data.otherVar }
+      ];
+
+      varMappings.forEach(mapping => {
+        let pctInput = document.getElementById(mapping.pctId);
+        if (price > 0) {
+          let pct = (mapping.val / price) * 100;
+          pctInput.value = parseFloat(pct.toFixed(1));
+        } else {
+          pctInput.value = 0;
+        }
+      });
+
+      updateGuestSlider();
+    }
+
+    function formatNumber(num) {
+      return new Intl.NumberFormat('vi-VN').format(Math.round(num));
+    }
+
+    function updateKtvSplit() {
+      const dailyGuests = parseFloat(document.getElementById('input-guests').value) || 10;
+      const ktvCount = parseFloat(document.getElementById('input-ktv-count').value) || 1;
+      const wifeHelps = document.getElementById('input-wife-helps') ? document.getElementById('input-wife-helps').checked : true;
+      
+      const totalWorkers = ktvCount + (wifeHelps ? 1 : 0);
+      const fairWorkload = dailyGuests / totalWorkers;
+      
+      const slider = document.getElementById('input-ktv-guests');
+      if (slider) {
+        slider.value = Math.max(1, Math.min(12, Math.round(fairWorkload)));
+        
+        const daily = parseFloat(slider.value) || 6;
+        document.getElementById('val-ktv-guests-display').innerText = daily + " khách / ngày";
+        const monthly = daily * 26;
+        const duration = getComboDuration();
+        const dailyHours = (daily * (duration / 60)).toFixed(1);
+        document.getElementById('ktv-guests-day-desc').innerText = `Tổng số khách phục vụ cả tháng: ${monthly} khách (làm 26 ngày, đứng làm thực tế khoảng ${dailyHours} tiếng/ngày)`;
+      }
+      calculate();
+    }
+
+    function updateGuestSlider() {
+      const daily = parseFloat(document.getElementById('input-guests').value) || 10;
+      document.getElementById('val-guests-display').innerText = daily + " khách / ngày";
+      const monthly = daily * 30;
+      document.getElementById('guests-day-desc').innerText = `Tổng số khách phục vụ cả tháng: ${formatNumber(monthly)} khách`;
+      updateKtvSplit();
+    }
+
+    function updateKtvSlider() {
+      const daily = parseFloat(document.getElementById('input-ktv-guests').value) || 6;
+      document.getElementById('val-ktv-guests-display').innerText = daily + " khách / ngày";
+      const monthly = daily * 26;
+      const duration = getComboDuration();
+      const dailyHours = (daily * (duration / 60)).toFixed(1);
+      document.getElementById('ktv-guests-day-desc').innerText = `Tổng số khách phục vụ cả tháng: ${monthly} khách (làm 26 ngày, đứng làm thực tế khoảng ${dailyHours} tiếng/ngày)`;
+      calculate();
+    }
+
+    function calculate() {
+      const price = getRawValue('input-price');
+      
+      const commission = getRawValue('input-commission');
+      const cosmetics = getRawValue('input-cosmetics');
+      const consumables = getRawValue('input-consumables');
+      const electricity = getRawValue('input-electricity');
+      const water = getRawValue('input-water');
+      const otherVar = getRawValue('input-other-var');
+
+      const rent = getRawValue('input-rent');
+      const salaryFixed = getRawValue('input-salary-fixed');
+      const depreciation = getRawValue('input-depreciation');
+      const software = getRawValue('input-software');
+      const wifi = getRawValue('input-wifi');
+      const marketing = getRawValue('input-marketing');
+      const fixedElec = getRawValue('input-fixed-elec');
+      const fixedWater = getRawValue('input-fixed-water');
+      const fixedReserve = getRawValue('input-fixed-reserve');
+      const fixedOther = getRawValue('input-fixed-other');
+
+      const dailyGuests = parseFloat(document.getElementById('input-guests').value) || 10;
+      const guests = dailyGuests * 30;
+
+      const totalVarCost = commission + cosmetics + consumables + electricity + water + otherVar;
+      const grossProfit = price - totalVarCost;
+      const grossMargin = price > 0 ? (grossProfit / price) * 100 : 0;
+
+      const ktvCount = parseFloat(document.getElementById('input-ktv-count').value) || 1;
+      const salaryPerKtv = ktvCount > 0 ? salaryFixed / ktvCount : 0;
+      document.getElementById('daily-ktv-count-desc').innerText = `Lương cứng: ${formatNumber(salaryPerKtv)} đ/người`;
+
+      const totalFixedCost = rent + salaryFixed + depreciation + software + wifi + marketing + fixedElec + fixedWater + fixedReserve + fixedOther;
+      const dailyFixed = totalFixedCost / 30;
+      document.getElementById('daily-fixed-cost-display').innerText = `Định phí trung bình ngày: ${formatNumber(dailyFixed)} đ (Chia đều 30 ngày)`;
+
+      function updateDailyDesc(inputId, descId) {
+        const val = getRawValue(inputId);
+        const daily = val / 30;
+        document.getElementById(descId).innerText = `${formatNumber(daily)} đ/ngày`;
+      }
+      updateDailyDesc('input-rent', 'daily-rent-desc');
+      updateDailyDesc('input-salary-fixed', 'daily-salary-fixed-desc');
+      updateDailyDesc('input-depreciation', 'daily-depreciation-desc');
+      updateDailyDesc('input-software', 'daily-software-desc');
+      updateDailyDesc('input-wifi', 'daily-wifi-desc');
+      updateDailyDesc('input-marketing', 'daily-marketing-desc');
+      updateDailyDesc('input-fixed-elec', 'daily-fixed-elec-desc');
+      updateDailyDesc('input-fixed-water', 'daily-fixed-water-desc');
+      updateDailyDesc('input-fixed-reserve', 'daily-fixed-reserve-desc');
+      updateDailyDesc('input-fixed-other', 'daily-fixed-other-desc');
+
+      const fixedAllocated = totalFixedCost / guests;
+      const netProfitPerGuest = grossProfit - fixedAllocated;
+      const totalNetProfit = netProfitPerGuest * guests;
+
+      const breakEvenGuests = grossProfit > 0 ? totalFixedCost / grossProfit : 9999;
+
+      document.getElementById('val-price-display').innerText = formatNumber(price) + " đ";
+      document.getElementById('res-gross-profit').innerText = formatNumber(grossProfit);
+      document.getElementById('res-gross-margin').innerText = grossMargin.toFixed(1) + "%";
+      
+      const netProfitEl = document.getElementById('res-net-profit');
+      netProfitEl.innerText = formatNumber(totalNetProfit);
+      if (totalNetProfit >= 0) {
+        netProfitEl.parentElement.className = 'result-block highlight-green';
+        netProfitEl.style.color = 'var(--green)';
+      } else {
+        netProfitEl.parentElement.className = 'result-block highlight-red';
+        netProfitEl.style.color = 'var(--red)';
+      }
+
+      document.getElementById('res-break-even').innerText = formatNumber(Math.ceil(breakEvenGuests));
+
+      document.getElementById('bullet-price').innerText = "+" + formatNumber(price) + " đ";
+      document.getElementById('bullet-commission').innerText = "-" + formatNumber(commission) + " đ";
+      document.getElementById('bullet-cosmetics').innerText = "-" + formatNumber(cosmetics) + " đ";
+      document.getElementById('bullet-utilities').innerText = "-" + formatNumber(consumables + electricity + water + otherVar) + " đ";
+      
+      const bGross = document.getElementById('bullet-gross-profit');
+      bGross.innerText = "+" + formatNumber(grossProfit) + " đ";
+      
+      document.getElementById('bullet-fixed-allocated').innerText = "-" + formatNumber(fixedAllocated) + " đ";
+      
+      const bNet = document.getElementById('bullet-net-profit');
+      bNet.innerText = (netProfitPerGuest >= 0 ? "+" : "") + formatNumber(netProfitPerGuest) + " đ";
+      bNet.style.color = netProfitPerGuest >= 0 ? 'var(--green)' : 'var(--red)';
+
+      // KTV Salary Calculations
+      const ktvDailyGuests = parseFloat(document.getElementById('input-ktv-guests').value) || 0;
+      const ktvGuests = ktvDailyGuests * 26;
+      const salaryBase = currentSalaryModel === 'fixed' ? getRawValue('input-salary-fixed') : 0;
+      const commissionCash = getRawValue('input-commission');
+      const salaryTour = ktvGuests * commissionCash;
+      const salaryTotal = salaryBase + salaryTour;
+
+      document.getElementById('salary-base-display').innerText = formatNumber(salaryBase) + " đ";
+      document.getElementById('salary-tour-display').innerText = formatNumber(salaryTour) + " đ";
+      
+      const tourLabel = document.getElementById('salary-tour-display').previousElementSibling;
+      let commPct = currentSalaryModel === 'fixed' ? 10 : 20;
+      tourLabel.innerText = `🎟️ Tiền hoa hồng tour (${commPct}%/khách)`;
+
+      const totalDisplay = document.getElementById('salary-total-display');
+      totalDisplay.innerText = formatNumber(salaryTotal) + " đ";
+
+      // Salary warning text based on Vietnamese market rates
+      const warningEl = document.getElementById('salary-warning-desc');
+      if (salaryTotal < 5000000) {
+        warningEl.innerText = "⚠️ Thu nhập thợ dưới 5tr: Rất thấp, rất khó tuyển thợ gội và giữ chân nhân viên.";
+        warningEl.style.color = 'var(--red)';
+      } else if (salaryTotal >= 5000000 && salaryTotal < 7000000) {
+        warningEl.innerText = "ℹ️ Thu nhập thợ 5tr - 7tr: Mức trung bình thấp, phù hợp tuyển thợ mới học việc.";
+        warningEl.style.color = 'var(--amber)';
+      } else if (salaryTotal >= 7000000 && salaryTotal < 10000000) {
+        warningEl.innerText = "✅ Thu nhập thợ 7tr - 10tr: Mức thu nhập tốt, dễ dàng tuyển dụng thợ cứng lành nghề.";
+        warningEl.style.color = 'var(--green)';
+      } else {
+        warningEl.innerText = "🔥 Thu nhập thợ trên 10tr: Mức thu nhập cao, thu hút thợ giỏi và gắn bó lâu dài.";
+        warningEl.style.color = 'var(--accent-light)';
+      }
+
+      // Simulation rows
+      const simulationRows = document.getElementById('simulation-rows');
+      simulationRows.innerHTML = '';
+
+      const dailyCases = [5, 10, 15, 20, 25, 30, 40, 50];
+      dailyCases.forEach(daily => {
+        const monthlyGuests = daily * 30;
+        const revenue = monthlyGuests * price;
+        const netProfit = (grossProfit * monthlyGuests) - totalFixedCost;
+        const isProfit = netProfit >= 0;
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><strong>${daily} khách</strong></td>
+          <td>${formatNumber(monthlyGuests)}</td>
+          <td>${formatNumber(revenue)} đ</td>
+          <td style="color: ${isProfit ? 'var(--green)' : 'var(--red)'}; font-weight:600;">
+            ${(netProfit >= 0 ? "+" : "") + formatNumber(netProfit)} đ
+          </td>
+          <td>
+            <span class="badge-status ${isProfit ? 'badge-profit' : 'badge-loss'}">
+              ${isProfit ? 'Có Lời' : 'Lỗ'}
+            </span>
+          </td>
+        `;
+        simulationRows.appendChild(tr);
+      });
+    }
+
+    // Update preset buttons with price labels dynamically on load
+    function updatePresetButtonLabels() {
+      const keys = ['combo_be', 'combo1', 'combo2', 'combo3', 'combo4', 'combo5'];
+      const names = {
+        combo_be: 'Combo Bé',
+        combo1: 'Combo 1',
+        combo2: 'Combo 2',
+        combo3: 'Combo 3',
+        combo4: 'Combo 4',
+        combo5: 'Combo 5'
+      };
+      const durations = {
+        combo_be: '40p',
+        combo1: '50p',
+        combo2: '1h15p',
+        combo3: '1h25p',
+        combo4: '1h35p',
+        combo5: '1h50p'
+      };
+      keys.forEach((key, idx) => {
+        const btn = document.querySelector(`#combo-presets .tab-btn:nth-child(${idx + 1})`);
+        if (btn) {
+          const data = presets[key];
+          const priceK = Math.round(data.price / 1000) + 'k';
+          const durationText = durations[key] ? ` - ${durations[key]}` : '';
+          btn.innerText = `${names[key]} (${priceK}${durationText})`;
+        }
+      });
+    }
+
+    updatePresetButtonLabels();
+
+    // Run first calculation on load
+    loadPreset('combo1', document.querySelector('#combo-presets .tab-btn:nth-child(2)'));
+    updateKtvSlider();
+  </script>
+</body>
+</html>
