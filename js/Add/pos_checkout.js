@@ -311,7 +311,14 @@ function openCheckoutModal() {
 
   const now = new Date();
   const endTimeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
-  const elapsedMinutes = Math.max(1, Math.round((Date.now() - currentLiveSession.start_timestamp) / 60000));
+  
+  // Tính phút chuẩn theo độ lệch giờ start_time và end_time để khớp 100% mắt nhìn
+  const [h1, m1] = (currentLiveSession.start_time || endTimeStr).split(':').map(Number);
+  const [h2, m2] = endTimeStr.split(':').map(Number);
+  let timeDiffMin = (h2 * 60 + m2) - (h1 * 60 + m1);
+  if (timeDiffMin < 0) timeDiffMin += 1440; // qua đêm
+  
+  const elapsedMinutes = timeDiffMin > 0 ? timeDiffMin : Math.max(1, Math.round((Date.now() - currentLiveSession.start_timestamp) / 60000));
   currentLiveSession.end_time = endTimeStr;
   currentLiveSession.duration_actual_min = elapsedMinutes;
 

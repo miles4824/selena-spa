@@ -273,7 +273,18 @@ function createReceipt(params) {
 
   const startTime = params.start_time || params.time || timeStr;
   const endTime = params.end_time || timeStr;
-  const durationMin = Number(params.duration_min) || (params.duration_target_min || 45);
+  let durationMin = Number(params.duration_min);
+  if (!durationMin || isNaN(durationMin)) {
+    if (startTime && endTime && startTime.includes(':') && endTime.includes(':')) {
+      let p1 = startTime.split(':').map(Number);
+      let p2 = endTime.split(':').map(Number);
+      let diff = (p2[0] * 60 + p2[1]) - (p1[0] * 60 + p1[1]);
+      if (diff < 0) diff += 1440;
+      durationMin = diff > 0 ? diff : 1;
+    } else {
+      durationMin = params.duration_target_min || 45;
+    }
+  }
 
   const phone = normalizePhone(params.customer_phone);
   const customerName = String(params.customer_name || 'Khách vãng lai').trim();
