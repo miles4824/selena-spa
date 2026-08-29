@@ -1,11 +1,11 @@
 // =============================================================
-// APP ROUTER, TAB CONTROLLER & LIFECYCLE INITIALIZER
+// APP ROUTER, DYNAMIC VIEW LOADER & LIFECYCLE INITIALIZER
 // =============================================================
 function hideAllViews() {
-  document.getElementById('view-home').classList.add('hidden');
-  document.getElementById('view-add').classList.add('hidden');
-  document.getElementById('view-history').classList.add('hidden');
-  document.getElementById('view-income').classList.add('hidden');
+  document.getElementById('view-home')?.classList.add('hidden');
+  document.getElementById('view-add')?.classList.add('hidden');
+  document.getElementById('view-history')?.classList.add('hidden');
+  document.getElementById('view-income')?.classList.add('hidden');
 }
 
 function showView(view) {
@@ -14,25 +14,25 @@ function showView(view) {
   const isOwner = isUserOwner(currentUser);
 
   if (view === 'home') {
-    document.getElementById('view-home').classList.remove('hidden');
+    document.getElementById('view-home')?.classList.remove('hidden');
     if (isOwner) {
-      document.getElementById('home-ktv-section').classList.add('hidden');
-      document.getElementById('home-owner-section').classList.remove('hidden');
+      document.getElementById('home-ktv-section')?.classList.add('hidden');
+      document.getElementById('home-owner-section')?.classList.remove('hidden');
       loadAdminDashboard();
     } else {
-      document.getElementById('home-owner-section').classList.add('hidden');
-      document.getElementById('home-ktv-section').classList.remove('hidden');
+      document.getElementById('home-owner-section')?.classList.add('hidden');
+      document.getElementById('home-ktv-section')?.classList.remove('hidden');
       loadKTVHomeStats();
     }
     renderAnnouncement();
   } else if (view === 'add') {
-    document.getElementById('view-add').classList.remove('hidden');
+    document.getElementById('view-add')?.classList.remove('hidden');
     updatePOSStaffInfo();
   } else if (view === 'history') {
-    document.getElementById('view-history').classList.remove('hidden');
+    document.getElementById('view-history')?.classList.remove('hidden');
     loadHistoryView();
   } else if (view === 'income') {
-    document.getElementById('view-income').classList.remove('hidden');
+    document.getElementById('view-income')?.classList.remove('hidden');
     const headerName = document.getElementById('header-user-name');
     const headerRole = document.getElementById('header-role-badge');
     if (headerName) headerName.innerText = currentUser?.full_name || 'Mai Lan';
@@ -46,6 +46,8 @@ function showView(view) {
 
 function renderBottomNavDock() {
   const navContainer = document.getElementById('nav-buttons-container');
+  if (!navContainer) return;
+
   const tabs = [
     { id: 'home', icon: 'home', label: 'Home' },
     { id: 'add', icon: 'plus', label: 'Tạo ca' },
@@ -74,12 +76,12 @@ function renderBottomNavDock() {
 function loadHistoryView() {
   const isOwner = isUserOwner(currentUser);
   if (isOwner) {
-    document.getElementById('history-ktv-section').classList.add('hidden');
-    document.getElementById('history-owner-section').classList.remove('hidden');
+    document.getElementById('history-ktv-section')?.classList.add('hidden');
+    document.getElementById('history-owner-section')?.classList.remove('hidden');
     loadAdminReceiptsList();
   } else {
-    document.getElementById('history-owner-section').classList.add('hidden');
-    document.getElementById('history-ktv-section').classList.remove('hidden');
+    document.getElementById('history-owner-section')?.classList.add('hidden');
+    document.getElementById('history-ktv-section')?.classList.remove('hidden');
     loadStaffHistoryList();
   }
   lucide.createIcons();
@@ -88,12 +90,12 @@ function loadHistoryView() {
 function loadIncomeView() {
   const isOwner = isUserOwner(currentUser);
   if (isOwner) {
-    document.getElementById('income-ktv-section').classList.add('hidden');
-    document.getElementById('income-owner-section').classList.remove('hidden');
+    document.getElementById('income-ktv-section')?.classList.add('hidden');
+    document.getElementById('income-owner-section')?.classList.remove('hidden');
     loadAdminExpensesList();
   } else {
-    document.getElementById('income-owner-section').classList.add('hidden');
-    document.getElementById('income-ktv-section').classList.remove('hidden');
+    document.getElementById('income-owner-section')?.classList.add('hidden');
+    document.getElementById('income-ktv-section')?.classList.remove('hidden');
     loadStaffPayrollStats();
   }
   lucide.createIcons();
@@ -128,8 +130,34 @@ window.addEventListener('touchend', e => {
   isPulling = false;
 });
 
+// Dynamic View Component Loader
+async function loadViewTemplate(containerId, filePath) {
+  try {
+    const res = await fetch(filePath + '?v=' + Date.now());
+    if (res.ok) {
+      const html = await res.text();
+      const container = document.getElementById(containerId);
+      if (container) container.innerHTML = html;
+    }
+  } catch (err) {
+    console.error('Error loading view:', filePath, err);
+  }
+}
+
 // App Initialization
-window.addEventListener('DOMContentLoaded', () => {
+window.addEventListener('DOMContentLoaded', async () => {
+  // Preload all separate HTML view files in parallel
+  await Promise.all([
+    loadViewTemplate('container-ptr', 'components/pull_to_refresh.html'),
+    loadViewTemplate('container-login', 'views/login.html'),
+    loadViewTemplate('container-home', 'views/home.html'),
+    loadViewTemplate('container-add', 'views/add.html'),
+    loadViewTemplate('container-history', 'views/history.html'),
+    loadViewTemplate('container-wallet', 'views/wallet.html'),
+    loadViewTemplate('container-nav', 'components/bottom_nav.html'),
+    loadViewTemplate('container-modals', 'components/modals.html')
+  ]);
+
   initMenuUI();
   renderQuickAccounts();
   renderAnnouncement();
