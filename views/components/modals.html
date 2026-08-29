@@ -1,100 +1,137 @@
   <!-- ============================================================= -->
-  <!-- BƯỚC 3: MODAL HOÀN THÀNH CA & THANH TOÁN (TIPS + MÃ QR VIB THẬT) -->
+  <!-- MODAL THANH TOÁN 2 PHA (PHA 1: KHÁCH XEM -> PHA 2: KTV NHẬP TIPS) -->
   <!-- ============================================================= -->
   <div id="modal-checkout" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md overflow-y-auto">
-    <div class="w-full max-w-md spa-modal p-6 sm:p-7 relative space-y-5 my-auto max-h-[90vh] overflow-y-auto no-scrollbar">
-      <div class="flex justify-between items-center">
-        <div>
-          <span class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-[#E8F8F5] text-[#2E7D6D] text-xs font-bold">
-            <i data-lucide="check-circle" class="w-3.5 h-3.5"></i> Bước 3: Thu Tiền Ca Gội
-          </span>
-          <h3 class="text-xl font-extrabold text-[#2D2424] mt-1">Hoàn Thành Ca & Thanh Toán</h3>
-        </div>
-        <button type="button" onclick="closeCheckoutModal()" class="p-2 rounded-full bg-[#F7F2EC] hover:bg-[#FFF0EB] text-[#7E7272] hover:text-[#E58A7B] transition cursor-pointer">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
-      </div>
-
-      <!-- Tóm tắt ca gội -->
-      <div class="p-4 rounded-2xl bg-[#FAF6F1] border border-[#F0EAE1] space-y-2 text-xs sm:text-sm">
-        <div class="flex justify-between font-bold text-[#2D2424]">
-          <span id="chk-service-name">Combo 2 (Gội Chuyên Sâu)</span>
-          <span id="chk-service-price" class="text-[#E58A7B]">99.000 đ</span>
-        </div>
-        <div class="flex justify-between text-[#7E7272]">
-          <span>Thời gian thực hiện:</span>
-          <span id="chk-time-range" class="font-mono font-semibold text-[#2D2424]">15:30 - 16:30 (60 phút)</span>
-        </div>
-        <div class="flex justify-between text-[#7E7272]">
-          <span>KTV phục vụ:</span>
-          <span id="chk-staff-names" class="font-semibold text-[#2E7D6D]">Thu Ngân</span>
-        </div>
-      </div>
-
-      <!-- 🎁 Ô NHẬP TIỀN TIPS KHÁCH CHO (LÚC NÀY MỚI HIỆN) -->
-      <div class="space-y-2.5 p-4 rounded-2xl bg-[#FFF5F2] border border-[#FCDFD7]">
+    <div class="w-full max-w-md spa-modal p-6 sm:p-7 relative space-y-5 my-auto max-h-[92vh] overflow-y-auto no-scrollbar">
+      
+      <!-- ========================================================= -->
+      <!-- 🟢 PHA 1: MÀN HÌNH ĐƯA CHO KHÁCH XEM (HOÀN TOÀN GIẤU CHỮ TIPS) -->
+      <!-- ========================================================= -->
+      <div id="checkout-step-customer" class="space-y-4">
         <div class="flex justify-between items-center">
-          <label class="text-xs sm:text-sm font-bold text-[#2D2424] flex items-center gap-1.5">
-            <i data-lucide="heart" class="w-4 h-4 text-[#E58A7B]"></i> Tiền Tips khách cho thêm (nếu có):
+          <div>
+            <span class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-[#FFF0EB] text-[#E58A7B] text-xs font-bold">
+              <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> Selena Spa • Thanh Toán
+            </span>
+            <h3 class="text-xl font-extrabold text-[#2D2424] mt-1">Thông Tin Thanh Toán</h3>
+          </div>
+          <button type="button" onclick="closeCheckoutModal()" class="p-2 rounded-full bg-[#F7F2EC] hover:bg-[#FFF0EB] text-[#7E7272] hover:text-[#E58A7B] transition cursor-pointer">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+
+        <!-- Tóm tắt dịch vụ khách sử dụng -->
+        <div class="p-4 rounded-2xl bg-[#FAF6F1] border border-[#F0EAE1] space-y-2 text-xs sm:text-sm">
+          <div class="flex justify-between font-bold text-[#2D2424]">
+            <span id="chk-service-name">Combo 2 (Gội Chuyên Sâu)</span>
+            <span id="chk-service-price" class="text-[#E58A7B] text-base font-extrabold">99.000 đ</span>
+          </div>
+          <div class="flex justify-between text-[#7E7272]">
+            <span>Thời gian liệu trình:</span>
+            <span id="chk-time-range" class="font-mono font-semibold text-[#2D2424]">15:30 - 16:30 (60 phút)</span>
+          </div>
+          <div class="flex justify-between text-[#7E7272]">
+            <span>Khách hàng:</span>
+            <span id="chk-customer-name" class="font-semibold text-[#2D2424]">Chị Mai Lan</span>
+          </div>
+        </div>
+
+        <!-- Chọn Phương thức thanh toán (QR hoặc Tiền mặt) -->
+        <div class="space-y-2">
+          <label class="block text-xs font-bold text-[#7E7272] uppercase tracking-wider">
+            Hình Thức Thanh Toán
           </label>
-          <span class="text-[11px] text-[#2E7D6D] font-bold">100% cho KTV</span>
+          <div class="grid grid-cols-2 gap-3">
+            <button type="button" id="chk-btn-qr" onclick="setCheckoutPayment('Chuyển khoản')" class="p-3.5 rounded-2xl border bg-[#FFF0EB] border-[#E58A7B] text-[#E58A7B] font-extrabold text-sm flex items-center justify-center gap-2 shadow-sm transition cursor-pointer">
+              <i data-lucide="qr-code" class="w-4 h-4"></i> Quét Mã QR
+            </button>
+            <button type="button" id="chk-btn-cash" onclick="setCheckoutPayment('Tiền mặt')" class="p-3.5 rounded-2xl border bg-[#F7F2EC] border-[#EFE8DF] text-[#7E7272] hover:bg-[#FFF0EB] font-bold text-sm flex items-center justify-center gap-2 transition cursor-pointer">
+              <i data-lucide="banknote" class="w-4 h-4"></i> Tiền Mặt
+            </button>
+          </div>
         </div>
 
-        <div class="relative">
-          <input type="number" id="chk-tip-input" oninput="onCheckoutTipChange(this.value)" placeholder="0 đ (để trống nếu không có)" class="w-full bg-white border border-[#FCDFD7] rounded-xl p-3 pl-10 text-base font-extrabold text-[#2D2424] focus:outline-none focus:border-[#E58A7B] font-mono">
-          <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-bold text-[#A39696]">₫</span>
+        <!-- 📱 KHUNG MÃ QR VIB CỦA TIỆM (ĐỂ ĐƯA KHÁCH QUÉT) -->
+        <div id="chk-qr-display-box" class="p-4 rounded-3xl bg-white border border-[#F0EAE1] text-center space-y-2.5 shadow-sm">
+          <div class="p-1.5 bg-white rounded-2xl border border-[#F0EAE1] shadow-inner inline-block mx-auto">
+            <img src="images/qr_bank.jpg?v=0.0.2.2" alt="Mã QR VIB" class="w-52 h-auto max-h-60 object-contain rounded-xl mx-auto">
+          </div>
+          <div class="text-xs text-[#7E7272]">
+            <div>Ngân hàng: <b class="text-[#2D2424]">VIB (Quốc Tế)</b></div>
+            <div>Chủ TK: <b class="text-[#2D2424]">TRẦN THU NGÂN</b> • STK: <b class="text-[#E58A7B] font-mono">799625591</b></div>
+          </div>
         </div>
 
-        <!-- Quick Tip Buttons -->
-        <div class="flex flex-wrap gap-2 pt-1">
-          <button type="button" onclick="setCheckoutQuickTip(20000)" class="px-3 py-1 rounded-full text-xs font-bold bg-white hover:bg-[#FFF0EB] text-[#2D2424] hover:text-[#E58A7B] border border-[#EFE8DF] transition cursor-pointer shadow-sm">+20.000 đ</button>
-          <button type="button" onclick="setCheckoutQuickTip(50000)" class="px-3 py-1 rounded-full text-xs font-bold bg-white hover:bg-[#FFF0EB] text-[#2D2424] hover:text-[#E58A7B] border border-[#EFE8DF] transition cursor-pointer shadow-sm">+50.000 đ</button>
-          <button type="button" onclick="setCheckoutQuickTip(100000)" class="px-3 py-1 rounded-full text-xs font-bold bg-white hover:bg-[#FFF0EB] text-[#2D2424] hover:text-[#E58A7B] border border-[#EFE8DF] transition cursor-pointer shadow-sm">+100.000 đ</button>
-          <button type="button" onclick="setCheckoutQuickTip(0)" class="px-3 py-1 rounded-full text-xs font-bold bg-white hover:bg-rose-50 text-[#A39696] hover:text-rose-600 border border-[#EFE8DF] transition cursor-pointer shadow-sm">Xóa Tip</button>
-        </div>
-      </div>
-
-      <!-- 💳 CHỌN PHƯƠNG THỨC THANH TOÁN (QR HAY TIỀN MẶT) -->
-      <div class="space-y-2.5">
-        <label class="block text-xs sm:text-sm font-bold text-[#2D2424] uppercase tracking-wider flex items-center gap-2">
-          <i data-lucide="credit-card" class="w-4 h-4 text-[#E58A7B]"></i> Chọn Phương Thức Thanh Toán
-        </label>
-        <div class="grid grid-cols-2 gap-3">
-          <button type="button" id="chk-btn-qr" onclick="setCheckoutPayment('Chuyển khoản')" class="p-3.5 rounded-2xl border bg-[#FFF0EB] border-[#E58A7B] text-[#E58A7B] font-extrabold text-sm flex items-center justify-center gap-2 shadow-sm transition cursor-pointer">
-            <i data-lucide="qr-code" class="w-4 h-4"></i> Quét Mã QR
-          </button>
-          <button type="button" id="chk-btn-cash" onclick="setCheckoutPayment('Tiền mặt')" class="p-3.5 rounded-2xl border bg-[#F7F2EC] border-[#EFE8DF] text-[#7E7272] hover:bg-[#FFF0EB] font-bold text-sm flex items-center justify-center gap-2 transition cursor-pointer">
-            <i data-lucide="banknote" class="w-4 h-4"></i> Tiền Mặt
+        <!-- Nút chuyển sang bước KTV sau khi khách thanh toán xong -->
+        <div class="pt-2">
+          <button type="button" onclick="goToStaffTipStep()" class="w-full py-4 rounded-full bg-[#2E7D6D] hover:bg-[#25685B] text-white font-extrabold text-base shadow-lg shadow-[#2E7D6D]/25 flex items-center justify-center gap-2 transition active:scale-95 cursor-pointer">
+            <i data-lucide="arrow-right-circle" class="w-5 h-5"></i>
+            <span>Khách Đã Thanh Toán Xong • Tiếp Tục</span>
           </button>
         </div>
       </div>
 
-      <!-- 📱 KHUNG HIỂN THỊ MÃ QR VIB THẬT CỦA ANH (KHI CHỌN QUÉT QR) -->
-      <div id="chk-qr-display-box" class="p-4 rounded-3xl bg-white border border-[#F0EAE1] text-center space-y-3 shadow-sm">
-        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FFF0EB] text-[#E58A7B] text-xs font-bold">
-          <i data-lucide="qr-code" class="w-3.5 h-3.5"></i> Mã QR Tài Khoản VIB
-        </div>
-        <div class="p-2 bg-white rounded-2xl border border-[#F0EAE1] shadow-inner inline-block mx-auto">
-          <!-- Ảnh QR thật từ file images/qr_bank.jpg -->
-          <img src="images/qr_bank.jpg?v=0.0.2.1" alt="Mã QR VIB Trần Thu Ngân" class="w-52 h-auto max-h-64 object-contain rounded-xl mx-auto">
-        </div>
-        <div class="text-xs text-[#7E7272] space-y-0.5">
-          <div>Ngân hàng: <b class="text-[#2D2424]">VIB (Quốc Tế)</b></div>
-          <div>Chủ TK: <b class="text-[#2D2424]">TRẦN THU NGÂN</b> • STK: <b class="text-[#E58A7B] font-mono">799625591</b></div>
-        </div>
-      </div>
-
-      <!-- TỔNG TIỀN VÀ NÚT LƯU HÓA ĐƠN -->
-      <div class="pt-3 border-t border-[#F0EAE1] space-y-3">
+      <!-- ========================================================= -->
+      <!-- 🔒 PHA 2: MÀN HÌNH NỘI BỘ KTV (NHẬP TIỀN TIPS SAU KHI KHÁCH ĐI) -->
+      <!-- ========================================================= -->
+      <div id="checkout-step-staff" class="hidden space-y-4">
         <div class="flex justify-between items-center">
-          <span class="text-sm font-bold text-[#7E7272]">Tổng tiền thu khách:</span>
-          <span id="chk-grand-total" class="text-2xl font-extrabold text-[#E58A7B]">99.000 đ</span>
+          <div>
+            <span class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-[#E8F8F5] text-[#2E7D6D] text-xs font-bold">
+              <i data-lucide="lock" class="w-3.5 h-3.5"></i> Bước Riêng KTV
+            </span>
+            <h3 class="text-xl font-extrabold text-[#2D2424] mt-1">Ghi Nhận Tiền Tips</h3>
+          </div>
+          <button type="button" onclick="backToCustomerStep()" class="text-xs text-[#7E7272] hover:text-[#E58A7B] underline cursor-pointer">Quay lại</button>
         </div>
 
-        <button type="button" onclick="confirmSaveReceiptFromCheckout()" class="w-full py-4 rounded-full bg-[#E58A7B] hover:bg-[#D9796A] text-white font-extrabold text-base shadow-lg shadow-[#E58A7B]/25 flex items-center justify-center gap-2 transition active:scale-95 cursor-pointer">
-          <i data-lucide="check" class="w-5 h-5"></i>
-          <span>Xác Nhận & Lưu Hóa Đơn</span>
-        </button>
+        <div class="p-3.5 rounded-2xl bg-[#FAF6F1] border border-[#F0EAE1] text-xs text-[#7E7272] space-y-1">
+          <div class="flex justify-between">
+            <span>Tiền dịch vụ ca:</span>
+            <span id="staff-step-service-price" class="font-bold text-[#2D2424]">99.000 đ</span>
+          </div>
+          <div class="flex justify-between">
+            <span>Hình thức thanh toán:</span>
+            <span id="staff-step-pay-method" class="font-semibold text-[#2E7D6D]">Chuyển khoản</span>
+          </div>
+        </div>
+
+        <!-- Ô NHẬP TIPS KÍN ĐÁO -->
+        <div class="space-y-2.5 p-4 rounded-2xl bg-[#FFF5F2] border border-[#FCDFD7]">
+          <div class="flex justify-between items-center">
+            <label class="text-xs sm:text-sm font-bold text-[#2D2424] flex items-center gap-1.5">
+              <i data-lucide="heart" class="w-4 h-4 text-[#E58A7B]"></i> Khách có boa thêm tiền Tips không?
+            </label>
+            <span class="text-[11px] text-[#2E7D6D] font-bold">100% thuộc KTV</span>
+          </div>
+
+          <div class="relative">
+            <input type="number" id="chk-tip-input" oninput="onCheckoutTipChange(this.value)" placeholder="0 đ (bấm 0 đ nếu không có)" class="w-full bg-white border border-[#FCDFD7] rounded-xl p-3 pl-10 text-base font-extrabold text-[#2D2424] focus:outline-none focus:border-[#E58A7B] font-mono">
+            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-bold text-[#A39696]">₫</span>
+          </div>
+
+          <!-- Quick Tip Buttons -->
+          <div class="flex flex-wrap gap-2 pt-1">
+            <button type="button" onclick="setCheckoutQuickTip(0)" class="px-3 py-1 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-[#7E7272] border border-[#EFE8DF] transition cursor-pointer shadow-sm">Không tip (0 đ)</button>
+            <button type="button" onclick="setCheckoutQuickTip(20000)" class="px-3 py-1 rounded-full text-xs font-bold bg-white hover:bg-[#FFF0EB] text-[#2D2424] hover:text-[#E58A7B] border border-[#EFE8DF] transition cursor-pointer shadow-sm">+20.000 đ</button>
+            <button type="button" onclick="setCheckoutQuickTip(50000)" class="px-3 py-1 rounded-full text-xs font-bold bg-white hover:bg-[#FFF0EB] text-[#2D2424] hover:text-[#E58A7B] border border-[#EFE8DF] transition cursor-pointer shadow-sm">+50.000 đ</button>
+            <button type="button" onclick="setCheckoutQuickTip(100000)" class="px-3 py-1 rounded-full text-xs font-bold bg-white hover:bg-[#FFF0EB] text-[#2D2424] hover:text-[#E58A7B] border border-[#EFE8DF] transition cursor-pointer shadow-sm">+100.000 đ</button>
+          </div>
+        </div>
+
+        <!-- TỔNG KẾT THU NHẬP CA & LƯU -->
+        <div class="pt-2 space-y-3">
+          <div class="p-3.5 rounded-2xl bg-[#E8F8F5] border border-[#B7EBDD] flex justify-between items-center text-xs sm:text-sm">
+            <span class="font-bold text-[#2E7D6D]">Thu nhập KTV ca này nhận:</span>
+            <span id="staff-step-ktv-earning" class="text-base font-extrabold text-[#2E7D6D]">+9.900 đ</span>
+          </div>
+
+          <button type="button" onclick="confirmSaveReceiptFromCheckout()" class="w-full py-4 rounded-full bg-[#E58A7B] hover:bg-[#D9796A] text-white font-extrabold text-base shadow-lg shadow-[#E58A7B]/25 flex items-center justify-center gap-2 transition active:scale-95 cursor-pointer">
+            <i data-lucide="check-circle" class="w-5 h-5"></i>
+            <span>Hoàn Tất & Lưu Hóa Đơn</span>
+          </button>
+        </div>
+
       </div>
 
     </div>

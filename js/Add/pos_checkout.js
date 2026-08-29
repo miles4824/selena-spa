@@ -1,5 +1,5 @@
 // =============================================================
-// TAB 2: ADD - POS CHECKOUT & 3-STEP SPA SESSION LIFECYCLE
+// TAB 2: ADD - POS CHECKOUT, 2-PHASE DISCREET CHECKOUT & TIPS
 // =============================================================
 let isStaff2Enabled = false;
 let currentCheckoutTip = 0;
@@ -270,7 +270,7 @@ function updateLiveTimerTick() {
 
   if (hintEl) {
     if (elapsedMin >= targetMin) {
-      hintEl.innerText = '🔔 Đã đạt đủ thời gian liệu trình (' + targetMin + ' phút). Bạn có thể bấm Hoàn thành ca & thu tiền!';
+      hintEl.innerText = '🔔 Đã đạt đủ thời gian liệu trình (' + targetMin + ' phút). Bấm nút bên dưới để thanh toán!';
       hintEl.className = 'text-xs text-[#E58A7B] font-extrabold animate-bounce';
     } else {
       hintEl.innerText = `⏱️ Còn khoảng ${targetMin - elapsedMin} phút theo liệu trình`;
@@ -301,7 +301,7 @@ function restoreLiveSessionIfExists() {
 }
 
 // =============================================================
-// BƯỚC 3: MỞ MODAL THANH TOÁN (NHẬP TIPS + CHỌN QR VIB / TIỀN MẶT)
+// BƯỚC 3: MỞ MODAL THANH TOÁN (PHA 1: KHÁCH XEM)
 // =============================================================
 
 function openCheckoutModal() {
@@ -316,12 +316,15 @@ function openCheckoutModal() {
   document.getElementById('chk-service-name').innerText = currentLiveSession.service_name;
   document.getElementById('chk-service-price').innerText = currentLiveSession.use_voucher ? '0 đ (Voucher)' : currentLiveSession.price.toLocaleString('vi-VN') + ' đ';
   document.getElementById('chk-time-range').innerText = `${currentLiveSession.start_time} - ${endTimeStr} (${elapsedMinutes} phút)`;
-  document.getElementById('chk-staff-names').innerText = currentLiveSession.staff_1_name + (currentLiveSession.has_staff_2 ? ` & ${currentLiveSession.staff_2_name}` : '');
+  document.getElementById('chk-customer-name').innerText = currentLiveSession.customer_name || 'Khách vãng lai';
+
+  // Hiển thị Pha 1 (Khách xem) và ẩn Pha 2 (KTV nhập Tips)
+  document.getElementById('checkout-step-customer')?.classList.remove('hidden');
+  document.getElementById('checkout-step-staff')?.classList.add('hidden');
 
   currentCheckoutTip = 0;
   document.getElementById('chk-tip-input').value = '';
   setCheckoutPayment('Chuyển khoản');
-  updateCheckoutTotal();
 
   const modal = document.getElementById('modal-checkout');
   if (modal) modal.classList.remove('hidden');
@@ -331,18 +334,6 @@ function openCheckoutModal() {
 function closeCheckoutModal() {
   const modal = document.getElementById('modal-checkout');
   if (modal) modal.classList.add('hidden');
-}
-
-function onCheckoutTipChange(val) {
-  currentCheckoutTip = Math.max(0, Number(val) || 0);
-  updateCheckoutTotal();
-}
-
-function setCheckoutQuickTip(amount) {
-  currentCheckoutTip = amount;
-  const input = document.getElementById('chk-tip-input');
-  if (input) input.value = amount > 0 ? amount : '';
-  updateCheckoutTotal();
 }
 
 function setCheckoutPayment(method) {
@@ -363,11 +354,52 @@ function setCheckoutPayment(method) {
   lucide.createIcons();
 }
 
-function updateCheckoutTotal() {
-  const basePrice = currentLiveSession?.use_voucher ? 0 : (currentLiveSession?.price || 0);
-  const grandTotal = basePrice + currentCheckoutTip;
-  const totalEl = document.getElementById('chk-grand-total');
-  if (totalEl) totalEl.innerText = grandTotal.toLocaleString('vi-VN') + ' đ';
+// =============================================================
+// CHUYỂN SANG PHA 2: KTV GHI NHẬN TIPS KÍN ĐÁO SAU KHI KHÁCH ĐÃ THANH TOÁN
+// =============================================================
+
+function goToStaffTipStep() {
+  document.getElementById('checkout-step-customer')?.classList.add('hidden');
+  document.getElementById('checkout-step-staff')?.classList.remove('hidden');
+
+  document.getElementById('staff-step-service-price').innerText = currentLiveSession?.use_voucher ? '0 đ (Voucher)' : (currentLiveSession?.price?.toLocaleString('vi-VN') + ' đ');
+  document.getElementById('staff-step-pay-method').innerText = checkoutPaymentMethod;
+
+  updateStaffEarningPreview();
+  lucide.createIcons();
+}
+
+function backToCustomerStep() {
+  document.getElementById('checkout-step-customer')?.classList.remove('hidden');
+  document.getElementById('checkout-step-staff')?.classList.add('hidden');
+  lucide.createIcons();
+}
+
+function onCheckoutTipChange(val) {
+  currentCheckoutTip = Math.max(0, Number(val) || 0);
+  updateStaffEarningPreview();
+}
+
+function setCheckoutQuickTip(amount) {
+  currentCheckoutTip = amount;
+  const input = document.getElementById('chk-tip-input');
+  if (input) input.value = amount > 0 ? amount : '';
+  updateStaffEarningPreview();
+}
+
+function updateStaffEarningPreview() {
+  if (!currentLiveSession) return;
+  const users = getStored('users', DEFAULT_USERS);
+  const staff1 = users.find(u => normalizePhone(u.phone) === normalizePhone(currentLiveSession.staff_1_phone)) || currentUser;
+  const rate1 = parsePercentage(staff1?.commission_rate);
+
+  const totalComm = Math.round(currentLiveSession.price * (rate1 / 100));
+  let myComm = currentLiveSession.has_staff_2 ? Math.round(totalComm / 2) : totalComm;
+  let myTip = currentLiveSession.has_staff_2 ? Math.round(currentCheckoutTip / 2) : currentCheckoutTip;
+  let myTotal = myComm + myTip;
+
+  const earnEl = document.getElementById('staff-step-ktv-earning');
+  if (earnEl) earnEl.innerText = `+${myTotal.toLocaleString('vi-VN')} đ (Tour: ${myComm.toLocaleString('vi-VN')}${myTip > 0 ? ` + Tip: ${myTip.toLocaleString('vi-VN')}` : ''})`;
 }
 
 function confirmSaveReceiptFromCheckout() {
@@ -464,7 +496,11 @@ function confirmSaveReceiptFromCheckout() {
   callGasApi('create_receipt', receipt);
   confetti({ particleCount: 60, spread: 70, origin: { y: 0.6 } });
 
-  alert(`✅ Đã lưu hóa đơn thành công!\n• Khách thanh toán: ${grandTotal.toLocaleString('vi-VN')} đ (${checkoutPaymentMethod})\n• KTV 1 (${receipt.staff_1_name}): +${(comm1 + tip1).toLocaleString('vi-VN')} đ${receipt.has_staff_2 ? `\n• KTV 2 (${receipt.staff_2_name}): +${(comm2 + tip2).toLocaleString('vi-VN')} đ` : ''}`);
+  let successMsg = `✅ Đã hoàn tất và lưu hóa đơn ca gội!\n• Khách thanh toán: ${grandTotal.toLocaleString('vi-VN')} đ (${checkoutPaymentMethod})`;
+  if (receipt.tip_amount > 0) successMsg += `\n• Tiền Tips: +${receipt.tip_amount.toLocaleString('vi-VN')} đ`;
+  successMsg += `\n• KTV 1 (${receipt.staff_1_name}): +${(comm1 + tip1).toLocaleString('vi-VN')} đ`;
+  if (receipt.has_staff_2) successMsg += `\n• KTV 2 (${receipt.staff_2_name}): +${(comm2 + tip2).toLocaleString('vi-VN')} đ`;
+  alert(successMsg);
 
   // Đóng modal và dọn live session
   closeCheckoutModal();
