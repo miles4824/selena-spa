@@ -10,26 +10,51 @@ function loadKTVHomeStats() {
   // Update Greeting Name
   const greetingNameEl = document.getElementById('home-greeting-name');
   if (greetingNameEl) {
-    let displayName = currentUser?.full_name || 'bạn';
-    greetingNameEl.innerText = displayName;
+    greetingNameEl.innerText = currentUser?.full_name || 'bạn';
   }
 
   let todayTours = 0;
   let todayComm = 0;
+  let todayTips = 0;
 
   receipts.forEach(r => {
     const rDate = normalizeDateKey(r.date || r.created_at);
-    const rPhone = normalizePhone(r.staff_phone);
-    const rCode = String(r.staff_id || '').trim();
+    const s1Phone = normalizePhone(r.staff_1_phone || r.staff_phone);
+    const s1Code = String(r.staff_1_id || r.staff_id || '').trim();
+    const s2Phone = normalizePhone(r.staff_2_phone);
+    const s2Code = String(r.staff_2_id || '').trim();
 
-    if (rDate === todayStr && ((staffPhone && rPhone === staffPhone) || (staffCode && rCode === staffCode))) {
+    let isMe = false;
+    let myComm = 0;
+    let myTip = 0;
+
+    if ((staffPhone && s1Phone === staffPhone) || (staffCode && s1Code === staffCode)) {
+      isMe = true;
+      myComm += (Number(r.staff_1_comm) !== undefined && r.staff_1_comm !== null) ? Number(r.staff_1_comm) : (Number(r.commission_amount) || 0);
+      myTip += Number(r.staff_1_tip) || 0;
+    }
+
+    if ((staffPhone && s2Phone === staffPhone) || (staffCode && s2Code === staffCode)) {
+      isMe = true;
+      myComm += Number(r.staff_2_comm) || 0;
+      myTip += Number(r.staff_2_tip) || 0;
+    }
+
+    if (rDate === todayStr && isMe) {
       todayTours += 1;
-      todayComm += (Number(r.commission_amount) || 0);
+      todayComm += myComm;
+      todayTips += myTip;
     }
   });
 
-  document.getElementById('home-today-tours').innerText = todayTours + ' ca';
-  document.getElementById('home-today-comm').innerText = todayComm.toLocaleString('vi-VN') + ' đ';
+  const toursEl = document.getElementById('home-today-tours');
+  const commEl = document.getElementById('home-today-comm');
+
+  if (toursEl) toursEl.innerText = todayTours + ' ca';
+  if (commEl) {
+    let totalToday = todayComm + todayTips;
+    commEl.innerText = totalToday.toLocaleString('vi-VN') + ' đ';
+  }
 }
 
 function loadAdminDashboard() {
@@ -41,12 +66,12 @@ function loadAdminDashboard() {
   let totalSalaries = 0;
 
   receipts.forEach(r => {
-    totalRevenue += (Number(r.total_paid) || Number(r.price) || 0);
+    totalRevenue += (Number(r.price) || Number(r.total_paid) || 0);
   });
 
   users.filter(u => !isUserOwner(u)).forEach(staff => {
     const p = calculateStaffPayroll(staff, receipts);
-    totalSalaries += p.totalEarnings;
+    totalSalaries += (p.earnedBase + p.totalCommission);
   });
 
   let totalExpenses = 0;
@@ -56,11 +81,17 @@ function loadAdminDashboard() {
 
   const netProfit = totalRevenue - totalSalaries - totalExpenses;
 
-  document.getElementById('kpi-revenue').innerText = totalRevenue.toLocaleString('vi-VN') + ' đ';
-  document.getElementById('kpi-tours').innerText = receipts.length + ' ca phục vụ';
-  document.getElementById('kpi-salaries').innerText = totalSalaries.toLocaleString('vi-VN') + ' đ';
-  document.getElementById('kpi-expenses').innerText = totalExpenses.toLocaleString('vi-VN') + ' đ';
-  document.getElementById('kpi-net-profit').innerText = netProfit.toLocaleString('vi-VN') + ' đ';
+  const revEl = document.getElementById('kpi-revenue');
+  const toursEl = document.getElementById('kpi-tours');
+  const salEl = document.getElementById('kpi-salaries');
+  const expEl = document.getElementById('kpi-expenses');
+  const netEl = document.getElementById('kpi-net-profit');
+
+  if (revEl) revEl.innerText = totalRevenue.toLocaleString('vi-VN') + ' đ';
+  if (toursEl) toursEl.innerText = receipts.length + ' ca phục vụ';
+  if (salEl) salEl.innerText = totalSalaries.toLocaleString('vi-VN') + ' đ';
+  if (expEl) expEl.innerText = totalExpenses.toLocaleString('vi-VN') + ' đ';
+  if (netEl) netEl.innerText = netProfit.toLocaleString('vi-VN') + ' đ';
 
   loadAdminUsersList();
   loadAdminCustomersList();
@@ -88,8 +119,10 @@ function switchAdminTab(tab) {
 function loadAdminUsersList() {
   const users = getStored('users', DEFAULT_USERS);
   const receipts = getStored('receipts', []);
-  document.getElementById('admin-users-count').innerText = users.length + ' nhân sự';
+  const countEl = document.getElementById('admin-users-count');
+  if (countEl) countEl.innerText = users.length + ' nhân sự';
   const container = document.getElementById('admin-users-list');
+  if (!container) return;
 
   container.innerHTML = users.map(u => {
     const isOwner = isUserOwner(u);
@@ -100,7 +133,7 @@ function loadAdminUsersList() {
         <div class="flex justify-between items-start">
           <div>
             <div class="font-extrabold text-sm sm:text-base text-[#2D2424]">${isOwner ? '👑' : '💆'} ${u.full_name}</div>
-            <div class="text-xs text-[#7E7272] font-mono">${u.phone} • ${u.staff_id}</div>
+            <div class="text-xs text-[#7E7272] font-mono">${u.phone} • ${u.staff_id || u.phone}</div>
           </div>
           <span class="text-xs font-bold px-2.5 py-1 rounded-full ${isOwner ? 'bg-[#FFF0EB] text-[#E58A7B]' : u.salary_type === 'fixed' || u.salary_type === 'fixed_10pct' ? 'bg-[#E8F8F5] text-[#2E7D6D]' : 'bg-[#EBF5FB] text-[#2980B9]'}">
             ${isOwner ? 'Chủ tiệm' : u.salary_type === 'fixed' || u.salary_type === 'fixed_10pct' ? '10% + Lương cứng' : '20% Thuần tour'}
@@ -114,11 +147,11 @@ function loadAdminUsersList() {
               <span class="font-bold text-[#E58A7B] font-mono">${payroll.workedDays} / ${payroll.standardDays} ngày</span>
             </div>
             <div class="flex justify-between text-[#7E7272]">
-              <span>Lương tour + Lương cứng:</span>
-              <span class="font-bold text-[#2E7D6D]">${payroll.totalCommission.toLocaleString('vi-VN')} + ${payroll.earnedBase.toLocaleString('vi-VN')} đ</span>
+              <span>Lương tour + Tips + Cứng:</span>
+              <span class="font-bold text-[#2E7D6D]">${payroll.totalCommission.toLocaleString('vi-VN')} + ${payroll.totalTips.toLocaleString('vi-VN')} + ${payroll.earnedBase.toLocaleString('vi-VN')} đ</span>
             </div>
             <div class="flex justify-between text-[#2D2424] font-extrabold pt-1 border-t border-[#F0EAE1]">
-              <span>Tổng lương tạm tính:</span>
+              <span>Tổng thu nhập KTV:</span>
               <span class="text-[#E58A7B] font-bold text-sm">${payroll.totalEarnings.toLocaleString('vi-VN')} đ</span>
             </div>
           </div>
@@ -130,8 +163,10 @@ function loadAdminUsersList() {
 
 function loadAdminCustomersList() {
   const customers = getStored('customers', DEFAULT_CUSTOMERS);
-  document.getElementById('admin-customer-count').innerText = customers.length + ' khách';
+  const countEl = document.getElementById('admin-customer-count');
+  if (countEl) countEl.innerText = customers.length + ' khách';
   const container = document.getElementById('admin-customers-list');
+  if (!container) return;
 
   container.innerHTML = customers.map(c => `
     <div class="p-4 rounded-3xl bg-[#F7F2EC] border border-[#EFE8DF] space-y-2">

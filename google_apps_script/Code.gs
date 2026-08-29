@@ -1,10 +1,13 @@
 /**
  * =========================================================================
- * SELENA SPA - API GOOGLE APPS SCRIPT (GAS SERVER BACKEND V2.0 - SECURE)
+ * SELENA SPA - API GOOGLE APPS SCRIPT (GAS SERVER BACKEND V2.1 - SECURE & 2 KTV TIPS)
  * =========================================================================
- * Phân quyền bảo mật từ gốc:
- * - Chủ tiệm (Admin): Xem toàn bộ doanh thu, lợi nhuận, chi phí, nhân sự
- * - Kỹ thuật viên (KTV): CHỈ nhận ca gội của chính mình, KHÔNG nhận chi phí & lợi nhuận tiệm
+ * Cột dữ liệu cố định trên tb_receipts:
+ * - receipt_id, date, time, customer_phone, customer_name, service_id, service_name
+ * - price (giá combo), tip_amount (tiền tip), total_paid (khách trả)
+ * - staff_1_id, staff_1_name, staff_1_comm, staff_1_tip
+ * - staff_2_id, staff_2_name, staff_2_comm, staff_2_tip
+ * - payment_method, is_voucher_used
  */
 
 function doGet(e) {
@@ -33,7 +36,7 @@ function handleRequest(e) {
 
     switch (action) {
       case 'ping':
-        result = { success: true, message: 'Selena Spa Secure Backend is active!', timestamp: new Date().toISOString() };
+        result = { success: true, message: 'Selena Spa Secure Backend v2.1 is active!', timestamp: new Date().toISOString() };
         break;
 
       case 'login':
@@ -216,17 +219,17 @@ function checkCustomer(phoneNumber) {
 }
 
 // -------------------------------------------------------------
-// 4. TẠO HÓA ĐƠN CA LÀM
+// 4. TẠO HÓA ĐƠN CA LÀM (GHI NHẬN 2 KTV VÀ TIỀN TIPS TÁCH BIỆT)
 // -------------------------------------------------------------
 function createReceipt(params) {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheetReceipts = ss.getSheetByName('tb_receipts');
   const sheetCustomers = ss.getSheetByName('tb_customers');
-  const sheetUsers = ss.getSheetByName('tb_users');
 
   const now = new Date();
-  const timeStr = Utilities.formatDate(now, 'GMT+7', 'yyyy/MM/dd - HH:mm');
+  const timeStr = Utilities.formatDate(now, 'GMT+7', 'HH:mm');
   const dateStr = Utilities.formatDate(now, 'GMT+7', 'yyyy-MM-dd');
+  const fullTimeStr = Utilities.formatDate(now, 'GMT+7', 'yyyy/MM/dd - HH:mm');
   const receiptId = params.receipt_id || ('HD' + Utilities.formatDate(now, 'GMT+7', 'yyMMddHHmmss'));
 
   const phone = normalizePhone(params.customer_phone);
@@ -234,34 +237,53 @@ function createReceipt(params) {
   const serviceId = String(params.service_id || '').trim();
   const serviceName = String(params.service_name || '');
   const price = Number(params.price) || 0;
-  const totalPaid = Number(params.total_paid) || 0;
-  const staffPhone = normalizePhone(params.staff_phone);
-  const staffCode = String(params.staff_id || 'KTV01');
-  const staffName = String(params.staff_name || 'KTV');
-  const commAmount = Number(params.commission_amount) || 0;
+  const tipAmount = Number(params.tip_amount) || 0;
+  const totalPaid = Number(params.total_paid) || (price + tipAmount);
+
+  // KTV 1
+  const s1Phone = normalizePhone(params.staff_1_phone || params.staff_phone);
+  const s1Id = String(params.staff_1_id || params.staff_id || 'KTV01');
+  const s1Name = String(params.staff_1_name || params.staff_name || 'KTV 1');
+  const s1Comm = Number(params.staff_1_comm) || Number(params.commission_amount) || 0;
+  const s1Tip = Number(params.staff_1_tip) || 0;
+
+  // KTV 2
+  const hasStaff2 = Boolean(params.has_staff_2);
+  const s2Phone = normalizePhone(params.staff_2_phone);
+  const s2Id = String(params.staff_2_id || '');
+  const s2Name = String(params.staff_2_name || '');
+  const s2Comm = Number(params.staff_2_comm) || 0;
+  const s2Tip = Number(params.staff_2_tip) || 0;
+
   const paymentMethod = String(params.payment_method || 'Chuyển khoản').trim();
   const isVoucherUsed = Boolean(params.is_voucher_used);
 
-  // Ghi vào tb_receipts
+  // Ghi vào tb_receipts với các cột dữ liệu cố định
   if (sheetReceipts) {
     sheetReceipts.appendRow([
       receiptId,
       dateStr,
-      dateStr,
+      timeStr,
       phone,
       customerName,
       serviceId,
       serviceName,
-      staffPhone,
-      staffCode,
-      staffName,
       price,
-      commAmount,
-      0,
+      tipAmount,
       totalPaid,
+      s1Phone,
+      s1Id,
+      s1Name,
+      s1Comm,
+      s1Tip,
+      s2Phone,
+      s2Id,
+      s2Name,
+      s2Comm,
+      s2Tip,
       paymentMethod,
       isVoucherUsed ? 'TRUE' : 'FALSE',
-      timeStr
+      fullTimeStr
     ]);
   }
 
@@ -309,7 +331,7 @@ function createReceipt(params) {
 }
 
 // -------------------------------------------------------------
-// 5. THÊM CHI PHÍ VẬN HÀNH (CHỈ CHỦ MỚI ĐƯỢC GỌI)
+// 5. THÊM CHI PHÍ VẬN HÀNH
 // -------------------------------------------------------------
 function addExpense(params) {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -357,19 +379,18 @@ function updateAnnouncement(params) {
 }
 
 // -------------------------------------------------------------
-// 7. ĐỒNG BỘ TOÀN DIỆN PHÂN QUYỀN BẢO MẬT (SECURE SYNC)
+// 7. ĐỒNG BỘ TOÀN DIỆN PHÂN QUYỀN BẢO MẬT & 2 KTV
 // -------------------------------------------------------------
 function syncAllData(params) {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   
-  // Xác thực danh tính người gọi
   const clientPhone = normalizePhone(params.client_phone || params.phone);
   const clientStaffId = String(params.client_staff_id || params.staff_id || '').trim();
   const clientRole = String(params.client_role || '').trim();
 
   const isOwner = isOwnerCheck(clientRole, clientPhone, clientStaffId);
 
-  // 1. Menu (Công khai cho toàn bộ thợ & chủ)
+  // 1. Menu
   const sheetMenu = ss.getSheetByName('tb_menu');
   let menu = [];
   if (sheetMenu) {
@@ -389,9 +410,7 @@ function syncAllData(params) {
     }
   }
 
-  // 2. Users:
-  // - Nếu là Chủ: Trả về đầy đủ thông tin để quản lý nhân sự
-  // - Nếu là KTV / Ẩn danh: Chỉ trả về tên hiển thị và SĐT phục vụ chọn tài khoản, GIẤU MẬT KHẨU & LƯƠNG CỦA NGƯỜI KHÁC
+  // 2. Users
   const sheetUsers = ss.getSheetByName('tb_users');
   let users = [];
   if (sheetUsers) {
@@ -412,7 +431,6 @@ function syncAllData(params) {
         const uIsOwner = isOwnerCheck(role, uPhone, uStaffId);
 
         if (isOwner) {
-          // Chủ tiệm nhận toàn bộ
           users.push({
             user_id: uUserId || uPhone,
             staff_id: uStaffId || uUserId,
@@ -425,7 +443,6 @@ function syncAllData(params) {
             base_salary: baseSalary
           });
         } else {
-          // KTV chỉ nhận thông tin của chính mình, các nhân sự khác chỉ thấy Tên để hiển thị
           let isMe = (clientPhone && uPhone === clientPhone) || (clientStaffId && uStaffId === clientStaffId);
           users.push({
             user_id: uUserId || uPhone,
@@ -443,7 +460,7 @@ function syncAllData(params) {
     }
   }
 
-  // 3. Customers (Công khai để tra cứu điểm khách)
+  // 3. Customers
   const sheetCust = ss.getSheetByName('tb_customers');
   let customers = [];
   if (sheetCust) {
@@ -463,9 +480,7 @@ function syncAllData(params) {
     }
   }
 
-  // 4. Receipts:
-  // - Nếu là Chủ: Nhận TOÀN BỘ hóa đơn tiệm để tính Doanh thu & Lợi nhuận
-  // - Nếu là KTV: CHỈ NHẬN CÁC HÓA ĐƠN DO CHÍNH MÌNH THỰC HIỆN
+  // 4. Receipts
   const sheetRec = ss.getSheetByName('tb_receipts');
   let receipts = [];
   if (sheetRec) {
@@ -473,36 +488,69 @@ function syncAllData(params) {
     for (let i = data.length - 1; i >= 1; i--) {
       let r = data[i];
       if (r[0]) {
-        let rStaffPhone = normalizePhone(r[7] || r[8]);
-        let rStaffId = String(r[8] || '').trim();
-        let isMyReceipt = (clientPhone && rStaffPhone === clientPhone) || (clientStaffId && rStaffId === clientStaffId);
+        let rPrice = Number(String(r[7] || r[10] || 0).replace(/[^\d]/g, '')) || 0;
+        let rTip = Number(String(r[8] || 0).replace(/[^\d]/g, '')) || 0;
+        let rTotalPaid = Number(String(r[9] || r[13] || 0).replace(/[^\d]/g, '')) || (rPrice + rTip);
+
+        let s1Phone = normalizePhone(r[10] || r[7]);
+        let s1Id = String(r[11] || r[8] || '').trim();
+        let s1Name = String(r[12] || r[9] || 'KTV 1');
+        let s1Comm = Number(String(r[13] || r[11] || 0).replace(/[^\d]/g, '')) || 0;
+        let s1Tip = Number(String(r[14] || 0).replace(/[^\d]/g, '')) || 0;
+
+        let s2Phone = normalizePhone(r[15]);
+        let s2Id = String(r[16] || '').trim();
+        let s2Name = String(r[17] || '');
+        let s2Comm = Number(String(r[18] || 0).replace(/[^\d]/g, '')) || 0;
+        let s2Tip = Number(String(r[19] || 0).replace(/[^\d]/g, '')) || 0;
+        let hasStaff2 = Boolean(s2Phone || s2Id);
+
+        let paymentMethod = String(r[20] || r[14] || 'Chuyển khoản');
+        let isVoucher = (r[21] === true || String(r[21]).toUpperCase() === 'TRUE');
+
+        let isMyReceipt = (clientPhone && (s1Phone === clientPhone || s2Phone === clientPhone)) || 
+                          (clientStaffId && (s1Id === clientStaffId || s2Id === clientStaffId));
 
         if (isOwner || isMyReceipt) {
           receipts.push({
             receipt_id: String(r[0]),
-            date: String(r[1] || r[2]),
+            date: String(r[1]),
+            time: String(r[2] || '14:30'),
             customer_phone: normalizePhone(r[3]),
             customer_name: String(r[4]),
             service_id: String(r[5]),
             service_name: String(r[6]),
-            staff_phone: rStaffPhone,
-            staff_id: rStaffId,
-            staff_name: String(r[9]),
-            price: Number(String(r[10] || 0).replace(/[^\d]/g, '')) || 0,
-            commission_amount: Number(String(r[11] || 0).replace(/[^\d]/g, '')) || 0,
-            total_paid: Number(String(r[13] || 0).replace(/[^\d]/g, '')) || 0,
-            payment_method: String(r[14] || 'Chuyển khoản'),
-            is_voucher_used: (r[15] === true || String(r[15]).toUpperCase() === 'TRUE'),
-            time: String(r[16] || '').split('- ')[1] || '14:30'
+            price: rPrice,
+            tip_amount: rTip,
+            total_paid: rTotalPaid,
+
+            staff_1_phone: s1Phone,
+            staff_1_id: s1Id,
+            staff_1_name: s1Name,
+            staff_1_comm: s1Comm,
+            staff_1_tip: s1Tip,
+
+            has_staff_2: hasStaff2,
+            staff_2_phone: s2Phone,
+            staff_2_id: s2Id,
+            staff_2_name: s2Name,
+            staff_2_comm: s2Comm,
+            staff_2_tip: s2Tip,
+
+            staff_phone: s1Phone,
+            staff_id: s1Id,
+            staff_name: s1Name,
+            commission_amount: s1Comm + s1Tip,
+
+            payment_method: paymentMethod,
+            is_voucher_used: isVoucher
           });
         }
       }
     }
   }
 
-  // 5. Expenses:
-  // - Nếu là Chủ: Nhận toàn bộ chi phí vận hành
-  // - Nếu là KTV: TRẢ VỀ RỖNG [] (BẢO VỆ TUYỆT ĐỐI DỮ LIỆU CHI PHÍ CỦA TIỆM)
+  // 5. Expenses
   let expenses = [];
   if (isOwner) {
     const sheetExp = ss.getSheetByName('tb_expenses');
@@ -523,7 +571,7 @@ function syncAllData(params) {
     }
   }
 
-  // 6. Announcement & Config
+  // 6. Announcement
   const sheetConfig = ss.getSheetByName('tb_config');
   let announcement = {
     content: '✨ Chúc các kỹ thuật viên một ngày làm việc tràn đầy năng lượng!',
