@@ -1,10 +1,14 @@
 /**
  * =========================================================================
- * SELENA SPA - API GOOGLE APPS SCRIPT (GAS SERVER BACKEND V2.2 - DYNAMIC HEADER MAPPING)
+ * SELENA SPA - API GOOGLE APPS SCRIPT (GAS SERVER BACKEND V2.3 - FULL START/END DURATION)
  * =========================================================================
- * Sử dụng Dynamic Header Mapping:
- * - Đọc cột theo đúng TÊN HEADER ở hàng 1 (A1:Z1), chống lệch cột 100%
- * - Tương thích mượt mà với cả Sheet cũ và Sheet mới
+ * Cột dữ liệu chuẩn trên tb_receipts:
+ * - receipt_id, date, start_time, end_time, duration_min
+ * - customer_phone, customer_name, service_id, service_name
+ * - price, tip_amount, total_paid
+ * - staff_1_phone, staff_1_id, staff_1_name, staff_1_comm, staff_1_tip
+ * - staff_2_phone, staff_2_id, staff_2_name, staff_2_comm, staff_2_tip
+ * - payment_method, is_voucher_used, created_at
  */
 
 function doGet(e) {
@@ -33,7 +37,7 @@ function handleRequest(e) {
 
     switch (action) {
       case 'ping':
-        result = { success: true, message: 'Selena Spa Dynamic Backend v2.2 is active!', timestamp: new Date().toISOString() };
+        result = { success: true, message: 'Selena Spa Dynamic Backend v2.3 is active!', timestamp: new Date().toISOString() };
         break;
 
       case 'login':
@@ -62,10 +66,6 @@ function handleRequest(e) {
 
       case 'update_announcement':
         result = updateAnnouncement(params);
-        break;
-
-      case 'setup_sheet_headers':
-        result = autoSetupSheetHeaders();
         break;
 
       default:
@@ -113,7 +113,6 @@ function isOwnerCheck(role, phone, staffId) {
   return (r === 'admin' || r === 'chủ tiệm' || r === 'chủ sáng lập' || r === 'owner' || p === '0949251144' || s === 'FOUNDER_01');
 }
 
-// Helper tạo bảng tra cứu Header động (Tên cột -> Chỉ số Index 0, 1, 2...)
 function createHeaderMap(sheet) {
   const map = {};
   if (!sheet) return map;
@@ -259,7 +258,7 @@ function checkCustomer(phoneNumber) {
 }
 
 // -------------------------------------------------------------
-// 4. TẠO HÓA ĐƠN CA LÀM (CHUẨN HÓA VÀ GHI NHẬN THEO TÊN CỘT)
+// 4. TẠO HÓA ĐƠN CA LÀM (GHI ĐẦY ĐỦ START_TIME, END_TIME, DURATION)
 // -------------------------------------------------------------
 function createReceipt(params) {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -268,9 +267,13 @@ function createReceipt(params) {
 
   const now = new Date();
   const timeStr = Utilities.formatDate(now, 'GMT+7', 'HH:mm');
-  const dateStr = Utilities.formatDate(now, 'GMT+7', 'yyyy-MM-dd');
+  const dateStr = params.date || Utilities.formatDate(now, 'GMT+7', 'yyyy-MM-dd');
   const fullTimeStr = Utilities.formatDate(now, 'GMT+7', 'yyyy/MM/dd - HH:mm');
   const receiptId = params.receipt_id || ('HD' + Utilities.formatDate(now, 'GMT+7', 'yyMMddHHmmss'));
+
+  const startTime = params.start_time || params.time || timeStr;
+  const endTime = params.end_time || timeStr;
+  const durationMin = Number(params.duration_min) || (params.duration_target_min || 45);
 
   const phone = normalizePhone(params.customer_phone);
   const customerName = String(params.customer_name || 'Khách vãng lai').trim();
@@ -300,10 +303,9 @@ function createReceipt(params) {
 
   if (sheetReceipts) {
     const colMap = createHeaderMap(sheetReceipts);
-    const lastCol = Math.max(sheetReceipts.getLastColumn(), 23);
+    const lastCol = Math.max(sheetReceipts.getLastColumn(), 25);
     const newRow = new Array(lastCol).fill('');
 
-    // Hàm gán vào vị trí cột tương ứng
     function assign(keyList, val) {
       for (let k of keyList) {
         if (colMap[k.toLowerCase()] !== undefined) {
@@ -316,7 +318,10 @@ function createReceipt(params) {
     if (Object.keys(colMap).length > 0) {
       assign(['receipt_id', 'ma_hd'], receiptId);
       assign(['date', 'ngay'], dateStr);
-      assign(['time', 'gio'], timeStr);
+      assign(['start_time', 'gio_bat_dau', 'time', 'gio'], startTime);
+      assign(['end_time', 'gio_ket_thuc'], endTime);
+      assign(['duration_min', 'thoi_gian_lam', 'so_phut'], durationMin);
+
       assign(['customer_phone', 'sdt_khach'], phone);
       assign(['customer_name', 'ten_khach'], customerName);
       assign(['service_id', 'ma_dich_vu'], serviceId);
@@ -331,9 +336,9 @@ function createReceipt(params) {
       assign(['staff_1_comm', 'commission_amount', 'hoa_hong_ktv_1', 'hoa_hong'], s1Comm);
       assign(['staff_1_tip', 'tip_ktv_1'], s1Tip);
 
-      assign(['staff_2_phone', 'sdt_ktv_2'], s2Phone);
-      assign(['staff_2_id', 'ma_ktv_2'], s2Id);
-      assign(['staff_2_name', 'ten_ktv_2'], s2Name);
+      assign(['staff_2_phone', 'sdt_ktv_2'], s2Phone ? s2Phone : '-');
+      assign(['staff_2_id', 'ma_ktv_2'], s2Id ? s2Id : '-');
+      assign(['staff_2_name', 'ten_ktv_2'], s2Name ? s2Name : '-');
       assign(['staff_2_comm', 'hoa_hong_ktv_2'], s2Comm);
       assign(['staff_2_tip', 'tip_ktv_2'], s2Tip);
 
@@ -344,9 +349,12 @@ function createReceipt(params) {
       sheetReceipts.appendRow(newRow);
     } else {
       sheetReceipts.appendRow([
-        receiptId, dateStr, timeStr, phone, customerName, serviceId, serviceName,
-        price, tipAmount, totalPaid, s1Phone, s1Id, s1Name, s1Comm, s1Tip,
-        s2Phone, s2Id, s2Name, s2Comm, s2Tip, paymentMethod, isVoucherUsed ? 'TRUE' : 'FALSE', fullTimeStr
+        receiptId, dateStr, startTime, endTime, durationMin,
+        phone, customerName, serviceId, serviceName,
+        price, tipAmount, totalPaid,
+        s1Phone, s1Id, s1Name, s1Comm, s1Tip,
+        s2Phone ? s2Phone : '-', s2Id ? s2Id : '-', s2Name ? s2Name : '-', s2Comm, s2Tip,
+        paymentMethod, isVoucherUsed ? 'TRUE' : 'FALSE', fullTimeStr
       ]);
     }
   }
@@ -441,7 +449,7 @@ function updateAnnouncement(params) {
 }
 
 // -------------------------------------------------------------
-// 7. ĐỒNG BỘ TOÀN DIỆN VỚI HEADER MAPPING ĐỘNG (CHỐNG LỆCH CỘT 100%)
+// 7. ĐỒNG BỘ TOÀN DIỆN VỚI 25 CỘT
 // -------------------------------------------------------------
 function syncAllData(params) {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -563,7 +571,7 @@ function syncAllData(params) {
     }
   }
 
-  // 4. Receipts (Đọc chính xác theo tên Header, chống lệch hoàn toàn!)
+  // 4. Receipts
   const sheetRec = ss.getSheetByName('tb_receipts');
   let receipts = [];
   if (sheetRec) {
@@ -576,7 +584,10 @@ function syncAllData(params) {
 
       if (rId) {
         let rDate = String(getCell(r, colMapR, ['date', 'ngay']));
-        let rTime = String(getCell(r, colMapR, ['time', 'gio'], '14:30'));
+        let startTime = String(getCell(r, colMapR, ['start_time', 'gio_bat_dau', 'time', 'gio'], '14:30'));
+        let endTime = String(getCell(r, colMapR, ['end_time', 'gio_ket_thuc'], '15:15'));
+        let durationMin = Number(getCell(r, colMapR, ['duration_min', 'thoi_gian_lam', 'so_phut'], 45)) || 45;
+
         let custPhone = normalizePhone(getCell(r, colMapR, ['customer_phone', 'sdt_khach']));
         let custName = String(getCell(r, colMapR, ['customer_name', 'ten_khach']));
         let servId = String(getCell(r, colMapR, ['service_id', 'ma_dich_vu']));
@@ -599,7 +610,7 @@ function syncAllData(params) {
         let s2Name = String(getCell(r, colMapR, ['staff_2_name', 'ten_ktv_2']));
         let s2Comm = Number(String(getCell(r, colMapR, ['staff_2_comm', 'hoa_hong_ktv_2'], 0)).replace(/[^\d]/g, '')) || 0;
         let s2Tip = Number(String(getCell(r, colMapR, ['staff_2_tip', 'tip_ktv_2'], 0)).replace(/[^\d]/g, '')) || 0;
-        let hasStaff2 = Boolean(s2Phone || s2Id);
+        let hasStaff2 = Boolean((s2Phone && s2Phone !== '-') || (s2Id && s2Id !== '-'));
 
         let paymentMethod = String(getCell(r, colMapR, ['payment_method', 'phuong_thuc_tt'], 'Chuyển khoản'));
         let isVoucher = (getCell(r, colMapR, ['is_voucher_used', 'dung_voucher']) === true || String(getCell(r, colMapR, ['is_voucher_used', 'dung_voucher'])).toUpperCase() === 'TRUE');
@@ -611,7 +622,10 @@ function syncAllData(params) {
           receipts.push({
             receipt_id: rId,
             date: rDate,
-            time: rTime,
+            start_time: startTime,
+            end_time: endTime,
+            duration_min: durationMin,
+            time: startTime,
             customer_phone: custPhone,
             customer_name: custName,
             service_id: servId,
@@ -705,26 +719,4 @@ function syncAllData(params) {
       is_owner_authenticated: isOwner
     }
   };
-}
-
-// -------------------------------------------------------------
-// 8. TỰ ĐỘNG CẬP NHẬT HEADER CHUẨN TRÊN SHEET (CHẠY 1 LẦN)
-// -------------------------------------------------------------
-function autoSetupSheetHeaders() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-
-  const receiptHeaders = [
-    'receipt_id', 'date', 'time', 'customer_phone', 'customer_name', 'service_id', 'service_name', 
-    'price', 'tip_amount', 'total_paid', 
-    'staff_1_phone', 'staff_1_id', 'staff_1_name', 'staff_1_comm', 'staff_1_tip', 
-    'staff_2_phone', 'staff_2_id', 'staff_2_name', 'staff_2_comm', 'staff_2_tip', 
-    'payment_method', 'is_voucher_used', 'created_at'
-  ];
-
-  const sheetRec = ss.getSheetByName('tb_receipts');
-  if (sheetRec) {
-    sheetRec.getRange(1, 1, 1, receiptHeaders.length).setValues([receiptHeaders]);
-  }
-
-  return { success: true, message: 'Updated tb_receipts headers successfully!' };
 }
