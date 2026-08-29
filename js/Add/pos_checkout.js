@@ -24,34 +24,13 @@ function initMenuUI() {
   }
 
   const select = document.getElementById('pos-service-select');
-  const quickContainer = document.getElementById('pos-quick-combos');
   if (!select) return;
 
   select.innerHTML = menu.map(m => `
     <option value="${m.service_id}">${m.service_name} — ${m.price.toLocaleString('vi-VN')} đ (${m.duration_min}p)</option>
   `).join('');
 
-  if (quickContainer) {
-    quickContainer.innerHTML = menu.map((m, idx) => {
-      const isSelected = m.service_id === selectedComboId;
-      const shortName = m.service_name.includes('(') ? m.service_name.split('(')[0].trim() : `Combo ${idx + 1}`;
-      return `
-        <button type="button" onclick="selectQuickCombo('${m.service_id}')" class="px-3.5 py-2 rounded-2xl text-xs font-extrabold border transition active:scale-95 cursor-pointer shadow-sm ${isSelected ? 'bg-[#FFF0EB] text-[#E58A7B] border-[#E58A7B]' : 'bg-[#FAF6F1] text-[#7E7272] border-[#EFE8DF] hover:bg-[#FFF0EB] hover:text-[#E58A7B]'}">
-          ${shortName}
-        </button>
-      `;
-    }).join('');
-  }
-
   restoreLiveSessionIfExists();
-}
-
-function selectQuickCombo(id) {
-  const select = document.getElementById('pos-service-select');
-  if (select) {
-    select.value = id;
-    onSelectServiceChange();
-  }
 }
 
 function onSelectServiceChange() {
@@ -59,20 +38,6 @@ function onSelectServiceChange() {
   if (select) {
     selectedComboId = select.value;
     updatePOSCalculations();
-    // Cập nhật highlight nút nhanh
-    const menu = getStored('menu', DEFAULT_MENU);
-    const quickContainer = document.getElementById('pos-quick-combos');
-    if (quickContainer) {
-      quickContainer.innerHTML = menu.map((m, idx) => {
-        const isSelected = m.service_id === selectedComboId;
-        const shortName = m.service_name.includes('(') ? m.service_name.split('(')[0].trim() : `Combo ${idx + 1}`;
-        return `
-          <button type="button" onclick="selectQuickCombo('${m.service_id}')" class="px-3.5 py-2 rounded-2xl text-xs font-extrabold border transition active:scale-95 cursor-pointer shadow-sm ${isSelected ? 'bg-[#FFF0EB] text-[#E58A7B] border-[#E58A7B]' : 'bg-[#FAF6F1] text-[#7E7272] border-[#EFE8DF] hover:bg-[#FFF0EB] hover:text-[#E58A7B]'}">
-            ${shortName}
-          </button>
-        `;
-      }).join('');
-    }
   }
 }
 
