@@ -214,7 +214,7 @@ function renderExtraStaffUI() {
     const selectable = users.filter(u => !otherUsedPhones.includes(normalizePhone(u.phone)));
 
     return `
-      <div id="extra-staff-card-${idx}" class="relative p-3.5 rounded-2xl bg-[#FFF5F2] border border-[#FCDFD7] space-y-2 shadow-sm transition-all">
+      <div id="extra-staff-card-${idx}" class="relative p-3.5 rounded-2xl bg-[#FFF5F2] border border-[#FCDFD7] space-y-2 transition-all">
         <!-- 🔴 NÚT DẤU TRỪ ĐỎ ⊖ Ở GÓC TRÊN BÊN PHẢI -->
         <button type="button" onclick="removeExtraStaff(${idx})" title="Xóa người này" class="absolute -top-2.5 -right-2.5 w-7 h-7 rounded-full bg-white border-2 border-rose-400 text-rose-500 hover:bg-rose-500 hover:text-white flex items-center justify-center shadow-md active:scale-75 transition-all cursor-pointer z-10">
           <i data-lucide="minus" class="w-4 h-4 stroke-[3]"></i>
@@ -426,13 +426,13 @@ function renderLiveSessionUI() {
     ];
     
     chipsContainer.innerHTML = staffs.map((s, idx) => `
-      <button type="button" onclick="openSwapStaffModal()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-[#EFE8DF] hover:border-[#E58A7B] text-xs font-bold text-[#2D2424] shadow-sm transition active:scale-95 cursor-pointer">
+      <button type="button" onclick="openSwapStaffModal()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-[#EFE8DF] hover:border-[#E58A7B] text-xs font-bold text-[#2D2424] transition active:scale-95 cursor-pointer">
         <span class="w-2 h-2 rounded-full ${idx === 0 ? 'bg-[#2E7D6D]' : 'bg-[#E58A7B]'}"></span>
         <span>${s.name}</span>
         <span class="text-[10px] font-extrabold text-[#7E7272] bg-[#FAF6F1] px-1.5 py-0.5 rounded-md">${s.pct || Math.round(100/staffs.length)}%</span>
       </button>
     `).join('') + `
-      <button type="button" onclick="openSwapStaffModal()" title="Điều chỉnh / Thêm KTV" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-[#FFF0EB] hover:bg-[#FFE5DC] text-xs font-bold text-[#E58A7B] border border-[#FCDFD7] shadow-sm transition active:scale-95 cursor-pointer">
+      <button type="button" onclick="openSwapStaffModal()" title="Điều chỉnh / Thêm KTV" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-[#FFF0EB] hover:bg-[#FFE5DC] text-xs font-bold text-[#E58A7B] border border-[#FCDFD7] transition active:scale-95 cursor-pointer">
         <i data-lucide="user-plus" class="w-3.5 h-3.5"></i>
         <span>Đổi / Thêm</span>
       </button>
@@ -546,16 +546,16 @@ function updateSplitButtonsUI() {
     btnTimer.disabled = true;
     btnTimer.className = 'p-2.5 rounded-xl border bg-gray-100 border-gray-200 text-gray-400 font-bold text-xs flex flex-col items-center gap-0.5 cursor-not-allowed opacity-60';
     btnHalf.disabled = false;
-    btnHalf.className = 'p-2.5 rounded-xl border bg-[#FFF0EB] border-[#E58A7B] text-[#E58A7B] font-bold text-xs flex flex-col items-center gap-0.5 cursor-pointer shadow-sm';
+    btnHalf.className = 'p-2.5 rounded-xl border bg-[#FFF0EB] border-[#E58A7B] text-[#E58A7B] font-bold text-xs flex flex-col items-center gap-0.5 cursor-pointer ';
     currentSplitMode = 'equal';
   } else if (count >= 2) {
     btnTimer.disabled = false;
     btnHalf.disabled = false;
     if (currentSplitMode === 'timer') {
-      btnTimer.className = 'p-2.5 rounded-xl border bg-[#FFF0EB] border-[#E58A7B] text-[#E58A7B] font-bold text-xs flex flex-col items-center gap-0.5 cursor-pointer shadow-sm';
+      btnTimer.className = 'p-2.5 rounded-xl border bg-[#FFF0EB] border-[#E58A7B] text-[#E58A7B] font-bold text-xs flex flex-col items-center gap-0.5 cursor-pointer ';
       btnHalf.className = 'p-2.5 rounded-xl border bg-[#F7F2EC] border-[#EFE8DF] text-[#7E7272] hover:bg-[#FFF0EB] font-bold text-xs flex flex-col items-center gap-0.5 cursor-pointer';
     } else {
-      btnHalf.className = 'p-2.5 rounded-xl border bg-[#FFF0EB] border-[#E58A7B] text-[#E58A7B] font-bold text-xs flex flex-col items-center gap-0.5 cursor-pointer shadow-sm';
+      btnHalf.className = 'p-2.5 rounded-xl border bg-[#FFF0EB] border-[#E58A7B] text-[#E58A7B] font-bold text-xs flex flex-col items-center gap-0.5 cursor-pointer ';
       btnTimer.className = 'p-2.5 rounded-xl border bg-[#F7F2EC] border-[#EFE8DF] text-[#7E7272] hover:bg-[#FFF0EB] font-bold text-xs flex flex-col items-center gap-0.5 cursor-pointer';
     }
   } else {
@@ -600,7 +600,7 @@ function renderSwapModalStaffUI() {
         </select>
 
         ${!isFirst ? `
-          <button type="button" onclick="removeStaffInSwapModal(${idx})" title="Xóa KTV này khỏi tour" class="absolute top-2 right-2 w-6 h-6 rounded-full bg-white border border-rose-300 text-rose-500 hover:bg-rose-500 hover:text-white flex items-center justify-center shadow-sm cursor-pointer active:scale-90 transition">
+          <button type="button" onclick="removeStaffInSwapModal(${idx})" title="Xóa KTV này khỏi tour" class="absolute top-2 right-2 w-6 h-6 rounded-full bg-white border border-rose-300 text-rose-500 hover:bg-rose-500 hover:text-white flex items-center justify-center cursor-pointer active:scale-90 transition">
             <i data-lucide="minus" class="w-3.5 h-3.5 stroke-[2.5]"></i>
           </button>
         ` : ''}
@@ -919,7 +919,7 @@ function renderDynamicTipInputs() {
 
         <div class="flex flex-wrap gap-1.5 pt-0.5">
           ${quickAmounts.map(amt => `
-            <button type="button" onclick="setDynamicQuickTip('${s.phone}', ${amt})" class="px-2.5 py-1 rounded-lg text-xs font-bold ${amt === 0 ? 'bg-white text-[#7E7272] border border-[#EFE8DF]' : 'bg-[#FFF0EB] text-[#E58A7B] border border-[#FCDFD7] hover:bg-[#FFE5DC]'} transition active:scale-95 cursor-pointer shadow-sm">
+            <button type="button" onclick="setDynamicQuickTip('${s.phone}', ${amt})" class="px-2.5 py-1 rounded-lg text-xs font-bold ${amt === 0 ? 'bg-white text-[#7E7272] border border-[#EFE8DF]' : 'bg-[#FFF0EB] text-[#E58A7B] border border-[#FCDFD7] hover:bg-[#FFE5DC]'} transition active:scale-95 cursor-pointer ">
               ${amt === 0 ? '0 đ' : `+${amt >= 1000 ? (amt/1000) + 'k' : amt}`}
             </button>
           `).join('')}
@@ -938,7 +938,7 @@ function renderDynamicTipInputs() {
           <span class="text-xs font-bold text-[#7E7272] block">💡 Khách đưa Tips chung chia đều cho ${currentStaffs.length} bạn:</span>
           <div class="flex flex-wrap gap-2">
             ${sharedAmounts.map(amt => `
-              <button type="button" onclick="splitSharedTipDynamic(${amt})" class="px-3 py-1.5 rounded-xl bg-white border border-[#EFE8DF] hover:border-[#E58A7B] text-xs font-extrabold text-[#E58A7B] shadow-sm transition active:scale-95 cursor-pointer">
+              <button type="button" onclick="splitSharedTipDynamic(${amt})" class="px-3 py-1.5 rounded-xl bg-white border border-[#EFE8DF] hover:border-[#E58A7B] text-xs font-extrabold text-[#E58A7B] transition active:scale-95 cursor-pointer">
                 Chia ${amt/1000}k
               </button>
             `).join('')}
@@ -1057,10 +1057,10 @@ function setCheckoutPayment(method) {
   const btnCash = document.getElementById('btn-pay-cash');
 
   if (method === 'Chuyển khoản') {
-    btnBank.className = 'py-3 rounded-2xl border bg-[#FFF0EB] border-[#E58A7B] text-[#E58A7B] font-extrabold text-sm flex items-center justify-center gap-2 cursor-pointer shadow-sm';
+    btnBank.className = 'py-3 rounded-2xl border bg-[#FFF0EB] border-[#E58A7B] text-[#E58A7B] font-extrabold text-sm flex items-center justify-center gap-2 cursor-pointer ';
     btnCash.className = 'py-3 rounded-2xl border bg-[#F7F2EC] border-[#EFE8DF] text-[#7E7272] font-extrabold text-sm flex items-center justify-center gap-2 cursor-pointer';
   } else {
-    btnCash.className = 'py-3 rounded-2xl border bg-[#FFF0EB] border-[#E58A7B] text-[#E58A7B] font-extrabold text-sm flex items-center justify-center gap-2 cursor-pointer shadow-sm';
+    btnCash.className = 'py-3 rounded-2xl border bg-[#FFF0EB] border-[#E58A7B] text-[#E58A7B] font-extrabold text-sm flex items-center justify-center gap-2 cursor-pointer ';
     btnBank.className = 'py-3 rounded-2xl border bg-[#F7F2EC] border-[#EFE8DF] text-[#7E7272] font-extrabold text-sm flex items-center justify-center gap-2 cursor-pointer';
   }
 

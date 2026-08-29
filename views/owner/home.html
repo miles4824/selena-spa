@@ -4,18 +4,18 @@
       <h2 class="text-2xl sm:text-3xl font-extrabold text-[#2D2424] flex items-center gap-2.5">👑 Quản Trị Selena Spa</h2>
       <p class="text-xs sm:text-sm text-[#7E7272]">Thống kê tài chính dòng tiền & Kiểm soát vận hành</p>
     </div>
-    <button onclick="loadAdminDashboard()" class="px-4 py-2.5 rounded-2xl bg-white hover:bg-[#FFF0EB] text-[#2D2424] hover:text-[#E58A7B] text-xs sm:text-sm font-bold flex items-center gap-2 transition border border-[#F0EAE1] shadow-sm cursor-pointer">
+    <button onclick="loadAdminDashboard()" class="px-4 py-2.5 rounded-2xl bg-white hover:bg-[#FFF0EB] text-[#2D2424] hover:text-[#E58A7B] text-xs sm:text-sm font-bold flex items-center gap-2 transition border border-[#F0EAE1] cursor-pointer">
       <i data-lucide="refresh-cw" class="w-4 h-4 text-[#E58A7B]"></i> Làm mới
     </button>
   </div>
 
   <!-- Thông Báo Đang Phát Cho Nhân Viên (Chủ có thể sửa) -->
-  <div class="spa-card p-5 sm:p-6 bg-gradient-to-br from-[#FFF0EB]/80 via-[#FFFFFF] to-[#FAF6F1] border border-[#FCDFD7] space-y-3 shadow-sm">
+  <div class="spa-card p-5 sm:p-6 bg-gradient-to-br from-[#FFF0EB]/80 via-[#FFFFFF] to-[#FAF6F1] border border-[#FCDFD7] space-y-3 ">
     <div class="flex items-center justify-between">
-      <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#FFF0EB] border border-[#FCDFD7] text-[#E58A7B] text-xs font-bold shadow-sm">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#FFF0EB] border border-[#FCDFD7] text-[#E58A7B] text-xs font-bold ">
         <i data-lucide="megaphone" class="w-3.5 h-3.5 text-[#E58A7B]"></i> Thông Báo Đang Phát Cho KTV
       </div>
-      <button onclick="openEditAnnouncementModal()" class="px-3.5 py-1.5 rounded-full bg-[#E58A7B] hover:bg-[#D9796A] text-white text-xs font-bold transition shadow-sm flex items-center gap-1.5 cursor-pointer">
+      <button onclick="openEditAnnouncementModal()" class="px-3.5 py-1.5 rounded-full bg-[#E58A7B] hover:bg-[#D9796A] text-white text-xs font-bold transition flex items-center gap-1.5 cursor-pointer">
         <i data-lucide="edit-3" class="w-3.5 h-3.5"></i> Sửa Thông Báo
       </button>
     </div>
@@ -30,17 +30,17 @@
 
   <!-- 4 Pastel Financial KPI Cards -->
   <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-    <div class="p-5 sm:p-6 rounded-3xl bg-[#E8F8F5] border border-[#B7EBDD] space-y-1 shadow-sm">
+    <div class="p-5 sm:p-6 rounded-3xl bg-[#E8F8F5] border border-[#B7EBDD] space-y-1 ">
       <span class="text-xs sm:text-sm font-bold text-[#2E7D6D] uppercase tracking-wider block">Doanh Thu Tổng</span>
       <div class="text-2xl sm:text-3xl font-extrabold text-[#2D2424]" id="kpi-revenue">0 đ</div>
       <span class="text-xs text-[#2E7D6D] font-medium block" id="kpi-tours">0 ca phục vụ</span>
     </div>
-    <div class="p-5 sm:p-6 rounded-3xl bg-[#F5EEF8] border border-[#E8DAEF] space-y-1 shadow-sm">
+    <div class="p-5 sm:p-6 rounded-3xl bg-[#F5EEF8] border border-[#E8DAEF] space-y-1 ">
       <span class="text-xs sm:text-sm font-bold text-[#8E44AD] uppercase tracking-wider block">Tổng Lương KTV</span>
       <div class="text-2xl sm:text-3xl font-extrabold text-[#2D2424]" id="kpi-salaries">0 đ</div>
       <span class="text-xs text-[#8E44AD] font-medium block">Lương cứng + Tour</span>
     </div>
-    <div class="p-5 sm:p-6 rounded-3xl bg-[#FFF0EB] border border-[#FCDFD7] space-y-1 shadow-sm">
+    <div class="p-5 sm:p-6 rounded-3xl bg-[#FFF0EB] border border-[#FCDFD7] space-y-1 ">
       <span class="text-xs sm:text-sm font-bold text-[#D35400] uppercase tracking-wider block">Chi Phí Vận Hành</span>
       <div class="text-2xl sm:text-3xl font-extrabold text-[#2D2424]" id="kpi-expenses">0 đ</div>
       <span class="text-xs text-[#D35400] font-medium block">Điện, nước, mạng, mặt bằng</span>

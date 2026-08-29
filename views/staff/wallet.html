@@ -2,7 +2,7 @@
   <!-- Header KTV -->
   <div id="main-header" class="spa-card p-4 sm:p-5 flex items-center justify-between">
     <div class="flex items-center gap-3.5">
-      <div class="w-11 h-11 rounded-2xl bg-[#FFF0EB] border border-[#FCDFD7] flex items-center justify-center text-[#E58A7B] font-extrabold text-lg shadow-sm">
+      <div class="w-11 h-11 rounded-2xl bg-[#FFF0EB] border border-[#FCDFD7] flex items-center justify-center text-[#E58A7B] font-extrabold text-lg ">
         <i data-lucide="sparkles" class="w-5 h-5"></i>
       </div>
       <div>
@@ -14,10 +14,10 @@
     </div>
 
     <div class="flex items-center gap-2.5">
-      <button id="btn-sync-cloud" onclick="refreshDataFromGoogleSheets()" title="Đồng bộ Google Sheets 2 chiều" class="px-3.5 py-2.5 rounded-2xl bg-[#F7F2EC] hover:bg-[#FFF0EB] border border-[#EFE8DF] text-[#E58A7B] text-xs sm:text-sm font-bold flex items-center gap-2 transition shadow-sm cursor-pointer">
+      <button id="btn-sync-cloud" onclick="refreshDataFromGoogleSheets()" title="Đồng bộ Google Sheets 2 chiều" class="px-3.5 py-2.5 rounded-2xl bg-[#F7F2EC] hover:bg-[#FFF0EB] border border-[#EFE8DF] text-[#E58A7B] text-xs sm:text-sm font-bold flex items-center gap-2 transition cursor-pointer">
         <i data-lucide="cloud-check" class="w-4 h-4 text-[#2E7D6D]"></i> <span class="hidden sm:inline">Đồng bộ Sheet</span>
       </button>
-      <button onclick="logout()" title="Đăng xuất" class="p-2.5 rounded-2xl bg-[#F7F2EC] hover:bg-rose-50 text-[#7E7272] hover:text-rose-600 transition border border-[#EFE8DF] shadow-sm cursor-pointer">
+      <button onclick="logout()" title="Đăng xuất" class="p-2.5 rounded-2xl bg-[#F7F2EC] hover:bg-rose-50 text-[#7E7272] hover:text-rose-600 transition border border-[#EFE8DF] cursor-pointer">
         <i data-lucide="log-out" class="w-4 h-4"></i>
       </button>
     </div>
@@ -28,7 +28,7 @@
       <h2 class="text-2xl font-extrabold text-[#2D2424]">Thu Nhập Của Tôi</h2>
       <p class="text-xs sm:text-sm text-[#7E7272]">Chi tiết lương ngày công & hoa hồng tour</p>
     </div>
-    <button onclick="loadIncomeView()" class="p-3 rounded-2xl bg-white hover:bg-[#FFF0EB] text-[#7E7272] hover:text-[#E58A7B] transition border border-[#F0EAE1] shadow-sm cursor-pointer">
+    <button onclick="loadIncomeView()" class="p-3 rounded-2xl bg-white hover:bg-[#FFF0EB] text-[#7E7272] hover:text-[#E58A7B] transition border border-[#F0EAE1] cursor-pointer">
       <i data-lucide="refresh-cw" class="w-4 h-4"></i>
     </button>
   </div>
