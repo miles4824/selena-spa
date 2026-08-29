@@ -209,11 +209,13 @@ function startLiveSession() {
     date: startDateStr,
     customer_phone: phone,
     customer_name: name,
+    staff_1_user_id: staff1?.user_id || staff1?.phone || '',
     staff_1_phone: staff1?.phone || '',
     staff_1_id: staff1?.staff_id || 'KTV01',
     staff_1_name: staff1?.full_name || 'KTV 1',
     has_staff_2: Boolean(isStaff2Enabled && staff2),
-    staff_2_phone: staff2?.phone || '',
+    staff_2_user_id: staff2?.user_id || staff2?.phone || '-',
+    staff_2_phone: staff2?.phone || '-',
     staff_2_id: staff2?.staff_id || '',
     staff_2_name: staff2?.full_name || '',
     use_voucher: useVoucher
@@ -441,6 +443,7 @@ function confirmSaveReceiptFromCheckout() {
     
     // KTV 1
     staff_1_id: staff1?.staff_id || staff1?.phone || 'KTV01',
+    staff_1_user_id: staff1?.user_id || staff1?.phone || '',
     staff_1_phone: staff1?.phone || '',
     staff_1_name: staff1?.full_name || 'KTV 1',
     staff_1_comm: comm1,
@@ -449,7 +452,8 @@ function confirmSaveReceiptFromCheckout() {
     // KTV 2
     has_staff_2: currentLiveSession.has_staff_2,
     staff_2_id: staff2?.staff_id || staff2?.phone || '',
-    staff_2_phone: staff2?.phone || '',
+    staff_2_user_id: staff2?.user_id || staff2?.phone || '-',
+    staff_2_phone: staff2?.phone || '-',
     staff_2_name: staff2?.full_name || '',
     staff_2_comm: comm2,
     staff_2_tip: tip2,

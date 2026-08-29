@@ -1,6 +1,6 @@
 /**
  * =========================================================================
- * SELENA SPA - SETUP DATABASE SCRIPT (setup.gs) - 25 CỘT CHUẨN START/END
+ * SELENA SPA - SETUP DATABASE SCRIPT (setup.gs) - 25 CỘT CHUẨN USER_ID
  * =========================================================================
  */
 
@@ -22,13 +22,13 @@ function upgradeReceiptsTable() {
     'price',             // J: Giá dịch vụ gốc
     'tip_amount',        // K: Tiền Tips
     'total_paid',        // L: Tổng khách trả
-    'staff_1_phone',     // M: SĐT KTV 1
-    'staff_1_id',        // N: Mã KTV 1
+    'staff_1_user_id',   // M: User ID KTV 1 (SĐT đăng nhập)
+    'staff_1_id',        // N: Mã KTV 1 (KTV01)
     'staff_1_name',      // O: Tên KTV 1
     'staff_1_comm',      // P: Hoa hồng KTV 1
     'staff_1_tip',       // Q: Tiền Tips KTV 1
-    'staff_2_phone',     // R: SĐT KTV 2
-    'staff_2_id',        // S: Mã KTV 2
+    'staff_2_user_id',   // R: User ID KTV 2
+    'staff_2_id',        // S: Mã KTV 2 (KTV02)
     'staff_2_name',      // T: Tên KTV 2
     'staff_2_comm',      // U: Hoa hồng KTV 2
     'staff_2_tip',       // V: Tiền Tips KTV 2
@@ -47,5 +47,5 @@ function upgradeReceiptsTable() {
   sheet.setRowHeight(1, 35);
   sheet.setFrozenRows(1);
 
-  Logger.log('✅ ĐÃ CẬP NHẬT 25 CỘT CHUẨN START/END CHO BẢNG tb_receipts!');
+  Logger.log('✅ ĐÃ CẬP NHẬT 25 CỘT CHUẨN STAFF_USER_ID CHO BẢNG tb_receipts!');
 }

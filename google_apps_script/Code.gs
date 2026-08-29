@@ -330,13 +330,13 @@ function createReceipt(params) {
       assign(['tip_amount', 'tien_tip'], tipAmount);
       assign(['total_paid', 'tong_tien_khach_tra'], totalPaid);
 
-      assign(['staff_1_phone', 'staff_phone', 'sdt_ktv_1', 'sdt_ktv'], s1Phone);
+      assign(['staff_1_user_id', 'staff_1_phone', 'user_id_1', 'staff_phone', 'sdt_ktv_1'], s1Phone);
       assign(['staff_1_id', 'staff_id', 'ma_ktv_1', 'ma_ktv'], s1Id);
       assign(['staff_1_name', 'staff_name', 'ten_ktv_1', 'ten_ktv'], s1Name);
       assign(['staff_1_comm', 'commission_amount', 'hoa_hong_ktv_1', 'hoa_hong'], s1Comm);
       assign(['staff_1_tip', 'tip_ktv_1'], s1Tip);
 
-      assign(['staff_2_phone', 'sdt_ktv_2'], s2Phone ? s2Phone : '-');
+      assign(['staff_2_user_id', 'staff_2_phone', 'user_id_2', 'sdt_ktv_2'], s2Phone ? s2Phone : '-');
       assign(['staff_2_id', 'ma_ktv_2'], s2Id ? s2Id : '-');
       assign(['staff_2_name', 'ten_ktv_2'], s2Name ? s2Name : '-');
       assign(['staff_2_comm', 'hoa_hong_ktv_2'], s2Comm);
@@ -598,14 +598,14 @@ function syncAllData(params) {
         let totalPaid = Number(String(getCell(r, colMapR, ['total_paid', 'tong_tien_khach_tra'], 0)).replace(/[^\d]/g, '')) || (price + tipAmount);
 
         // KTV 1
-        let s1Phone = normalizePhone(getCell(r, colMapR, ['staff_1_phone', 'staff_phone', 'sdt_ktv_1', 'sdt_ktv']));
+        let s1Phone = normalizePhone(getCell(r, colMapR, ['staff_1_user_id', 'staff_1_phone', 'user_id_1', 'staff_phone', 'sdt_ktv_1']));
         let s1Id = String(getCell(r, colMapR, ['staff_1_id', 'staff_id', 'ma_ktv_1', 'ma_ktv'])).trim();
         let s1Name = String(getCell(r, colMapR, ['staff_1_name', 'staff_name', 'ten_ktv_1', 'ten_ktv']));
         let s1Comm = Number(String(getCell(r, colMapR, ['staff_1_comm', 'commission_amount', 'hoa_hong_ktv_1', 'hoa_hong'], 0)).replace(/[^\d]/g, '')) || 0;
         let s1Tip = Number(String(getCell(r, colMapR, ['staff_1_tip', 'tip_ktv_1'], 0)).replace(/[^\d]/g, '')) || 0;
 
         // KTV 2
-        let s2Phone = normalizePhone(getCell(r, colMapR, ['staff_2_phone', 'sdt_ktv_2']));
+        let s2Phone = normalizePhone(getCell(r, colMapR, ['staff_2_user_id', 'staff_2_phone', 'user_id_2', 'sdt_ktv_2']));
         let s2Id = String(getCell(r, colMapR, ['staff_2_id', 'ma_ktv_2'])).trim();
         let s2Name = String(getCell(r, colMapR, ['staff_2_name', 'ten_ktv_2']));
         let s2Comm = Number(String(getCell(r, colMapR, ['staff_2_comm', 'hoa_hong_ktv_2'], 0)).replace(/[^\d]/g, '')) || 0;
