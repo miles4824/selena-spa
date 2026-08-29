@@ -365,21 +365,30 @@ function renderLiveSessionUI() {
   if (liveCard) liveCard.classList.remove('hidden');
   if (formBox) formBox.classList.add('hidden');
 
-  const staffNames = (currentLiveSession.staffs || [{ name: currentLiveSession.staff_1_name }]).map(s => s.name).join(' & ');
-
   document.getElementById('live-service-name').innerText = currentLiveSession.service_name;
   document.getElementById('live-customer-badge').innerText = '👤 ' + (currentLiveSession.customer_name || 'Khách vãng lai');
-  document.getElementById('live-staff-badge').innerText = '💆 ' + staffNames;
   document.getElementById('live-start-time-text').innerText = currentLiveSession.start_time;
   document.getElementById('live-target-time-text').innerText = currentLiveSession.duration_target_min + ' phút';
 
-  const splitText = document.getElementById('live-split-ratio-text');
-  if (splitText) {
-    if (currentLiveSession.has_staff_2) {
-      splitText.innerText = `🤝 ${(currentLiveSession.staffs || []).length} KTV: ${staffNames}`;
-    } else {
-      splitText.innerText = '💆 1 KTV phụ trách trọn ca (100%)';
-    }
+  // RENDER CÁCH 1: CÁC CHIP KTV TƯƠNG TÁC
+  const chipsContainer = document.getElementById('live-staff-chips-container');
+  if (chipsContainer) {
+    const staffs = currentLiveSession.staffs || [
+      { phone: currentLiveSession.staff_1_phone, name: currentLiveSession.staff_1_name, pct: 100 }
+    ];
+    
+    chipsContainer.innerHTML = staffs.map((s, idx) => `
+      <button type="button" onclick="openSwapStaffModal()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-[#EFE8DF] hover:border-[#E58A7B] text-xs font-bold text-[#2D2424] shadow-sm transition active:scale-95 cursor-pointer">
+        <span class="w-2 h-2 rounded-full ${idx === 0 ? 'bg-[#2E7D6D]' : 'bg-[#E58A7B]'}"></span>
+        <span>${s.name}</span>
+        <span class="text-[10px] font-extrabold text-[#7E7272] bg-[#FAF6F1] px-1.5 py-0.5 rounded-md">${s.pct || Math.round(100/staffs.length)}%</span>
+      </button>
+    `).join('') + `
+      <button type="button" onclick="openSwapStaffModal()" title="Điều chỉnh / Thêm KTV" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-[#FFF0EB] hover:bg-[#FFE5DC] text-xs font-bold text-[#E58A7B] border border-[#FCDFD7] shadow-sm transition active:scale-95 cursor-pointer">
+        <i data-lucide="user-plus" class="w-3.5 h-3.5"></i>
+        <span>Đổi / Thêm</span>
+      </button>
+    `;
   }
 
   clearInterval(liveTimerInterval);
