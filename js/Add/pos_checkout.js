@@ -1,6 +1,6 @@
 // Helper lấy danh sách users với KTV xếp trước, Sếp luôn ở dưới cùng
 function getSortedUsersList() {
-  const users = getSortedUsersList();
+  const users = getStored('users', DEFAULT_USERS);
   const ktvs = users.filter(u => !isUserOwner(u));
   const owners = users.filter(u => isUserOwner(u));
   return [...ktvs, ...owners];
