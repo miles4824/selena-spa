@@ -1,5 +1,5 @@
 // =============================================================
-// TAB 4: WALLET - GOOGLE APPS SCRIPT API & CLOUD SYNC
+// TAB 4: WALLET - SECURE GOOGLE APPS SCRIPT API & CLOUD SYNC
 // =============================================================
 const DEFAULT_GAS_URL = 'https://script.google.com/macros/s/AKfycbwQ-Dwr2zCWWWMPWBCyVIfwDirofgvjD8S7Ug-5OSNLHvM63Gw0nSCa10BqhpD5g8id/exec';
 
@@ -36,11 +36,19 @@ async function callGasApi(action, payload = {}) {
   const gasUrl = getGasUrl();
   if (!gasUrl || !gasUrl.startsWith('http')) return null;
 
+  // Tự động đính kèm thông tin xác thực của User hiện tại để Server phân quyền bảo mật
+  const authPayload = {
+    client_phone: currentUser ? normalizePhone(currentUser.phone) : '',
+    client_staff_id: currentUser ? currentUser.staff_id : '',
+    client_role: currentUser ? currentUser.role : '',
+    ...payload
+  };
+
   try {
     const res = await fetch(gasUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({ action, ...payload })
+      body: JSON.stringify({ action, ...authPayload })
     });
     return await res.json();
   } catch (err) {
