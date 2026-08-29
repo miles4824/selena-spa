@@ -31,11 +31,12 @@ function initMenuUI() {
   `).join('');
 
   if (!selectedComboId || !menu.some(m => m.service_id === selectedComboId)) {
-    selectedComboId = 'CB01'; // Mặc định là Combo 1
+    selectedComboId = 'CB01';
   }
   select.value = selectedComboId;
 
   renderQuickComboButtons();
+  updatePOSCalculations();
   restoreLiveSessionIfExists();
 }
 
@@ -62,39 +63,25 @@ function renderQuickComboButtons() {
 }
 
 function selectQuickCombo(id) {
+  selectedComboId = id;
   const select = document.getElementById('pos-service-select');
   if (select) {
     select.value = id;
-    selectedComboId = id;
-    renderQuickComboButtons();
-    updatePOSCalculations();
   }
+  renderQuickComboButtons();
+  updatePOSCalculations();
 }
 
 function onSelectServiceChange() {
   const select = document.getElementById('pos-service-select');
   if (select) {
     selectedComboId = select.value;
-    renderQuickComboButtons();
-    updatePOSCalculations();
   }
+  renderQuickComboButtons();
+  updatePOSCalculations();
 }
 
-function selectQuickCombo(id) {
-  const select = document.getElementById('pos-service-select');
-  if (select) {
-    select.value = id;
-    onSelectServiceChange();
-  }
-}
 
-function onSelectServiceChange() {
-  const select = document.getElementById('pos-service-select');
-  if (select) {
-    selectedComboId = select.value;
-    updatePOSCalculations();
-  }
-}
 
 function onStaff1SelectChange() {
   renderExtraStaffUI();
