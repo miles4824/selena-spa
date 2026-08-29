@@ -93,10 +93,10 @@ function loadStaffHistoryList() {
     let totalMyEarning = myComm + myTip;
 
     return `
-      <div class="flex items-start gap-3">
-        <div class="w-12 pt-3.5 text-right shrink-0">
-          <span class="text-xs font-extrabold text-[#2D2424] block">${cleanTime}</span>
-          <span class="text-[10px] text-[#A39696] block">${cleanDate}</span>
+      <div class="flex items-center gap-3 sm:gap-3.5">
+        <div class="w-12 sm:w-14 text-center shrink-0 flex flex-col items-center justify-center self-center py-1">
+          <span class="text-xs font-extrabold text-[#2D2424] leading-tight block">${cleanTime}</span>
+          <span class="text-[10px] font-semibold text-[#8C7E7E] bg-[#F4EDE4] px-1.5 py-0.5 rounded-md mt-1 block">${cleanDate}</span>
         </div>
 
         <div class="flex-1 spa-card p-4 border-l-4 ${cardStyle} space-y-2">
