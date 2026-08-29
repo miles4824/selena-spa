@@ -1,11 +1,14 @@
-const APP_VERSION = 'v0.0.3.9';
+const APP_VERSION = 'v0.0.4.0';
 // =============================================================
 // SELENA SPA - GLOBAL CONFIG & CONSTANTS
 // =============================================================
 const DEFAULT_USERS = [
   { user_id: '0949251144', staff_id: 'FOUNDER_01', phone: '0949251144', password: '123', full_name: 'Miles', role: 'admin', salary_type: 'owner', commission_rate: 0, base_salary: 0, bank_name: 'MBBank', bank_account_no: '0949251144', bank_account_name: 'NGUYEN TIEN DUY' },
   { user_id: '0799625591', staff_id: 'KTV01', phone: '0799625591', password: '123', full_name: 'Thu Ngân', role: 'staff', salary_type: 'fixed', commission_rate: 10, base_salary: 2000000, bank_name: 'MBBank', bank_account_no: '0799625591', bank_account_name: 'NGUYEN THI THU NGAN' },
-  { user_id: '0912345678', staff_id: 'KTV02', phone: '0912345678', password: '123', full_name: 'KTV Mai Lan', role: 'staff', salary_type: 'commission', commission_rate: 20, base_salary: 0, bank_name: 'MBBank', bank_account_no: '0912345678', bank_account_name: 'KTV MAI LAN' }
+  { user_id: '0912345678', staff_id: 'KTV02', phone: '0912345678', password: '123', full_name: 'KTV Mai Lan', role: 'staff', salary_type: 'commission', commission_rate: 20, base_salary: 0, bank_name: 'MBBank', bank_account_no: '0912345678', bank_account_name: 'KTV MAI LAN' },
+  { user_id: '0933112233', staff_id: 'KTV03', phone: '0933112233', password: '123', full_name: 'KTV Phương Thảo', role: 'staff', salary_type: 'commission', commission_rate: 10, base_salary: 0, bank_name: 'MBBank', bank_account_no: '0933112233', bank_account_name: 'KTV PHUONG THAO' },
+  { user_id: '0977889900', staff_id: 'KTV04', phone: '0977889900', password: '123', full_name: 'KTV Ngọc Ánh', role: 'staff', salary_type: 'fixed', commission_rate: 10, base_salary: 2000000, bank_name: 'MBBank', bank_account_no: '0977889900', bank_account_name: 'KTV NGOC ANH' },
+  { user_id: '0966554433', staff_id: 'KTV05', phone: '0966554433', password: '123', full_name: 'KTV Bảo Trân', role: 'staff', salary_type: 'commission', commission_rate: 20, base_salary: 0, bank_name: 'MBBank', bank_account_no: '0966554433', bank_account_name: 'KTV BAO TRAN' }
 ];
 
 const DEFAULT_MENU = [

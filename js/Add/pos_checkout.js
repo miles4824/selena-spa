@@ -1,3 +1,13 @@
+function getMergedUsers() {
+  let stored = getMergedUsers();
+  // Đảm bảo các KTV mẫu luôn có mặt để test
+  DEFAULT_USERS.forEach(defU => {
+    if (!stored.some(u => normalizePhone(u.phone) === normalizePhone(defU.phone))) {
+      stored.push(defU);
+    }
+  });
+  return stored;
+}
 // =============================================================
 // TAB 2: ADD - POS CHECKOUT, DYNAMIC STAFF LIST & 2-PHASE CHECKOUT
 // =============================================================
@@ -58,7 +68,7 @@ function onStaff1SelectChange() {
 }
 
 function updatePOSStaffInfo() {
-  const users = getStored('users', DEFAULT_USERS);
+  const users = getMergedUsers();
   const s1Select = document.getElementById('pos-staff1-select');
   const isOwner = currentUser && isUserOwner(currentUser);
 
@@ -90,7 +100,7 @@ function updatePOSStaffInfo() {
 // =============================================================
 
 function addExtraStaff() {
-  const users = getStored('users', DEFAULT_USERS);
+  const users = getMergedUsers();
   const staffList = users.filter(u => !isUserOwner(u));
   const s1Phone = document.getElementById('pos-staff1-select')?.value || currentUser?.phone;
 
@@ -132,7 +142,7 @@ function removeExtraStaff(index) {
 }
 
 function onExtraStaffSelectChange(index, newPhone) {
-  const users = getStored('users', DEFAULT_USERS);
+  const users = getMergedUsers();
   const staff = users.find(u => normalizePhone(u.phone) === normalizePhone(newPhone));
   if (staff) {
     extraStaffList[index] = {
@@ -151,7 +161,7 @@ function renderExtraStaffUI() {
   const addBtn = document.getElementById('btn-add-staff-card');
   if (!container) return;
 
-  const users = getStored('users', DEFAULT_USERS);
+  const users = getMergedUsers();
   const staffList = users.filter(u => !isUserOwner(u));
   const s1Phone = document.getElementById('pos-staff1-select')?.value || currentUser?.phone;
 
@@ -200,7 +210,7 @@ function renderExtraStaffUI() {
 
 function updatePOSCalculations() {
   const menu = getStored('menu', DEFAULT_MENU);
-  const users = getStored('users', DEFAULT_USERS);
+  const users = getMergedUsers();
   const service = menu.find(m => m.service_id === selectedComboId) || menu[0];
 
   const s1Phone = document.getElementById('pos-staff1-select')?.value || currentUser?.phone;
@@ -281,7 +291,7 @@ function onVoucherToggle(checked) {
 
 function startLiveSession() {
   const menu = getStored('menu', DEFAULT_MENU);
-  const users = getStored('users', DEFAULT_USERS);
+  const users = getMergedUsers();
   const service = menu.find(m => m.service_id === selectedComboId) || menu[0];
 
   const phone = document.getElementById('pos-customer-phone')?.value.trim() || '';
@@ -435,7 +445,7 @@ function restoreLiveSessionIfExists() {
 
 function openSwapStaffModal() {
   if (!currentLiveSession) return;
-  const users = getStored('users', DEFAULT_USERS);
+  const users = getMergedUsers();
   const staffList = users.filter(u => !isUserOwner(u));
   const s2Select = document.getElementById('swap-staff2-select');
 
@@ -496,7 +506,7 @@ function updateSwapPreviewDisplay() {
   document.getElementById('swap-preview-s1-name').innerText = currentLiveSession.staff_1_name + ':';
   document.getElementById('swap-preview-s1-pct').innerText = `${s1Pct}% (${Math.round(currentLiveSession.price * 0.1 * s1Pct / 100).toLocaleString('vi-VN')} đ)`;
   
-  const users = getStored('users', DEFAULT_USERS);
+  const users = getMergedUsers();
   const s2Phone = document.getElementById('swap-staff2-select')?.value;
   const s2 = users.find(u => normalizePhone(u.phone) === normalizePhone(s2Phone));
   const s2Rate = (s2 && parsePercentage(s2?.commission_rate) > 0) ? parsePercentage(s2?.commission_rate) : 10;
@@ -507,7 +517,7 @@ function updateSwapPreviewDisplay() {
 
 function saveSwapStaffSetting() {
   if (!currentLiveSession) return;
-  const users = getStored('users', DEFAULT_USERS);
+  const users = getMergedUsers();
   const s2Phone = document.getElementById('swap-staff2-select')?.value;
   const s2 = users.find(u => normalizePhone(u.phone) === normalizePhone(s2Phone));
 
@@ -743,7 +753,7 @@ function splitSharedTipDynamic(totalAmount) {
 
 function updateStaffEarningPreview() {
   if (!currentLiveSession) return;
-  const users = getStored('users', DEFAULT_USERS);
+  const users = getMergedUsers();
   const staffs = currentLiveSession.staffs || [
     { phone: currentLiveSession.staff_1_phone, name: currentLiveSession.staff_1_name, pct: 100 }
   ];
@@ -782,7 +792,7 @@ function updateStaffEarningPreview() {
 function confirmSaveReceiptFromCheckout() {
   if (!currentLiveSession) return;
 
-  const users = getStored('users', DEFAULT_USERS);
+  const users = getMergedUsers();
   const staffs = currentLiveSession.staffs || [
     { phone: currentLiveSession.staff_1_phone, name: currentLiveSession.staff_1_name, pct: 100, user_id: currentLiveSession.staff_1_user_id, staff_id: currentLiveSession.staff_1_id }
   ];
