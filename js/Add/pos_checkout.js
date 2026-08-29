@@ -120,12 +120,13 @@ function updatePOSCalculations() {
   const staff1 = users.find(u => normalizePhone(u.phone) === normalizePhone(s1Phone)) || currentUser;
   const staff2 = isStaff2Enabled ? users.find(u => normalizePhone(u.phone) === normalizePhone(s2Phone)) : null;
 
-  const rate1 = parsePercentage(staff1?.commission_rate);
-  const rate2 = staff2 ? parsePercentage(staff2?.commission_rate) : 0;
+  const rate1 = parsePercentage(staff1?.commission_rate) || 10;
+  const rate2 = staff2 ? (parsePercentage(staff2?.commission_rate) || rate1 || 10) : 0;
 
-  const totalComm = Math.round(service.price * (rate1 / 100));
-  let comm1 = isStaff2Enabled && staff2 ? Math.round(totalComm / 2) : totalComm;
-  let comm2 = isStaff2Enabled && staff2 ? Math.round(service.price * (rate2 / 100) / 2) : 0;
+  const totalComm1 = Math.round(service.price * (rate1 / 100));
+  const totalComm2 = staff2 ? Math.round(service.price * (rate2 / 100)) : 0;
+  let comm1 = isStaff2Enabled && staff2 ? Math.round(totalComm1 / 2) : totalComm1;
+  let comm2 = isStaff2Enabled && staff2 ? Math.round(totalComm2 / 2) : 0;
 
   const p1El = document.getElementById('pos-staff1-comm-preview');
   if (p1El) p1El.innerText = `+${comm1.toLocaleString('vi-VN')} đ`;
@@ -397,7 +398,8 @@ function updateSwapPreviewDisplay() {
   const s2 = users.find(u => normalizePhone(u.phone) === normalizePhone(s2Phone));
   
   document.getElementById('swap-preview-s2-name').innerText = (s2?.full_name || 'KTV 2') + ':';
-  document.getElementById('swap-preview-s2-pct').innerText = `${s2Pct}% (${Math.round(currentLiveSession.price * 0.1 * s2Pct / 100).toLocaleString('vi-VN')} đ)`;
+  const s2Rate = (s2 && parsePercentage(s2?.commission_rate) > 0) ? parsePercentage(s2?.commission_rate) : 10;
+  document.getElementById('swap-preview-s2-pct').innerText = `${s2Pct}% (${Math.round(currentLiveSession.price * (s2Rate / 100) * s2Pct / 100).toLocaleString('vi-VN')} đ)`;
 }
 
 function saveSwapStaffSetting() {
@@ -562,8 +564,8 @@ function confirmSaveReceiptFromCheckout() {
   const staff1 = users.find(u => normalizePhone(u.phone) === normalizePhone(currentLiveSession.staff_1_phone)) || currentUser;
   const staff2 = currentLiveSession.has_staff_2 ? users.find(u => normalizePhone(u.phone) === normalizePhone(currentLiveSession.staff_2_phone)) : null;
 
-  const rate1 = parsePercentage(staff1?.commission_rate);
-  const rate2 = staff2 ? parsePercentage(staff2?.commission_rate) : 0;
+  const rate1 = parsePercentage(staff1?.commission_rate) || 10;
+  const rate2 = (staff2 && parsePercentage(staff2?.commission_rate) > 0) ? parsePercentage(staff2?.commission_rate) : (rate1 || 10);
 
   const totalComm1 = Math.round(currentLiveSession.price * (rate1 / 100));
   const totalComm2 = staff2 ? Math.round(currentLiveSession.price * (rate2 / 100)) : 0;

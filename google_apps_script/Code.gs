@@ -577,7 +577,7 @@ function syncAllData(params) {
             full_name: fullName,
             role: uIsOwner ? 'Chủ tiệm' : 'Kỹ thuật viên',
             salary_type: isMe ? salaryType : 'fixed',
-            commission_rate: isMe ? commRate : 0,
+            commission_rate: commRate || 10,
             base_salary: isMe ? baseSalary : 0
           });
         }
