@@ -1,8 +1,10 @@
 // =============================================================
-// TAB 2: ADD - POS CHECKOUT, 2 KTV SELECTION & TIPS HANDLER
+// TAB 2: ADD - POS CHECKOUT & LIVE SPA SESSION TIMER HANDLER
 // =============================================================
 let isStaff2Enabled = false;
 let currentTipAmount = 0;
+let liveTimerInterval = null;
+let currentLiveSession = null;
 
 function initMenuUI() {
   const menu = getStored('menu', DEFAULT_MENU);
@@ -28,6 +30,9 @@ function initMenuUI() {
       </button>
     `).join('');
   }
+
+  // Khôi phục ca đang chạy nếu có trong LocalStorage
+  restoreLiveSessionIfExists();
 }
 
 function selectQuickCombo(id) {
@@ -65,12 +70,12 @@ function updatePOSStaffInfo() {
     s2Select.innerHTML = staffList.map(u => `
       <option value="${u.phone}">💆 ${u.full_name} (${u.staff_id || u.phone})</option>
     `).join('');
-    // Mặc định chọn người khác KTV 1 nếu có
     const otherStaff = staffList.find(u => normalizePhone(u.phone) !== normalizePhone(currentUser?.phone));
     if (otherStaff) s2Select.value = otherStaff.phone;
   }
 
   updatePOSCalculations();
+  restoreLiveSessionIfExists();
 }
 
 function toggleSecondStaff() {
@@ -118,7 +123,6 @@ function updatePOSCalculations() {
   const rate1 = parsePercentage(staff1?.commission_rate);
   const rate2 = staff2 ? parsePercentage(staff2?.commission_rate) : 0;
 
-  // Tính tiền dịch vụ & hoa hồng
   let basePrice = useVoucher ? 0 : service.price;
   let totalComm = Math.round(service.price * (rate1 / 100));
 
@@ -128,14 +132,12 @@ function updatePOSCalculations() {
   let tip2 = 0;
 
   if (isStaff2Enabled && staff2) {
-    // Chia đôi 50/50 hoa hồng và tips
     comm1 = Math.round(totalComm / 2);
     comm2 = Math.round(service.price * (rate2 / 100) / 2);
     tip1 = Math.round(currentTipAmount / 2);
     tip2 = currentTipAmount - tip1;
   }
 
-  // Cập nhật xem trước hoa hồng KTV 1 & KTV 2
   const p1El = document.getElementById('pos-staff1-comm-preview');
   if (p1El) {
     let totalEarning1 = comm1 + tip1;
@@ -148,7 +150,6 @@ function updatePOSCalculations() {
     p2El.innerText = `+${totalEarning2.toLocaleString('vi-VN')} đ (Tour: ${comm2.toLocaleString('vi-VN')}${tip2 > 0 ? ` + Tip: ${tip2.toLocaleString('vi-VN')}` : ''})`;
   }
 
-  // Cập nhật tóm tắt thanh toán
   const sPriceEl = document.getElementById('pos-service-price-preview');
   const tPriceEl = document.getElementById('pos-tip-price-preview');
   const totPaidEl = document.getElementById('pos-total-paid-preview');
@@ -231,6 +232,175 @@ function setPaymentMethod(method) {
   }
   lucide.createIcons();
 }
+
+// =============================================================
+// 🟢 LIVE SPA SESSION LIFECYCLE (BẮT ĐẦU CA -> ĐẾM GIỜ -> HOÀN THÀNH)
+// =============================================================
+
+function startLiveSession() {
+  const menu = getStored('menu', DEFAULT_MENU);
+  const users = getStored('users', DEFAULT_USERS);
+  const service = menu.find(m => m.service_id === selectedComboId) || menu[0];
+
+  const phone = document.getElementById('pos-customer-phone')?.value.trim() || '';
+  const name = document.getElementById('pos-customer-name')?.value.trim() || 'Khách vãng lai';
+
+  const s1Phone = document.getElementById('pos-staff1-select')?.value || currentUser?.phone;
+  const s2Phone = document.getElementById('pos-staff2-select')?.value;
+
+  const staff1 = users.find(u => normalizePhone(u.phone) === normalizePhone(s1Phone)) || currentUser;
+  const staff2 = isStaff2Enabled ? users.find(u => normalizePhone(u.phone) === normalizePhone(s2Phone)) : null;
+
+  const now = new Date();
+  const startTimeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+  const startDateStr = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}`;
+
+  currentLiveSession = {
+    session_id: 'SS' + Date.now(),
+    service_id: service.service_id,
+    service_name: service.service_name,
+    duration_target_min: service.duration_min || 45,
+    start_timestamp: Date.now(),
+    start_time: startTimeStr,
+    date: startDateStr,
+    customer_phone: phone,
+    customer_name: name,
+    staff_1_phone: staff1?.phone || '',
+    staff_1_id: staff1?.staff_id || 'KTV01',
+    staff_1_name: staff1?.full_name || 'KTV 1',
+    has_staff_2: Boolean(isStaff2Enabled && staff2),
+    staff_2_phone: staff2?.phone || '',
+    staff_2_id: staff2?.staff_id || '',
+    staff_2_name: staff2?.full_name || '',
+    use_voucher: useVoucher
+  };
+
+  localStorage.setItem('selena_active_live_session', JSON.stringify(currentLiveSession));
+  renderLiveSessionUI();
+  
+  // Rung phản hồi nhẹ và cuộn lên đầu xem đồng hồ
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function renderLiveSessionUI() {
+  const liveCard = document.getElementById('live-session-card');
+  const formBox = document.getElementById('pos-form-box');
+
+  if (!currentLiveSession) {
+    if (liveCard) liveCard.classList.add('hidden');
+    if (formBox) formBox.classList.remove('hidden');
+    clearInterval(liveTimerInterval);
+    return;
+  }
+
+  if (liveCard) liveCard.classList.remove('hidden');
+  if (formBox) formBox.classList.add('hidden');
+
+  document.getElementById('live-service-name').innerText = currentLiveSession.service_name;
+  document.getElementById('live-customer-badge').innerText = '👤 ' + (currentLiveSession.customer_name || 'Khách vãng lai');
+  document.getElementById('live-staff-badge').innerText = '💆 ' + currentLiveSession.staff_1_name + (currentLiveSession.has_staff_2 ? ` & ${currentLiveSession.staff_2_name}` : '');
+  document.getElementById('live-start-time-text').innerText = currentLiveSession.start_time;
+  document.getElementById('live-target-time-text').innerText = currentLiveSession.duration_target_min + ' phút';
+
+  // Khởi động đồng hồ đếm giây
+  clearInterval(liveTimerInterval);
+  updateLiveTimerTick();
+  liveTimerInterval = setInterval(updateLiveTimerTick, 1000);
+  lucide.createIcons();
+}
+
+function updateLiveTimerTick() {
+  if (!currentLiveSession) return;
+  const elapsedSec = Math.max(0, Math.floor((Date.now() - currentLiveSession.start_timestamp) / 1000));
+  const elapsedMin = Math.floor(elapsedSec / 60);
+  const remSec = elapsedSec % 60;
+
+  const timerEl = document.getElementById('live-timer-display');
+  const barEl = document.getElementById('live-progress-bar');
+  const hintEl = document.getElementById('live-status-hint');
+
+  if (timerEl) {
+    timerEl.innerText = `${elapsedMin.toString().padStart(2, '0')}:${remSec.toString().padStart(2, '0')}`;
+  }
+
+  const targetMin = currentLiveSession.duration_target_min || 45;
+  const pct = Math.min(100, Math.round((elapsedMin / targetMin) * 100));
+  if (barEl) barEl.style.width = pct + '%';
+
+  if (hintEl) {
+    if (elapsedMin >= targetMin) {
+      hintEl.innerText = '🔔 Đã đạt đủ thời gian liệu trình (' + targetMin + ' phút). Bạn có thể gội xong và thu tiền!';
+      hintEl.className = 'text-[11px] text-[#E58A7B] font-extrabold animate-bounce';
+    } else {
+      hintEl.innerText = `⏱️ Còn khoảng ${targetMin - elapsedMin} phút theo liệu trình chuẩn`;
+      hintEl.className = 'text-[11px] text-[#2E7D6D] font-medium';
+    }
+  }
+}
+
+function finishLiveSession() {
+  if (!currentLiveSession) return;
+
+  const now = new Date();
+  const endTimeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+  const elapsedMinutes = Math.max(1, Math.round((Date.now() - currentLiveSession.start_timestamp) / 60000));
+
+  // Chuyển ca sang màn hình thanh toán hoàn chỉnh
+  const liveCard = document.getElementById('live-session-card');
+  const formBox = document.getElementById('pos-form-box');
+  if (liveCard) liveCard.classList.add('hidden');
+  if (formBox) formBox.classList.remove('hidden');
+
+  // Điền lại thông tin vào form
+  selectedComboId = currentLiveSession.service_id;
+  const select = document.getElementById('pos-service-select');
+  if (select) select.value = selectedComboId;
+
+  document.getElementById('pos-customer-phone').value = currentLiveSession.customer_phone;
+  document.getElementById('pos-customer-name').value = currentLiveSession.customer_name;
+  
+  if (currentLiveSession.has_staff_2 && !isStaff2Enabled) {
+    toggleSecondStaff();
+  }
+
+  updatePOSCalculations();
+
+  // Tự động mở Modal gợi ý nhập Tips & quét QR
+  const conf = confirm(`🎉 Hoàn thành ca gội (${currentLiveSession.start_time} - ${endTimeStr} • ${elapsedMinutes} phút)!\n\nBạn có muốn mở Mã QR Ngân Hàng để khách thanh toán không?`);
+  if (conf) {
+    openStaticQRModal();
+  }
+
+  // Xóa session đang chạy và lưu chính thức
+  localStorage.removeItem('selena_active_live_session');
+  currentLiveSession = null;
+  clearInterval(liveTimerInterval);
+}
+
+function cancelLiveSession() {
+  if (confirm('Bạn có chắc muốn hủy ca đang phục vụ này không?')) {
+    localStorage.removeItem('selena_active_live_session');
+    currentLiveSession = null;
+    clearInterval(liveTimerInterval);
+    renderLiveSessionUI();
+  }
+}
+
+function restoreLiveSessionIfExists() {
+  const saved = localStorage.getItem('selena_active_live_session');
+  if (saved) {
+    try {
+      currentLiveSession = JSON.parse(saved);
+      renderLiveSessionUI();
+    } catch(e) {
+      localStorage.removeItem('selena_active_live_session');
+    }
+  }
+}
+
+// =============================================================
+// LƯU HÓA ĐƠN VÀO HỆ THỐNG & GOOGLE SHEETS
+// =============================================================
 
 function submitPOSReceipt() {
   const menu = getStored('menu', DEFAULT_MENU);

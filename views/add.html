@@ -2,15 +2,63 @@
   <div class="flex justify-between items-center px-1">
     <div>
       <h2 class="text-2xl font-extrabold text-[#2D2424]">Tạo Ca Gội Mới</h2>
-      <p class="text-xs sm:text-sm text-[#7E7272]">Nhập dịch vụ, phân chia KTV & ghi nhận Tips</p>
+      <p class="text-xs sm:text-sm text-[#7E7272]">Bắt đầu liệu trình đếm giờ hoặc lưu hóa đơn ca</p>
     </div>
     <div class="w-10 h-10 rounded-2xl bg-[#FFF0EB] border border-[#FCDFD7] flex items-center justify-center text-[#E58A7B] shadow-sm">
-      <i data-lucide="sparkles" class="w-5 h-5"></i>
+      <i data-lucide="clock" class="w-5 h-5"></i>
     </div>
   </div>
 
-  <!-- Form Action POS -->
-  <div class="spa-card p-5 sm:p-7 space-y-6">
+  <!-- 🟢 THẺ CA ĐANG GỘI TRỰC TIẾP (LIVE SESSION TRACKER - HIỆN KHI ĐANG GỘI) -->
+  <div id="live-session-card" class="hidden p-5 sm:p-6 rounded-3xl bg-gradient-to-br from-[#FFF5F2] via-white to-[#F9F5F0] border-2 border-[#E58A7B] shadow-lg shadow-[#E58A7B]/15 space-y-4 animate-pulse-border">
+    <div class="flex justify-between items-center">
+      <div class="flex items-center gap-2">
+        <span class="relative flex h-3.5 w-3.5">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#E58A7B] opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-3.5 w-3.5 bg-[#E58A7B]"></span>
+        </span>
+        <span class="text-xs font-extrabold text-[#E58A7B] uppercase tracking-wider">Đang phục vụ tại bồn gội</span>
+      </div>
+      <button type="button" onclick="cancelLiveSession()" class="text-xs text-[#A39696] hover:text-rose-600 underline cursor-pointer">Hủy ca này</button>
+    </div>
+
+    <div>
+      <h3 id="live-service-name" class="text-lg sm:text-xl font-extrabold text-[#2D2424]">Combo 2 (Gội Chuyên Sâu)</h3>
+      <div class="flex items-center gap-2 mt-1 text-xs text-[#7E7272]">
+        <span id="live-customer-badge" class="font-bold text-[#2D2424]">👤 Chị Mai Lan</span>
+        <span>•</span>
+        <span id="live-staff-badge" class="font-medium text-[#2E7D6D]">💆 KTV Thu Ngân</span>
+      </div>
+    </div>
+
+    <!-- ĐỒNG HỒ ĐẾM GIỜ TRỰC TIẾP -->
+    <div class="p-4 rounded-2xl bg-white border border-[#F0EAE1] text-center space-y-2 shadow-sm">
+      <div class="text-xs text-[#7E7272] flex justify-between px-2">
+        <span>Bắt đầu lúc: <b id="live-start-time-text" class="text-[#2D2424] font-mono">15:30</b></span>
+        <span>Định mức: <b id="live-target-time-text" class="text-[#E58A7B]">60 phút</b></span>
+      </div>
+      
+      <!-- Số phút đếm trực tiếp -->
+      <div id="live-timer-display" class="text-3xl sm:text-4xl font-extrabold text-[#2D2424] font-mono tracking-wider">
+        00:00
+      </div>
+
+      <!-- Thanh tiến trình thời gian liệu trình -->
+      <div class="w-full h-2.5 bg-[#FAF6F1] rounded-full overflow-hidden border border-[#F0EAE1]">
+        <div id="live-progress-bar" class="h-full bg-gradient-to-r from-[#2E7D6D] via-[#E58A7B] to-[#D9796A] rounded-full transition-all duration-1000" style="width: 5%"></div>
+      </div>
+      <p id="live-status-hint" class="text-[11px] text-[#2E7D6D] font-medium">✨ Liệu trình đang diễn ra đúng tiến độ</p>
+    </div>
+
+    <!-- Nút Hoàn thành ca & Tính tiền -->
+    <button type="button" onclick="finishLiveSession()" class="w-full py-4 px-6 rounded-full bg-gradient-to-r from-[#2E7D6D] to-[#25685B] hover:opacity-95 text-white font-extrabold text-base shadow-lg shadow-[#2E7D6D]/25 flex items-center justify-center gap-2.5 transition active:scale-95 cursor-pointer">
+      <i data-lucide="check-circle" class="w-5 h-5 shrink-0"></i>
+      <span>Gội Xong • Hoàn Thành Ca & Thu Tiền</span>
+    </button>
+  </div>
+
+  <!-- Form Action POS (Nhập dịch vụ) -->
+  <div id="pos-form-box" class="spa-card p-5 sm:p-7 space-y-6">
     
     <!-- 1. CHỌN DỊCH VỤ -->
     <div class="space-y-2.5">
@@ -21,7 +69,7 @@
       <div id="pos-quick-combos" class="flex flex-wrap gap-2 pt-1"></div>
     </div>
 
-    <!-- 2. PHÂN BỔ KỸ THUẬT VIÊN (HỖ TRỢ 1 HOẶC 2 KTV CÙNG LÀM) -->
+    <!-- 2. PHÂN BỔ KỸ THUẬT VIÊN (1 HOẶC 2 KTV CÙNG LÀM) -->
     <div class="space-y-3 p-4 rounded-3xl bg-[#FAF6F1] border border-[#F0EAE1]">
       <div class="flex justify-between items-center">
         <label class="text-xs sm:text-sm font-bold text-[#2D2424] uppercase tracking-wider flex items-center gap-2">
@@ -94,7 +142,7 @@
       </div>
     </div>
 
-    <!-- 4. TIỀN TIPS KHÁCH CHO (TỰ DO & TÙY CHỌN) -->
+    <!-- 4. TIỀN TIPS KHÁCH CHO (TÙY CHỌN) -->
     <div class="space-y-2.5 p-4 rounded-3xl bg-[#FAF6F1] border border-[#F0EAE1]">
       <div class="flex justify-between items-center">
         <label class="text-xs sm:text-sm font-bold text-[#2D2424] uppercase tracking-wider flex items-center gap-2">
@@ -132,7 +180,7 @@
       </div>
     </div>
 
-    <!-- 6. TỔNG KẾT & LƯU CA -->
+    <!-- 6. HAI CHẾ ĐỘ HÀNH ĐỘNG: BẮT ĐẦU CA (ĐẾM GIỜ) HOẶC LƯU NHANH -->
     <div class="pt-4 border-t border-[#F0EAE1] space-y-4">
       <div class="p-4 rounded-2xl bg-[#FAF6F1] space-y-2 text-xs sm:text-sm">
         <div class="flex justify-between text-[#7E7272]">
@@ -149,14 +197,23 @@
         </div>
       </div>
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <button type="button" onclick="openStaticQRModal()" class="py-4 px-4 rounded-full bg-white hover:bg-[#FFF0EB] border border-[#E58A7B] text-[#E58A7B] font-extrabold text-sm sm:text-base shadow-sm flex items-center justify-center gap-2 transition cursor-pointer">
-          <i data-lucide="qr-code" class="w-5 h-5"></i> Hiện Mã QR Ngân Hàng
+      <!-- 2 Nút chính: Bắt đầu ca gội & Lưu nhanh -->
+      <div class="space-y-3">
+        <!-- Nút 1: Bắt đầu ca (Có đếm giờ trực tiếp) -->
+        <button type="button" onclick="startLiveSession()" class="w-full py-4 px-6 rounded-full bg-[#E58A7B] hover:bg-[#D9796A] text-white font-extrabold text-base sm:text-lg shadow-lg shadow-[#E58A7B]/25 flex items-center justify-center gap-2.5 transition active:scale-95 cursor-pointer">
+          <i data-lucide="play-circle" class="w-6 h-6 shrink-0"></i>
+          <span>Bắt Đầu Ca Gội (Đếm Giờ)</span>
         </button>
-        <button type="button" onclick="submitPOSReceipt()" class="py-4 px-6 rounded-full bg-[#E58A7B] hover:bg-[#D9796A] text-white font-extrabold text-base shadow-lg shadow-[#E58A7B]/25 flex items-center justify-center gap-2.5 transition active:scale-95 cursor-pointer">
-          <i data-lucide="check-circle" class="w-5 h-5 shrink-0"></i>
-          <span>Lưu Ca Gội Ngay</span>
-        </button>
+
+        <!-- Hàng nút phụ: Hiện QR và Lưu nhanh ngay -->
+        <div class="grid grid-cols-2 gap-3 pt-1">
+          <button type="button" onclick="openStaticQRModal()" class="py-3.5 px-3 rounded-full bg-white hover:bg-[#FFF0EB] border border-[#EFE8DF] hover:border-[#E58A7B] text-[#7E7272] hover:text-[#E58A7B] font-bold text-xs sm:text-sm shadow-sm flex items-center justify-center gap-1.5 transition cursor-pointer">
+            <i data-lucide="qr-code" class="w-4 h-4"></i> Hiện QR Ngân Hàng
+          </button>
+          <button type="button" onclick="submitPOSReceipt()" class="py-3.5 px-3 rounded-full bg-[#F7F2EC] hover:bg-[#EFE8DF] text-[#2D2424] font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5 transition cursor-pointer">
+            <i data-lucide="check" class="w-4 h-4"></i> Lưu Nhanh Ngay
+          </button>
+        </div>
       </div>
     </div>
 
