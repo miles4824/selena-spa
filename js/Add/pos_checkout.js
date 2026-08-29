@@ -16,22 +16,26 @@ let liveTimerInterval = null;
 let currentLiveSession = null;
 let currentSplitMode = 'timer';
 
-function initMenuUI() {
+function getValidatedMenu() {
   let menu = getStored('menu', DEFAULT_MENU);
-  if (!menu || menu.length < 5) {
+  if (!Array.isArray(menu) || menu.length < 5) {
     menu = DEFAULT_MENU;
     setStored('menu', DEFAULT_MENU);
   }
+  return menu;
+}
 
+function initMenuUI() {
+  const menu = getValidatedMenu();
   const select = document.getElementById('pos-service-select');
   if (!select) return;
 
   select.innerHTML = menu.map(m => `
-    <option value="${m.service_id}">${m.service_name} — ${m.price.toLocaleString('vi-VN')} đ (${m.duration_min}p)</option>
+    <option value="${m.service_id}">${m.service_name} — ${Number(m.price).toLocaleString('vi-VN')} đ (${m.duration_min}p)</option>
   `).join('');
 
   if (!selectedComboId || !menu.some(m => m.service_id === selectedComboId)) {
-    selectedComboId = 'CB01';
+    selectedComboId = menu[0].service_id;
   }
   select.value = selectedComboId;
 
@@ -79,86 +83,6 @@ function onSelectServiceChange() {
   }
   renderQuickComboButtons();
   updatePOSCalculations();
-}
-
-
-
-function onStaff1SelectChange() {
-  renderExtraStaffUI();
-  updatePOSCalculations();
-}
-
-function updatePOSStaffInfo() {
-  const users = getSortedUsersList();
-  const s1Select = document.getElementById('pos-staff1-select');
-  const isOwner = currentUser && isUserOwner(currentUser);
-
-  if (s1Select) {
-    s1Select.innerHTML = users.map(u => `
-      <option value="${u.phone}">${u.full_name}</option>
-    `).join('');
-
-    if (isOwner) {
-      s1Select.disabled = false;
-      document.getElementById('pos-staff1-role-hint')?.classList.add('hidden');
-      document.getElementById('pos-staff1-lock-icon')?.classList.add('hidden');
-      if (currentUser) s1Select.value = currentUser.phone;
-    } else {
-      s1Select.disabled = true;
-      document.getElementById('pos-staff1-role-hint')?.classList.remove('hidden');
-      document.getElementById('pos-staff1-lock-icon')?.classList.remove('hidden');
-      if (currentUser) s1Select.value = currentUser.phone;
-    }
-  }
-
-  renderExtraStaffUI();
-  updatePOSCalculations();
-  restoreLiveSessionIfExists();
-}
-
-// =============================================================
-// QUẢN LÝ DANH SÁCH KTV ĐỘNG (THÊM / XÓA BẰNG DẤU TRỪ ĐỎ ⊖)
-// =============================================================
-
-function addExtraStaff() {
-  const users = getSortedUsersList();
-  const s1Phone = document.getElementById('pos-staff1-select')?.value || currentUser?.phone;
-
-  // Lọc ra những người chưa có trong ca (bao gồm cả Sếp/Chủ tiệm nếu cùng vào làm)
-  const usedPhones = [normalizePhone(s1Phone), ...extraStaffList.map(s => normalizePhone(s.phone))];
-  const available = users.filter(u => !usedPhones.includes(normalizePhone(u.phone)));
-
-  if (available.length === 0) {
-    alert('Đã thêm toàn bộ nhân viên và quản lý hiện có trong tiệm!');
-    return;
-  }
-
-  const nextStaff = available[0];
-  extraStaffList.push({
-    phone: nextStaff.phone,
-    staff_id: nextStaff.staff_id || (isUserOwner(nextStaff) ? 'FOUNDER_01' : 'KTV'),
-    full_name: nextStaff.full_name,
-    user_id: nextStaff.user_id || nextStaff.phone
-  });
-
-  renderExtraStaffUI();
-  updatePOSCalculations();
-}
-
-function removeExtraStaff(index) {
-  const container = document.getElementById(`extra-staff-card-${index}`);
-  if (container) {
-    container.classList.add('scale-95', 'opacity-0', 'transition-all', 'duration-200');
-    setTimeout(() => {
-      extraStaffList.splice(index, 1);
-      renderExtraStaffUI();
-      updatePOSCalculations();
-    }, 200);
-  } else {
-    extraStaffList.splice(index, 1);
-    renderExtraStaffUI();
-    updatePOSCalculations();
-  }
 }
 
 function onExtraStaffSelectChange(index, newPhone) {
@@ -226,7 +150,7 @@ function renderExtraStaffUI() {
 }
 
 function updatePOSCalculations() {
-  const menu = getStored('menu', DEFAULT_MENU);
+  const menu = getValidatedMenu();
   const users = getSortedUsersList();
   const service = menu.find(m => m.service_id === selectedComboId) || menu[0];
 
@@ -307,7 +231,7 @@ function onVoucherToggle(checked) {
 // =============================================================
 
 function startLiveSession() {
-  const menu = getStored('menu', DEFAULT_MENU);
+  const menu = getValidatedMenu();
   const users = getSortedUsersList();
   const service = menu.find(m => m.service_id === selectedComboId) || menu[0];
 

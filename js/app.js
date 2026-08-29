@@ -51,6 +51,7 @@ async function showView(view) {
     renderAnnouncement();
   } else if (view === 'add') {
     targetEl = document.getElementById('view-add');
+    initMenuUI();
     updatePOSStaffInfo();
   } else if (view === 'history') {
     targetEl = document.getElementById('view-history');
