@@ -54,7 +54,7 @@
         <!-- 📱 KHUNG MÃ QR VIB CỦA TIỆM (ĐỂ ĐƯA KHÁCH QUÉT) -->
         <div id="chk-qr-display-box" class="p-4 rounded-3xl bg-white border border-[#F0EAE1] text-center space-y-2.5 shadow-sm">
           <div class="p-1.5 bg-white rounded-2xl border border-[#F0EAE1] shadow-inner inline-block mx-auto">
-            <img src="images/qr_bank.jpg?v=0.0.3.3" alt="Mã QR VIB" class="w-52 h-auto max-h-60 object-contain rounded-xl mx-auto">
+            <img src="images/qr_bank.jpg?v=0.0.3.9" alt="Mã QR VIB" class="w-52 h-auto max-h-60 object-contain rounded-xl mx-auto">
           </div>
           <div class="text-xs text-[#7E7272]">
             <div>Ngân hàng: <b class="text-[#2D2424]">VIB (Quốc Tế)</b></div>
@@ -72,7 +72,7 @@
       </div>
 
       <!-- ========================================================= -->
-      <!-- 🔒 PHA 2: MÀN HÌNH NỘI BỘ KTV (GHI NHẬN TIPS RIÊNG BIỆT 1 HOẶC 2 KTV) -->
+      <!-- 🔒 PHA 2: MÀN HÌNH NỘI BỘ KTV (GHI NHẬN TIPS RIÊNG BIỆT CHO TỪNG KTV) -->
       <!-- ========================================================= -->
       <div id="checkout-step-staff" class="hidden space-y-4">
         <div class="flex justify-between items-center">
@@ -90,85 +90,14 @@
           <span class="font-semibold text-[#2E7D6D]" id="staff-step-pay-method">Tiền mặt</span>
         </div>
 
-        <!-- ======================================================= -->
-        <!-- KHU VỰC NHẬP TIPS KTV 1 -->
-        <!-- ======================================================= -->
-        <div class="space-y-2 p-3.5 rounded-2xl bg-[#FFF5F2] border border-[#FCDFD7]">
-          <div class="flex justify-between items-center">
-            <label class="text-xs sm:text-sm font-bold text-[#2D2424] flex items-center gap-1.5">
-              <i data-lucide="heart" class="w-4 h-4 text-[#E58A7B]"></i>
-              <span id="label-tip-ktv1">Tips cho KTV 1 (Thu Ngân):</span>
-            </label>
-            <span class="text-[11px] text-[#2E7D6D] font-bold">100% KTV</span>
-          </div>
-
-          <div class="relative">
-            <input type="text" inputmode="numeric" id="chk-tip-input-s1" oninput="onStaff1TipChange(this)" placeholder="0" class="w-full bg-white border border-[#FCDFD7] rounded-xl p-3 pr-10 text-base font-extrabold text-[#2D2424] focus:outline-none focus:border-[#E58A7B] font-mono text-left">
-            <span class="absolute right-3.5 top-1/2 -translate-y-1/2 text-sm font-bold text-[#7E7272]">đ</span>
-          </div>
-
-          <!-- Quick Tip Buttons KTV 1 (+5k, +10k, +20k, +30k, +50k, +100k, 0đ) -->
-          <div class="flex flex-wrap gap-1.5 pt-0.5">
-            <button type="button" onclick="setKTV1QuickTip(0)" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-white hover:bg-slate-100 text-[#7E7272] border border-[#EFE8DF] transition cursor-pointer shadow-sm">0 đ</button>
-            <button type="button" onclick="setKTV1QuickTip(5000)" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-white hover:bg-[#FFF0EB] text-[#2D2424] hover:text-[#E58A7B] border border-[#EFE8DF] transition cursor-pointer shadow-sm">+5k</button>
-            <button type="button" onclick="setKTV1QuickTip(10000)" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-white hover:bg-[#FFF0EB] text-[#2D2424] hover:text-[#E58A7B] border border-[#EFE8DF] transition cursor-pointer shadow-sm">+10k</button>
-            <button type="button" onclick="setKTV1QuickTip(20000)" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-white hover:bg-[#FFF0EB] text-[#2D2424] hover:text-[#E58A7B] border border-[#EFE8DF] transition cursor-pointer shadow-sm">+20k</button>
-            <button type="button" onclick="setKTV1QuickTip(30000)" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-white hover:bg-[#FFF0EB] text-[#2D2424] hover:text-[#E58A7B] border border-[#EFE8DF] transition cursor-pointer shadow-sm">+30k</button>
-            <button type="button" onclick="setKTV1QuickTip(50000)" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-white hover:bg-[#FFF0EB] text-[#2D2424] hover:text-[#E58A7B] border border-[#EFE8DF] transition cursor-pointer shadow-sm">+50k</button>
-            <button type="button" onclick="setKTV1QuickTip(100000)" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-white hover:bg-[#FFF0EB] text-[#2D2424] hover:text-[#E58A7B] border border-[#EFE8DF] transition cursor-pointer shadow-sm">+100k</button>
-          </div>
-        </div>
-
-        <!-- ======================================================= -->
-        <!-- KHU VỰC NHẬP TIPS KTV 2 (CHỈ HIỆN KHI CÓ 2 KTV) -->
-        <!-- ======================================================= -->
-        <div id="box-checkout-tip-s2" class="hidden space-y-2 p-3.5 rounded-2xl bg-[#E8F8F5]/80 border border-[#B7EBDD]">
-          <div class="flex justify-between items-center">
-            <label class="text-xs sm:text-sm font-bold text-[#2D2424] flex items-center gap-1.5">
-              <i data-lucide="gift" class="w-4 h-4 text-[#2E7D6D]"></i>
-              <span id="label-tip-ktv2">Tips cho KTV 2 (Mai Lan):</span>
-            </label>
-            <span class="text-[11px] text-[#2E7D6D] font-bold">100% KTV</span>
-          </div>
-
-          <div class="relative">
-            <input type="text" inputmode="numeric" id="chk-tip-input-s2" oninput="onStaff2TipChange(this)" placeholder="0" class="w-full bg-white border border-[#B7EBDD] rounded-xl p-3 pr-10 text-base font-extrabold text-[#2D2424] focus:outline-none focus:border-[#2E7D6D] font-mono text-left">
-            <span class="absolute right-3.5 top-1/2 -translate-y-1/2 text-sm font-bold text-[#7E7272]">đ</span>
-          </div>
-
-          <!-- Quick Tip Buttons KTV 2 -->
-          <div class="flex flex-wrap gap-1.5 pt-0.5">
-            <button type="button" onclick="setKTV2QuickTip(0)" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-white hover:bg-slate-100 text-[#7E7272] border border-[#EFE8DF] transition cursor-pointer shadow-sm">0 đ</button>
-            <button type="button" onclick="setKTV2QuickTip(5000)" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-white hover:bg-[#E8F8F5] text-[#2D2424] hover:text-[#2E7D6D] border border-[#EFE8DF] transition cursor-pointer shadow-sm">+5k</button>
-            <button type="button" onclick="setKTV2QuickTip(10000)" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-white hover:bg-[#E8F8F5] text-[#2D2424] hover:text-[#2E7D6D] border border-[#EFE8DF] transition cursor-pointer shadow-sm">+10k</button>
-            <button type="button" onclick="setKTV2QuickTip(20000)" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-white hover:bg-[#E8F8F5] text-[#2D2424] hover:text-[#2E7D6D] border border-[#EFE8DF] transition cursor-pointer shadow-sm">+20k</button>
-            <button type="button" onclick="setKTV2QuickTip(30000)" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-white hover:bg-[#E8F8F5] text-[#2D2424] hover:text-[#2E7D6D] border border-[#EFE8DF] transition cursor-pointer shadow-sm">+30k</button>
-            <button type="button" onclick="setKTV2QuickTip(50000)" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-white hover:bg-[#E8F8F5] text-[#2D2424] hover:text-[#2E7D6D] border border-[#EFE8DF] transition cursor-pointer shadow-sm">+50k</button>
-            <button type="button" onclick="setKTV2QuickTip(100000)" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-white hover:bg-[#E8F8F5] text-[#2D2424] hover:text-[#2E7D6D] border border-[#EFE8DF] transition cursor-pointer shadow-sm">+100k</button>
-          </div>
-
-          <!-- Nút chia đôi tip chung -->
-          <div class="pt-1 flex justify-between items-center text-xs">
-            <span class="text-[#7E7272]">Khách boa chung 1 khoản?</span>
-            <div class="flex gap-1.5">
-              <button type="button" onclick="splitSharedTip(20000)" class="px-2 py-0.5 rounded-full bg-white text-[#2E7D6D] font-bold border border-[#B7EBDD] hover:bg-[#E8F8F5] transition cursor-pointer">Chia 20k (10k-10k)</button>
-              <button type="button" onclick="splitSharedTip(50000)" class="px-2 py-0.5 rounded-full bg-white text-[#2E7D6D] font-bold border border-[#B7EBDD] hover:bg-[#E8F8F5] transition cursor-pointer">Chia 50k (25k-25k)</button>
-            </div>
-          </div>
-        </div>
+        <!-- CONTAINER CÁC Ô NHẬP TIPS DÀNH RIÊNG CHO TỪNG KTV (RENDER ĐỘNG QUA JS) -->
+        <div id="checkout-dynamic-tips-container" class="space-y-3"></div>
 
         <!-- TỔNG KẾT THU NHẬP CA & LƯU -->
         <div class="pt-1 space-y-2.5">
-          <div class="p-3 rounded-2xl bg-[#FAF6F1] border border-[#F0EAE1] space-y-1 text-xs">
-            <div class="flex justify-between items-center text-[#2D2424]">
-              <span id="staff-step-ktv1-summary">Thu nhập KTV 1:</span>
-              <span id="staff-step-ktv1-earning" class="font-extrabold text-[#2E7D6D]">+6.400 đ</span>
-            </div>
-            <div id="box-ktv2-earning-summary" class="hidden flex justify-between items-center text-[#2D2424]">
-              <span id="staff-step-ktv2-summary">Thu nhập KTV 2:</span>
-              <span id="staff-step-ktv2-earning" class="font-extrabold text-[#2E7D6D]">+0 đ</span>
-            </div>
-            <div class="flex justify-between items-center pt-1 border-t border-[#F0EAE1] font-bold">
+          <div id="staff-step-summary-card" class="p-3.5 rounded-2xl bg-[#FAF6F1] border border-[#F0EAE1] space-y-1.5 text-xs">
+            <div id="checkout-summary-staff-list" class="space-y-1"></div>
+            <div class="flex justify-between items-center pt-2 border-t border-[#F0EAE1] font-bold">
               <span class="text-[#7E7272]">Tổng khách thanh toán (gồm tip):</span>
               <span id="staff-step-grand-total" class="text-sm font-extrabold text-[#E58A7B]">64.000 đ</span>
             </div>

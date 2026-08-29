@@ -1,9 +1,8 @@
 // =============================================================
-// TAB 2: ADD - POS CHECKOUT, LIVE SESSION TIMER & 2-PHASE CHECKOUT
+// TAB 2: ADD - POS CHECKOUT, DYNAMIC STAFF LIST & 2-PHASE CHECKOUT
 // =============================================================
-let isStaff2Enabled = false;
-let currentCheckoutTipS1 = 0;
-let currentCheckoutTipS2 = 0;
+let extraStaffList = []; // Mảng chứa danh sách KTV phụ được add thêm [{ phone, id, name, user_id }]
+let staffTipMap = {};    // Map chứa tiền tips theo từng KTV: { [phone]: amount }
 let checkoutPaymentMethod = 'Chuyển khoản';
 let liveTimerInterval = null;
 let currentLiveSession = null;
@@ -53,11 +52,14 @@ function onSelectServiceChange() {
   }
 }
 
+function onStaff1SelectChange() {
+  renderExtraStaffUI();
+  updatePOSCalculations();
+}
+
 function updatePOSStaffInfo() {
   const users = getStored('users', DEFAULT_USERS);
-  const staffList = users.filter(u => !isUserOwner(u));
   const s1Select = document.getElementById('pos-staff1-select');
-  const s2Select = document.getElementById('pos-staff2-select');
   const isOwner = currentUser && isUserOwner(currentUser);
 
   if (s1Select) {
@@ -78,35 +80,122 @@ function updatePOSStaffInfo() {
     }
   }
 
-  if (s2Select) {
-    s2Select.innerHTML = staffList.map(u => `
-      <option value="${u.phone}">💆 ${u.full_name} (${u.staff_id || u.phone})</option>
-    `).join('');
-    const otherStaff = staffList.find(u => normalizePhone(u.phone) !== normalizePhone(currentUser?.phone));
-    if (otherStaff) s2Select.value = otherStaff.phone;
-  }
-
+  renderExtraStaffUI();
   updatePOSCalculations();
   restoreLiveSessionIfExists();
 }
 
-function toggleSecondStaff() {
-  isStaff2Enabled = !isStaff2Enabled;
-  const box = document.getElementById('box-staff2-container');
-  const btnText = document.getElementById('toggle-staff2-text');
-  const btn = document.getElementById('btn-toggle-staff2');
+// =============================================================
+// QUẢN LÝ DANH SÁCH KTV ĐỘNG (THÊM / XÓA BẰNG DẤU TRỪ ĐỎ ⊖)
+// =============================================================
 
-  if (isStaff2Enabled) {
-    box.classList.remove('hidden');
-    btnText.innerText = 'Bỏ KTV 2';
-    btn.className = 'px-3 py-1.5 rounded-full text-xs font-bold bg-rose-50 text-rose-600 border border-rose-200 hover:bg-rose-100 transition flex items-center gap-1.5 cursor-pointer shadow-sm';
-  } else {
-    box.classList.add('hidden');
-    btnText.innerText = '+ Thêm KTV cùng làm';
-    btn.className = 'px-3 py-1.5 rounded-full text-xs font-bold bg-[#FAF6F1] text-[#E58A7B] border border-[#FCDFD7] hover:bg-[#FFF0EB] transition flex items-center gap-1.5 cursor-pointer shadow-sm';
+function addExtraStaff() {
+  const users = getStored('users', DEFAULT_USERS);
+  const staffList = users.filter(u => !isUserOwner(u));
+  const s1Phone = document.getElementById('pos-staff1-select')?.value || currentUser?.phone;
+
+  // Lọc ra những KTV chưa có trong ca
+  const usedPhones = [normalizePhone(s1Phone), ...extraStaffList.map(s => normalizePhone(s.phone))];
+  const available = staffList.filter(u => !usedPhones.includes(normalizePhone(u.phone)));
+
+  if (available.length === 0) {
+    alert('Đã thêm toàn bộ kỹ thuật viên hiện có trong tiệm!');
+    return;
   }
-  lucide.createIcons();
+
+  const nextStaff = available[0];
+  extraStaffList.push({
+    phone: nextStaff.phone,
+    staff_id: nextStaff.staff_id || 'KTV',
+    full_name: nextStaff.full_name,
+    user_id: nextStaff.user_id || nextStaff.phone
+  });
+
+  renderExtraStaffUI();
   updatePOSCalculations();
+}
+
+function removeExtraStaff(index) {
+  const container = document.getElementById(`extra-staff-card-${index}`);
+  if (container) {
+    container.classList.add('scale-95', 'opacity-0', 'transition-all', 'duration-200');
+    setTimeout(() => {
+      extraStaffList.splice(index, 1);
+      renderExtraStaffUI();
+      updatePOSCalculations();
+    }, 200);
+  } else {
+    extraStaffList.splice(index, 1);
+    renderExtraStaffUI();
+    updatePOSCalculations();
+  }
+}
+
+function onExtraStaffSelectChange(index, newPhone) {
+  const users = getStored('users', DEFAULT_USERS);
+  const staff = users.find(u => normalizePhone(u.phone) === normalizePhone(newPhone));
+  if (staff) {
+    extraStaffList[index] = {
+      phone: staff.phone,
+      staff_id: staff.staff_id || 'KTV',
+      full_name: staff.full_name,
+      user_id: staff.user_id || staff.phone
+    };
+  }
+  renderExtraStaffUI();
+  updatePOSCalculations();
+}
+
+function renderExtraStaffUI() {
+  const container = document.getElementById('pos-extra-staff-container');
+  const addBtn = document.getElementById('btn-add-staff-card');
+  if (!container) return;
+
+  const users = getStored('users', DEFAULT_USERS);
+  const staffList = users.filter(u => !isUserOwner(u));
+  const s1Phone = document.getElementById('pos-staff1-select')?.value || currentUser?.phone;
+
+  container.innerHTML = extraStaffList.map((item, idx) => {
+    const ktvNum = idx + 2;
+    // Lọc danh sách dropdown: KTV 1 + các KTV khác ngoại trừ chính card này
+    const otherUsedPhones = [normalizePhone(s1Phone), ...extraStaffList.filter((_, i) => i !== idx).map(s => normalizePhone(s.phone))];
+    const selectable = staffList.filter(u => !otherUsedPhones.includes(normalizePhone(u.phone)));
+
+    return `
+      <div id="extra-staff-card-${idx}" class="relative p-3.5 rounded-2xl bg-[#FFF5F2] border border-[#FCDFD7] space-y-2 shadow-sm transition-all">
+        <!-- 🔴 NÚT DẤU TRỪ ĐỎ ⊖ Ở GÓC TRÊN BÊN PHẢI -->
+        <button type="button" onclick="removeExtraStaff(${idx})" title="Xóa KTV này" class="absolute -top-2.5 -right-2.5 w-7 h-7 rounded-full bg-white border-2 border-rose-400 text-rose-500 hover:bg-rose-500 hover:text-white flex items-center justify-center shadow-md active:scale-75 transition-all cursor-pointer z-10">
+          <i data-lucide="minus" class="w-4 h-4 stroke-[3]"></i>
+        </button>
+
+        <div class="flex justify-between items-center pr-5">
+          <span class="text-xs font-bold text-[#E58A7B] flex items-center gap-1">
+            <i data-lucide="user-check" class="w-3.5 h-3.5 text-[#E58A7B]"></i>
+            <span class="font-extrabold">KTV ${ktvNum} (Cùng làm / Phụ):</span>
+          </span>
+          <span id="pos-staff${ktvNum}-comm-preview" class="text-xs font-extrabold text-[#2E7D6D] bg-[#E8F8F5] px-2.5 py-0.5 rounded-full">+3.200 đ</span>
+        </div>
+
+        <select onchange="onExtraStaffSelectChange(${idx}, this.value)" class="w-full bg-white border border-[#FCDFD7] rounded-xl p-3 text-[#2D2424] font-bold text-sm focus:outline-none focus:border-[#E58A7B] cursor-pointer">
+          ${selectable.map(u => `
+            <option value="${u.phone}" ${normalizePhone(u.phone) === normalizePhone(item.phone) ? 'selected' : ''}>💆 ${u.full_name} (${u.staff_id || u.phone})</option>
+          `).join('')}
+        </select>
+      </div>
+    `;
+  }).join('');
+
+  // Ẩn nút thêm nếu đã add hết toàn bộ KTV trong tiệm
+  const totalUsed = 1 + extraStaffList.length;
+  if (addBtn) {
+    if (totalUsed >= staffList.length + (isUserOwner(currentUser) ? 1 : 0) || staffList.length <= 1) {
+      addBtn.classList.add('hidden');
+    } else {
+      addBtn.classList.remove('hidden');
+    }
+  }
+
+  lucide.createIcons();
 }
 
 function updatePOSCalculations() {
@@ -115,24 +204,21 @@ function updatePOSCalculations() {
   const service = menu.find(m => m.service_id === selectedComboId) || menu[0];
 
   const s1Phone = document.getElementById('pos-staff1-select')?.value || currentUser?.phone;
-  const s2Phone = document.getElementById('pos-staff2-select')?.value;
-
   const staff1 = users.find(u => normalizePhone(u.phone) === normalizePhone(s1Phone)) || currentUser;
-  const staff2 = isStaff2Enabled ? users.find(u => normalizePhone(u.phone) === normalizePhone(s2Phone)) : null;
-
   const rate1 = parsePercentage(staff1?.commission_rate) || 10;
-  const rate2 = staff2 ? (parsePercentage(staff2?.commission_rate) || rate1 || 10) : 0;
 
-  const totalComm1 = Math.round(service.price * (rate1 / 100));
-  const totalComm2 = staff2 ? Math.round(service.price * (rate2 / 100)) : 0;
-  let comm1 = isStaff2Enabled && staff2 ? Math.round(totalComm1 / 2) : totalComm1;
-  let comm2 = isStaff2Enabled && staff2 ? Math.round(totalComm2 / 2) : 0;
+  const totalStaffCount = 1 + extraStaffList.length;
+  const baseTourComm = Math.round(service.price * (rate1 / 100));
+  const splitTourComm = Math.round(baseTourComm / totalStaffCount);
 
   const p1El = document.getElementById('pos-staff1-comm-preview');
-  if (p1El) p1El.innerText = `+${comm1.toLocaleString('vi-VN')} đ`;
+  if (p1El) p1El.innerText = `+${splitTourComm.toLocaleString('vi-VN')} đ`;
 
-  const p2El = document.getElementById('pos-staff2-comm-preview');
-  if (p2El && isStaff2Enabled) p2El.innerText = `+${comm2.toLocaleString('vi-VN')} đ`;
+  extraStaffList.forEach((_, idx) => {
+    const ktvNum = idx + 2;
+    const pEl = document.getElementById(`pos-staff${ktvNum}-comm-preview`);
+    if (pEl) pEl.innerText = `+${splitTourComm.toLocaleString('vi-VN')} đ`;
+  });
 }
 
 function onCustomerPhoneInput(val) {
@@ -202,14 +288,28 @@ function startLiveSession() {
   const name = document.getElementById('pos-customer-name')?.value.trim() || 'Khách vãng lai';
 
   const s1Phone = document.getElementById('pos-staff1-select')?.value || currentUser?.phone;
-  const s2Phone = document.getElementById('pos-staff2-select')?.value;
-
   const staff1 = users.find(u => normalizePhone(u.phone) === normalizePhone(s1Phone)) || currentUser;
-  const staff2 = isStaff2Enabled ? users.find(u => normalizePhone(u.phone) === normalizePhone(s2Phone)) : null;
 
   const now = new Date();
   const startTimeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
   const startDateStr = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}`;
+
+  const allStaffs = [
+    {
+      user_id: staff1?.user_id || staff1?.phone || '',
+      phone: staff1?.phone || '',
+      staff_id: staff1?.staff_id || 'KTV01',
+      name: staff1?.full_name || 'KTV 1',
+      pct: Math.round(100 / (1 + extraStaffList.length))
+    },
+    ...extraStaffList.map((s, idx) => ({
+      user_id: s.user_id || s.phone,
+      phone: s.phone,
+      staff_id: s.staff_id || `KTV0${idx+2}`,
+      name: s.full_name,
+      pct: Math.round(100 / (1 + extraStaffList.length))
+    }))
+  ];
 
   currentLiveSession = {
     session_id: 'SS' + Date.now(),
@@ -222,17 +322,18 @@ function startLiveSession() {
     date: startDateStr,
     customer_phone: phone,
     customer_name: name,
-    staff_1_user_id: staff1?.user_id || staff1?.phone || '',
-    staff_1_phone: staff1?.phone || '',
-    staff_1_id: staff1?.staff_id || 'KTV01',
-    staff_1_name: staff1?.full_name || 'KTV 1',
-    has_staff_2: Boolean(isStaff2Enabled && staff2),
-    staff_2_user_id: staff2 ? (staff2.user_id || staff2.phone) : '-',
-    staff_2_phone: staff2 ? staff2.phone : '-',
-    staff_2_id: staff2 ? (staff2.staff_id || 'KTV02') : '-',
-    staff_2_name: staff2 ? staff2.full_name : '-',
-    staff_1_pct: isStaff2Enabled && staff2 ? 50 : 100,
-    staff_2_pct: isStaff2Enabled && staff2 ? 50 : 0,
+    staffs: allStaffs,
+    staff_1_user_id: allStaffs[0].user_id,
+    staff_1_phone: allStaffs[0].phone,
+    staff_1_id: allStaffs[0].staff_id,
+    staff_1_name: allStaffs[0].name,
+    has_staff_2: allStaffs.length > 1,
+    staff_2_user_id: allStaffs[1]?.user_id || '-',
+    staff_2_phone: allStaffs[1]?.phone || '-',
+    staff_2_id: allStaffs[1]?.staff_id || '-',
+    staff_2_name: allStaffs[1]?.name || '-',
+    staff_1_pct: allStaffs[0].pct,
+    staff_2_pct: allStaffs[1]?.pct || 0,
     use_voucher: useVoucher
   };
 
@@ -255,16 +356,18 @@ function renderLiveSessionUI() {
   if (liveCard) liveCard.classList.remove('hidden');
   if (formBox) formBox.classList.add('hidden');
 
+  const staffNames = (currentLiveSession.staffs || [{ name: currentLiveSession.staff_1_name }]).map(s => s.name).join(' & ');
+
   document.getElementById('live-service-name').innerText = currentLiveSession.service_name;
   document.getElementById('live-customer-badge').innerText = '👤 ' + (currentLiveSession.customer_name || 'Khách vãng lai');
-  document.getElementById('live-staff-badge').innerText = '💆 ' + currentLiveSession.staff_1_name + (currentLiveSession.has_staff_2 ? ` & ${currentLiveSession.staff_2_name}` : '');
+  document.getElementById('live-staff-badge').innerText = '💆 ' + staffNames;
   document.getElementById('live-start-time-text').innerText = currentLiveSession.start_time;
   document.getElementById('live-target-time-text').innerText = currentLiveSession.duration_target_min + ' phút';
 
   const splitText = document.getElementById('live-split-ratio-text');
   if (splitText) {
     if (currentLiveSession.has_staff_2) {
-      splitText.innerText = `🤝 2 KTV: ${currentLiveSession.staff_1_name} (${currentLiveSession.staff_1_pct || 50}%) & ${currentLiveSession.staff_2_name} (${currentLiveSession.staff_2_pct || 50}%)`;
+      splitText.innerText = `🤝 ${(currentLiveSession.staffs || []).length} KTV: ${staffNames}`;
     } else {
       splitText.innerText = '💆 1 KTV phụ trách trọn ca (100%)';
     }
@@ -429,6 +532,11 @@ function saveSwapStaffSetting() {
   currentLiveSession.staff_1_pct = s1Pct;
   currentLiveSession.staff_2_pct = s2Pct;
 
+  currentLiveSession.staffs = [
+    { phone: currentLiveSession.staff_1_phone, name: currentLiveSession.staff_1_name, pct: s1Pct, user_id: currentLiveSession.staff_1_user_id, staff_id: currentLiveSession.staff_1_id },
+    { phone: currentLiveSession.staff_2_phone, name: currentLiveSession.staff_2_name, pct: s2Pct, user_id: currentLiveSession.staff_2_user_id, staff_id: currentLiveSession.staff_2_id }
+  ];
+
   localStorage.setItem('selena_active_live_session', JSON.stringify(currentLiveSession));
   closeSwapStaffModal();
   renderLiveSessionUI();
@@ -443,6 +551,9 @@ function removeSecondStaffFromLive() {
   currentLiveSession.staff_2_name = '-';
   currentLiveSession.staff_1_pct = 100;
   currentLiveSession.staff_2_pct = 0;
+  currentLiveSession.staffs = [
+    { phone: currentLiveSession.staff_1_phone, name: currentLiveSession.staff_1_name, pct: 100, user_id: currentLiveSession.staff_1_user_id, staff_id: currentLiveSession.staff_1_id }
+  ];
 
   localStorage.setItem('selena_active_live_session', JSON.stringify(currentLiveSession));
   closeSwapStaffModal();
@@ -473,12 +584,7 @@ function openCheckoutModal() {
   document.getElementById('checkout-step-customer')?.classList.remove('hidden');
   document.getElementById('checkout-step-staff')?.classList.add('hidden');
 
-  currentCheckoutTipS1 = 0;
-  currentCheckoutTipS2 = 0;
-  const inS1 = document.getElementById('chk-tip-input-s1');
-  const inS2 = document.getElementById('chk-tip-input-s2');
-  if (inS1) inS1.value = '';
-  if (inS2) inS2.value = '';
+  staffTipMap = {};
   setCheckoutPayment('Chuyển khoản');
 
   const modal = document.getElementById('modal-checkout');
@@ -520,32 +626,74 @@ function goToStaffTipStep() {
   document.getElementById('staff-step-service-price').innerText = currentLiveSession?.use_voucher ? '0 đ (Voucher)' : (currentLiveSession?.price?.toLocaleString('vi-VN') + ' đ');
   document.getElementById('staff-step-pay-method').innerText = checkoutPaymentMethod;
 
-  currentCheckoutTipS1 = 0;
-  currentCheckoutTipS2 = 0;
-  
-  const inputS1 = document.getElementById('chk-tip-input-s1');
-  const inputS2 = document.getElementById('chk-tip-input-s2');
-  if (inputS1) inputS1.value = '';
-  if (inputS2) inputS2.value = '';
+  staffTipMap = {};
+  const activeStaffs = currentLiveSession.staffs || [
+    { phone: currentLiveSession.staff_1_phone, name: currentLiveSession.staff_1_name, pct: 100 }
+  ];
 
-  const labelS1 = document.getElementById('label-tip-ktv1');
-  const labelS2 = document.getElementById('label-tip-ktv2');
-  const boxS2 = document.getElementById('box-checkout-tip-s2');
-  const summaryBoxS2 = document.getElementById('box-ktv2-earning-summary');
+  activeStaffs.forEach(s => {
+    staffTipMap[s.phone] = 0;
+  });
 
-  if (currentLiveSession.has_staff_2) {
-    if (labelS1) labelS1.innerText = `Tips cho KTV 1 (${currentLiveSession.staff_1_name}):`;
-    if (labelS2) labelS2.innerText = `Tips cho KTV 2 (${currentLiveSession.staff_2_name}):`;
-    if (boxS2) boxS2.classList.remove('hidden');
-    if (summaryBoxS2) summaryBoxS2.classList.remove('hidden');
-  } else {
-    if (labelS1) labelS1.innerText = `Khách có boa tiền Tips cho bạn không?`;
-    if (boxS2) boxS2.classList.add('hidden');
-    if (summaryBoxS2) summaryBoxS2.classList.add('hidden');
-  }
-
+  renderDynamicTipInputs(activeStaffs);
   updateStaffEarningPreview();
   lucide.createIcons();
+}
+
+function renderDynamicTipInputs(staffs) {
+  const container = document.getElementById('checkout-dynamic-tips-container');
+  if (!container) return;
+
+  const isMulti = staffs.length > 1;
+
+  container.innerHTML = staffs.map((s, idx) => {
+    const isFirst = idx === 0;
+    const boxBg = isFirst ? 'bg-[#FFF5F2] border-[#FCDFD7]' : 'bg-[#E8F8F5]/80 border-[#B7EBDD]';
+    const labelColor = isFirst ? 'text-[#E58A7B]' : 'text-[#2E7D6D]';
+    const focusColor = isFirst ? 'focus:border-[#E58A7B]' : 'focus:border-[#2E7D6D]';
+    const title = isMulti ? `Tips cho KTV ${idx + 1} (${s.name}):` : `Khách có boa thêm tiền Tips không?`;
+
+    return `
+      <div class="space-y-2 p-3.5 rounded-2xl ${boxBg} border">
+        <div class="flex justify-between items-center">
+          <label class="text-xs sm:text-sm font-bold text-[#2D2424] flex items-center gap-1.5">
+            <i data-lucide="${isFirst ? 'heart' : 'gift'}" class="w-4 h-4 ${labelColor}"></i>
+            <span>${title}</span>
+          </label>
+          <span class="text-[11px] text-[#2E7D6D] font-bold">100% KTV</span>
+        </div>
+
+        <div class="relative">
+          <input type="text" inputmode="numeric" id="chk-tip-input-${s.phone}" oninput="onDynamicStaffTipInput('${s.phone}', this)" placeholder="0" class="w-full bg-white border border-[#EFE8DF] rounded-xl p-3 pr-10 text-base font-extrabold text-[#2D2424] focus:outline-none ${focusColor} font-mono text-left">
+          <span class="absolute right-3.5 top-1/2 -translate-y-1/2 text-sm font-bold text-[#7E7272]">đ</span>
+        </div>
+
+        <!-- Quick Tip Buttons (+5k, +10k, +20k, +30k, +50k, +100k, 0đ) -->
+        <div class="flex flex-wrap gap-1.5 pt-0.5">
+          <button type="button" onclick="setDynamicQuickTip('${s.phone}', 0)" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-white hover:bg-slate-100 text-[#7E7272] border border-[#EFE8DF] transition cursor-pointer shadow-sm">0 đ</button>
+          <button type="button" onclick="setDynamicQuickTip('${s.phone}', 5000)" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-white hover:bg-[#FFF0EB] text-[#2D2424] hover:text-[#E58A7B] border border-[#EFE8DF] transition cursor-pointer shadow-sm">+5k</button>
+          <button type="button" onclick="setDynamicQuickTip('${s.phone}', 10000)" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-white hover:bg-[#FFF0EB] text-[#2D2424] hover:text-[#E58A7B] border border-[#EFE8DF] transition cursor-pointer shadow-sm">+10k</button>
+          <button type="button" onclick="setDynamicQuickTip('${s.phone}', 20000)" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-white hover:bg-[#FFF0EB] text-[#2D2424] hover:text-[#E58A7B] border border-[#EFE8DF] transition cursor-pointer shadow-sm">+20k</button>
+          <button type="button" onclick="setDynamicQuickTip('${s.phone}', 30000)" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-white hover:bg-[#FFF0EB] text-[#2D2424] hover:text-[#E58A7B] border border-[#EFE8DF] transition cursor-pointer shadow-sm">+30k</button>
+          <button type="button" onclick="setDynamicQuickTip('${s.phone}', 50000)" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-white hover:bg-[#FFF0EB] text-[#2D2424] hover:text-[#E58A7B] border border-[#EFE8DF] transition cursor-pointer shadow-sm">+50k</button>
+          <button type="button" onclick="setDynamicQuickTip('${s.phone}', 100000)" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-white hover:bg-[#FFF0EB] text-[#2D2424] hover:text-[#E58A7B] border border-[#EFE8DF] transition cursor-pointer shadow-sm">+100k</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  if (isMulti) {
+    container.innerHTML += `
+      <div class="p-3 rounded-2xl bg-white border border-[#EFE8DF] flex justify-between items-center text-xs">
+        <span class="text-[#7E7272] font-medium">Khách boa chung 1 khoản?</span>
+        <div class="flex gap-1.5">
+          <button type="button" onclick="splitSharedTipDynamic(20000)" class="px-2.5 py-1 rounded-full bg-[#E8F8F5] text-[#2E7D6D] font-bold border border-[#B7EBDD] hover:bg-[#D0F0E8] transition cursor-pointer">Chia 20k</button>
+          <button type="button" onclick="splitSharedTipDynamic(50000)" class="px-2.5 py-1 rounded-full bg-[#E8F8F5] text-[#2E7D6D] font-bold border border-[#B7EBDD] hover:bg-[#D0F0E8] transition cursor-pointer">Chia 50k</button>
+          <button type="button" onclick="splitSharedTipDynamic(100000)" class="px-2.5 py-1 rounded-full bg-[#E8F8F5] text-[#2E7D6D] font-bold border border-[#B7EBDD] hover:bg-[#D0F0E8] transition cursor-pointer">Chia 100k</button>
+        </div>
+      </div>
+    `;
+  }
 }
 
 function backToCustomerStep() {
@@ -564,49 +712,31 @@ function formatWithDots(num) {
   return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 }
 
-function onStaff1TipChange(inputEl) {
+function onDynamicStaffTipInput(phone, inputEl) {
   let val = (inputEl && inputEl.value !== undefined) ? inputEl.value : inputEl;
   let raw = parseRawNumber(val);
-  currentCheckoutTipS1 = raw;
-  const input = document.getElementById('chk-tip-input-s1');
-  if (input) input.value = raw > 0 ? formatWithDots(raw) : '';
+  staffTipMap[phone] = raw;
+  if (inputEl) inputEl.value = raw > 0 ? formatWithDots(raw) : '';
   updateStaffEarningPreview();
 }
 
-function onStaff2TipChange(inputEl) {
-  let val = (inputEl && inputEl.value !== undefined) ? inputEl.value : inputEl;
-  let raw = parseRawNumber(val);
-  currentCheckoutTipS2 = raw;
-  const input = document.getElementById('chk-tip-input-s2');
-  if (input) input.value = raw > 0 ? formatWithDots(raw) : '';
+function setDynamicQuickTip(phone, amount) {
+  staffTipMap[phone] = Number(amount) || 0;
+  const input = document.getElementById(`chk-tip-input-${phone}`);
+  if (input) input.value = staffTipMap[phone] > 0 ? formatWithDots(staffTipMap[phone]) : '';
   updateStaffEarningPreview();
 }
 
-function setKTV1QuickTip(amount) {
-  currentCheckoutTipS1 = Number(amount) || 0;
-  const input = document.getElementById('chk-tip-input-s1');
-  if (input) input.value = currentCheckoutTipS1 > 0 ? formatWithDots(currentCheckoutTipS1) : '';
-  updateStaffEarningPreview();
-}
+function splitSharedTipDynamic(totalAmount) {
+  const staffs = currentLiveSession.staffs || [{ phone: currentLiveSession.staff_1_phone }];
+  const count = staffs.length;
+  const perStaff = Math.round(totalAmount / count);
 
-function setKTV2QuickTip(amount) {
-  currentCheckoutTipS2 = Number(amount) || 0;
-  const input = document.getElementById('chk-tip-input-s2');
-  if (input) input.value = currentCheckoutTipS2 > 0 ? formatWithDots(currentCheckoutTipS2) : '';
-  updateStaffEarningPreview();
-}
-
-function splitSharedTip(totalAmount) {
-  let total = Number(totalAmount) || 0;
-  let half1 = Math.round(total / 2);
-  let half2 = total - half1;
-  currentCheckoutTipS1 = half1;
-  currentCheckoutTipS2 = half2;
-
-  const inputS1 = document.getElementById('chk-tip-input-s1');
-  const inputS2 = document.getElementById('chk-tip-input-s2');
-  if (inputS1) inputS1.value = half1 > 0 ? formatWithDots(half1) : '';
-  if (inputS2) inputS2.value = half2 > 0 ? formatWithDots(half2) : '';
+  staffs.forEach(s => {
+    staffTipMap[s.phone] = perStaff;
+    const input = document.getElementById(`chk-tip-input-${s.phone}`);
+    if (input) input.value = perStaff > 0 ? formatWithDots(perStaff) : '';
+  });
 
   updateStaffEarningPreview();
 }
@@ -614,38 +744,37 @@ function splitSharedTip(totalAmount) {
 function updateStaffEarningPreview() {
   if (!currentLiveSession) return;
   const users = getStored('users', DEFAULT_USERS);
-  const staff1 = users.find(u => normalizePhone(u.phone) === normalizePhone(currentLiveSession.staff_1_phone)) || currentUser;
-  const staff2 = currentLiveSession.has_staff_2 ? users.find(u => normalizePhone(u.phone) === normalizePhone(currentLiveSession.staff_2_phone)) : null;
+  const staffs = currentLiveSession.staffs || [
+    { phone: currentLiveSession.staff_1_phone, name: currentLiveSession.staff_1_name, pct: 100 }
+  ];
 
-  const rate1 = parsePercentage(staff1?.commission_rate) || 10;
-  const rate2 = (staff2 && parsePercentage(staff2?.commission_rate) > 0) ? parsePercentage(staff2?.commission_rate) : (rate1 || 10);
+  const totalComm = Math.round(currentLiveSession.price * 0.1);
+  const count = staffs.length;
 
-  const totalComm1 = Math.round(currentLiveSession.price * (rate1 / 100));
-  const totalComm2 = staff2 ? Math.round(currentLiveSession.price * (rate2 / 100)) : 0;
+  let summaryHtml = '';
+  let totalTip = 0;
 
-  const s1Pct = currentLiveSession.has_staff_2 ? (currentLiveSession.staff_1_pct || 50) : 100;
-  const s2Pct = currentLiveSession.has_staff_2 ? (currentLiveSession.staff_2_pct || 50) : 0;
+  staffs.forEach(s => {
+    const u = users.find(user => normalizePhone(user.phone) === normalizePhone(s.phone));
+    const rate = (u && parsePercentage(u?.commission_rate) > 0) ? parsePercentage(u?.commission_rate) : 10;
+    const sPct = s.pct || Math.round(100 / count);
+    const comm = Math.round(currentLiveSession.price * (rate / 100) * (sPct / 100));
+    const tip = staffTipMap[s.phone] || 0;
+    totalTip += tip;
 
-  let comm1 = Math.round(totalComm1 * (s1Pct / 100));
-  let comm2 = Math.round(totalComm2 * (s2Pct / 100));
+    summaryHtml += `
+      <div class="flex justify-between items-center text-[#2D2424]">
+        <span>Thu nhập ${s.name}:</span>
+        <span class="font-extrabold text-[#2E7D6D]">+${(comm + tip).toLocaleString('vi-VN')} đ (Tour: ${comm.toLocaleString('vi-VN')}${tip > 0 ? ` + Tip: ${tip.toLocaleString('vi-VN')}` : ''})</span>
+      </div>
+    `;
+  });
 
-  let tip1 = currentCheckoutTipS1;
-  let tip2 = currentLiveSession.has_staff_2 ? currentCheckoutTipS2 : 0;
-
-  const earnEl1 = document.getElementById('staff-step-ktv1-earning');
-  const sumLabel1 = document.getElementById('staff-step-ktv1-summary');
-  if (sumLabel1) sumLabel1.innerText = `Thu nhập ${currentLiveSession.staff_1_name}:`;
-  if (earnEl1) earnEl1.innerText = `+${(comm1 + tip1).toLocaleString('vi-VN')} đ (Tour: ${comm1.toLocaleString('vi-VN')}${tip1 > 0 ? ` + Tip: ${tip1.toLocaleString('vi-VN')}` : ''})`;
-
-  if (currentLiveSession.has_staff_2) {
-    const earnEl2 = document.getElementById('staff-step-ktv2-earning');
-    const sumLabel2 = document.getElementById('staff-step-ktv2-summary');
-    if (sumLabel2) sumLabel2.innerText = `Thu nhập ${currentLiveSession.staff_2_name}:`;
-    if (earnEl2) earnEl2.innerText = `+${(comm2 + tip2).toLocaleString('vi-VN')} đ (Tour: ${comm2.toLocaleString('vi-VN')}${tip2 > 0 ? ` + Tip: ${tip2.toLocaleString('vi-VN')}` : ''})`;
-  }
+  const listEl = document.getElementById('checkout-summary-staff-list');
+  if (listEl) listEl.innerHTML = summaryHtml;
 
   const basePrice = currentLiveSession.use_voucher ? 0 : currentLiveSession.price;
-  const grandTotal = basePrice + tip1 + tip2;
+  const grandTotal = basePrice + totalTip;
   const totalEl = document.getElementById('staff-step-grand-total');
   if (totalEl) totalEl.innerText = `${grandTotal.toLocaleString('vi-VN')} đ`;
 }
@@ -654,24 +783,27 @@ function confirmSaveReceiptFromCheckout() {
   if (!currentLiveSession) return;
 
   const users = getStored('users', DEFAULT_USERS);
-  const staff1 = users.find(u => normalizePhone(u.phone) === normalizePhone(currentLiveSession.staff_1_phone)) || currentUser;
-  const staff2 = currentLiveSession.has_staff_2 ? users.find(u => normalizePhone(u.phone) === normalizePhone(currentLiveSession.staff_2_phone)) : null;
+  const staffs = currentLiveSession.staffs || [
+    { phone: currentLiveSession.staff_1_phone, name: currentLiveSession.staff_1_name, pct: 100, user_id: currentLiveSession.staff_1_user_id, staff_id: currentLiveSession.staff_1_id }
+  ];
 
-  const rate1 = parsePercentage(staff1?.commission_rate) || 10;
-  const rate2 = (staff2 && parsePercentage(staff2?.commission_rate) > 0) ? parsePercentage(staff2?.commission_rate) : (rate1 || 10);
+  const s1 = staffs[0];
+  const s2 = staffs[1] || null;
 
-  const totalComm1 = Math.round(currentLiveSession.price * (rate1 / 100));
-  const totalComm2 = staff2 ? Math.round(currentLiveSession.price * (rate2 / 100)) : 0;
+  const rate1 = parsePercentage(users.find(u => normalizePhone(u.phone) === normalizePhone(s1.phone))?.commission_rate) || 10;
+  const rate2 = s2 ? (parsePercentage(users.find(u => normalizePhone(u.phone) === normalizePhone(s2.phone))?.commission_rate) || rate1 || 10) : 0;
 
-  const s1Pct = currentLiveSession.has_staff_2 ? (currentLiveSession.staff_1_pct || 50) : 100;
-  const s2Pct = currentLiveSession.has_staff_2 ? (currentLiveSession.staff_2_pct || 50) : 0;
+  const s1Pct = s1.pct || (staffs.length > 1 ? Math.round(100 / staffs.length) : 100);
+  const s2Pct = s2 ? (s2.pct || Math.round(100 / staffs.length)) : 0;
 
-  let comm1 = Math.round(totalComm1 * (s1Pct / 100));
-  let comm2 = Math.round(totalComm2 * (s2Pct / 100));
+  let comm1 = Math.round(currentLiveSession.price * (rate1 / 100) * (s1Pct / 100));
+  let comm2 = s2 ? Math.round(currentLiveSession.price * (rate2 / 100) * (s2Pct / 100)) : 0;
 
-  let tip1 = currentCheckoutTipS1;
-  let tip2 = currentLiveSession.has_staff_2 ? currentCheckoutTipS2 : 0;
-  let totalTip = tip1 + tip2;
+  let tip1 = staffTipMap[s1.phone] || 0;
+  let tip2 = s2 ? (staffTipMap[s2.phone] || 0) : 0;
+
+  let totalTip = 0;
+  Object.values(staffTipMap).forEach(val => totalTip += Number(val) || 0);
 
   const finalPrice = currentLiveSession.use_voucher ? 0 : currentLiveSession.price;
   const grandTotal = finalPrice + totalTip;
@@ -688,26 +820,26 @@ function confirmSaveReceiptFromCheckout() {
     customer_name: currentLiveSession.customer_name,
     
     // KTV 1
-    staff_1_user_id: staff1?.user_id || staff1?.phone || '',
-    staff_1_id: staff1?.staff_id || staff1?.phone || 'KTV01',
-    staff_1_phone: staff1?.phone || '',
-    staff_1_name: staff1?.full_name || 'KTV 1',
+    staff_1_user_id: s1.user_id || s1.phone || '',
+    staff_1_id: s1.staff_id || 'KTV01',
+    staff_1_phone: s1.phone || '',
+    staff_1_name: s1.name || 'KTV 1',
     staff_1_comm: comm1,
     staff_1_tip: tip1,
 
     // KTV 2
-    has_staff_2: currentLiveSession.has_staff_2,
-    staff_2_user_id: staff2 ? (staff2.user_id || staff2.phone) : '-',
-    staff_2_id: staff2 ? (staff2.staff_id || 'KTV02') : '-',
-    staff_2_phone: staff2 ? staff2.phone : '-',
-    staff_2_name: staff2 ? staff2.full_name : '-',
+    has_staff_2: Boolean(s2),
+    staff_2_user_id: s2 ? (s2.user_id || s2.phone) : '-',
+    staff_2_id: s2 ? s2.staff_id : '-',
+    staff_2_phone: s2 ? s2.phone : '-',
+    staff_2_name: s2 ? s2.name : '-',
     staff_2_comm: comm2,
     staff_2_tip: tip2,
 
     // Tương thích ngược
-    staff_phone: staff1?.phone || '',
-    staff_id: staff1?.staff_id || 'KTV01',
-    staff_name: staff1?.full_name || 'KTV',
+    staff_phone: s1.phone || '',
+    staff_id: s1.staff_id || 'KTV01',
+    staff_name: s1.name || 'KTV',
     commission_amount: comm1 + tip1,
 
     start_time: currentLiveSession.start_time,
@@ -757,6 +889,7 @@ function confirmSaveReceiptFromCheckout() {
   closeCheckoutModal();
   localStorage.removeItem('selena_active_live_session');
   currentLiveSession = null;
+  extraStaffList = [];
   clearInterval(liveTimerInterval);
   renderLiveSessionUI();
 
@@ -764,7 +897,7 @@ function confirmSaveReceiptFromCheckout() {
   document.getElementById('pos-customer-name').value = '';
   document.getElementById('pos-customer-card').classList.add('hidden');
   useVoucher = false;
-  if (isStaff2Enabled) toggleSecondStaff();
+  renderExtraStaffUI();
 
   showView('history');
 }
