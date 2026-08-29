@@ -1,3 +1,11 @@
+// Helper lấy danh sách users với KTV xếp trước, Sếp luôn ở dưới cùng
+function getSortedUsersList() {
+  const users = getSortedUsersList();
+  const ktvs = users.filter(u => !isUserOwner(u));
+  const owners = users.filter(u => isUserOwner(u));
+  return [...ktvs, ...owners];
+}
+
 // =============================================================
 // TAB 2: ADD - POS CHECKOUT, DYNAMIC STAFF LIST & 2-PHASE CHECKOUT
 // =============================================================
@@ -58,7 +66,7 @@ function onStaff1SelectChange() {
 }
 
 function updatePOSStaffInfo() {
-  const users = getStored('users', DEFAULT_USERS);
+  const users = getSortedUsersList();
   const s1Select = document.getElementById('pos-staff1-select');
   const isOwner = currentUser && isUserOwner(currentUser);
 
@@ -90,7 +98,7 @@ function updatePOSStaffInfo() {
 // =============================================================
 
 function addExtraStaff() {
-  const users = getStored('users', DEFAULT_USERS);
+  const users = getSortedUsersList();
   const s1Phone = document.getElementById('pos-staff1-select')?.value || currentUser?.phone;
 
   // Lọc ra những người chưa có trong ca (bao gồm cả Sếp/Chủ tiệm nếu cùng vào làm)
@@ -131,7 +139,7 @@ function removeExtraStaff(index) {
 }
 
 function onExtraStaffSelectChange(index, newPhone) {
-  const users = getStored('users', DEFAULT_USERS);
+  const users = getSortedUsersList();
   const staff = users.find(u => normalizePhone(u.phone) === normalizePhone(newPhone));
   if (staff) {
     extraStaffList[index] = {
@@ -150,7 +158,7 @@ function renderExtraStaffUI() {
   const addBtn = document.getElementById('btn-add-staff-card');
   if (!container) return;
 
-  const users = getStored('users', DEFAULT_USERS);
+  const users = getSortedUsersList();
   const s1Phone = document.getElementById('pos-staff1-select')?.value || currentUser?.phone;
 
   container.innerHTML = extraStaffList.map((item, idx) => {
@@ -196,7 +204,7 @@ function renderExtraStaffUI() {
 
 function updatePOSCalculations() {
   const menu = getStored('menu', DEFAULT_MENU);
-  const users = getStored('users', DEFAULT_USERS);
+  const users = getSortedUsersList();
   const service = menu.find(m => m.service_id === selectedComboId) || menu[0];
 
   const s1Phone = document.getElementById('pos-staff1-select')?.value || currentUser?.phone;
@@ -277,7 +285,7 @@ function onVoucherToggle(checked) {
 
 function startLiveSession() {
   const menu = getStored('menu', DEFAULT_MENU);
-  const users = getStored('users', DEFAULT_USERS);
+  const users = getSortedUsersList();
   const service = menu.find(m => m.service_id === selectedComboId) || menu[0];
 
   const phone = document.getElementById('pos-customer-phone')?.value.trim() || '';
@@ -426,28 +434,24 @@ function restoreLiveSessionIfExists() {
 }
 
 // =============================================================
-// LOGIC ĐỔI / THÊM KTV GIỮA CA & CHIA HOA HỒNG THEO THỜI GIAN
+// LOGIC MODAL ĐỔI / THÊM KTV GIỮA CA (PHƯƠNG ÁN B - DANH SÁCH ĐỘNG)
 // =============================================================
+let tempSwapStaffs = [];
 
 function openSwapStaffModal() {
   if (!currentLiveSession) return;
-  const users = getStored('users', DEFAULT_USERS);
-  const staffList = users;
-  const s2Select = document.getElementById('swap-staff2-select');
+  const users = getSortedUsersList();
 
-  if (s2Select) {
-    s2Select.innerHTML = staffList.map(u => `
-      <option value="${u.phone}">💆 ${u.full_name} (${u.staff_id || u.phone})</option>
-    `).join('');
-    if (currentLiveSession.staff_2_phone && currentLiveSession.staff_2_phone !== '-') {
-      s2Select.value = currentLiveSession.staff_2_phone;
-    } else {
-      const other = staffList.find(u => normalizePhone(u.phone) !== normalizePhone(currentLiveSession.staff_1_phone));
-      if (other) s2Select.value = other.phone;
-    }
-  }
+  // Khởi tạo danh sách tạm từ live session hiện tại
+  tempSwapStaffs = (currentLiveSession.staffs || [
+    { phone: currentLiveSession.staff_1_phone, name: currentLiveSession.staff_1_name, pct: 100 }
+  ]).map(s => ({ ...s }));
 
+  currentSplitMode = (tempSwapStaffs.length > 1 && currentLiveSession.split_mode) ? currentLiveSession.split_mode : (tempSwapStaffs.length === 2 ? 'timer' : 'equal');
+
+  renderSwapModalStaffUI();
   updateSwapPreviewDisplay();
+
   const modal = document.getElementById('modal-swap-staff');
   if (modal) modal.classList.remove('hidden');
   lucide.createIcons();
@@ -458,85 +462,184 @@ function closeSwapStaffModal() {
   if (modal) modal.classList.add('hidden');
 }
 
+function renderSwapModalStaffUI() {
+  const container = document.getElementById('swap-modal-staff-container');
+  const addBtn = document.getElementById('btn-swap-add-staff');
+  if (!container) return;
+
+  const users = getSortedUsersList();
+
+  container.innerHTML = tempSwapStaffs.map((item, idx) => {
+    const isFirst = idx === 0;
+    const usedOtherPhones = tempSwapStaffs.filter((_, i) => i !== idx).map(s => normalizePhone(s.phone));
+    const selectable = users.filter(u => !usedOtherPhones.includes(normalizePhone(u.phone)));
+
+    return `
+      <div class="relative p-3 rounded-xl bg-[#FAF6F1] border border-[#F0EAE1] space-y-1.5">
+        <div class="flex justify-between items-center pr-6">
+          <span class="text-xs font-bold text-[#2D2424] flex items-center gap-1">
+            <span class="text-[#E58A7B] font-extrabold">KTV ${idx + 1}:</span>
+            <span>${item.name || ''}</span>
+          </span>
+          <span class="text-[11px] font-extrabold text-[#2E7D6D] bg-[#E8F8F5] px-2 py-0.5 rounded-full" id="swap-item-comm-${idx}">...</span>
+        </div>
+
+        <select onchange="onSwapStaffSelectChange(${idx}, this.value)" class="w-full bg-white border border-[#EFE8DF] rounded-lg p-2.5 text-xs font-bold text-[#2D2424] focus:outline-none focus:border-[#E58A7B] cursor-pointer">
+          ${selectable.map(u => `
+            <option value="${u.phone}" ${normalizePhone(u.phone) === normalizePhone(item.phone) ? 'selected' : ''}>
+              ${isUserOwner(u) ? '👑' : '💆'} ${u.full_name} (${u.staff_id || u.phone})
+            </option>
+          `).join('')}
+        </select>
+
+        ${!isFirst ? `
+          <button type="button" onclick="removeStaffInSwapModal(${idx})" title="Xóa KTV này khỏi ca" class="absolute top-2 right-2 w-6 h-6 rounded-full bg-white border border-rose-300 text-rose-500 hover:bg-rose-500 hover:text-white flex items-center justify-center shadow-sm cursor-pointer active:scale-90 transition">
+            <i data-lucide="minus" class="w-3.5 h-3.5 stroke-[2.5]"></i>
+          </button>
+        ` : ''}
+      </div>
+    `;
+  }).join('');
+
+  if (addBtn) {
+    if (tempSwapStaffs.length >= users.length) {
+      addBtn.classList.add('hidden');
+    } else {
+      addBtn.classList.remove('hidden');
+    }
+  }
+
+  lucide.createIcons();
+}
+
+function onSwapStaffSelectChange(index, newPhone) {
+  const users = getSortedUsersList();
+  const u = users.find(user => normalizePhone(user.phone) === normalizePhone(newPhone));
+  if (u) {
+    tempSwapStaffs[index].phone = u.phone;
+    tempSwapStaffs[index].name = u.full_name;
+    tempSwapStaffs[index].user_id = u.user_id || u.phone;
+    tempSwapStaffs[index].staff_id = u.staff_id || (isUserOwner(u) ? 'FOUNDER_01' : 'KTV');
+  }
+  renderSwapModalStaffUI();
+  updateSwapPreviewDisplay();
+}
+
+function addStaffInSwapModal() {
+  const users = getSortedUsersList();
+  const usedPhones = tempSwapStaffs.map(s => normalizePhone(s.phone));
+  const available = users.filter(u => !usedPhones.includes(normalizePhone(u.phone)));
+
+  if (available.length === 0) return;
+
+  const next = available[0];
+  tempSwapStaffs.push({
+    phone: next.phone,
+    name: next.full_name,
+    user_id: next.user_id || next.phone,
+    staff_id: next.staff_id || (isUserOwner(next) ? 'FOUNDER_01' : 'KTV'),
+    pct: 0
+  });
+
+  renderSwapModalStaffUI();
+  updateSwapPreviewDisplay();
+}
+
+function removeStaffInSwapModal(index) {
+  if (index === 0 && tempSwapStaffs.length === 1) return;
+  tempSwapStaffs.splice(index, 1);
+  renderSwapModalStaffUI();
+  updateSwapPreviewDisplay();
+}
+
 function setSplitMode(mode) {
   currentSplitMode = mode;
   const btnTimer = document.getElementById('btn-split-timer');
   const btnHalf = document.getElementById('btn-split-half');
 
   if (mode === 'timer') {
-    btnTimer.className = 'p-2.5 rounded-xl border bg-[#FFF0EB] border-[#E58A7B] text-[#E58A7B] font-bold text-xs flex flex-col items-center gap-1 cursor-pointer';
-    btnHalf.className = 'p-2.5 rounded-xl border bg-[#F7F2EC] border-[#EFE8DF] text-[#7E7272] font-bold text-xs flex flex-col items-center gap-1 cursor-pointer';
+    btnTimer.className = 'p-2.5 rounded-xl border bg-[#FFF0EB] border-[#E58A7B] text-[#E58A7B] font-bold text-xs flex flex-col items-center gap-0.5 cursor-pointer';
+    btnHalf.className = 'p-2.5 rounded-xl border bg-[#F7F2EC] border-[#EFE8DF] text-[#7E7272] font-bold text-xs flex flex-col items-center gap-0.5 cursor-pointer';
   } else {
-    btnHalf.className = 'p-2.5 rounded-xl border bg-[#FFF0EB] border-[#E58A7B] text-[#E58A7B] font-bold text-xs flex flex-col items-center gap-1 cursor-pointer';
-    btnTimer.className = 'p-2.5 rounded-xl border bg-[#F7F2EC] border-[#EFE8DF] text-[#7E7272] font-bold text-xs flex flex-col items-center gap-1 cursor-pointer';
+    btnHalf.className = 'p-2.5 rounded-xl border bg-[#FFF0EB] border-[#E58A7B] text-[#E58A7B] font-bold text-xs flex flex-col items-center gap-0.5 cursor-pointer';
+    btnTimer.className = 'p-2.5 rounded-xl border bg-[#F7F2EC] border-[#EFE8DF] text-[#7E7272] font-bold text-xs flex flex-col items-center gap-0.5 cursor-pointer';
   }
   updateSwapPreviewDisplay();
 }
 
 function updateSwapPreviewDisplay() {
-  if (!currentLiveSession) return;
+  if (!currentLiveSession || tempSwapStaffs.length === 0) return;
+  const users = getSortedUsersList();
+  const count = tempSwapStaffs.length;
   const targetMin = currentLiveSession.duration_target_min || 45;
   const elapsedSec = Math.max(1, Math.floor((Date.now() - currentLiveSession.start_timestamp) / 1000));
   const elapsedMin = Math.floor(elapsedSec / 60);
 
-  let s1Pct = 50;
-  let s2Pct = 50;
-
-  if (currentSplitMode === 'timer') {
+  // Tính tỷ lệ % cho từng KTV
+  if (count === 1) {
+    tempSwapStaffs[0].pct = 100;
+  } else if (count === 2 && currentSplitMode === 'timer') {
     let p1 = Math.min(90, Math.max(10, Math.round((elapsedMin / targetMin) * 100)));
-    s1Pct = p1;
-    s2Pct = 100 - p1;
+    tempSwapStaffs[0].pct = p1;
+    tempSwapStaffs[1].pct = 100 - p1;
+    document.getElementById('split-timer-pct').innerText = `${p1}% - ${100 - p1}% (${elapsedMin}p đã làm)`;
+  } else {
+    const equalPct = Math.round(100 / count);
+    tempSwapStaffs.forEach((s, idx) => {
+      s.pct = idx === count - 1 ? (100 - equalPct * (count - 1)) : equalPct;
+    });
   }
 
-  document.getElementById('split-timer-pct').innerText = `${s1Pct}% - ${s2Pct}% (${elapsedMin}p đã làm)`;
-  document.getElementById('swap-preview-s1-name').innerText = currentLiveSession.staff_1_name + ':';
-  document.getElementById('swap-preview-s1-pct').innerText = `${s1Pct}% (${Math.round(currentLiveSession.price * 0.1 * s1Pct / 100).toLocaleString('vi-VN')} đ)`;
-  
-  const users = getStored('users', DEFAULT_USERS);
-  const s2Phone = document.getElementById('swap-staff2-select')?.value;
-  const s2 = users.find(u => normalizePhone(u.phone) === normalizePhone(s2Phone));
-  const s2Rate = (s2 && parsePercentage(s2?.commission_rate) > 0) ? parsePercentage(s2?.commission_rate) : 10;
+  // Render danh sách preview hoa hồng
+  const summaryContainer = document.getElementById('swap-summary-pct-list');
+  let html = '';
 
-  document.getElementById('swap-preview-s2-name').innerText = (s2?.full_name || 'KTV 2') + ':';
-  document.getElementById('swap-preview-s2-pct').innerText = `${s2Pct}% (${Math.round(currentLiveSession.price * (s2Rate / 100) * s2Pct / 100).toLocaleString('vi-VN')} đ)`;
+  tempSwapStaffs.forEach((s, idx) => {
+    const u = users.find(user => normalizePhone(user.phone) === normalizePhone(s.phone));
+    const rate = (u && parsePercentage(u?.commission_rate) > 0) ? parsePercentage(u?.commission_rate) : 10;
+    const comm = Math.round(currentLiveSession.price * (rate / 100) * (s.pct / 100));
+
+    html += `
+      <div class="flex justify-between items-center text-[#2D2424]">
+        <span>${s.name}:</span>
+        <span class="font-extrabold text-[#2E7D6D]">${s.pct}% (${comm.toLocaleString('vi-VN')} đ)</span>
+      </div>
+    `;
+
+    const itemCommBadge = document.getElementById(`swap-item-comm-${idx}`);
+    if (itemCommBadge) itemCommBadge.innerText = `${s.pct}% • +${comm.toLocaleString('vi-VN')} đ`;
+  });
+
+  if (summaryContainer) summaryContainer.innerHTML = html;
 }
 
 function saveSwapStaffSetting() {
-  if (!currentLiveSession) return;
-  const users = getStored('users', DEFAULT_USERS);
-  const s2Phone = document.getElementById('swap-staff2-select')?.value;
-  const s2 = users.find(u => normalizePhone(u.phone) === normalizePhone(s2Phone));
+  if (!currentLiveSession || tempSwapStaffs.length === 0) return;
 
-  const targetMin = currentLiveSession.duration_target_min || 45;
-  const elapsedSec = Math.max(1, Math.floor((Date.now() - currentLiveSession.start_timestamp) / 1000));
-  const elapsedMin = Math.floor(elapsedSec / 60);
+  currentLiveSession.staffs = tempSwapStaffs.map(s => ({ ...s }));
+  currentLiveSession.split_mode = currentSplitMode;
 
-  let s1Pct = 50;
-  let s2Pct = 50;
+  const s1 = tempSwapStaffs[0];
+  const s2 = tempSwapStaffs[1] || null;
 
-  if (currentSplitMode === 'timer') {
-    let p1 = Math.min(90, Math.max(10, Math.round((elapsedMin / targetMin) * 100)));
-    s1Pct = p1;
-    s2Pct = 100 - p1;
-  }
+  currentLiveSession.staff_1_phone = s1.phone;
+  currentLiveSession.staff_1_name = s1.name;
+  currentLiveSession.staff_1_user_id = s1.user_id;
+  currentLiveSession.staff_1_id = s1.staff_id;
+  currentLiveSession.staff_1_pct = s1.pct;
 
-  currentLiveSession.has_staff_2 = true;
-  currentLiveSession.staff_2_user_id = s2?.user_id || s2?.phone || '-';
-  currentLiveSession.staff_2_phone = s2?.phone || '-';
-  currentLiveSession.staff_2_id = s2?.staff_id || '-';
-  currentLiveSession.staff_2_name = s2?.full_name || 'KTV 2';
-  currentLiveSession.staff_1_pct = s1Pct;
-  currentLiveSession.staff_2_pct = s2Pct;
-
-  currentLiveSession.staffs = [
-    { phone: currentLiveSession.staff_1_phone, name: currentLiveSession.staff_1_name, pct: s1Pct, user_id: currentLiveSession.staff_1_user_id, staff_id: currentLiveSession.staff_1_id },
-    { phone: currentLiveSession.staff_2_phone, name: currentLiveSession.staff_2_name, pct: s2Pct, user_id: currentLiveSession.staff_2_user_id, staff_id: currentLiveSession.staff_2_id }
-  ];
+  currentLiveSession.has_staff_2 = Boolean(s2);
+  currentLiveSession.staff_2_phone = s2 ? s2.phone : '-';
+  currentLiveSession.staff_2_name = s2 ? s2.name : '-';
+  currentLiveSession.staff_2_user_id = s2 ? s2.user_id : '-';
+  currentLiveSession.staff_2_id = s2 ? s2.staff_id : '-';
+  currentLiveSession.staff_2_pct = s2 ? s2.pct : 0;
 
   localStorage.setItem('selena_active_live_session', JSON.stringify(currentLiveSession));
   closeSwapStaffModal();
   renderLiveSessionUI();
 }
+
 
 function removeSecondStaffFromLive() {
   if (!currentLiveSession) return;
@@ -739,7 +842,7 @@ function splitSharedTipDynamic(totalAmount) {
 
 function updateStaffEarningPreview() {
   if (!currentLiveSession) return;
-  const users = getStored('users', DEFAULT_USERS);
+  const users = getSortedUsersList();
   const staffs = currentLiveSession.staffs || [
     { phone: currentLiveSession.staff_1_phone, name: currentLiveSession.staff_1_name, pct: 100 }
   ];
@@ -778,7 +881,7 @@ function updateStaffEarningPreview() {
 function confirmSaveReceiptFromCheckout() {
   if (!currentLiveSession) return;
 
-  const users = getStored('users', DEFAULT_USERS);
+  const users = getSortedUsersList();
   const staffs = currentLiveSession.staffs || [
     { phone: currentLiveSession.staff_1_phone, name: currentLiveSession.staff_1_name, pct: 100, user_id: currentLiveSession.staff_1_user_id, staff_id: currentLiveSession.staff_1_id }
   ];
