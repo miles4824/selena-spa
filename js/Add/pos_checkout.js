@@ -24,13 +24,56 @@ function initMenuUI() {
   }
 
   const select = document.getElementById('pos-service-select');
+  const quickContainer = document.getElementById('pos-quick-combos');
   if (!select) return;
 
   select.innerHTML = menu.map(m => `
     <option value="${m.service_id}">${m.service_name} — ${m.price.toLocaleString('vi-VN')} đ (${m.duration_min}p)</option>
   `).join('');
 
+  if (quickContainer) {
+    quickContainer.innerHTML = menu.map((m, idx) => {
+      const isSelected = m.service_id === selectedComboId;
+      const shortName = m.service_name.includes('(') ? m.service_name.split('(')[0].trim() : `Combo ${idx + 1}`;
+      return `
+        <button type="button" onclick="selectQuickCombo('${m.service_id}')" class="px-3.5 py-2 rounded-2xl text-xs font-extrabold border transition active:scale-95 cursor-pointer shadow-sm ${isSelected ? 'bg-[#FFF0EB] text-[#E58A7B] border-[#E58A7B]' : 'bg-[#FAF6F1] text-[#7E7272] border-[#EFE8DF] hover:bg-[#FFF0EB] hover:text-[#E58A7B]'}">
+          ${shortName}
+        </button>
+      `;
+    }).join('');
+  }
+
   restoreLiveSessionIfExists();
+}
+
+function selectQuickCombo(id) {
+  const select = document.getElementById('pos-service-select');
+  if (select) {
+    select.value = id;
+    onSelectServiceChange();
+  }
+}
+
+function onSelectServiceChange() {
+  const select = document.getElementById('pos-service-select');
+  if (select) {
+    selectedComboId = select.value;
+    updatePOSCalculations();
+    // Cập nhật highlight nút nhanh
+    const menu = getStored('menu', DEFAULT_MENU);
+    const quickContainer = document.getElementById('pos-quick-combos');
+    if (quickContainer) {
+      quickContainer.innerHTML = menu.map((m, idx) => {
+        const isSelected = m.service_id === selectedComboId;
+        const shortName = m.service_name.includes('(') ? m.service_name.split('(')[0].trim() : `Combo ${idx + 1}`;
+        return `
+          <button type="button" onclick="selectQuickCombo('${m.service_id}')" class="px-3.5 py-2 rounded-2xl text-xs font-extrabold border transition active:scale-95 cursor-pointer shadow-sm ${isSelected ? 'bg-[#FFF0EB] text-[#E58A7B] border-[#E58A7B]' : 'bg-[#FAF6F1] text-[#7E7272] border-[#EFE8DF] hover:bg-[#FFF0EB] hover:text-[#E58A7B]'}">
+            ${shortName}
+          </button>
+        `;
+      }).join('');
+    }
+  }
 }
 
 function selectQuickCombo(id) {
@@ -61,7 +104,7 @@ function updatePOSStaffInfo() {
 
   if (s1Select) {
     s1Select.innerHTML = users.map(u => `
-      <option value="${u.phone}">${isUserOwner(u) ? '👑' : '💆'} ${u.full_name} (${u.staff_id || u.phone})</option>
+      <option value="${u.phone}">${u.full_name}</option>
     `).join('');
 
     if (isOwner) {
@@ -172,7 +215,7 @@ function renderExtraStaffUI() {
 
         <select onchange="onExtraStaffSelectChange(${idx}, this.value)" class="w-full bg-white border border-[#FCDFD7] rounded-xl p-3 text-[#2D2424] font-bold text-sm focus:outline-none focus:border-[#E58A7B] cursor-pointer">
           ${selectable.map(u => `
-            <option value="${u.phone}" ${normalizePhone(u.phone) === normalizePhone(item.phone) ? 'selected' : ''}>${isUserOwner(u) ? '👑' : '💆'} ${u.full_name} (${u.staff_id || u.phone})</option>
+            <option value="${u.phone}" ${normalizePhone(u.phone) === normalizePhone(item.phone) ? 'selected' : ''}>${u.full_name}</option>
           `).join('')}
         </select>
       </div>
@@ -416,7 +459,7 @@ function updateLiveTimerTick() {
 }
 
 function cancelLiveSession() {
-  if (confirm('Bạn có chắc muốn hủy ca đang phục vụ này không?')) {
+  if (confirm('Bạn có chắc muốn hủy tour đang phục vụ này không?')) {
     localStorage.removeItem('selena_active_live_session');
     currentLiveSession = null;
     clearInterval(liveTimerInterval);
@@ -538,9 +581,7 @@ function renderSwapModalStaffUI() {
 
         <select ${isLocked ? 'disabled' : ''} onchange="onSwapStaffSelectChange(${idx}, this.value)" class="w-full bg-white border border-[#EFE8DF] rounded-lg p-2.5 text-xs font-bold text-[#2D2424] focus:outline-none focus:border-[#E58A7B] ${isLocked ? 'disabled:bg-[#F7F2EC] disabled:opacity-90 cursor-not-allowed' : 'cursor-pointer'}">
           ${selectable.map(u => `
-            <option value="${u.phone}" ${normalizePhone(u.phone) === normalizePhone(item.phone) ? 'selected' : ''}>
-              ${isUserOwner(u) ? '👑' : '💆'} ${u.full_name} (${u.staff_id || u.phone})
-            </option>
+            <option value="${u.phone}" ${normalizePhone(u.phone) === normalizePhone(item.phone) ? 'selected' : ''}>${u.full_name}</option>
           `).join('')}
         </select>
 
@@ -1139,7 +1180,7 @@ function confirmSaveReceiptFromCheckout() {
   callGasApi('create_receipt', receipt);
   confetti({ particleCount: 60, spread: 70, origin: { y: 0.6 } });
 
-  let successMsg = `✅ Đã hoàn tất và lưu hóa đơn ca gội!\n• Thời gian: ${receipt.start_time} - ${receipt.end_time} (${receipt.duration_min} phút)\n• Khách trả: ${grandTotal.toLocaleString('vi-VN')} đ (${checkoutPaymentMethod})`;
+  let successMsg = `✅ Đã hoàn tất và lưu hóa đơn tour gội!\n• Thời gian: ${receipt.start_time} - ${receipt.end_time} (${receipt.duration_min} phút)\n• Khách trả: ${grandTotal.toLocaleString('vi-VN')} đ (${checkoutPaymentMethod})`;
   if (totalTip > 0) successMsg += `\n• Tổng tiền Tips: +${totalTip.toLocaleString('vi-VN')} đ`;
   successMsg += `\n• KTV 1 (${receipt.staff_1_name}): Tour +${comm1.toLocaleString('vi-VN')} đ${tip1 > 0 ? ` + Tip +${tip1.toLocaleString('vi-VN')} đ` : ''}`;
   if (receipt.has_staff_2) successMsg += `\n• KTV 2 (${receipt.staff_2_name}): Tour +${comm2.toLocaleString('vi-VN')} đ${tip2 > 0 ? ` + Tip +${tip2.toLocaleString('vi-VN')} đ` : ''}`;

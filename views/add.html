@@ -1,7 +1,7 @@
 <main id="view-add" class="flex-1 p-4 sm:p-6 max-w-xl w-full mx-auto space-y-5 pb-28">
   <div class="flex justify-between items-center px-1">
     <div>
-      <h2 class="text-2xl font-extrabold text-[#2D2424]">Tạo Ca Gội Mới</h2>
+      <h2 class="text-2xl font-extrabold text-[#2D2424]">Tạo Tour Gội Mới</h2>
       <p class="text-xs sm:text-sm text-[#7E7272]">Chọn dịch vụ, nhân viên & bấm bắt đầu</p>
     </div>
     <div class="w-10 h-10 rounded-2xl bg-[#FFF0EB] border border-[#FCDFD7] flex items-center justify-center text-[#E58A7B] shadow-sm">
@@ -21,9 +21,9 @@
           <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#2E7D6D] opacity-75"></span>
           <span class="relative inline-flex rounded-full h-2 w-2 bg-[#2E7D6D]"></span>
         </span>
-        <span>Đang phục vụ tại bồn gội</span>
+        <span>Đang phục vụ tour gội</span>
       </div>
-      <button type="button" onclick="cancelLiveSession()" class="text-xs text-[#A39696] hover:text-rose-600 font-semibold transition cursor-pointer">Hủy ca</button>
+      <button type="button" onclick="cancelLiveSession()" class="text-xs text-[#A39696] hover:text-rose-600 font-semibold transition cursor-pointer">Hủy tour</button>
     </div>
 
     <!-- Thông tin dịch vụ & KTV Chips -->
@@ -59,7 +59,7 @@
     <!-- NÚT HOÀN THÀNH CA (GỌN GÀNG, DỨT KHOÁT) -->
     <button type="button" onclick="openCheckoutModal()" class="w-full py-4 px-6 rounded-full bg-gradient-to-r from-[#2E7D6D] to-[#25685B] hover:opacity-95 text-white font-extrabold text-base sm:text-lg shadow-lg shadow-[#2E7D6D]/25 flex items-center justify-center gap-2 transition active:scale-95 cursor-pointer">
       <i data-lucide="check-circle" class="w-5 h-5 shrink-0"></i>
-      <span>Hoàn Thành Ca</span>
+      <span>Hoàn Thành Tour</span>
     </button>
   </div>
 
@@ -74,6 +74,7 @@
         <i data-lucide="sparkles" class="w-4 h-4 text-[#E58A7B]"></i> 1. Chọn Combo Dịch Vụ
       </label>
       <select id="pos-service-select" onchange="onSelectServiceChange()" class="w-full bg-[#F7F2EC] border border-[#EFE8DF] rounded-2xl p-4 text-[#2D2424] font-bold text-base focus:outline-none focus:border-[#E58A7B] focus:bg-white transition cursor-pointer"></select>
+      <div id="pos-quick-combos" class="flex flex-wrap gap-2 pt-1.5"></div>
       
     </div>
 
@@ -96,7 +97,7 @@
           </div>
           
           <select id="pos-staff1-select" onchange="onStaff1SelectChange()" class="w-full bg-white border border-[#EFE8DF] rounded-xl p-3 text-[#2D2424] font-bold text-sm focus:outline-none focus:border-[#E58A7B] disabled:opacity-80 disabled:bg-[#F7F2EC] cursor-pointer"></select>
-          <p id="pos-staff1-role-hint" class="text-[11px] text-[#A39696] hidden">🔒 Ca được gán cố định cho tài khoản của bạn</p>
+          <p id="pos-staff1-role-hint" class="text-[11px] text-[#A39696] hidden">🔒 Tour được gán cố định cho tài khoản của bạn</p>
         </div>
 
         <!-- Dynamic Extra Staff Cards (Render qua Javascript) -->
@@ -153,7 +154,7 @@
     <div class="pt-2">
       <button type="button" onclick="startLiveSession()" class="w-full py-4 px-6 rounded-full bg-[#E58A7B] hover:bg-[#D9796A] text-white font-extrabold text-base sm:text-lg shadow-lg shadow-[#E58A7B]/25 flex items-center justify-center gap-2.5 transition active:scale-95 cursor-pointer">
         <i data-lucide="play-circle" class="w-6 h-6 shrink-0"></i>
-        <span>Bắt Đầu Ca Gội</span>
+        <span>Bắt Đầu Tour Gội</span>
       </button>
     </div>
 
