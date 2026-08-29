@@ -1,6 +1,31 @@
 // =============================================================
-// TAB 3: HISTORY - KTV DAILY ROUTINE TIMELINE
+// TAB 3: HISTORY - KTV DAILY ROUTINE TIMELINE (FORMAT GỌN GÀNG)
 // =============================================================
+
+function formatCleanTime(val) {
+  if (!val) return '12:00';
+  let s = String(val).trim();
+  let match = s.match(/(\d{1,2}):(\d{2})/);
+  if (match) {
+    return `${match[1].padStart(2, '0')}:${match[2]}`;
+  }
+  return s.slice(0, 5);
+}
+
+function formatCleanDate(val) {
+  if (!val) return '08-29';
+  let s = String(val).trim();
+  let matchFull = s.match(/(\d{4})[/-](\d{1,2})[/-](\d{1,2})/);
+  if (matchFull) {
+    return `${matchFull[2].padStart(2, '0')}-${matchFull[3].padStart(2, '0')}`;
+  }
+  let matchShort = s.match(/(\d{1,2})[/-](\d{1,2})/);
+  if (matchShort) {
+    return `${matchShort[1].padStart(2, '0')}-${matchShort[2].padStart(2, '0')}`;
+  }
+  return s.slice(-5);
+}
+
 function loadStaffHistoryList() {
   const receipts = getStored('receipts', []);
   const container = document.getElementById('staff-receipts-list');
@@ -10,9 +35,9 @@ function loadStaffHistoryList() {
   const staffCode = String(currentUser?.staff_id || '').trim();
 
   const myReceipts = receipts.filter(r => {
-    const s1Phone = normalizePhone(r.staff_1_phone || r.staff_phone);
+    const s1Phone = normalizePhone(r.staff_1_user_id || r.staff_1_phone || r.staff_phone);
     const s1Code = String(r.staff_1_id || r.staff_id || '').trim();
-    const s2Phone = normalizePhone(r.staff_2_phone);
+    const s2Phone = normalizePhone(r.staff_2_user_id || r.staff_2_phone);
     const s2Code = String(r.staff_2_id || '').trim();
 
     return (staffPhone && (s1Phone === staffPhone || s2Phone === staffPhone)) || 
@@ -40,11 +65,12 @@ function loadStaffHistoryList() {
   ];
 
   container.innerHTML = myReceipts.map((r, idx) => {
-    const time = r.time || '14:30';
+    const cleanTime = formatCleanTime(r.start_time || r.time);
+    const cleanDate = formatCleanDate(r.date);
     const isQR = r.payment_method === 'Chuyển khoản';
     const cardStyle = pastelBorders[idx % pastelBorders.length];
 
-    const s1Phone = normalizePhone(r.staff_1_phone || r.staff_phone);
+    const s1Phone = normalizePhone(r.staff_1_user_id || r.staff_1_phone || r.staff_phone);
     const isStaff1 = (staffPhone && s1Phone === staffPhone) || (staffCode && String(r.staff_1_id) === staffCode);
 
     let myComm = isStaff1 ? ((Number(r.staff_1_comm) !== undefined && r.staff_1_comm !== null) ? Number(r.staff_1_comm) : (Number(r.commission_amount) || 0)) : (Number(r.staff_2_comm) || 0);
@@ -53,37 +79,51 @@ function loadStaffHistoryList() {
 
     return `
       <div class="flex items-start gap-3">
-        <div class="w-14 pt-3.5 text-right shrink-0">
-          <span class="text-xs font-extrabold text-[#2D2424] block">${time}</span>
-          <span class="text-[10px] text-[#A39696] block">${r.date?.slice(5) || '27/08'}</span>
+        <div class="w-12 pt-3.5 text-right shrink-0">
+          <span class="text-xs font-extrabold text-[#2D2424] block">${cleanTime}</span>
+          <span class="text-[10px] text-[#A39696] block">${cleanDate}</span>
         </div>
 
-        <div class="flex-1 spa-card p-4 border-l-4 ${cardStyle} transition hover:shadow-md space-y-1.5">
+        <div class="flex-1 spa-card p-4 border-l-4 ${cardStyle} space-y-2">
           <div class="flex justify-between items-start">
-            <div>
-              <h4 class="text-sm sm:text-base font-extrabold text-[#2D2424]">${r.service_name}</h4>
-              <div class="flex items-center gap-2 mt-1 text-xs text-[#7E7272]">
-                <span class="font-medium">👤 ${r.customer_name || 'Khách vãng lai'}</span>
-                <span>•</span>
-                <span class="inline-flex items-center gap-1 font-semibold ${isQR ? 'text-[#2E7D6D]' : 'text-[#D35400]'}">
-                  <i data-lucide="${isQR ? 'qr-code' : 'banknote'}" class="w-3.5 h-3.5"></i> ${r.payment_method}
-                </span>
-              </div>
-            </div>
+            <div class="font-bold text-[#2D2424] text-sm">${r.service_name}</div>
             <div class="text-right">
-              <span class="text-sm sm:text-base font-extrabold text-[#2E7D6D] block">+${totalMyEarning.toLocaleString('vi-VN')} đ</span>
-              <span class="text-[10px] text-[#A39696]">${r.receipt_id}</span>
+              <span class="text-xs font-extrabold text-[#2E7D6D]">+${totalMyEarning.toLocaleString('vi-VN')} đ</span>
             </div>
           </div>
 
-          ${(r.has_staff_2 || myTip > 0) ? `
-            <div class="flex justify-between items-center text-[11px] pt-1.5 border-t border-[#F0EAE1]/80 text-[#7E7272]">
-              <span>${r.has_staff_2 ? `👥 Cùng làm: ${r.staff_1_name} & ${r.staff_2_name}` : '💆 1 KTV'}</span>
+          <div class="flex items-center justify-between text-[11px] text-[#7E7272]">
+            <span class="flex items-center gap-1">
+              <i data-lucide="user" class="w-3.5 h-3.5 text-[#E58A7B]"></i>
+              ${r.customer_name || 'Khách vãng lai'}
+            </span>
+            <span class="flex items-center gap-1 font-semibold ${isQR ? 'text-[#2E7D6D]' : 'text-[#D35400]'}">
+              <i data-lucide="${isQR ? 'qr-code' : 'banknote'}" class="w-3.5 h-3.5"></i>
+              ${r.payment_method || 'Chuyển khoản'}
+            </span>
+            <span class="text-[10px] text-[#A39696] font-mono">${r.receipt_id}</span>
+          </div>
+
+          ${r.has_staff_2 ? `
+            <div class="text-[11px] text-[#7E7272] bg-white/70 p-2 rounded-xl border border-[#F0EAE1] flex items-center justify-between">
+              <span class="flex items-center gap-1 text-[#2D2424]">
+                <i data-lucide="users" class="w-3.5 h-3.5 text-[#2E7D6D]"></i>
+                Cùng làm: ${r.staff_1_name} & ${r.staff_2_name}
+              </span>
               ${myTip > 0 ? `<span class="text-[#E58A7B] font-bold">🎁 Được tip: +${myTip.toLocaleString('vi-VN')} đ</span>` : ''}
             </div>
-          ` : ''}
+          ` : `
+            ${myTip > 0 ? `
+              <div class="text-[11px] text-[#E58A7B] font-bold bg-[#FFF0EB]/80 px-2.5 py-1 rounded-xl flex items-center gap-1">
+                <i data-lucide="gift" class="w-3.5 h-3.5"></i>
+                Được khách tặng tip riêng: +${myTip.toLocaleString('vi-VN')} đ
+              </div>
+            ` : ''}
+          `}
         </div>
       </div>
     `;
   }).join('');
+
+  lucide.createIcons();
 }

@@ -1,3 +1,35 @@
+function formatTimeVal(val) {
+  if (!val) return '12:00';
+  if (val instanceof Date) {
+    return Utilities.formatDate(val, 'GMT+7', 'HH:mm');
+  }
+  let s = String(val).trim();
+  if (s.includes('GMT') || s.includes('1899')) {
+    try {
+      return Utilities.formatDate(new Date(val), 'GMT+7', 'HH:mm');
+    } catch(e) {}
+  }
+  let match = s.match(/(\d{1,2}):(\d{2})/);
+  if (match) return `${match[1].padStart(2, '0')}:${match[2]}`;
+  return s;
+}
+
+function formatDateVal(val) {
+  if (!val) return '2026-08-29';
+  if (val instanceof Date) {
+    return Utilities.formatDate(val, 'GMT+7', 'yyyy-MM-dd');
+  }
+  let s = String(val).trim();
+  if (s.includes('GMT') || s.includes('T')) {
+    try {
+      return Utilities.formatDate(new Date(val), 'GMT+7', 'yyyy-MM-dd');
+    } catch(e) {}
+  }
+  let match = s.match(/(\d{4})[/-](\d{1,2})[/-](\d{1,2})/);
+  if (match) return `${match[1]}-${match[2].padStart(2, '0')}-${match[3].padStart(2, '0')}`;
+  return s;
+}
+
 /**
  * =========================================================================
  * SELENA SPA - API GOOGLE APPS SCRIPT (GAS SERVER BACKEND V2.3 - FULL START/END DURATION)
@@ -596,9 +628,9 @@ function syncAllData(params) {
       let rId = String(getCell(r, colMapR, ['receipt_id', 'ma_hd'])).trim();
 
       if (rId) {
-        let rDate = String(getCell(r, colMapR, ['date', 'ngay']));
-        let startTime = String(getCell(r, colMapR, ['start_time', 'gio_bat_dau', 'time', 'gio'], '14:30'));
-        let endTime = String(getCell(r, colMapR, ['end_time', 'gio_ket_thuc'], '15:15'));
+        let rDate = formatDateVal(getCell(r, colMapR, ['date', 'ngay']));
+        let startTime = formatTimeVal(getCell(r, colMapR, ['start_time', 'gio_bat_dau', 'time', 'gio'], '14:30'));
+        let endTime = formatTimeVal(getCell(r, colMapR, ['end_time', 'gio_ket_thuc'], '15:15'));
         let durationMin = Number(getCell(r, colMapR, ['duration_min', 'thoi_gian_lam', 'so_phut'], 45)) || 45;
 
         let custPhone = normalizePhone(getCell(r, colMapR, ['customer_phone', 'sdt_khach']));
