@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Selena Spa">
+  <title>Selena Spa - Luxury Skincare & Wellness</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400..800;1,7..72,400..800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
+  <style>
+<!-- INCLUDE: css/styles.css -->
+  </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-[#E58A7B]/20">
+  <!-- PULL TO REFRESH -->
+<!-- INCLUDE: components/pull_to_refresh.html -->
+
+  <!-- 1. LOGIN SCREEN -->
+<!-- INCLUDE: components/login_screen.html -->
+
+  <!-- 2. MAIN VIEWS (4 TABS) -->
+<!-- INCLUDE: views/view_home.html -->
+<!-- INCLUDE: views/view_add.html -->
+<!-- INCLUDE: views/view_history.html -->
+<!-- INCLUDE: views/view_income.html -->
+
+  <!-- 3. FLOATING BOTTOM NAVIGATION DOCK -->
+<!-- INCLUDE: components/bottom_nav.html -->
+
+  <!-- 4. MODALS -->
+<!-- INCLUDE: components/modal_vietqr.html -->
+<!-- INCLUDE: components/modal_add_expense.html -->
+<!-- INCLUDE: components/modal_edit_announcement.html -->
+
+  <!-- 5. JAVASCRIPT MODULES -->
+  <script>
+<!-- INCLUDE: js/config.js -->
+<!-- INCLUDE: js/gas_api.js -->
+<!-- INCLUDE: js/payroll.js -->
+<!-- INCLUDE: js/auth.js -->
+<!-- INCLUDE: js/pos.js -->
+<!-- INCLUDE: js/admin.js -->
+<!-- INCLUDE: js/app.js -->
+  </script>
+</body>
+</html>

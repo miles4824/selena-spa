@@ -1,0 +1,26 @@
+  <div id="modal-edit-announcement" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-md">
+    <div class="w-full max-w-md spa-modal p-6 sm:p-7 relative space-y-4">
+      <div class="flex justify-between items-center">
+        <h3 class="text-lg font-extrabold text-[#2D2424] flex items-center gap-2">
+          <i data-lucide="megaphone" class="w-5 h-5 text-[#E58A7B]"></i> Cập Nhật Thông Báo Nội Bộ
+        </h3>
+        <button onclick="closeEditAnnouncementModal()" class="p-2 rounded-full bg-[#F7F2EC] hover:bg-[#FFF0EB] text-[#7E7272] hover:text-[#E58A7B] transition cursor-pointer">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+      <p class="text-xs text-[#7E7272]">Nội dung sẽ được hiển thị ngay lập tức trên màn hình Home của toàn bộ Kỹ Thuật Viên và đồng bộ về Google Sheet (tab tb_config).</p>
+      
+      <form onsubmit="handleSaveAnnouncement(event)" class="space-y-3.5">
+        <div>
+          <label class="block text-xs font-bold text-[#2D2424] mb-1.5">Nội dung thông báo:</label>
+          <textarea id="input-announcement-content" rows="4" placeholder="Nhập thông báo gửi đến toàn thể kỹ thuật viên..." class="w-full bg-[#F7F2EC] border border-[#EFE8DF] rounded-2xl p-3.5 text-sm text-[#2D2424] focus:outline-none focus:border-[#E58A7B] focus:bg-white transition leading-relaxed" required></textarea>
+        </div>
+        <div class="flex gap-2 pt-2">
+          <button type="button" onclick="closeEditAnnouncementModal()" class="flex-1 py-3.5 rounded-full bg-[#F7F2EC] hover:bg-[#EFE8DF] text-[#7E7272] font-bold text-xs sm:text-sm cursor-pointer">Đóng</button>
+          <button type="submit" class="flex-1 py-3.5 rounded-full bg-[#E58A7B] hover:bg-[#D9796A] text-white font-bold text-xs sm:text-sm shadow-md shadow-[#E58A7B]/20 flex items-center justify-center gap-1.5 cursor-pointer">
+            <i data-lucide="send" class="w-4 h-4"></i> Phát Thông Báo
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>

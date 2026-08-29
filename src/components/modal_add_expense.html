@@ -1,0 +1,31 @@
+  <div id="modal-add-expense" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-md">
+    <div class="w-full max-w-sm spa-modal p-6 relative">
+      <h3 class="text-lg font-extrabold text-[#2D2424] mb-4">Nhập Chi Phí Phát Sinh</h3>
+      <form onsubmit="handleSaveExpenseForm(event)" class="space-y-3.5">
+        <div>
+          <label class="block text-xs font-bold text-[#2D2424] mb-1">Loại chi phí</label>
+          <select id="input-exp-type" class="w-full bg-[#F7F2EC] border border-[#EFE8DF] rounded-2xl p-3.5 text-sm text-[#2D2424] focus:outline-none focus:border-[#E58A7B]">
+            <option value="Điện sấy">Điện sấy & máy lạnh</option>
+            <option value="Điện cố định">Điện sinh hoạt cố định</option>
+            <option value="Nước cố định">Tiền nước sạch</option>
+            <option value="Mạng Internet">Mạng wifi internet</option>
+            <option value="Mặt bằng">Tiền thuê mặt bằng</option>
+            <option value="Mỹ phẩm & Dầu gội">Mua thêm dầu gội, mỹ phẩm</option>
+            <option value="Khác">Chi phí khác</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-[#2D2424] mb-1">Số tiền (VNĐ)</label>
+          <input type="number" id="input-exp-amount" placeholder="Ví dụ: 350000" class="w-full bg-[#F7F2EC] border border-[#EFE8DF] rounded-2xl p-3.5 text-base font-bold text-[#2D2424] focus:outline-none focus:border-[#E58A7B]" required>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-[#2D2424] mb-1">Ghi chú</label>
+          <input type="text" id="input-exp-note" placeholder="Ghi chú chi tiết..." class="w-full bg-[#F7F2EC] border border-[#EFE8DF] rounded-2xl p-3.5 text-sm text-[#2D2424] focus:outline-none focus:border-[#E58A7B]">
+        </div>
+        <div class="flex gap-2 pt-2">
+          <button type="button" onclick="closeAddExpenseModal()" class="flex-1 py-3.5 rounded-full bg-[#F7F2EC] hover:bg-[#EFE8DF] text-[#7E7272] font-bold text-xs sm:text-sm cursor-pointer">Đóng</button>
+          <button type="submit" class="flex-1 py-3.5 rounded-full bg-[#E58A7B] hover:bg-[#D9796A] text-white font-bold text-xs sm:text-sm shadow-md shadow-[#E58A7B]/20 cursor-pointer">Lưu Chi Phí</button>
+        </div>
+      </form>
+    </div>
+  </div>
