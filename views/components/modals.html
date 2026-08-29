@@ -197,3 +197,60 @@
       </form>
     </div>
   </div>
+
+
+  <!-- ============================================================= -->
+  <!-- MODAL ĐỔI / THÊM KTV GIỮA CA & CHIA THEO THỜI GIAN THỰC TẾ -->
+  <!-- ============================================================= -->
+  <div id="modal-swap-staff" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md overflow-y-auto">
+    <div class="w-full max-w-md spa-modal p-6 sm:p-7 relative space-y-4 my-auto">
+      <div class="flex justify-between items-center">
+        <h3 class="text-lg font-extrabold text-[#2D2424] flex items-center gap-2">
+          <i data-lucide="user-switch" class="w-5 h-5 text-[#E58A7B]"></i> Thay Đổi / Thêm KTV Ca Này
+        </h3>
+        <button type="button" onclick="closeSwapStaffModal()" class="p-2 rounded-full bg-[#F7F2EC] hover:bg-[#FFF0EB] text-[#7E7272] hover:text-[#E58A7B] transition cursor-pointer">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <p class="text-xs text-[#7E7272]">Khi đổi hoặc thêm KTV giữa ca, hệ thống sẽ tự động tính số phút đã làm so với tổng thời gian combo để chia hoa hồng công bằng!</p>
+
+      <div class="space-y-3.5">
+        <div>
+          <label class="block text-xs font-bold text-[#7E7272] mb-1">Chọn KTV thứ 2 cùng làm / tiếp quản:</label>
+          <select id="swap-staff2-select" class="w-full bg-[#F7F2EC] border border-[#EFE8DF] rounded-xl p-3.5 text-sm font-bold text-[#2D2424] focus:outline-none focus:border-[#E58A7B]"></select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-[#7E7272] mb-1">Hình thức phân chia:</label>
+          <div class="grid grid-cols-2 gap-2">
+            <button type="button" id="btn-split-timer" onclick="setSplitMode('timer')" class="p-2.5 rounded-xl border bg-[#FFF0EB] border-[#E58A7B] text-[#E58A7B] font-bold text-xs flex flex-col items-center gap-1 cursor-pointer">
+              <span>⏱️ Theo thời gian thực</span>
+              <span id="split-timer-pct" class="text-[11px] font-normal text-[#2D2424]">67% - 33%</span>
+            </button>
+            <button type="button" id="btn-split-half" onclick="setSplitMode('50/50')" class="p-2.5 rounded-xl border bg-[#F7F2EC] border-[#EFE8DF] text-[#7E7272] font-bold text-xs flex flex-col items-center gap-1 cursor-pointer">
+              <span>🤝 Chia đều 50% - 50%</span>
+              <span class="text-[11px] font-normal text-[#7E7272]">Làm cùng từ đầu</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Tóm tắt phân chia -->
+        <div class="p-3.5 rounded-2xl bg-[#FAF6F1] border border-[#F0EAE1] text-xs space-y-1.5">
+          <div class="flex justify-between">
+            <span id="swap-preview-s1-name" class="font-bold text-[#2D2424]">KTV 1:</span>
+            <span id="swap-preview-s1-pct" class="font-extrabold text-[#2E7D6D]">67% hoa hồng</span>
+          </div>
+          <div class="flex justify-between">
+            <span id="swap-preview-s2-name" class="font-bold text-[#E58A7B]">KTV 2:</span>
+            <span id="swap-preview-s2-pct" class="font-extrabold text-[#E58A7B]">33% hoa hồng</span>
+          </div>
+        </div>
+
+        <div class="flex gap-2 pt-2">
+          <button type="button" onclick="removeSecondStaffFromLive()" class="flex-1 py-3 rounded-full bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold text-xs cursor-pointer">Chỉ 1 KTV (100%)</button>
+          <button type="button" onclick="saveSwapStaffSetting()" class="flex-1 py-3 rounded-full bg-[#E58A7B] hover:bg-[#D9796A] text-white font-bold text-xs shadow-md shadow-[#E58A7B]/20 cursor-pointer">Lưu Phân Chia</button>
+        </div>
+      </div>
+    </div>
+  </div>

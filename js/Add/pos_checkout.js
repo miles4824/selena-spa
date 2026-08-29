@@ -6,6 +6,7 @@ let currentCheckoutTip = 0;
 let checkoutPaymentMethod = 'Chuyển khoản';
 let liveTimerInterval = null;
 let currentLiveSession = null;
+let currentSplitMode = 'timer';
 
 function initMenuUI() {
   const menu = getStored('menu', DEFAULT_MENU);
@@ -56,13 +57,24 @@ function updatePOSStaffInfo() {
   const staffList = users.filter(u => !isUserOwner(u));
   const s1Select = document.getElementById('pos-staff1-select');
   const s2Select = document.getElementById('pos-staff2-select');
+  const isOwner = currentUser && isUserOwner(currentUser);
 
   if (s1Select) {
     s1Select.innerHTML = users.map(u => `
       <option value="${u.phone}">${isUserOwner(u) ? '👑' : '💆'} ${u.full_name} (${u.staff_id || u.phone})</option>
     `).join('');
-    if (currentUser) {
-      s1Select.value = currentUser.phone;
+
+    if (isOwner) {
+      s1Select.disabled = false;
+      document.getElementById('pos-staff1-role-hint')?.classList.add('hidden');
+      document.getElementById('pos-staff1-lock-icon')?.classList.add('hidden');
+      if (currentUser) s1Select.value = currentUser.phone;
+    } else {
+      // Đối với KTV: Khóa KTV 1 cố định là chính KTV đó
+      s1Select.disabled = true;
+      document.getElementById('pos-staff1-role-hint')?.classList.remove('hidden');
+      document.getElementById('pos-staff1-lock-icon')?.classList.remove('hidden');
+      if (currentUser) s1Select.value = currentUser.phone;
     }
   }
 
@@ -91,7 +103,7 @@ function toggleSecondStaff() {
   } else {
     box.classList.add('hidden');
     btnText.innerText = '+ Thêm KTV cùng làm';
-    btn.className = 'px-3 py-1.5 rounded-full text-xs font-bold bg-white text-[#E58A7B] border border-[#FCDFD7] hover:bg-[#FFF0EB] transition flex items-center gap-1.5 cursor-pointer shadow-sm';
+    btn.className = 'px-3 py-1.5 rounded-full text-xs font-bold bg-[#FAF6F1] text-[#E58A7B] border border-[#FCDFD7] hover:bg-[#FFF0EB] transition flex items-center gap-1.5 cursor-pointer shadow-sm';
   }
   lucide.createIcons();
   updatePOSCalculations();
@@ -214,10 +226,12 @@ function startLiveSession() {
     staff_1_id: staff1?.staff_id || 'KTV01',
     staff_1_name: staff1?.full_name || 'KTV 1',
     has_staff_2: Boolean(isStaff2Enabled && staff2),
-    staff_2_user_id: staff2?.user_id || staff2?.phone || '-',
-    staff_2_phone: staff2?.phone || '-',
-    staff_2_id: staff2?.staff_id || '-',
-    staff_2_name: staff2?.full_name || '-',
+    staff_2_user_id: staff2 ? (staff2.user_id || staff2.phone) : '-',
+    staff_2_phone: staff2 ? staff2.phone : '-',
+    staff_2_id: staff2 ? (staff2.staff_id || 'KTV02') : '-',
+    staff_2_name: staff2 ? staff2.full_name : '-',
+    staff_1_pct: isStaff2Enabled && staff2 ? 50 : 100,
+    staff_2_pct: isStaff2Enabled && staff2 ? 50 : 0,
     use_voucher: useVoucher
   };
 
@@ -245,6 +259,15 @@ function renderLiveSessionUI() {
   document.getElementById('live-staff-badge').innerText = '💆 ' + currentLiveSession.staff_1_name + (currentLiveSession.has_staff_2 ? ` & ${currentLiveSession.staff_2_name}` : '');
   document.getElementById('live-start-time-text').innerText = currentLiveSession.start_time;
   document.getElementById('live-target-time-text').innerText = currentLiveSession.duration_target_min + ' phút';
+
+  const splitText = document.getElementById('live-split-ratio-text');
+  if (splitText) {
+    if (currentLiveSession.has_staff_2) {
+      splitText.innerText = `🤝 2 KTV: ${currentLiveSession.staff_1_name} (${currentLiveSession.staff_1_pct || 50}%) & ${currentLiveSession.staff_2_name} (${currentLiveSession.staff_2_pct || 50}%)`;
+    } else {
+      splitText.innerText = '💆 1 KTV phụ trách trọn ca (100%)';
+    }
+  }
 
   clearInterval(liveTimerInterval);
   updateLiveTimerTick();
@@ -303,6 +326,128 @@ function restoreLiveSessionIfExists() {
 }
 
 // =============================================================
+// LOGIC ĐỔI / THÊM KTV GIỮA CA & CHIA HOA HỒNG THEO THỜI GIAN
+// =============================================================
+
+function openSwapStaffModal() {
+  if (!currentLiveSession) return;
+  const users = getStored('users', DEFAULT_USERS);
+  const staffList = users.filter(u => !isUserOwner(u));
+  const s2Select = document.getElementById('swap-staff2-select');
+
+  if (s2Select) {
+    s2Select.innerHTML = staffList.map(u => `
+      <option value="${u.phone}">💆 ${u.full_name} (${u.staff_id || u.phone})</option>
+    `).join('');
+    if (currentLiveSession.staff_2_phone && currentLiveSession.staff_2_phone !== '-') {
+      s2Select.value = currentLiveSession.staff_2_phone;
+    } else {
+      const other = staffList.find(u => normalizePhone(u.phone) !== normalizePhone(currentLiveSession.staff_1_phone));
+      if (other) s2Select.value = other.phone;
+    }
+  }
+
+  updateSwapPreviewDisplay();
+  const modal = document.getElementById('modal-swap-staff');
+  if (modal) modal.classList.remove('hidden');
+  lucide.createIcons();
+}
+
+function closeSwapStaffModal() {
+  const modal = document.getElementById('modal-swap-staff');
+  if (modal) modal.classList.add('hidden');
+}
+
+function setSplitMode(mode) {
+  currentSplitMode = mode;
+  const btnTimer = document.getElementById('btn-split-timer');
+  const btnHalf = document.getElementById('btn-split-half');
+
+  if (mode === 'timer') {
+    btnTimer.className = 'p-2.5 rounded-xl border bg-[#FFF0EB] border-[#E58A7B] text-[#E58A7B] font-bold text-xs flex flex-col items-center gap-1 cursor-pointer';
+    btnHalf.className = 'p-2.5 rounded-xl border bg-[#F7F2EC] border-[#EFE8DF] text-[#7E7272] font-bold text-xs flex flex-col items-center gap-1 cursor-pointer';
+  } else {
+    btnHalf.className = 'p-2.5 rounded-xl border bg-[#FFF0EB] border-[#E58A7B] text-[#E58A7B] font-bold text-xs flex flex-col items-center gap-1 cursor-pointer';
+    btnTimer.className = 'p-2.5 rounded-xl border bg-[#F7F2EC] border-[#EFE8DF] text-[#7E7272] font-bold text-xs flex flex-col items-center gap-1 cursor-pointer';
+  }
+  updateSwapPreviewDisplay();
+}
+
+function updateSwapPreviewDisplay() {
+  if (!currentLiveSession) return;
+  const targetMin = currentLiveSession.duration_target_min || 45;
+  const elapsedSec = Math.max(1, Math.floor((Date.now() - currentLiveSession.start_timestamp) / 1000));
+  const elapsedMin = Math.floor(elapsedSec / 60);
+
+  let s1Pct = 50;
+  let s2Pct = 50;
+
+  if (currentSplitMode === 'timer') {
+    let p1 = Math.min(90, Math.max(10, Math.round((elapsedMin / targetMin) * 100)));
+    s1Pct = p1;
+    s2Pct = 100 - p1;
+  }
+
+  document.getElementById('split-timer-pct').innerText = `${s1Pct}% - ${s2Pct}% (${elapsedMin}p đã làm)`;
+  document.getElementById('swap-preview-s1-name').innerText = currentLiveSession.staff_1_name + ':';
+  document.getElementById('swap-preview-s1-pct').innerText = `${s1Pct}% (${Math.round(currentLiveSession.price * 0.1 * s1Pct / 100).toLocaleString('vi-VN')} đ)`;
+  
+  const users = getStored('users', DEFAULT_USERS);
+  const s2Phone = document.getElementById('swap-staff2-select')?.value;
+  const s2 = users.find(u => normalizePhone(u.phone) === normalizePhone(s2Phone));
+  
+  document.getElementById('swap-preview-s2-name').innerText = (s2?.full_name || 'KTV 2') + ':';
+  document.getElementById('swap-preview-s2-pct').innerText = `${s2Pct}% (${Math.round(currentLiveSession.price * 0.1 * s2Pct / 100).toLocaleString('vi-VN')} đ)`;
+}
+
+function saveSwapStaffSetting() {
+  if (!currentLiveSession) return;
+  const users = getStored('users', DEFAULT_USERS);
+  const s2Phone = document.getElementById('swap-staff2-select')?.value;
+  const s2 = users.find(u => normalizePhone(u.phone) === normalizePhone(s2Phone));
+
+  const targetMin = currentLiveSession.duration_target_min || 45;
+  const elapsedSec = Math.max(1, Math.floor((Date.now() - currentLiveSession.start_timestamp) / 1000));
+  const elapsedMin = Math.floor(elapsedSec / 60);
+
+  let s1Pct = 50;
+  let s2Pct = 50;
+
+  if (currentSplitMode === 'timer') {
+    let p1 = Math.min(90, Math.max(10, Math.round((elapsedMin / targetMin) * 100)));
+    s1Pct = p1;
+    s2Pct = 100 - p1;
+  }
+
+  currentLiveSession.has_staff_2 = true;
+  currentLiveSession.staff_2_user_id = s2?.user_id || s2?.phone || '-';
+  currentLiveSession.staff_2_phone = s2?.phone || '-';
+  currentLiveSession.staff_2_id = s2?.staff_id || '-';
+  currentLiveSession.staff_2_name = s2?.full_name || 'KTV 2';
+  currentLiveSession.staff_1_pct = s1Pct;
+  currentLiveSession.staff_2_pct = s2Pct;
+
+  localStorage.setItem('selena_active_live_session', JSON.stringify(currentLiveSession));
+  closeSwapStaffModal();
+  renderLiveSessionUI();
+}
+
+function removeSecondStaffFromLive() {
+  if (!currentLiveSession) return;
+  currentLiveSession.has_staff_2 = false;
+  currentLiveSession.staff_2_user_id = '-';
+  currentLiveSession.staff_2_phone = '-';
+  currentLiveSession.staff_2_id = '-';
+  currentLiveSession.staff_2_name = '-';
+  currentLiveSession.staff_1_pct = 100;
+  currentLiveSession.staff_2_pct = 0;
+
+  localStorage.setItem('selena_active_live_session', JSON.stringify(currentLiveSession));
+  closeSwapStaffModal();
+  renderLiveSessionUI();
+}
+
+// =============================================================
 // BƯỚC 3: MỞ MODAL THANH TOÁN (PHA 1: KHÁCH XEM)
 // =============================================================
 
@@ -312,7 +457,7 @@ function openCheckoutModal() {
   const now = new Date();
   const endTimeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
   
-  // LỰA CHỌN 3: Tính số phút thập phân chính xác từng giây (VD: 1.4 phút, 45.5 phút)
+  // LỰA CHỌN 3: Tính số phút thập phân chính xác từng giây
   const elapsedSec = Math.max(1, Math.floor((Date.now() - (currentLiveSession.start_timestamp || Date.now())) / 1000));
   const elapsedMinutes = Math.round((elapsedSec / 60) * 10) / 10;
   
@@ -400,8 +545,10 @@ function updateStaffEarningPreview() {
   const rate1 = parsePercentage(staff1?.commission_rate);
 
   const totalComm = Math.round(currentLiveSession.price * (rate1 / 100));
-  let myComm = currentLiveSession.has_staff_2 ? Math.round(totalComm / 2) : totalComm;
-  let myTip = currentLiveSession.has_staff_2 ? Math.round(currentCheckoutTip / 2) : currentCheckoutTip;
+  const s1Pct = currentLiveSession.has_staff_2 ? (currentLiveSession.staff_1_pct || 50) : 100;
+  
+  let myComm = Math.round(totalComm * (s1Pct / 100));
+  let myTip = Math.round(currentCheckoutTip * (s1Pct / 100));
   let myTotal = myComm + myTip;
 
   const earnEl = document.getElementById('staff-step-ktv-earning');
@@ -418,18 +565,16 @@ function confirmSaveReceiptFromCheckout() {
   const rate1 = parsePercentage(staff1?.commission_rate);
   const rate2 = staff2 ? parsePercentage(staff2?.commission_rate) : 0;
 
-  const totalComm = Math.round(currentLiveSession.price * (rate1 / 100));
-  let comm1 = totalComm;
-  let comm2 = 0;
-  let tip1 = currentCheckoutTip;
-  let tip2 = 0;
+  const totalComm1 = Math.round(currentLiveSession.price * (rate1 / 100));
+  const totalComm2 = staff2 ? Math.round(currentLiveSession.price * (rate2 / 100)) : 0;
 
-  if (currentLiveSession.has_staff_2 && staff2) {
-    comm1 = Math.round(totalComm / 2);
-    comm2 = Math.round(currentLiveSession.price * (rate2 / 100) / 2);
-    tip1 = Math.round(currentCheckoutTip / 2);
-    tip2 = currentCheckoutTip - tip1;
-  }
+  const s1Pct = currentLiveSession.has_staff_2 ? (currentLiveSession.staff_1_pct || 50) : 100;
+  const s2Pct = currentLiveSession.has_staff_2 ? (currentLiveSession.staff_2_pct || 50) : 0;
+
+  let comm1 = Math.round(totalComm1 * (s1Pct / 100));
+  let comm2 = Math.round(totalComm2 * (s2Pct / 100));
+  let tip1 = Math.round(currentCheckoutTip * (s1Pct / 100));
+  let tip2 = currentCheckoutTip - tip1;
 
   const finalPrice = currentLiveSession.use_voucher ? 0 : currentLiveSession.price;
   const grandTotal = finalPrice + currentCheckoutTip;
@@ -455,10 +600,10 @@ function confirmSaveReceiptFromCheckout() {
 
     // KTV 2
     has_staff_2: currentLiveSession.has_staff_2,
-    staff_2_user_id: staff2?.user_id || staff2?.phone || '-',
-    staff_2_id: staff2?.staff_id || staff2?.phone || '-',
-    staff_2_phone: staff2?.phone || '-',
-    staff_2_name: staff2?.full_name || '-',
+    staff_2_user_id: staff2 ? (staff2.user_id || staff2.phone) : '-',
+    staff_2_id: staff2 ? (staff2.staff_id || 'KTV02') : '-',
+    staff_2_phone: staff2 ? staff2.phone : '-',
+    staff_2_name: staff2 ? staff2.full_name : '-',
     staff_2_comm: comm2,
     staff_2_tip: tip2,
 
@@ -510,8 +655,8 @@ function confirmSaveReceiptFromCheckout() {
 
   let successMsg = `✅ Đã hoàn tất và lưu hóa đơn ca gội!\n• Thời gian: ${receipt.start_time} - ${receipt.end_time} (${receipt.duration_min} phút)\n• Khách thanh toán: ${grandTotal.toLocaleString('vi-VN')} đ (${checkoutPaymentMethod})`;
   if (receipt.tip_amount > 0) successMsg += `\n• Tiền Tips: +${receipt.tip_amount.toLocaleString('vi-VN')} đ`;
-  successMsg += `\n• KTV 1 (${receipt.staff_1_name}): +${(comm1 + tip1).toLocaleString('vi-VN')} đ`;
-  if (receipt.has_staff_2) successMsg += `\n• KTV 2 (${receipt.staff_2_name}): +${(comm2 + tip2).toLocaleString('vi-VN')} đ`;
+  successMsg += `\n• KTV 1 (${receipt.staff_1_name} - ${s1Pct}%): +${(comm1 + tip1).toLocaleString('vi-VN')} đ`;
+  if (receipt.has_staff_2) successMsg += `\n• KTV 2 (${receipt.staff_2_name} - ${s2Pct}%): +${(comm2 + tip2).toLocaleString('vi-VN')} đ`;
   alert(successMsg);
 
   // Đóng modal và dọn live session
