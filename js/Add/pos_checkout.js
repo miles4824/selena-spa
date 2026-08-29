@@ -30,13 +30,52 @@ function initMenuUI() {
     <option value="${m.service_id}">${m.service_name} — ${m.price.toLocaleString('vi-VN')} đ (${m.duration_min}p)</option>
   `).join('');
 
+  if (!selectedComboId || !menu.some(m => m.service_id === selectedComboId)) {
+    selectedComboId = 'CB01'; // Mặc định là Combo 1
+  }
+  select.value = selectedComboId;
+
+  renderQuickComboButtons();
   restoreLiveSessionIfExists();
+}
+
+function renderQuickComboButtons() {
+  const quickContainer = document.getElementById('pos-quick-combos');
+  if (!quickContainer) return;
+
+  const quickList = [
+    { id: 'CB01', label: 'Combo 1' },
+    { id: 'CB02', label: 'Combo 2' },
+    { id: 'CB03', label: 'Combo 3' },
+    { id: 'CB04', label: 'Combo 4' },
+    { id: 'CB05', label: 'Combo 5' }
+  ];
+
+  quickContainer.innerHTML = quickList.map(item => {
+    const isSelected = item.id === selectedComboId;
+    return `
+      <button type="button" onclick="selectQuickCombo('${item.id}')" class="px-4 py-2.5 rounded-2xl text-xs font-extrabold border transition active:scale-95 cursor-pointer shadow-sm ${isSelected ? 'bg-[#FFF0EB] text-[#E58A7B] border-[#E58A7B] ring-1 ring-[#E58A7B]' : 'bg-[#FAF6F1] text-[#7E7272] border-[#EFE8DF] hover:bg-[#FFF0EB] hover:text-[#E58A7B]'}">
+        ${item.label}
+      </button>
+    `;
+  }).join('');
+}
+
+function selectQuickCombo(id) {
+  const select = document.getElementById('pos-service-select');
+  if (select) {
+    select.value = id;
+    selectedComboId = id;
+    renderQuickComboButtons();
+    updatePOSCalculations();
+  }
 }
 
 function onSelectServiceChange() {
   const select = document.getElementById('pos-service-select');
   if (select) {
     selectedComboId = select.value;
+    renderQuickComboButtons();
     updatePOSCalculations();
   }
 }
