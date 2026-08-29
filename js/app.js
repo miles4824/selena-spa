@@ -1,6 +1,6 @@
-// -------------------------------------------------------------
-// APP ROUTER, ANNOUNCEMENT CONTROLLER & LIFECYCLE INITIALIZER
-// -------------------------------------------------------------
+// =============================================================
+// APP ROUTER, TAB CONTROLLER & LIFECYCLE INITIALIZER
+// =============================================================
 function hideAllViews() {
   document.getElementById('view-home').classList.add('hidden');
   document.getElementById('view-add').classList.add('hidden');
@@ -69,89 +69,6 @@ function renderBottomNavDock() {
       `;
     }
   }).join('');
-}
-
-function renderAnnouncement() {
-  const ann = getStored('announcement', DEFAULT_ANNOUNCEMENT);
-  
-  const ktvContent = document.getElementById('home-announcement-content');
-  const ktvAuthor = document.getElementById('home-announcement-author');
-  const ktvDate = document.getElementById('home-announcement-date');
-
-  if (ktvContent) ktvContent.innerText = ann.content || DEFAULT_ANNOUNCEMENT.content;
-  if (ktvAuthor) ktvAuthor.innerText = ann.author || 'Miles (Chủ sáng lập)';
-  if (ktvDate) ktvDate.innerText = ann.date || 'Hôm nay';
-
-  const admContent = document.getElementById('admin-announcement-content');
-  const admDate = document.getElementById('admin-announcement-date');
-  if (admContent) admContent.innerText = ann.content || DEFAULT_ANNOUNCEMENT.content;
-  if (admDate) admDate.innerText = ann.date || 'Hôm nay';
-}
-
-function openEditAnnouncementModal() {
-  const ann = getStored('announcement', DEFAULT_ANNOUNCEMENT);
-  document.getElementById('input-announcement-content').value = ann.content || '';
-  document.getElementById('modal-edit-announcement').classList.remove('hidden');
-}
-
-function closeEditAnnouncementModal() {
-  document.getElementById('modal-edit-announcement').classList.add('hidden');
-}
-
-function handleSaveAnnouncement(e) {
-  e.preventDefault();
-  const content = document.getElementById('input-announcement-content').value.trim();
-  if (!content) return;
-
-  const now = new Date();
-  const dateStr = `${now.getDate().toString().padStart(2, '0')}/${(now.getMonth() + 1).toString().padStart(2, '0')}/${now.getFullYear()}`;
-  const ann = {
-    content: content,
-    author: currentUser?.full_name || 'Miles (Chủ sáng lập)',
-    date: dateStr
-  };
-
-  setStored('announcement', ann);
-  renderAnnouncement();
-  closeEditAnnouncementModal();
-
-  callGasApi('update_announcement', {
-    content: content,
-    author: ann.author
-  });
-
-  alert('✅ Đã cập nhật thông báo thành công! Nội dung đã được lưu và gửi đồng bộ đến Google Sheets.');
-}
-
-function loadKTVHomeStats() {
-  const receipts = getStored('receipts', []);
-  const todayStr = normalizeDateKey(new Date());
-  const staffPhone = normalizePhone(currentUser?.phone);
-  const staffCode = String(currentUser?.staff_id || '').trim();
-
-  // Update Greeting Name
-  const greetingNameEl = document.getElementById('home-greeting-name');
-  if (greetingNameEl) {
-    let displayName = currentUser?.full_name || 'bạn';
-    greetingNameEl.innerText = displayName;
-  }
-
-  let todayTours = 0;
-  let todayComm = 0;
-
-  receipts.forEach(r => {
-    const rDate = normalizeDateKey(r.date || r.created_at);
-    const rPhone = normalizePhone(r.staff_phone);
-    const rCode = String(r.staff_id || '').trim();
-
-    if (rDate === todayStr && ((staffPhone && rPhone === staffPhone) || (staffCode && rCode === staffCode))) {
-      todayTours += 1;
-      todayComm += (Number(r.commission_amount) || 0);
-    }
-  });
-
-  document.getElementById('home-today-tours').innerText = todayTours + ' ca';
-  document.getElementById('home-today-comm').innerText = todayComm.toLocaleString('vi-VN') + ' đ';
 }
 
 function loadHistoryView() {

@@ -1,6 +1,6 @@
-// -------------------------------------------------------------
-// DEFAULT DATA & APPLICATION CONSTANTS
-// -------------------------------------------------------------
+// =============================================================
+// SELENA SPA - GLOBAL CONFIG & CONSTANTS
+// =============================================================
 const DEFAULT_USERS = [
   { user_id: '0949251144', staff_id: 'FOUNDER_01', phone: '0949251144', password: '123', full_name: 'Miles', role: 'admin', salary_type: 'owner', commission_rate: 0, base_salary: 0, bank_name: 'MBBank', bank_account_no: '0949251144', bank_account_name: 'NGUYEN TIEN DUY' },
   { user_id: '0799625591', staff_id: 'KTV01', phone: '0799625591', password: '123', full_name: 'Thu Ngân', role: 'staff', salary_type: 'fixed', commission_rate: 10, base_salary: 2000000, bank_name: 'MBBank', bank_account_no: '0799625591', bank_account_name: 'NGUYEN THI THU NGAN' },
@@ -25,7 +25,7 @@ const DEFAULT_ANNOUNCEMENT = {
   date: '27/08/2026'
 };
 
-// Global App State
+// Global Application State
 let currentUser = null;
 let currentTab = 'home';
 let selectedComboId = 'CB01';
@@ -35,7 +35,7 @@ let useVoucher = false;
 let pendingReceipt = null;
 let isPasswordVisible = false;
 
-// LocalStorage Helpers
+// LocalStorage Helper Utilities
 function getStored(key, fallback) {
   try {
     const val = localStorage.getItem('selena_' + key);

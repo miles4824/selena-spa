@@ -1,6 +1,6 @@
-// -------------------------------------------------------------
-// GOOGLE APPS SCRIPT API INTEGRATION & OFFLINE SYNC
-// -------------------------------------------------------------
+// =============================================================
+// TAB 4: WALLET - GOOGLE APPS SCRIPT API & CLOUD SYNC
+// =============================================================
 const DEFAULT_GAS_URL = 'https://script.google.com/macros/s/AKfycbwQ-Dwr2zCWWWMPWBCyVIfwDirofgvjD8S7Ug-5OSNLHvM63Gw0nSCa10BqhpD5g8id/exec';
 
 function getGasUrl() {

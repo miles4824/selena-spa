@@ -1,6 +1,6 @@
-// -------------------------------------------------------------
-// PAYROLL & WORKING DAYS CALCULATION LOGIC
-// -------------------------------------------------------------
+// =============================================================
+// TAB 4: WALLET - KTV PAYROLL & WORKING DAYS PROGRESS
+// =============================================================
 function getMonthWorkingDaysInfo(targetDate = new Date()) {
   const year = targetDate.getFullYear();
   const month = targetDate.getMonth();

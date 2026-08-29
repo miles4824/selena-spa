@@ -22,7 +22,7 @@
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 
   <!-- CUSTOM STYLES -->
-  <link rel="stylesheet" href="css/styles.css?v=1.0.0" />
+  <link rel="stylesheet" href="css/style.css?v=1.0.0" />
 </head>
 <body class="min-h-screen flex flex-col selection:bg-[#E58A7B]/20">
   <!-- PULL TO REFRESH -->
@@ -654,13 +654,29 @@
   </div>
 
 
-  <!-- 5. NATIVE JAVASCRIPT MODULES (NẠP TRỰC TIẾP CHUẨN CHART-LOTT-V6) -->
+  <!-- 5. NATIVE JAVASCRIPT MODULES (CẤU TRÚC THEO TỪNG MÀN HÌNH CHUẨN MINDMAP) -->
+  <!-- A. Core & Auth -->
   <script src="js/config.js?v=1.0.0"></script>
-  <script src="js/gas_api.js?v=1.0.0"></script>
-  <script src="js/payroll.js?v=1.0.0"></script>
   <script src="js/auth.js?v=1.0.0"></script>
-  <script src="js/pos.js?v=1.0.0"></script>
-  <script src="js/admin.js?v=1.0.0"></script>
+
+  <!-- B. Home Tab Modules -->
+  <script src="js/Home/home_dashboard.js?v=1.0.0"></script>
+  <script src="js/Home/announcement.js?v=1.0.0"></script>
+
+  <!-- C. Add Tab Modules (Tạo Ca) -->
+  <script src="js/Add/pos_checkout.js?v=1.0.0"></script>
+  <script src="js/Add/vietqr.js?v=1.0.0"></script>
+
+  <!-- D. History Tab Modules (Lịch Sử) -->
+  <script src="js/History/routine_timeline.js?v=1.0.0"></script>
+  <script src="js/History/shop_receipts.js?v=1.0.0"></script>
+
+  <!-- E. Wallet Tab Modules (Thu Nhập & Tài Chính) -->
+  <script src="js/Wallet/payroll.js?v=1.0.0"></script>
+  <script src="js/Wallet/expenses.js?v=1.0.0"></script>
+  <script src="js/Wallet/gas_api.js?v=1.0.0"></script>
+
+  <!-- F. App Controller & Router -->
   <script src="js/app.js?v=1.0.0"></script>
 </body>
 </html>
