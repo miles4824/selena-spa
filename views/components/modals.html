@@ -54,7 +54,7 @@
         <!-- 📱 KHUNG MÃ QR VIB CỦA TIỆM (ĐỂ ĐƯA KHÁCH QUÉT) -->
         <div id="chk-qr-display-box" class="p-4 rounded-3xl bg-white border border-[#F0EAE1] text-center space-y-2.5 shadow-sm">
           <div class="p-1.5 bg-white rounded-2xl border border-[#F0EAE1] shadow-inner inline-block mx-auto">
-            <img src="images/qr_bank.jpg?v=0.0.2.2" alt="Mã QR VIB" class="w-52 h-auto max-h-60 object-contain rounded-xl mx-auto">
+            <img src="images/qr_bank.jpg?v=0.0.3.3" alt="Mã QR VIB" class="w-52 h-auto max-h-60 object-contain rounded-xl mx-auto">
           </div>
           <div class="text-xs text-[#7E7272]">
             <div>Ngân hàng: <b class="text-[#2D2424]">VIB (Quốc Tế)</b></div>
@@ -72,7 +72,7 @@
       </div>
 
       <!-- ========================================================= -->
-      <!-- 🔒 PHA 2: MÀN HÌNH NỘI BỘ KTV (NHẬP TIỀN TIPS SAU KHI KHÁCH ĐI) -->
+      <!-- 🔒 PHA 2: MÀN HÌNH NỘI BỘ KTV (GHI NHẬN TIPS RIÊNG BIỆT 1 HOẶC 2 KTV) -->
       <!-- ========================================================= -->
       <div id="checkout-step-staff" class="hidden space-y-4">
         <div class="flex justify-between items-center">
@@ -85,45 +85,93 @@
           <button type="button" onclick="backToCustomerStep()" class="text-xs text-[#7E7272] hover:text-[#E58A7B] underline cursor-pointer">Quay lại</button>
         </div>
 
-        <div class="p-3.5 rounded-2xl bg-[#FAF6F1] border border-[#F0EAE1] text-xs text-[#7E7272] space-y-1">
-          <div class="flex justify-between">
-            <span>Tiền dịch vụ ca:</span>
-            <span id="staff-step-service-price" class="font-bold text-[#2D2424]">99.000 đ</span>
-          </div>
-          <div class="flex justify-between">
-            <span>Hình thức thanh toán:</span>
-            <span id="staff-step-pay-method" class="font-semibold text-[#2E7D6D]">Chuyển khoản</span>
-          </div>
+        <div class="p-3 rounded-2xl bg-[#FAF6F1] border border-[#F0EAE1] text-xs text-[#7E7272] flex justify-between items-center">
+          <span>Tiền dịch vụ ca: <b id="staff-step-service-price" class="text-[#2D2424]">64.000 đ</b></span>
+          <span class="font-semibold text-[#2E7D6D]" id="staff-step-pay-method">Tiền mặt</span>
         </div>
 
-        <!-- Ô NHẬP TIPS KÍN ĐÁO -->
-        <div class="space-y-2.5 p-4 rounded-2xl bg-[#FFF5F2] border border-[#FCDFD7]">
+        <!-- ======================================================= -->
+        <!-- KHU VỰC NHẬP TIPS KTV 1 -->
+        <!-- ======================================================= -->
+        <div class="space-y-2 p-3.5 rounded-2xl bg-[#FFF5F2] border border-[#FCDFD7]">
           <div class="flex justify-between items-center">
             <label class="text-xs sm:text-sm font-bold text-[#2D2424] flex items-center gap-1.5">
-              <i data-lucide="heart" class="w-4 h-4 text-[#E58A7B]"></i> Khách có boa thêm tiền Tips không?
+              <i data-lucide="heart" class="w-4 h-4 text-[#E58A7B]"></i>
+              <span id="label-tip-ktv1">Tips cho KTV 1 (Thu Ngân):</span>
             </label>
-            <span class="text-[11px] text-[#2E7D6D] font-bold">100% thuộc KTV</span>
+            <span class="text-[11px] text-[#2E7D6D] font-bold">100% KTV</span>
           </div>
 
           <div class="relative">
-            <input type="number" id="chk-tip-input" oninput="onCheckoutTipChange(this.value)" placeholder="0 đ (bấm 0 đ nếu không có)" class="w-full bg-white border border-[#FCDFD7] rounded-xl p-3 pl-10 text-base font-extrabold text-[#2D2424] focus:outline-none focus:border-[#E58A7B] font-mono">
-            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-bold text-[#A39696]">₫</span>
+            <input type="number" id="chk-tip-input-s1" oninput="onStaff1TipChange(this.value)" placeholder="0 đ (để trống = 0 đ)" class="w-full bg-white border border-[#FCDFD7] rounded-xl p-2.5 pl-9 text-base font-extrabold text-[#2D2424] focus:outline-none focus:border-[#E58A7B] font-mono">
+            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-bold text-[#A39696]">₫</span>
           </div>
 
-          <!-- Quick Tip Buttons -->
-          <div class="flex flex-wrap gap-2 pt-1">
-            <button type="button" onclick="setCheckoutQuickTip(0)" class="px-3 py-1 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-[#7E7272] border border-[#EFE8DF] transition cursor-pointer shadow-sm">Không tip (0 đ)</button>
-            <button type="button" onclick="setCheckoutQuickTip(20000)" class="px-3 py-1 rounded-full text-xs font-bold bg-white hover:bg-[#FFF0EB] text-[#2D2424] hover:text-[#E58A7B] border border-[#EFE8DF] transition cursor-pointer shadow-sm">+20.000 đ</button>
-            <button type="button" onclick="setCheckoutQuickTip(50000)" class="px-3 py-1 rounded-full text-xs font-bold bg-white hover:bg-[#FFF0EB] text-[#2D2424] hover:text-[#E58A7B] border border-[#EFE8DF] transition cursor-pointer shadow-sm">+50.000 đ</button>
-            <button type="button" onclick="setCheckoutQuickTip(100000)" class="px-3 py-1 rounded-full text-xs font-bold bg-white hover:bg-[#FFF0EB] text-[#2D2424] hover:text-[#E58A7B] border border-[#EFE8DF] transition cursor-pointer shadow-sm">+100.000 đ</button>
+          <!-- Quick Tip Buttons KTV 1 (+5k, +10k, +20k, +30k, +50k, +100k, 0đ) -->
+          <div class="flex flex-wrap gap-1.5 pt-0.5">
+            <button type="button" onclick="setKTV1QuickTip(0)" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-white hover:bg-slate-100 text-[#7E7272] border border-[#EFE8DF] transition cursor-pointer shadow-sm">0 đ</button>
+            <button type="button" onclick="setKTV1QuickTip(5000)" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-white hover:bg-[#FFF0EB] text-[#2D2424] hover:text-[#E58A7B] border border-[#EFE8DF] transition cursor-pointer shadow-sm">+5k</button>
+            <button type="button" onclick="setKTV1QuickTip(10000)" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-white hover:bg-[#FFF0EB] text-[#2D2424] hover:text-[#E58A7B] border border-[#EFE8DF] transition cursor-pointer shadow-sm">+10k</button>
+            <button type="button" onclick="setKTV1QuickTip(20000)" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-white hover:bg-[#FFF0EB] text-[#2D2424] hover:text-[#E58A7B] border border-[#EFE8DF] transition cursor-pointer shadow-sm">+20k</button>
+            <button type="button" onclick="setKTV1QuickTip(30000)" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-white hover:bg-[#FFF0EB] text-[#2D2424] hover:text-[#E58A7B] border border-[#EFE8DF] transition cursor-pointer shadow-sm">+30k</button>
+            <button type="button" onclick="setKTV1QuickTip(50000)" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-white hover:bg-[#FFF0EB] text-[#2D2424] hover:text-[#E58A7B] border border-[#EFE8DF] transition cursor-pointer shadow-sm">+50k</button>
+            <button type="button" onclick="setKTV1QuickTip(100000)" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-white hover:bg-[#FFF0EB] text-[#2D2424] hover:text-[#E58A7B] border border-[#EFE8DF] transition cursor-pointer shadow-sm">+100k</button>
+          </div>
+        </div>
+
+        <!-- ======================================================= -->
+        <!-- KHU VỰC NHẬP TIPS KTV 2 (CHỈ HIỆN KHI CÓ 2 KTV) -->
+        <!-- ======================================================= -->
+        <div id="box-checkout-tip-s2" class="hidden space-y-2 p-3.5 rounded-2xl bg-[#E8F8F5]/80 border border-[#B7EBDD]">
+          <div class="flex justify-between items-center">
+            <label class="text-xs sm:text-sm font-bold text-[#2D2424] flex items-center gap-1.5">
+              <i data-lucide="gift" class="w-4 h-4 text-[#2E7D6D]"></i>
+              <span id="label-tip-ktv2">Tips cho KTV 2 (Mai Lan):</span>
+            </label>
+            <span class="text-[11px] text-[#2E7D6D] font-bold">100% KTV</span>
+          </div>
+
+          <div class="relative">
+            <input type="number" id="chk-tip-input-s2" oninput="onStaff2TipChange(this.value)" placeholder="0 đ (để trống = 0 đ)" class="w-full bg-white border border-[#B7EBDD] rounded-xl p-2.5 pl-9 text-base font-extrabold text-[#2D2424] focus:outline-none focus:border-[#2E7D6D] font-mono">
+            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-bold text-[#A39696]">₫</span>
+          </div>
+
+          <!-- Quick Tip Buttons KTV 2 -->
+          <div class="flex flex-wrap gap-1.5 pt-0.5">
+            <button type="button" onclick="setKTV2QuickTip(0)" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-white hover:bg-slate-100 text-[#7E7272] border border-[#EFE8DF] transition cursor-pointer shadow-sm">0 đ</button>
+            <button type="button" onclick="setKTV2QuickTip(5000)" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-white hover:bg-[#E8F8F5] text-[#2D2424] hover:text-[#2E7D6D] border border-[#EFE8DF] transition cursor-pointer shadow-sm">+5k</button>
+            <button type="button" onclick="setKTV2QuickTip(10000)" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-white hover:bg-[#E8F8F5] text-[#2D2424] hover:text-[#2E7D6D] border border-[#EFE8DF] transition cursor-pointer shadow-sm">+10k</button>
+            <button type="button" onclick="setKTV2QuickTip(20000)" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-white hover:bg-[#E8F8F5] text-[#2D2424] hover:text-[#2E7D6D] border border-[#EFE8DF] transition cursor-pointer shadow-sm">+20k</button>
+            <button type="button" onclick="setKTV2QuickTip(30000)" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-white hover:bg-[#E8F8F5] text-[#2D2424] hover:text-[#2E7D6D] border border-[#EFE8DF] transition cursor-pointer shadow-sm">+30k</button>
+            <button type="button" onclick="setKTV2QuickTip(50000)" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-white hover:bg-[#E8F8F5] text-[#2D2424] hover:text-[#2E7D6D] border border-[#EFE8DF] transition cursor-pointer shadow-sm">+50k</button>
+            <button type="button" onclick="setKTV2QuickTip(100000)" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-white hover:bg-[#E8F8F5] text-[#2D2424] hover:text-[#2E7D6D] border border-[#EFE8DF] transition cursor-pointer shadow-sm">+100k</button>
+          </div>
+
+          <!-- Nút chia đôi tip chung -->
+          <div class="pt-1 flex justify-between items-center text-xs">
+            <span class="text-[#7E7272]">Khách boa chung 1 khoản?</span>
+            <div class="flex gap-1.5">
+              <button type="button" onclick="splitSharedTip(20000)" class="px-2 py-0.5 rounded-full bg-white text-[#2E7D6D] font-bold border border-[#B7EBDD] hover:bg-[#E8F8F5] transition cursor-pointer">Chia 20k (10k-10k)</button>
+              <button type="button" onclick="splitSharedTip(50000)" class="px-2 py-0.5 rounded-full bg-white text-[#2E7D6D] font-bold border border-[#B7EBDD] hover:bg-[#E8F8F5] transition cursor-pointer">Chia 50k (25k-25k)</button>
+            </div>
           </div>
         </div>
 
         <!-- TỔNG KẾT THU NHẬP CA & LƯU -->
-        <div class="pt-2 space-y-3">
-          <div class="p-3.5 rounded-2xl bg-[#E8F8F5] border border-[#B7EBDD] flex justify-between items-center text-xs sm:text-sm">
-            <span class="font-bold text-[#2E7D6D]">Thu nhập KTV ca này nhận:</span>
-            <span id="staff-step-ktv-earning" class="text-base font-extrabold text-[#2E7D6D]">+9.900 đ</span>
+        <div class="pt-1 space-y-2.5">
+          <div class="p-3 rounded-2xl bg-[#FAF6F1] border border-[#F0EAE1] space-y-1 text-xs">
+            <div class="flex justify-between items-center text-[#2D2424]">
+              <span id="staff-step-ktv1-summary">Thu nhập KTV 1:</span>
+              <span id="staff-step-ktv1-earning" class="font-extrabold text-[#2E7D6D]">+6.400 đ</span>
+            </div>
+            <div id="box-ktv2-earning-summary" class="hidden flex justify-between items-center text-[#2D2424]">
+              <span id="staff-step-ktv2-summary">Thu nhập KTV 2:</span>
+              <span id="staff-step-ktv2-earning" class="font-extrabold text-[#2E7D6D]">+0 đ</span>
+            </div>
+            <div class="flex justify-between items-center pt-1 border-t border-[#F0EAE1] font-bold">
+              <span class="text-[#7E7272]">Tổng khách thanh toán (gồm tip):</span>
+              <span id="staff-step-grand-total" class="text-sm font-extrabold text-[#E58A7B]">64.000 đ</span>
+            </div>
           </div>
 
           <button type="button" onclick="confirmSaveReceiptFromCheckout()" class="w-full py-4 rounded-full bg-[#E58A7B] hover:bg-[#D9796A] text-white font-extrabold text-base shadow-lg shadow-[#E58A7B]/25 flex items-center justify-center gap-2 transition active:scale-95 cursor-pointer">
@@ -134,6 +182,60 @@
 
       </div>
 
+    </div>
+  </div>
+
+  <!-- MODAL ĐỔI / THÊM KTV GIỮA CA & CHIA THEO THỜI GIAN THỰC TẾ -->
+  <div id="modal-swap-staff" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md overflow-y-auto">
+    <div class="w-full max-w-md spa-modal p-6 sm:p-7 relative space-y-4 my-auto">
+      <div class="flex justify-between items-center">
+        <h3 class="text-lg font-extrabold text-[#2D2424] flex items-center gap-2">
+          <i data-lucide="user-switch" class="w-5 h-5 text-[#E58A7B]"></i> Thay Đổi / Thêm KTV Ca Này
+        </h3>
+        <button type="button" onclick="closeSwapStaffModal()" class="p-2 rounded-full bg-[#F7F2EC] hover:bg-[#FFF0EB] text-[#7E7272] hover:text-[#E58A7B] transition cursor-pointer">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <p class="text-xs text-[#7E7272]">Khi đổi hoặc thêm KTV giữa ca, hệ thống sẽ tự động tính số phút đã làm so với tổng thời gian combo để chia hoa hồng công bằng!</p>
+
+      <div class="space-y-3.5">
+        <div>
+          <label class="block text-xs font-bold text-[#7E7272] mb-1">Chọn KTV thứ 2 cùng làm / tiếp quản:</label>
+          <select id="swap-staff2-select" class="w-full bg-[#F7F2EC] border border-[#EFE8DF] rounded-xl p-3.5 text-sm font-bold text-[#2D2424] focus:outline-none focus:border-[#E58A7B]"></select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-[#7E7272] mb-1">Hình thức phân chia hoa hồng:</label>
+          <div class="grid grid-cols-2 gap-2">
+            <button type="button" id="btn-split-timer" onclick="setSplitMode('timer')" class="p-2.5 rounded-xl border bg-[#FFF0EB] border-[#E58A7B] text-[#E58A7B] font-bold text-xs flex flex-col items-center gap-1 cursor-pointer">
+              <span>⏱️ Theo thời gian thực</span>
+              <span id="split-timer-pct" class="text-[11px] font-normal text-[#2D2424]">67% - 33%</span>
+            </button>
+            <button type="button" id="btn-split-half" onclick="setSplitMode('50/50')" class="p-2.5 rounded-xl border bg-[#F7F2EC] border-[#EFE8DF] text-[#7E7272] font-bold text-xs flex flex-col items-center gap-1 cursor-pointer">
+              <span>🤝 Chia đều 50% - 50%</span>
+              <span class="text-[11px] font-normal text-[#7E7272]">Làm cùng từ đầu</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Tóm tắt phân chia -->
+        <div class="p-3.5 rounded-2xl bg-[#FAF6F1] border border-[#F0EAE1] text-xs space-y-1.5">
+          <div class="flex justify-between">
+            <span id="swap-preview-s1-name" class="font-bold text-[#2D2424]">KTV 1:</span>
+            <span id="swap-preview-s1-pct" class="font-extrabold text-[#2E7D6D]">67% hoa hồng</span>
+          </div>
+          <div class="flex justify-between">
+            <span id="swap-preview-s2-name" class="font-bold text-[#E58A7B]">KTV 2:</span>
+            <span id="swap-preview-s2-pct" class="font-extrabold text-[#E58A7B]">33% hoa hồng</span>
+          </div>
+        </div>
+
+        <div class="flex gap-2 pt-2">
+          <button type="button" onclick="removeSecondStaffFromLive()" class="flex-1 py-3 rounded-full bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold text-xs cursor-pointer">Chỉ 1 KTV (100%)</button>
+          <button type="button" onclick="saveSwapStaffSetting()" class="flex-1 py-3 rounded-full bg-[#E58A7B] hover:bg-[#D9796A] text-white font-bold text-xs shadow-md shadow-[#E58A7B]/20 cursor-pointer">Lưu Phân Chia</button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -195,62 +297,5 @@
           </button>
         </div>
       </form>
-    </div>
-  </div>
-
-
-  <!-- ============================================================= -->
-  <!-- MODAL ĐỔI / THÊM KTV GIỮA CA & CHIA THEO THỜI GIAN THỰC TẾ -->
-  <!-- ============================================================= -->
-  <div id="modal-swap-staff" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md overflow-y-auto">
-    <div class="w-full max-w-md spa-modal p-6 sm:p-7 relative space-y-4 my-auto">
-      <div class="flex justify-between items-center">
-        <h3 class="text-lg font-extrabold text-[#2D2424] flex items-center gap-2">
-          <i data-lucide="user-switch" class="w-5 h-5 text-[#E58A7B]"></i> Thay Đổi / Thêm KTV Ca Này
-        </h3>
-        <button type="button" onclick="closeSwapStaffModal()" class="p-2 rounded-full bg-[#F7F2EC] hover:bg-[#FFF0EB] text-[#7E7272] hover:text-[#E58A7B] transition cursor-pointer">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
-      </div>
-
-      <p class="text-xs text-[#7E7272]">Khi đổi hoặc thêm KTV giữa ca, hệ thống sẽ tự động tính số phút đã làm so với tổng thời gian combo để chia hoa hồng công bằng!</p>
-
-      <div class="space-y-3.5">
-        <div>
-          <label class="block text-xs font-bold text-[#7E7272] mb-1">Chọn KTV thứ 2 cùng làm / tiếp quản:</label>
-          <select id="swap-staff2-select" class="w-full bg-[#F7F2EC] border border-[#EFE8DF] rounded-xl p-3.5 text-sm font-bold text-[#2D2424] focus:outline-none focus:border-[#E58A7B]"></select>
-        </div>
-
-        <div>
-          <label class="block text-xs font-bold text-[#7E7272] mb-1">Hình thức phân chia:</label>
-          <div class="grid grid-cols-2 gap-2">
-            <button type="button" id="btn-split-timer" onclick="setSplitMode('timer')" class="p-2.5 rounded-xl border bg-[#FFF0EB] border-[#E58A7B] text-[#E58A7B] font-bold text-xs flex flex-col items-center gap-1 cursor-pointer">
-              <span>⏱️ Theo thời gian thực</span>
-              <span id="split-timer-pct" class="text-[11px] font-normal text-[#2D2424]">67% - 33%</span>
-            </button>
-            <button type="button" id="btn-split-half" onclick="setSplitMode('50/50')" class="p-2.5 rounded-xl border bg-[#F7F2EC] border-[#EFE8DF] text-[#7E7272] font-bold text-xs flex flex-col items-center gap-1 cursor-pointer">
-              <span>🤝 Chia đều 50% - 50%</span>
-              <span class="text-[11px] font-normal text-[#7E7272]">Làm cùng từ đầu</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- Tóm tắt phân chia -->
-        <div class="p-3.5 rounded-2xl bg-[#FAF6F1] border border-[#F0EAE1] text-xs space-y-1.5">
-          <div class="flex justify-between">
-            <span id="swap-preview-s1-name" class="font-bold text-[#2D2424]">KTV 1:</span>
-            <span id="swap-preview-s1-pct" class="font-extrabold text-[#2E7D6D]">67% hoa hồng</span>
-          </div>
-          <div class="flex justify-between">
-            <span id="swap-preview-s2-name" class="font-bold text-[#E58A7B]">KTV 2:</span>
-            <span id="swap-preview-s2-pct" class="font-extrabold text-[#E58A7B]">33% hoa hồng</span>
-          </div>
-        </div>
-
-        <div class="flex gap-2 pt-2">
-          <button type="button" onclick="removeSecondStaffFromLive()" class="flex-1 py-3 rounded-full bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold text-xs cursor-pointer">Chỉ 1 KTV (100%)</button>
-          <button type="button" onclick="saveSwapStaffSetting()" class="flex-1 py-3 rounded-full bg-[#E58A7B] hover:bg-[#D9796A] text-white font-bold text-xs shadow-md shadow-[#E58A7B]/20 cursor-pointer">Lưu Phân Chia</button>
-        </div>
-      </div>
     </div>
   </div>

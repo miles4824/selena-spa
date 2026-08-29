@@ -2,7 +2,8 @@
 // TAB 2: ADD - POS CHECKOUT, LIVE SESSION TIMER & 2-PHASE CHECKOUT
 // =============================================================
 let isStaff2Enabled = false;
-let currentCheckoutTip = 0;
+let currentCheckoutTipS1 = 0;
+let currentCheckoutTipS2 = 0;
 let checkoutPaymentMethod = 'Chuyển khoản';
 let liveTimerInterval = null;
 let currentLiveSession = null;
@@ -511,12 +512,40 @@ function setCheckoutPayment(method) {
 // CHUYỂN SANG PHA 2: KTV GHI NHẬN TIPS KÍN ĐÁO SAU KHI KHÁCH ĐÃ THANH TOÁN
 // =============================================================
 
+// =============================================================
+// CHUYỂN SANG PHA 2: KTV GHI NHẬN TIPS RIÊNG BIỆT KÍN ĐÁO
+// =============================================================
+
 function goToStaffTipStep() {
   document.getElementById('checkout-step-customer')?.classList.add('hidden');
   document.getElementById('checkout-step-staff')?.classList.remove('hidden');
 
   document.getElementById('staff-step-service-price').innerText = currentLiveSession?.use_voucher ? '0 đ (Voucher)' : (currentLiveSession?.price?.toLocaleString('vi-VN') + ' đ');
   document.getElementById('staff-step-pay-method').innerText = checkoutPaymentMethod;
+
+  currentCheckoutTipS1 = 0;
+  currentCheckoutTipS2 = 0;
+  
+  const inputS1 = document.getElementById('chk-tip-input-s1');
+  const inputS2 = document.getElementById('chk-tip-input-s2');
+  if (inputS1) inputS1.value = '';
+  if (inputS2) inputS2.value = '';
+
+  const labelS1 = document.getElementById('label-tip-ktv1');
+  const labelS2 = document.getElementById('label-tip-ktv2');
+  const boxS2 = document.getElementById('box-checkout-tip-s2');
+  const summaryBoxS2 = document.getElementById('box-ktv2-earning-summary');
+
+  if (currentLiveSession.has_staff_2) {
+    if (labelS1) labelS1.innerText = `Tips cho KTV 1 (${currentLiveSession.staff_1_name}):`;
+    if (labelS2) labelS2.innerText = `Tips cho KTV 2 (${currentLiveSession.staff_2_name}):`;
+    if (boxS2) boxS2.classList.remove('hidden');
+    if (summaryBoxS2) summaryBoxS2.classList.remove('hidden');
+  } else {
+    if (labelS1) labelS1.innerText = `Khách có boa tiền Tips cho bạn không?`;
+    if (boxS2) boxS2.classList.add('hidden');
+    if (summaryBoxS2) summaryBoxS2.classList.add('hidden');
+  }
 
   updateStaffEarningPreview();
   lucide.createIcons();
@@ -528,15 +557,41 @@ function backToCustomerStep() {
   lucide.createIcons();
 }
 
-function onCheckoutTipChange(val) {
-  currentCheckoutTip = Math.max(0, Number(val) || 0);
+function onStaff1TipChange(val) {
+  currentCheckoutTipS1 = Math.max(0, Number(val) || 0);
   updateStaffEarningPreview();
 }
 
-function setCheckoutQuickTip(amount) {
-  currentCheckoutTip = amount;
-  const input = document.getElementById('chk-tip-input');
+function onStaff2TipChange(val) {
+  currentCheckoutTipS2 = Math.max(0, Number(val) || 0);
+  updateStaffEarningPreview();
+}
+
+function setKTV1QuickTip(amount) {
+  currentCheckoutTipS1 = amount;
+  const input = document.getElementById('chk-tip-input-s1');
   if (input) input.value = amount > 0 ? amount : '';
+  updateStaffEarningPreview();
+}
+
+function setKTV2QuickTip(amount) {
+  currentCheckoutTipS2 = amount;
+  const input = document.getElementById('chk-tip-input-s2');
+  if (input) input.value = amount > 0 ? amount : '';
+  updateStaffEarningPreview();
+}
+
+function splitSharedTip(totalAmount) {
+  let half1 = Math.round(totalAmount / 2);
+  let half2 = totalAmount - half1;
+  currentCheckoutTipS1 = half1;
+  currentCheckoutTipS2 = half2;
+
+  const inputS1 = document.getElementById('chk-tip-input-s1');
+  const inputS2 = document.getElementById('chk-tip-input-s2');
+  if (inputS1) inputS1.value = half1;
+  if (inputS2) inputS2.value = half2;
+
   updateStaffEarningPreview();
 }
 
@@ -544,17 +599,39 @@ function updateStaffEarningPreview() {
   if (!currentLiveSession) return;
   const users = getStored('users', DEFAULT_USERS);
   const staff1 = users.find(u => normalizePhone(u.phone) === normalizePhone(currentLiveSession.staff_1_phone)) || currentUser;
-  const rate1 = parsePercentage(staff1?.commission_rate);
+  const staff2 = currentLiveSession.has_staff_2 ? users.find(u => normalizePhone(u.phone) === normalizePhone(currentLiveSession.staff_2_phone)) : null;
 
-  const totalComm = Math.round(currentLiveSession.price * (rate1 / 100));
+  const rate1 = parsePercentage(staff1?.commission_rate) || 10;
+  const rate2 = (staff2 && parsePercentage(staff2?.commission_rate) > 0) ? parsePercentage(staff2?.commission_rate) : (rate1 || 10);
+
+  const totalComm1 = Math.round(currentLiveSession.price * (rate1 / 100));
+  const totalComm2 = staff2 ? Math.round(currentLiveSession.price * (rate2 / 100)) : 0;
+
   const s1Pct = currentLiveSession.has_staff_2 ? (currentLiveSession.staff_1_pct || 50) : 100;
-  
-  let myComm = Math.round(totalComm * (s1Pct / 100));
-  let myTip = Math.round(currentCheckoutTip * (s1Pct / 100));
-  let myTotal = myComm + myTip;
+  const s2Pct = currentLiveSession.has_staff_2 ? (currentLiveSession.staff_2_pct || 50) : 0;
 
-  const earnEl = document.getElementById('staff-step-ktv-earning');
-  if (earnEl) earnEl.innerText = `+${myTotal.toLocaleString('vi-VN')} đ (Tour: ${myComm.toLocaleString('vi-VN')}${myTip > 0 ? ` + Tip: ${myTip.toLocaleString('vi-VN')}` : ''})`;
+  let comm1 = Math.round(totalComm1 * (s1Pct / 100));
+  let comm2 = Math.round(totalComm2 * (s2Pct / 100));
+
+  let tip1 = currentCheckoutTipS1;
+  let tip2 = currentLiveSession.has_staff_2 ? currentCheckoutTipS2 : 0;
+
+  const earnEl1 = document.getElementById('staff-step-ktv1-earning');
+  const sumLabel1 = document.getElementById('staff-step-ktv1-summary');
+  if (sumLabel1) sumLabel1.innerText = `Thu nhập ${currentLiveSession.staff_1_name}:`;
+  if (earnEl1) earnEl1.innerText = `+${(comm1 + tip1).toLocaleString('vi-VN')} đ (Tour: ${comm1.toLocaleString('vi-VN')}${tip1 > 0 ? ` + Tip: ${tip1.toLocaleString('vi-VN')}` : ''})`;
+
+  if (currentLiveSession.has_staff_2) {
+    const earnEl2 = document.getElementById('staff-step-ktv2-earning');
+    const sumLabel2 = document.getElementById('staff-step-ktv2-summary');
+    if (sumLabel2) sumLabel2.innerText = `Thu nhập ${currentLiveSession.staff_2_name}:`;
+    if (earnEl2) earnEl2.innerText = `+${(comm2 + tip2).toLocaleString('vi-VN')} đ (Tour: ${comm2.toLocaleString('vi-VN')}${tip2 > 0 ? ` + Tip: ${tip2.toLocaleString('vi-VN')}` : ''})`;
+  }
+
+  const basePrice = currentLiveSession.use_voucher ? 0 : currentLiveSession.price;
+  const grandTotal = basePrice + tip1 + tip2;
+  const totalEl = document.getElementById('staff-step-grand-total');
+  if (totalEl) totalEl.innerText = `${grandTotal.toLocaleString('vi-VN')} đ`;
 }
 
 function confirmSaveReceiptFromCheckout() {
@@ -575,11 +652,13 @@ function confirmSaveReceiptFromCheckout() {
 
   let comm1 = Math.round(totalComm1 * (s1Pct / 100));
   let comm2 = Math.round(totalComm2 * (s2Pct / 100));
-  let tip1 = Math.round(currentCheckoutTip * (s1Pct / 100));
-  let tip2 = currentCheckoutTip - tip1;
+
+  let tip1 = currentCheckoutTipS1;
+  let tip2 = currentLiveSession.has_staff_2 ? currentCheckoutTipS2 : 0;
+  let totalTip = tip1 + tip2;
 
   const finalPrice = currentLiveSession.use_voucher ? 0 : currentLiveSession.price;
-  const grandTotal = finalPrice + currentCheckoutTip;
+  const grandTotal = finalPrice + totalTip;
   const receiptId = 'HD' + Date.now().toString().slice(-6);
 
   const receipt = {
@@ -587,7 +666,7 @@ function confirmSaveReceiptFromCheckout() {
     service_id: currentLiveSession.service_id,
     service_name: currentLiveSession.service_name,
     price: currentLiveSession.price,
-    tip_amount: currentCheckoutTip,
+    tip_amount: totalTip,
     total_paid: grandTotal,
     customer_phone: currentLiveSession.customer_phone,
     customer_name: currentLiveSession.customer_name,
@@ -655,10 +734,15 @@ function confirmSaveReceiptFromCheckout() {
   callGasApi('create_receipt', receipt);
   confetti({ particleCount: 60, spread: 70, origin: { y: 0.6 } });
 
-  let successMsg = `✅ Đã hoàn tất và lưu hóa đơn ca gội!\n• Thời gian: ${receipt.start_time} - ${receipt.end_time} (${receipt.duration_min} phút)\n• Khách thanh toán: ${grandTotal.toLocaleString('vi-VN')} đ (${checkoutPaymentMethod})`;
-  if (receipt.tip_amount > 0) successMsg += `\n• Tiền Tips: +${receipt.tip_amount.toLocaleString('vi-VN')} đ`;
-  successMsg += `\n• KTV 1 (${receipt.staff_1_name} - ${s1Pct}%): +${(comm1 + tip1).toLocaleString('vi-VN')} đ`;
-  if (receipt.has_staff_2) successMsg += `\n• KTV 2 (${receipt.staff_2_name} - ${s2Pct}%): +${(comm2 + tip2).toLocaleString('vi-VN')} đ`;
+  let successMsg = `✅ Đã hoàn tất và lưu hóa đơn ca gội!
+• Thời gian: ${receipt.start_time} - ${receipt.end_time} (${receipt.duration_min} phút)
+• Khách trả: ${grandTotal.toLocaleString('vi-VN')} đ (${checkoutPaymentMethod})`;
+  if (totalTip > 0) successMsg += `
+• Tổng tiền Tips: +${totalTip.toLocaleString('vi-VN')} đ`;
+  successMsg += `
+• KTV 1 (${receipt.staff_1_name}): Tour +${comm1.toLocaleString('vi-VN')} đ${tip1 > 0 ? ` + Tip +${tip1.toLocaleString('vi-VN')} đ` : ''}`;
+  if (receipt.has_staff_2) successMsg += `
+• KTV 2 (${receipt.staff_2_name}): Tour +${comm2.toLocaleString('vi-VN')} đ${tip2 > 0 ? ` + Tip +${tip2.toLocaleString('vi-VN')} đ` : ''}`;
   alert(successMsg);
 
   // Đóng modal và dọn live session
