@@ -1,41 +1,102 @@
-  <!-- STATIC BANK QR MODAL (MÃ QR TĨNH CỦA ANH - KHÁCH TỰ BẤM TIỀN) -->
-  <div id="modal-static-qr" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
-    <div class="w-full max-w-sm spa-modal p-6 text-center relative space-y-4">
-      <button type="button" onclick="closeStaticQRModal()" class="absolute top-4 right-4 p-2 rounded-full bg-[#F7F2EC] hover:bg-[#FFF0EB] text-[#7E7272] hover:text-[#E58A7B] transition cursor-pointer">
-        <i data-lucide="x" class="w-5 h-5"></i>
-      </button>
-
-      <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#FFF0EB] border border-[#FCDFD7] text-[#E58A7B] text-xs font-bold">
-        <i data-lucide="qr-code" class="w-3.5 h-3.5"></i> Selena Spa - Tài Khoản Ngân Hàng
+  <!-- ============================================================= -->
+  <!-- BƯỚC 3: MODAL HOÀN THÀNH CA & THANH TOÁN (TIPS + MÃ QR VIB THẬT) -->
+  <!-- ============================================================= -->
+  <div id="modal-checkout" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md overflow-y-auto">
+    <div class="w-full max-w-md spa-modal p-6 sm:p-7 relative space-y-5 my-auto max-h-[90vh] overflow-y-auto no-scrollbar">
+      <div class="flex justify-between items-center">
+        <div>
+          <span class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-[#E8F8F5] text-[#2E7D6D] text-xs font-bold">
+            <i data-lucide="check-circle" class="w-3.5 h-3.5"></i> Bước 3: Thu Tiền Ca Gội
+          </span>
+          <h3 class="text-xl font-extrabold text-[#2D2424] mt-1">Hoàn Thành Ca & Thanh Toán</h3>
+        </div>
+        <button type="button" onclick="closeCheckoutModal()" class="p-2 rounded-full bg-[#F7F2EC] hover:bg-[#FFF0EB] text-[#7E7272] hover:text-[#E58A7B] transition cursor-pointer">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
       </div>
 
-      <h3 class="text-xl font-extrabold text-[#2D2424]">Quét Mã Chuyển Khoản</h3>
-      <p class="text-xs text-[#7E7272]">Khách mở App ngân hàng quét mã và nhập số tiền thanh toán</p>
-
-      <!-- Khung ảnh QR tĩnh (Người dùng có thể thay ảnh bất kỳ lúc nào) -->
-      <div class="p-3.5 bg-white rounded-3xl border border-[#F0EAE1] shadow-sm inline-block mx-auto">
-        <img id="static-qr-image" src="https://img.vietqr.io/image/MBBank-0949251144-compact2.png?accountName=NGUYEN%20TIEN%20DUY" alt="Mã QR Ngân Hàng" class="w-60 h-60 object-contain rounded-2xl mx-auto">
-      </div>
-
-      <!-- Thông tin tài khoản -->
-      <div class="p-4 rounded-2xl bg-[#F7F2EC] text-left text-xs space-y-1 border border-[#EFE8DF]">
-        <div class="flex justify-between">
-          <span class="text-[#7E7272]">Ngân hàng:</span>
-          <span class="font-bold text-[#2D2424] font-mono">MBBank (Quân Đội)</span>
+      <!-- Tóm tắt ca gội -->
+      <div class="p-4 rounded-2xl bg-[#FAF6F1] border border-[#F0EAE1] space-y-2 text-xs sm:text-sm">
+        <div class="flex justify-between font-bold text-[#2D2424]">
+          <span id="chk-service-name">Combo 2 (Gội Chuyên Sâu)</span>
+          <span id="chk-service-price" class="text-[#E58A7B]">99.000 đ</span>
         </div>
-        <div class="flex justify-between">
-          <span class="text-[#7E7272]">Số tài khoản:</span>
-          <span class="font-extrabold text-[#E58A7B] font-mono text-sm">0949251144</span>
+        <div class="flex justify-between text-[#7E7272]">
+          <span>Thời gian thực hiện:</span>
+          <span id="chk-time-range" class="font-mono font-semibold text-[#2D2424]">15:30 - 16:30 (60 phút)</span>
         </div>
-        <div class="flex justify-between">
-          <span class="text-[#7E7272]">Chủ tài khoản:</span>
-          <span class="font-bold text-[#2D2424]">NGUYEN TIEN DUY</span>
+        <div class="flex justify-between text-[#7E7272]">
+          <span>KTV phục vụ:</span>
+          <span id="chk-staff-names" class="font-semibold text-[#2E7D6D]">Thu Ngân</span>
         </div>
       </div>
 
-      <button type="button" onclick="closeStaticQRModal()" class="w-full py-3.5 rounded-full bg-[#E58A7B] hover:bg-[#D9796A] text-white font-bold text-sm shadow-md shadow-[#E58A7B]/20 cursor-pointer">
-        Đóng Mã QR
-      </button>
+      <!-- 🎁 Ô NHẬP TIỀN TIPS KHÁCH CHO (LÚC NÀY MỚI HIỆN) -->
+      <div class="space-y-2.5 p-4 rounded-2xl bg-[#FFF5F2] border border-[#FCDFD7]">
+        <div class="flex justify-between items-center">
+          <label class="text-xs sm:text-sm font-bold text-[#2D2424] flex items-center gap-1.5">
+            <i data-lucide="heart" class="w-4 h-4 text-[#E58A7B]"></i> Tiền Tips khách cho thêm (nếu có):
+          </label>
+          <span class="text-[11px] text-[#2E7D6D] font-bold">100% cho KTV</span>
+        </div>
+
+        <div class="relative">
+          <input type="number" id="chk-tip-input" oninput="onCheckoutTipChange(this.value)" placeholder="0 đ (để trống nếu không có)" class="w-full bg-white border border-[#FCDFD7] rounded-xl p-3 pl-10 text-base font-extrabold text-[#2D2424] focus:outline-none focus:border-[#E58A7B] font-mono">
+          <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-bold text-[#A39696]">₫</span>
+        </div>
+
+        <!-- Quick Tip Buttons -->
+        <div class="flex flex-wrap gap-2 pt-1">
+          <button type="button" onclick="setCheckoutQuickTip(20000)" class="px-3 py-1 rounded-full text-xs font-bold bg-white hover:bg-[#FFF0EB] text-[#2D2424] hover:text-[#E58A7B] border border-[#EFE8DF] transition cursor-pointer shadow-sm">+20.000 đ</button>
+          <button type="button" onclick="setCheckoutQuickTip(50000)" class="px-3 py-1 rounded-full text-xs font-bold bg-white hover:bg-[#FFF0EB] text-[#2D2424] hover:text-[#E58A7B] border border-[#EFE8DF] transition cursor-pointer shadow-sm">+50.000 đ</button>
+          <button type="button" onclick="setCheckoutQuickTip(100000)" class="px-3 py-1 rounded-full text-xs font-bold bg-white hover:bg-[#FFF0EB] text-[#2D2424] hover:text-[#E58A7B] border border-[#EFE8DF] transition cursor-pointer shadow-sm">+100.000 đ</button>
+          <button type="button" onclick="setCheckoutQuickTip(0)" class="px-3 py-1 rounded-full text-xs font-bold bg-white hover:bg-rose-50 text-[#A39696] hover:text-rose-600 border border-[#EFE8DF] transition cursor-pointer shadow-sm">Xóa Tip</button>
+        </div>
+      </div>
+
+      <!-- 💳 CHỌN PHƯƠNG THỨC THANH TOÁN (QR HAY TIỀN MẶT) -->
+      <div class="space-y-2.5">
+        <label class="block text-xs sm:text-sm font-bold text-[#2D2424] uppercase tracking-wider flex items-center gap-2">
+          <i data-lucide="credit-card" class="w-4 h-4 text-[#E58A7B]"></i> Chọn Phương Thức Thanh Toán
+        </label>
+        <div class="grid grid-cols-2 gap-3">
+          <button type="button" id="chk-btn-qr" onclick="setCheckoutPayment('Chuyển khoản')" class="p-3.5 rounded-2xl border bg-[#FFF0EB] border-[#E58A7B] text-[#E58A7B] font-extrabold text-sm flex items-center justify-center gap-2 shadow-sm transition cursor-pointer">
+            <i data-lucide="qr-code" class="w-4 h-4"></i> Quét Mã QR
+          </button>
+          <button type="button" id="chk-btn-cash" onclick="setCheckoutPayment('Tiền mặt')" class="p-3.5 rounded-2xl border bg-[#F7F2EC] border-[#EFE8DF] text-[#7E7272] hover:bg-[#FFF0EB] font-bold text-sm flex items-center justify-center gap-2 transition cursor-pointer">
+            <i data-lucide="banknote" class="w-4 h-4"></i> Tiền Mặt
+          </button>
+        </div>
+      </div>
+
+      <!-- 📱 KHUNG HIỂN THỊ MÃ QR VIB THẬT CỦA ANH (KHI CHỌN QUÉT QR) -->
+      <div id="chk-qr-display-box" class="p-4 rounded-3xl bg-white border border-[#F0EAE1] text-center space-y-3 shadow-sm">
+        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FFF0EB] text-[#E58A7B] text-xs font-bold">
+          <i data-lucide="qr-code" class="w-3.5 h-3.5"></i> Mã QR Tài Khoản VIB
+        </div>
+        <div class="p-2 bg-white rounded-2xl border border-[#F0EAE1] shadow-inner inline-block mx-auto">
+          <!-- Ảnh QR thật từ file images/qr_bank.jpg -->
+          <img src="images/qr_bank.jpg?v=0.0.2.1" alt="Mã QR VIB Trần Thu Ngân" class="w-52 h-auto max-h-64 object-contain rounded-xl mx-auto">
+        </div>
+        <div class="text-xs text-[#7E7272] space-y-0.5">
+          <div>Ngân hàng: <b class="text-[#2D2424]">VIB (Quốc Tế)</b></div>
+          <div>Chủ TK: <b class="text-[#2D2424]">TRẦN THU NGÂN</b> • STK: <b class="text-[#E58A7B] font-mono">799625591</b></div>
+        </div>
+      </div>
+
+      <!-- TỔNG TIỀN VÀ NÚT LƯU HÓA ĐƠN -->
+      <div class="pt-3 border-t border-[#F0EAE1] space-y-3">
+        <div class="flex justify-between items-center">
+          <span class="text-sm font-bold text-[#7E7272]">Tổng tiền thu khách:</span>
+          <span id="chk-grand-total" class="text-2xl font-extrabold text-[#E58A7B]">99.000 đ</span>
+        </div>
+
+        <button type="button" onclick="confirmSaveReceiptFromCheckout()" class="w-full py-4 rounded-full bg-[#E58A7B] hover:bg-[#D9796A] text-white font-extrabold text-base shadow-lg shadow-[#E58A7B]/25 flex items-center justify-center gap-2 transition active:scale-95 cursor-pointer">
+          <i data-lucide="check" class="w-5 h-5"></i>
+          <span>Xác Nhận & Lưu Hóa Đơn</span>
+        </button>
+      </div>
+
     </div>
   </div>
 
