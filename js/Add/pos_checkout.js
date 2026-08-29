@@ -18,11 +18,20 @@ let currentSplitMode = 'timer';
 
 function getValidatedMenu() {
   let menu = getStored('menu', DEFAULT_MENU);
-  if (!Array.isArray(menu) || menu.length < 5) {
+  if (!Array.isArray(menu) || menu.length === 0) {
     menu = DEFAULT_MENU;
     setStored('menu', DEFAULT_MENU);
   }
   return menu;
+}
+
+// Helper tìm đúng combo 1, 2, 3, 4, 5 dựa theo tên hoặc ID từ Google Sheets
+function findComboByNumber(menu, num) {
+  return menu.find(m => {
+    const sName = (m.service_name || '').toLowerCase();
+    const sId = (m.service_id || '').toLowerCase();
+    return sName.includes(`combo ${num}`) || sName.includes(`combo${num}`) || sId === `cb0${num}` || sId === `cb${num}` || sId === `combo${num}` || sId === `combo_${num}`;
+  }) || null;
 }
 
 function initMenuUI() {
@@ -34,9 +43,20 @@ function initMenuUI() {
     <option value="${m.service_id}">${m.service_name} — ${Number(m.price).toLocaleString('vi-VN')} đ (${m.duration_min}p)</option>
   `).join('');
 
+  // Mặc định luôn tìm và chọn Combo 1
+  const combo1 = findComboByNumber(menu, 1);
   if (!selectedComboId || !menu.some(m => m.service_id === selectedComboId)) {
-    selectedComboId = menu[0].service_id;
+    selectedComboId = combo1 ? combo1.service_id : (menu[0] ? menu[0].service_id : 'CB01');
   }
+
+  // Nếu hiện tại đang trỏ vào Combo Bé, tự động chuyển về Combo 1
+  if (combo1 && selectedComboId !== combo1.service_id) {
+    const curSelected = menu.find(m => m.service_id === selectedComboId);
+    if (!curSelected || (curSelected.service_name || '').toLowerCase().includes('bé') || (curSelected.service_name || '').toLowerCase().includes('be')) {
+      selectedComboId = combo1.service_id;
+    }
+  }
+
   select.value = selectedComboId;
 
   renderQuickComboButtons();
@@ -48,29 +68,37 @@ function renderQuickComboButtons() {
   const quickContainer = document.getElementById('pos-quick-combos');
   if (!quickContainer) return;
 
-  const quickList = [
-    { id: 'CB01', label: 'Combo 1' },
-    { id: 'CB02', label: 'Combo 2' },
-    { id: 'CB03', label: 'Combo 3' },
-    { id: 'CB04', label: 'Combo 4' },
-    { id: 'CB05', label: 'Combo 5' }
-  ];
+  const menu = getValidatedMenu();
+  const select = document.getElementById('pos-service-select');
+  const curSelectedId = select ? select.value : selectedComboId;
 
-  quickContainer.innerHTML = quickList.map(item => {
-    const isSelected = item.id === selectedComboId;
+  const quickNumbers = [1, 2, 3, 4, 5];
+
+  quickContainer.innerHTML = quickNumbers.map(num => {
+    const item = findComboByNumber(menu, num);
+    if (!item) {
+      return `
+        <button type="button" class="px-4 py-2.5 rounded-2xl text-xs font-extrabold border bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed opacity-60">
+          Combo ${num}
+        </button>
+      `;
+    }
+
+    const isSelected = item.service_id === curSelectedId;
     return `
-      <button type="button" onclick="selectQuickCombo('${item.id}')" class="px-4 py-2.5 rounded-2xl text-xs font-extrabold border transition active:scale-95 cursor-pointer shadow-sm ${isSelected ? 'bg-[#FFF0EB] text-[#E58A7B] border-[#E58A7B] ring-1 ring-[#E58A7B]' : 'bg-[#FAF6F1] text-[#7E7272] border-[#EFE8DF] hover:bg-[#FFF0EB] hover:text-[#E58A7B]'}">
-        ${item.label}
+      <button type="button" onclick="selectQuickCombo('${item.service_id}')" class="px-4 py-2.5 rounded-2xl text-xs font-extrabold border transition active:scale-95 cursor-pointer shadow-sm ${isSelected ? 'bg-[#FFF0EB] text-[#E58A7B] border-[#E58A7B] ring-2 ring-[#E58A7B]/50 font-black' : 'bg-[#FAF6F1] text-[#7E7272] border-[#EFE8DF] hover:bg-[#FFF0EB] hover:text-[#E58A7B]'}">
+        Combo ${num}
       </button>
     `;
   }).join('');
 }
 
-function selectQuickCombo(id) {
-  selectedComboId = id;
+function selectQuickCombo(serviceId) {
+  if (!serviceId) return;
+  selectedComboId = serviceId;
   const select = document.getElementById('pos-service-select');
   if (select) {
-    select.value = id;
+    select.value = serviceId;
   }
   renderQuickComboButtons();
   updatePOSCalculations();
@@ -82,11 +110,6 @@ function onSelectServiceChange() {
     selectedComboId = select.value;
   }
   renderQuickComboButtons();
-  updatePOSCalculations();
-}
-
-function onStaff1SelectChange() {
-  renderExtraStaffUI();
   updatePOSCalculations();
 }
 
@@ -116,6 +139,50 @@ function updatePOSStaffInfo() {
 
   renderExtraStaffUI();
   updatePOSCalculations();
+}
+
+function onStaff1SelectChange() {
+  renderExtraStaffUI();
+  updatePOSCalculations();
+}
+
+function addExtraStaff() {
+  const users = getSortedUsersList();
+  const s1Phone = document.getElementById('pos-staff1-select')?.value || currentUser?.phone;
+
+  const usedPhones = [normalizePhone(s1Phone), ...extraStaffList.map(s => normalizePhone(s.phone))];
+  const available = users.filter(u => !usedPhones.includes(normalizePhone(u.phone)));
+
+  if (available.length === 0) {
+    alert('Đã thêm toàn bộ nhân viên và quản lý hiện có trong tiệm!');
+    return;
+  }
+
+  const nextStaff = available[0];
+  extraStaffList.push({
+    phone: nextStaff.phone,
+    staff_id: nextStaff.staff_id || (isUserOwner(nextStaff) ? 'FOUNDER_01' : 'KTV'),
+    full_name: nextStaff.full_name,
+    user_id: nextStaff.user_id || nextStaff.phone
+  });
+
+  renderExtraStaffUI();
+  updatePOSCalculations();
+}
+
+function removeExtraStaff(index) {
+  const cardEl = document.getElementById(`extra-staff-card-${index}`);
+  if (cardEl) {
+    cardEl.style.transition = 'all 0.25s ease';
+    cardEl.style.transform = 'scale(0.85)';
+    cardEl.style.opacity = '0';
+  }
+
+  setTimeout(() => {
+    extraStaffList.splice(index, 1);
+    renderExtraStaffUI();
+    updatePOSCalculations();
+  }, 200);
 }
 
 function onExtraStaffSelectChange(index, newPhone) {
@@ -185,7 +252,8 @@ function renderExtraStaffUI() {
 function updatePOSCalculations() {
   const menu = getValidatedMenu();
   const users = getSortedUsersList();
-  const service = menu.find(m => m.service_id === selectedComboId) || menu[0];
+  const service = menu.find(m => m.service_id === selectedComboId) || findComboByNumber(menu, 1) || menu[0];
+  if (!service) return;
 
   const s1Phone = document.getElementById('pos-staff1-select')?.value || currentUser?.phone;
   const staff1 = users.find(u => normalizePhone(u.phone) === normalizePhone(s1Phone)) || currentUser;
@@ -238,20 +306,21 @@ function onCustomerPhoneInput(val) {
         document.getElementById('pos-cust-notes-box').classList.add('hidden');
       }
 
-      if (cust.voucher_count > 0) {
+      if ((cust.voucher_count || 0) > 0) {
         document.getElementById('pos-voucher-banner').classList.remove('hidden');
-        document.getElementById('pos-voucher-text').innerText = 'Khách có ' + cust.voucher_count + ' Voucher Combo 1 miễn phí!';
+        document.getElementById('pos-voucher-text').innerText = `Khách có ${cust.voucher_count} Voucher miễn phí!`;
       } else {
         document.getElementById('pos-voucher-banner').classList.add('hidden');
       }
-    } else {
-      currentCustomer = null;
-      card.classList.add('hidden');
+      return;
     }
-  } else {
-    currentCustomer = null;
-    card.classList.add('hidden');
   }
+
+  currentCustomer = null;
+  card.classList.add('hidden');
+  useVoucher = false;
+  const vCheck = document.getElementById('pos-use-voucher');
+  if (vCheck) vCheck.checked = false;
 }
 
 function onVoucherToggle(checked) {
@@ -260,13 +329,13 @@ function onVoucherToggle(checked) {
 }
 
 // =============================================================
-// BƯỚC 1 -> BƯỚC 2: KHỞI ĐỘNG CA & ĐẾM GIỜ
+// BƯỚC 1 -> BƯỚC 2: KHỞI ĐỘNG TOUR & ĐẾM GIỜ
 // =============================================================
 
 function startLiveSession() {
   const menu = getValidatedMenu();
   const users = getSortedUsersList();
-  const service = menu.find(m => m.service_id === selectedComboId) || menu[0];
+  const service = menu.find(m => m.service_id === selectedComboId) || findComboByNumber(menu, 1) || menu[0];
 
   const phone = document.getElementById('pos-customer-phone')?.value.trim() || '';
   const name = document.getElementById('pos-customer-name')?.value.trim() || 'Khách vãng lai';
@@ -310,7 +379,7 @@ function startLiveSession() {
     date: startDateStr,
     customer_phone: phone,
     customer_name: name,
-    initial_staff_count: allStaffs.length, // Số lượng KTV ban đầu lúc tạo ca
+    initial_staff_count: allStaffs.length,
     staffs: allStaffs,
     staff_1_user_id: allStaffs[0].user_id,
     staff_1_phone: allStaffs[0].phone,
@@ -328,7 +397,7 @@ function startLiveSession() {
 
   localStorage.setItem('selena_active_live_session', JSON.stringify(currentLiveSession));
   renderLiveSessionUI();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  confetti({ particleCount: 50, spread: 60, origin: { y: 0.85 } });
 }
 
 function renderLiveSessionUI() {
@@ -350,7 +419,6 @@ function renderLiveSessionUI() {
   document.getElementById('live-start-time-text').innerText = currentLiveSession.start_time;
   document.getElementById('live-target-time-text').innerText = currentLiveSession.duration_target_min + ' phút';
 
-  // RENDER CÁCH 1: CÁC CHIP KTV TƯƠNG TÁC
   const chipsContainer = document.getElementById('live-staff-chips-container');
   if (chipsContainer) {
     const staffs = currentLiveSession.staffs || [
@@ -428,7 +496,7 @@ function restoreLiveSessionIfExists() {
 }
 
 // =============================================================
-// LOGIC MODAL ĐỔI / THÊM KTV GIỮA CA (PHƯƠNG ÁN B - DANH SÁCH ĐỘNG & GIAI ĐOẠN)
+// LOGIC MODAL ĐỔI / THÊM KTV GIỮA TOUR (PHƯƠNG ÁN B - GIAI ĐOẠN)
 // =============================================================
 let tempSwapStaffs = [];
 
@@ -443,7 +511,6 @@ function openSwapStaffModal() {
   const initialCount = currentLiveSession.initial_staff_count || 1;
   const hasNewMidwayStaff = tempSwapStaffs.some(s => s.is_midway);
 
-  // Nếu ca ban đầu có từ 2 người trở lên và chưa có người mới vào giữa ca -> CỐ ĐỊNH 'equal' (chia đều)
   if (initialCount >= 2 && !hasNewMidwayStaff) {
     currentSplitMode = 'equal';
   } else if (currentLiveSession.split_mode) {
@@ -475,7 +542,6 @@ function updateSplitButtonsUI() {
   const initialCount = currentLiveSession?.initial_staff_count || 1;
   const hasMidwayJoiner = tempSwapStaffs.some(s => s.is_midway);
 
-  // Khóa nút "Thời gian thực" nếu ca làm cùng từ đầu và không có ai vào thêm giữa chừng
   if (initialCount >= 2 && !hasMidwayJoiner) {
     btnTimer.disabled = true;
     btnTimer.className = 'p-2.5 rounded-xl border bg-gray-100 border-gray-200 text-gray-400 font-bold text-xs flex flex-col items-center gap-0.5 cursor-not-allowed opacity-60';
@@ -534,7 +600,7 @@ function renderSwapModalStaffUI() {
         </select>
 
         ${!isFirst ? `
-          <button type="button" onclick="removeStaffInSwapModal(${idx})" title="Xóa KTV này khỏi ca" class="absolute top-2 right-2 w-6 h-6 rounded-full bg-white border border-rose-300 text-rose-500 hover:bg-rose-500 hover:text-white flex items-center justify-center shadow-sm cursor-pointer active:scale-90 transition">
+          <button type="button" onclick="removeStaffInSwapModal(${idx})" title="Xóa KTV này khỏi tour" class="absolute top-2 right-2 w-6 h-6 rounded-full bg-white border border-rose-300 text-rose-500 hover:bg-rose-500 hover:text-white flex items-center justify-center shadow-sm cursor-pointer active:scale-90 transition">
             <i data-lucide="minus" class="w-3.5 h-3.5 stroke-[2.5]"></i>
           </button>
         ` : ''}
@@ -584,10 +650,10 @@ function addStaffInSwapModal() {
     staff_id: next.staff_id || (isUserOwner(next) ? 'FOUNDER_01' : 'KTV'),
     pct: 0,
     joined_min: elapsedMin,
-    is_midway: true // Đánh dấu là KTV vào giữa ca
+    is_midway: true
   });
 
-  currentSplitMode = 'timer'; // Tự động gợi ý tính theo thời gian giai đoạn
+  currentSplitMode = 'timer';
 
   renderSwapModalStaffUI();
   updateSplitButtonsUI();
@@ -629,7 +695,7 @@ function updateSwapPreviewDisplay() {
     html = `
       <div class="space-y-1">
         <div class="flex justify-between items-center text-[#2D2424] font-bold">
-          <span>💆 ${tempSwapStaffs[0].name} (100% trọn ca):</span>
+          <span>${tempSwapStaffs[0].name} (100% trọn tour):</span>
           <span class="text-[#2E7D6D] font-extrabold">+${totalComm.toLocaleString('vi-VN')} đ</span>
         </div>
       </div>
@@ -637,9 +703,6 @@ function updateSwapPreviewDisplay() {
     const itemCommBadge = document.getElementById('swap-item-comm-0');
     if (itemCommBadge) itemCommBadge.innerText = `100% • +${totalComm.toLocaleString('vi-VN')} đ`;
   } else if (currentSplitMode === 'timer') {
-    // =========================================================
-    // ⏱️ TÍNH TOÁN VÀ HIỂN THỊ CHI TIẾT THEO GIAI ĐOẠN 1 & 2
-    // =========================================================
     const midwayStaff = tempSwapStaffs.find(s => s.is_midway);
     const joinMin = Math.min(targetMin, Math.max(1, midwayStaff ? (midwayStaff.joined_min || elapsedMin) : elapsedMin));
     const remMin = Math.max(0, targetMin - joinMin);
@@ -671,10 +734,8 @@ function updateSwapPreviewDisplay() {
       if (itemCommBadge) itemCommBadge.innerText = `${s.pct}% • +${comm.toLocaleString('vi-VN')} đ`;
     });
 
-    // Tạo giao diện bảng chi tiết các pha cực kỳ dễ hiểu
     html = `
       <div class="space-y-2.5">
-        <!-- Giai đoạn 1 -->
         <div class="p-2.5 rounded-xl bg-white border border-[#F0EAE1] space-y-1">
           <div class="flex justify-between items-center text-[11px] font-bold text-[#E58A7B]">
             <span>🔹 Giai đoạn 1: ${joinMin} phút đầu (${earlyStaffs.length} KTV làm)</span>
@@ -688,7 +749,6 @@ function updateSwapPreviewDisplay() {
           `).join('')}
         </div>
 
-        <!-- Giai đoạn 2 -->
         <div class="p-2.5 rounded-xl bg-white border border-[#F0EAE1] space-y-1">
           <div class="flex justify-between items-center text-[11px] font-bold text-[#2E7D6D]">
             <span>🔹 Giai đoạn 2: ${remMin} phút sau (${nTotal} KTV cùng làm)</span>
@@ -702,7 +762,6 @@ function updateSwapPreviewDisplay() {
           `).join('')}
         </div>
 
-        <!-- Tổng cộng thực nhận -->
         <div class="pt-1.5 border-t border-[#F0EAE1] space-y-1">
           <div class="text-[11px] font-extrabold text-[#2D2424] uppercase tracking-wider">🏆 Tổng Cộng Thực Nhận:</div>
           ${tempSwapStaffs.map(s => `
@@ -718,9 +777,6 @@ function updateSwapPreviewDisplay() {
     const timerTextEl = document.getElementById('split-timer-pct');
     if (timerTextEl) timerTextEl.innerText = `Theo giai đoạn (${joinMin}p đầu & ${remMin}p sau)`;
   } else {
-    // =========================================================
-    // 🤝 CHIA ĐỀU (ƯU TIÊN 34% & TIỀN DÔI CHO KTV 1)
-    // =========================================================
     const perStaffVnd = Math.floor(totalComm / count);
     const remVnd = totalComm - (perStaffVnd * count);
     const equalPct = Math.floor(100 / count);
@@ -738,7 +794,7 @@ function updateSwapPreviewDisplay() {
     html = `
       <div class="space-y-1.5">
         <div class="text-[11px] font-bold text-[#7E7272] flex items-center gap-1">
-          <span>🤝 Cùng làm từ đầu (Chia đều trọn ca ${targetMin} phút):</span>
+          <span>🤝 Cùng làm từ đầu (Chia đều trọn tour ${targetMin} phút):</span>
         </div>
         ${tempSwapStaffs.map((s, i) => `
           <div class="flex justify-between items-center text-xs font-bold">
@@ -753,7 +809,7 @@ function updateSwapPreviewDisplay() {
     if (equalTextEl) {
       if (count === 2) equalTextEl.innerText = '50% - 50%';
       else if (count === 3) equalTextEl.innerText = '34% - 33% - 33%';
-      else equalTextEl.innerText = 'Chia đều trọn ca';
+      else equalTextEl.innerText = 'Chia đều trọn tour';
     }
   }
 
@@ -787,53 +843,35 @@ function saveSwapStaffSetting() {
   renderLiveSessionUI();
 }
 
-
-
-
-function removeSecondStaffFromLive() {
-  if (!currentLiveSession) return;
-  currentLiveSession.has_staff_2 = false;
-  currentLiveSession.staff_2_user_id = '-';
-  currentLiveSession.staff_2_phone = '-';
-  currentLiveSession.staff_2_id = '-';
-  currentLiveSession.staff_2_name = '-';
-  currentLiveSession.staff_1_pct = 100;
-  currentLiveSession.staff_2_pct = 0;
-  currentLiveSession.staffs = [
-    { phone: currentLiveSession.staff_1_phone, name: currentLiveSession.staff_1_name, pct: 100, user_id: currentLiveSession.staff_1_user_id, staff_id: currentLiveSession.staff_1_id }
-  ];
-
-  localStorage.setItem('selena_active_live_session', JSON.stringify(currentLiveSession));
-  closeSwapStaffModal();
-  renderLiveSessionUI();
-}
-
 // =============================================================
-// BƯỚC 3: MỞ MODAL THANH TOÁN (PHA 1: KHÁCH XEM)
+// BƯỚC 2 -> CHECKOUT & THU TIỀN VÀ TIPS
 // =============================================================
 
 function openCheckoutModal() {
   if (!currentLiveSession) return;
 
   const now = new Date();
-  const endTimeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
-  
-  const elapsedSec = Math.max(1, Math.floor((Date.now() - (currentLiveSession.start_timestamp || Date.now())) / 1000));
-  const elapsedMinutes = Math.round((elapsedSec / 60) * 10) / 10;
-  
-  currentLiveSession.end_time = endTimeStr;
-  currentLiveSession.duration_actual_min = elapsedMinutes > 0 ? elapsedMinutes : 0.1;
+  currentLiveSession.end_time = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+  const elapsedMinutes = Math.max(1, Math.round((Date.now() - currentLiveSession.start_timestamp) / 60000));
+  currentLiveSession.duration_actual_min = elapsedMinutes;
 
-  document.getElementById('chk-service-name').innerText = currentLiveSession.service_name;
-  document.getElementById('chk-service-price').innerText = currentLiveSession.use_voucher ? '0 đ (Voucher)' : currentLiveSession.price.toLocaleString('vi-VN') + ' đ';
-  document.getElementById('chk-time-range').innerText = `${currentLiveSession.start_time} - ${endTimeStr} (${currentLiveSession.duration_actual_min} phút)`;
-  document.getElementById('chk-customer-name').innerText = currentLiveSession.customer_name || 'Khách vãng lai';
+  document.getElementById('checkout-service-name').innerText = currentLiveSession.service_name;
+  document.getElementById('checkout-customer-name').innerText = '👤 Khách: ' + (currentLiveSession.customer_name || 'Khách vãng lai');
+  document.getElementById('checkout-time-summary').innerText = `⏱️ ${currentLiveSession.start_time} - ${currentLiveSession.end_time} (${elapsedMinutes} phút)`;
 
-  document.getElementById('checkout-step-customer')?.classList.remove('hidden');
-  document.getElementById('checkout-step-staff')?.classList.add('hidden');
+  const price = currentLiveSession.use_voucher ? 0 : currentLiveSession.price;
+  document.getElementById('checkout-service-price').innerText = price.toLocaleString('vi-VN') + ' đ';
 
   staffTipMap = {};
-  setCheckoutPayment('Chuyển khoản');
+  const currentStaffs = currentLiveSession.staffs || [
+    { phone: currentLiveSession.staff_1_phone, name: currentLiveSession.staff_1_name, pct: 100 }
+  ];
+  currentStaffs.forEach(s => {
+    staffTipMap[s.phone] = 0;
+  });
+
+  renderDynamicTipInputs();
+  updateCheckoutGrandTotal();
 
   const modal = document.getElementById('modal-checkout');
   if (modal) modal.classList.remove('hidden');
@@ -845,216 +883,222 @@ function closeCheckoutModal() {
   if (modal) modal.classList.add('hidden');
 }
 
-function setCheckoutPayment(method) {
-  checkoutPaymentMethod = method;
-  const btnQR = document.getElementById('chk-btn-qr');
-  const btnCash = document.getElementById('chk-btn-cash');
-  const qrBox = document.getElementById('chk-qr-display-box');
+function renderDynamicTipInputs() {
+  const container = document.getElementById('checkout-dynamic-tips-container');
+  if (!container || !currentLiveSession) return;
 
-  if (method === 'Chuyển khoản') {
-    btnQR.className = 'p-3.5 rounded-2xl border bg-[#FFF0EB] border-[#E58A7B] text-[#E58A7B] font-extrabold text-sm flex items-center justify-center gap-2 shadow-sm transition cursor-pointer';
-    btnCash.className = 'p-3.5 rounded-2xl border bg-[#F7F2EC] border-[#EFE8DF] text-[#7E7272] hover:bg-[#FFF0EB] font-bold text-sm flex items-center justify-center gap-2 transition cursor-pointer';
-    if (qrBox) qrBox.classList.remove('hidden');
-  } else {
-    btnCash.className = 'p-3.5 rounded-2xl border bg-[#FFF0EB] border-[#E58A7B] text-[#E58A7B] font-extrabold text-sm flex items-center justify-center gap-2 shadow-sm transition cursor-pointer';
-    btnQR.className = 'p-3.5 rounded-2xl border bg-[#F7F2EC] border-[#EFE8DF] text-[#7E7272] hover:bg-[#FFF0EB] font-bold text-sm flex items-center justify-center gap-2 transition cursor-pointer';
-    if (qrBox) qrBox.classList.add('hidden');
-  }
-  lucide.createIcons();
-}
-
-// =============================================================
-// CHUYỂN SANG PHA 2: KTV GHI NHẬN TIPS RIÊNG BIỆT KÍN ĐÁO
-// =============================================================
-
-function goToStaffTipStep() {
-  document.getElementById('checkout-step-customer')?.classList.add('hidden');
-  document.getElementById('checkout-step-staff')?.classList.remove('hidden');
-
-  document.getElementById('staff-step-service-price').innerText = currentLiveSession?.use_voucher ? '0 đ (Voucher)' : (currentLiveSession?.price?.toLocaleString('vi-VN') + ' đ');
-  document.getElementById('staff-step-pay-method').innerText = checkoutPaymentMethod;
-
-  staffTipMap = {};
-  const activeStaffs = currentLiveSession.staffs || [
+  const users = getSortedUsersList();
+  const currentStaffs = currentLiveSession.staffs || [
     { phone: currentLiveSession.staff_1_phone, name: currentLiveSession.staff_1_name, pct: 100 }
   ];
 
-  activeStaffs.forEach(s => {
-    staffTipMap[s.phone] = 0;
-  });
+  const quickAmounts = [0, 5000, 10000, 20000, 30000, 50000, 100000];
 
-  renderDynamicTipInputs(activeStaffs);
-  updateStaffEarningPreview();
-  lucide.createIcons();
-}
-
-function renderDynamicTipInputs(staffs) {
-  const container = document.getElementById('checkout-dynamic-tips-container');
-  if (!container) return;
-
-  const isMulti = staffs.length > 1;
-
-  container.innerHTML = staffs.map((s, idx) => {
+  container.innerHTML = currentStaffs.map((s, idx) => {
     const isFirst = idx === 0;
-    const boxBg = isFirst ? 'bg-[#FFF5F2] border-[#FCDFD7]' : 'bg-[#E8F8F5]/80 border-[#B7EBDD]';
-    const labelColor = isFirst ? 'text-[#E58A7B]' : 'text-[#2E7D6D]';
-    const focusColor = isFirst ? 'focus:border-[#E58A7B]' : 'focus:border-[#2E7D6D]';
-    const title = isMulti ? `Tips cho KTV ${idx + 1} (${s.name}):` : `Khách có boa thêm tiền Tips không?`;
+    const staffObj = users.find(u => normalizePhone(u.phone) === normalizePhone(s.phone));
+    const rate = (staffObj && parsePercentage(staffObj?.commission_rate) > 0) ? parsePercentage(staffObj?.commission_rate) : 10;
+    const commVnd = Math.round(currentLiveSession.price * (rate / 100) * ((s.pct || Math.round(100/currentStaffs.length)) / 100));
 
     return `
-      <div class="space-y-2 p-3.5 rounded-2xl ${boxBg} border">
+      <div class="p-3.5 rounded-2xl bg-[#FFF5F2] border border-[#FCDFD7] space-y-2">
         <div class="flex justify-between items-center">
-          <label class="text-xs sm:text-sm font-bold text-[#2D2424] flex items-center gap-1.5">
-            <i data-lucide="${isFirst ? 'heart' : 'gift'}" class="w-4 h-4 ${labelColor}"></i>
-            <span>${title}</span>
-          </label>
-          <span class="text-[11px] text-[#2E7D6D] font-bold">100% KTV</span>
+          <span class="text-xs font-extrabold text-[#E58A7B] flex items-center gap-1">
+            <span class="text-[#2D2424]">KTV ${idx + 1}:</span>
+            <span>${s.name}</span>
+          </span>
+          <span class="text-xs font-extrabold text-[#2E7D6D] bg-[#E8F8F5] px-2 py-0.5 rounded-full">
+            Tour: +${commVnd.toLocaleString('vi-VN')} đ
+          </span>
         </div>
 
         <div class="relative">
-          <input type="text" inputmode="numeric" id="chk-tip-input-${s.phone}" oninput="onDynamicStaffTipInput('${s.phone}', this)" placeholder="0" class="w-full bg-white border border-[#EFE8DF] rounded-xl p-3 pr-10 text-base font-extrabold text-[#2D2424] focus:outline-none ${focusColor} font-mono text-left">
-          <span class="absolute right-3.5 top-1/2 -translate-y-1/2 text-sm font-bold text-[#7E7272]">đ</span>
+          <input type="text" id="chk-tip-input-${s.phone}" value="" onkeyup="onDynamicTipKeyup('${s.phone}', this.value)" placeholder="0" class="w-full bg-white border border-[#FCDFD7] rounded-xl p-3 pr-10 text-[#2D2424] font-extrabold text-base focus:outline-none focus:border-[#E58A7B] font-mono text-right">
+          <span class="absolute right-3.5 top-1/2 -translate-y-1/2 text-sm font-bold text-[#A39696] pointer-events-none">đ</span>
         </div>
 
-        <!-- Quick Tip Buttons (+5k, +10k, +20k, +30k, +50k, +100k, 0đ) -->
         <div class="flex flex-wrap gap-1.5 pt-0.5">
-          <button type="button" onclick="setDynamicQuickTip('${s.phone}', 0)" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-white hover:bg-slate-100 text-[#7E7272] border border-[#EFE8DF] transition cursor-pointer shadow-sm">0 đ</button>
-          <button type="button" onclick="setDynamicQuickTip('${s.phone}', 5000)" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-white hover:bg-[#FFF0EB] text-[#2D2424] hover:text-[#E58A7B] border border-[#EFE8DF] transition cursor-pointer shadow-sm">+5k</button>
-          <button type="button" onclick="setDynamicQuickTip('${s.phone}', 10000)" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-white hover:bg-[#FFF0EB] text-[#2D2424] hover:text-[#E58A7B] border border-[#EFE8DF] transition cursor-pointer shadow-sm">+10k</button>
-          <button type="button" onclick="setDynamicQuickTip('${s.phone}', 20000)" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-white hover:bg-[#FFF0EB] text-[#2D2424] hover:text-[#E58A7B] border border-[#EFE8DF] transition cursor-pointer shadow-sm">+20k</button>
-          <button type="button" onclick="setDynamicQuickTip('${s.phone}', 30000)" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-white hover:bg-[#FFF0EB] text-[#2D2424] hover:text-[#E58A7B] border border-[#EFE8DF] transition cursor-pointer shadow-sm">+30k</button>
-          <button type="button" onclick="setDynamicQuickTip('${s.phone}', 50000)" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-white hover:bg-[#FFF0EB] text-[#2D2424] hover:text-[#E58A7B] border border-[#EFE8DF] transition cursor-pointer shadow-sm">+50k</button>
-          <button type="button" onclick="setDynamicQuickTip('${s.phone}', 100000)" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-white hover:bg-[#FFF0EB] text-[#2D2424] hover:text-[#E58A7B] border border-[#EFE8DF] transition cursor-pointer shadow-sm">+100k</button>
+          ${quickAmounts.map(amt => `
+            <button type="button" onclick="setDynamicQuickTip('${s.phone}', ${amt})" class="px-2.5 py-1 rounded-lg text-xs font-bold ${amt === 0 ? 'bg-white text-[#7E7272] border border-[#EFE8DF]' : 'bg-[#FFF0EB] text-[#E58A7B] border border-[#FCDFD7] hover:bg-[#FFE5DC]'} transition active:scale-95 cursor-pointer shadow-sm">
+              ${amt === 0 ? '0 đ' : `+${amt >= 1000 ? (amt/1000) + 'k' : amt}`}
+            </button>
+          `).join('')}
         </div>
       </div>
     `;
   }).join('');
 
-  if (isMulti) {
-    container.innerHTML += `
-      <div class="p-3 rounded-2xl bg-white border border-[#EFE8DF] flex justify-between items-center text-xs">
-        <span class="text-[#7E7272] font-medium">Khách boa chung 1 khoản?</span>
-        <div class="flex gap-1.5">
-          <button type="button" onclick="splitSharedTipDynamic(20000)" class="px-2.5 py-1 rounded-full bg-[#E8F8F5] text-[#2E7D6D] font-bold border border-[#B7EBDD] hover:bg-[#D0F0E8] transition cursor-pointer">Chia 20k</button>
-          <button type="button" onclick="splitSharedTipDynamic(50000)" class="px-2.5 py-1 rounded-full bg-[#E8F8F5] text-[#2E7D6D] font-bold border border-[#B7EBDD] hover:bg-[#D0F0E8] transition cursor-pointer">Chia 50k</button>
-          <button type="button" onclick="splitSharedTipDynamic(100000)" class="px-2.5 py-1 rounded-full bg-[#E8F8F5] text-[#2E7D6D] font-bold border border-[#B7EBDD] hover:bg-[#D0F0E8] transition cursor-pointer">Chia 100k</button>
+  const sharedSplitDiv = document.getElementById('checkout-shared-split-box');
+  if (sharedSplitDiv) {
+    if (currentStaffs.length > 1) {
+      sharedSplitDiv.classList.remove('hidden');
+      const sharedAmounts = [20000, 50000, 100000];
+      sharedSplitDiv.innerHTML = `
+        <div class="p-3 rounded-2xl bg-[#F7F2EC] border border-[#EFE8DF] space-y-1.5">
+          <span class="text-xs font-bold text-[#7E7272] block">💡 Khách đưa Tips chung chia đều cho ${currentStaffs.length} bạn:</span>
+          <div class="flex flex-wrap gap-2">
+            ${sharedAmounts.map(amt => `
+              <button type="button" onclick="splitSharedTipDynamic(${amt})" class="px-3 py-1.5 rounded-xl bg-white border border-[#EFE8DF] hover:border-[#E58A7B] text-xs font-extrabold text-[#E58A7B] shadow-sm transition active:scale-95 cursor-pointer">
+                Chia ${amt/1000}k
+              </button>
+            `).join('')}
+          </div>
         </div>
-      </div>
-    `;
+      `;
+    } else {
+      sharedSplitDiv.classList.add('hidden');
+    }
   }
-}
 
-function backToCustomerStep() {
-  document.getElementById('checkout-step-customer')?.classList.remove('hidden');
-  document.getElementById('checkout-step-staff')?.classList.add('hidden');
   lucide.createIcons();
 }
 
-function parseRawNumber(val) {
-  if (typeof val === 'number') return val;
-  return Number(String(val || '').replace(/\D/g, '')) || 0;
+function setDynamicQuickTip(phone, amount) {
+  staffTipMap[phone] = amount;
+  const inputEl = document.getElementById(`chk-tip-input-${phone}`);
+  if (inputEl) {
+    inputEl.value = amount > 0 ? formatWithDots(amount) : '';
+  }
+  updateCheckoutGrandTotal();
 }
 
-function formatWithDots(num) {
-  if (!num || num <= 0) return '';
+function splitSharedTipDynamic(totalTipAmount) {
+  const currentStaffs = currentLiveSession?.staffs || [
+    { phone: currentLiveSession?.staff_1_phone, name: currentLiveSession?.staff_1_name, pct: 100 }
+  ];
+  const count = currentStaffs.length;
+  if (count === 0) return;
+
+  const perStaff = Math.floor(totalTipAmount / count);
+  const remainder = totalTipAmount - (perStaff * count);
+
+  currentStaffs.forEach((s, idx) => {
+    const tip = perStaff + (idx === 0 ? remainder : 0);
+    staffTipMap[s.phone] = tip;
+    const inputEl = document.getElementById(`chk-tip-input-${s.phone}`);
+    if (inputEl) {
+      inputEl.value = formatWithDots(tip);
+    }
+  });
+
+  updateCheckoutGrandTotal();
+}
+
+function formatWithDots(val) {
+  if (val === null || val === undefined || val === '') return '';
+  const num = parseInt(String(val).replace(/[^0-9]/g, ''), 10);
+  if (isNaN(num) || num === 0) return '';
   return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 }
 
-function onDynamicStaffTipInput(phone, inputEl) {
-  let val = (inputEl && inputEl.value !== undefined) ? inputEl.value : inputEl;
-  let raw = parseRawNumber(val);
-  staffTipMap[phone] = raw;
-  if (inputEl) inputEl.value = raw > 0 ? formatWithDots(raw) : '';
-  updateStaffEarningPreview();
+function onDynamicTipKeyup(phone, val) {
+  const rawNum = parseInt(String(val).replace(/[^0-9]/g, ''), 10) || 0;
+  staffTipMap[phone] = rawNum;
+
+  const inputEl = document.getElementById(`chk-tip-input-${phone}`);
+  if (inputEl && rawNum > 0) {
+    inputEl.value = formatWithDots(rawNum);
+  }
+  updateCheckoutGrandTotal();
 }
 
-function setDynamicQuickTip(phone, amount) {
-  staffTipMap[phone] = Number(amount) || 0;
-  const input = document.getElementById(`chk-tip-input-${phone}`);
-  if (input) input.value = staffTipMap[phone] > 0 ? formatWithDots(staffTipMap[phone]) : '';
-  updateStaffEarningPreview();
+function getStaffTipAmount(phone) {
+  return Number(staffTipMap[phone]) || 0;
 }
 
-function splitSharedTipDynamic(totalAmount) {
-  const staffs = currentLiveSession.staffs || [{ phone: currentLiveSession.staff_1_phone }];
-  const count = staffs.length;
-  const perStaff = Math.round(totalAmount / count);
-
-  staffs.forEach(s => {
-    staffTipMap[s.phone] = perStaff;
-    const input = document.getElementById(`chk-tip-input-${s.phone}`);
-    if (input) input.value = perStaff > 0 ? formatWithDots(perStaff) : '';
-  });
-
-  updateStaffEarningPreview();
-}
-
-function updateStaffEarningPreview() {
+function updateCheckoutGrandTotal() {
   if (!currentLiveSession) return;
-  const users = getSortedUsersList();
-  const staffs = currentLiveSession.staffs || [
-    { phone: currentLiveSession.staff_1_phone, name: currentLiveSession.staff_1_name, pct: 100 }
-  ];
+  const basePrice = currentLiveSession.use_voucher ? 0 : currentLiveSession.price;
 
-  const totalComm = Math.round(currentLiveSession.price * 0.1);
-  const count = staffs.length;
-
-  let summaryHtml = '';
   let totalTip = 0;
-
-  staffs.forEach(s => {
-    const u = users.find(user => normalizePhone(user.phone) === normalizePhone(s.phone));
-    const rate = (u && parsePercentage(u?.commission_rate) > 0) ? parsePercentage(u?.commission_rate) : 10;
-    const sPct = s.pct || Math.round(100 / count);
-    const comm = Math.round(currentLiveSession.price * (rate / 100) * (sPct / 100));
-    const tip = staffTipMap[s.phone] || 0;
-    totalTip += tip;
-
-    summaryHtml += `
-      <div class="flex justify-between items-center text-[#2D2424]">
-        <span>Thu nhập ${s.name}:</span>
-        <span class="font-extrabold text-[#2E7D6D]">+${(comm + tip).toLocaleString('vi-VN')} đ (Tour: ${comm.toLocaleString('vi-VN')}${tip > 0 ? ` + Tip: ${tip.toLocaleString('vi-VN')}` : ''})</span>
-      </div>
-    `;
+  Object.values(staffTipMap).forEach(v => {
+    totalTip += Number(v) || 0;
   });
 
-  const listEl = document.getElementById('checkout-summary-staff-list');
-  if (listEl) listEl.innerHTML = summaryHtml;
-
-  const basePrice = currentLiveSession.use_voucher ? 0 : currentLiveSession.price;
   const grandTotal = basePrice + totalTip;
-  const totalEl = document.getElementById('staff-step-grand-total');
-  if (totalEl) totalEl.innerText = `${grandTotal.toLocaleString('vi-VN')} đ`;
+  document.getElementById('checkout-grand-total').innerText = grandTotal.toLocaleString('vi-VN') + ' đ';
+
+  const staffSummaryEl = document.getElementById('checkout-summary-staff-list');
+  if (staffSummaryEl) {
+    const users = getSortedUsersList();
+    const currentStaffs = currentLiveSession.staffs || [
+      { phone: currentLiveSession.staff_1_phone, name: currentLiveSession.staff_1_name, pct: 100 }
+    ];
+
+    staffSummaryEl.innerHTML = currentStaffs.map((s, idx) => {
+      const staffObj = users.find(u => normalizePhone(u.phone) === normalizePhone(s.phone));
+      const rate = (staffObj && parsePercentage(staffObj?.commission_rate) > 0) ? parsePercentage(staffObj?.commission_rate) : 10;
+      const commVnd = Math.round(currentLiveSession.price * (rate / 100) * ((s.pct || Math.round(100/currentStaffs.length)) / 100));
+      const tipVnd = getStaffTipAmount(s.phone);
+
+      return `
+        <div class="flex justify-between items-center text-xs font-bold text-[#2D2424]">
+          <span>${s.name}:</span>
+          <span class="text-[#2E7D6D]">Tour +${commVnd.toLocaleString('vi-VN')} đ ${tipVnd > 0 ? `<span class="text-[#E58A7B]">(Tip +${tipVnd.toLocaleString('vi-VN')} đ)</span>` : ''}</span>
+        </div>
+      `;
+    }).join('');
+  }
+
+  const qrContainer = document.getElementById('checkout-qr-container');
+  if (checkoutPaymentMethod === 'Chuyển khoản') {
+    if (qrContainer) {
+      qrContainer.classList.remove('hidden');
+      renderVietQR('checkout-qr-img', 'checkout-qr-account', grandTotal, `SELENA SPA ${currentLiveSession.service_name.slice(0, 15)}`);
+    }
+  } else {
+    if (qrContainer) qrContainer.classList.add('hidden');
+  }
+}
+
+function setCheckoutPayment(method) {
+  checkoutPaymentMethod = method;
+  const btnBank = document.getElementById('btn-pay-bank');
+  const btnCash = document.getElementById('btn-pay-cash');
+
+  if (method === 'Chuyển khoản') {
+    btnBank.className = 'py-3 rounded-2xl border bg-[#FFF0EB] border-[#E58A7B] text-[#E58A7B] font-extrabold text-sm flex items-center justify-center gap-2 cursor-pointer shadow-sm';
+    btnCash.className = 'py-3 rounded-2xl border bg-[#F7F2EC] border-[#EFE8DF] text-[#7E7272] font-extrabold text-sm flex items-center justify-center gap-2 cursor-pointer';
+  } else {
+    btnCash.className = 'py-3 rounded-2xl border bg-[#FFF0EB] border-[#E58A7B] text-[#E58A7B] font-extrabold text-sm flex items-center justify-center gap-2 cursor-pointer shadow-sm';
+    btnBank.className = 'py-3 rounded-2xl border bg-[#F7F2EC] border-[#EFE8DF] text-[#7E7272] font-extrabold text-sm flex items-center justify-center gap-2 cursor-pointer';
+  }
+
+  updateCheckoutGrandTotal();
 }
 
 function confirmSaveReceiptFromCheckout() {
   if (!currentLiveSession) return;
 
   const users = getSortedUsersList();
-  const staffs = currentLiveSession.staffs || [
-    { phone: currentLiveSession.staff_1_phone, name: currentLiveSession.staff_1_name, pct: 100, user_id: currentLiveSession.staff_1_user_id, staff_id: currentLiveSession.staff_1_id }
+  const currentStaffs = currentLiveSession.staffs || [
+    { phone: currentLiveSession.staff_1_phone, name: currentLiveSession.staff_1_name, pct: 100 }
   ];
 
-  const s1 = staffs[0];
-  const s2 = staffs[1] || null;
+  const s1 = currentStaffs[0];
+  const s2 = currentStaffs[1] || null;
 
-  const rate1 = parsePercentage(users.find(u => normalizePhone(u.phone) === normalizePhone(s1.phone))?.commission_rate) || 10;
-  const rate2 = s2 ? (parsePercentage(users.find(u => normalizePhone(u.phone) === normalizePhone(s2.phone))?.commission_rate) || rate1 || 10) : 0;
+  const staff1Obj = users.find(u => normalizePhone(u.phone) === normalizePhone(s1.phone));
+  const rate1 = (staff1Obj && parsePercentage(staff1Obj?.commission_rate) > 0) ? parsePercentage(staff1Obj?.commission_rate) : 10;
+  const comm1 = Math.round(currentLiveSession.price * (rate1 / 100) * ((s1.pct || 100) / 100));
+  const tip1 = getStaffTipAmount(s1.phone);
 
-  const s1Pct = s1.pct || (staffs.length > 1 ? Math.round(100 / staffs.length) : 100);
-  const s2Pct = s2 ? (s2.pct || Math.round(100 / staffs.length)) : 0;
-
-  let comm1 = Math.round(currentLiveSession.price * (rate1 / 100) * (s1Pct / 100));
-  let comm2 = s2 ? Math.round(currentLiveSession.price * (rate2 / 100) * (s2Pct / 100)) : 0;
-
-  let tip1 = staffTipMap[s1.phone] || 0;
-  let tip2 = s2 ? (staffTipMap[s2.phone] || 0) : 0;
+  let comm2 = 0;
+  let tip2 = 0;
+  if (s2) {
+    const staff2Obj = users.find(u => normalizePhone(u.phone) === normalizePhone(s2.phone));
+    const rate2 = (staff2Obj && parsePercentage(staff2Obj?.commission_rate) > 0) ? parsePercentage(staff2Obj?.commission_rate) : 10;
+    comm2 = Math.round(currentLiveSession.price * (rate2 / 100) * ((s2.pct || 0) / 100));
+    tip2 = getStaffTipAmount(s2.phone);
+  }
 
   let totalTip = 0;
-  Object.values(staffTipMap).forEach(val => totalTip += Number(val) || 0);
+  Object.values(staffTipMap).forEach(v => {
+    totalTip += Number(v) || 0;
+  });
 
-  const finalPrice = currentLiveSession.use_voucher ? 0 : currentLiveSession.price;
-  const grandTotal = finalPrice + totalTip;
+  const basePrice = currentLiveSession.use_voucher ? 0 : currentLiveSession.price;
+  const grandTotal = basePrice + totalTip;
   const receiptId = 'HD' + Date.now().toString().slice(-6);
 
   const receipt = {
@@ -1067,7 +1111,6 @@ function confirmSaveReceiptFromCheckout() {
     customer_phone: currentLiveSession.customer_phone,
     customer_name: currentLiveSession.customer_name,
     
-    // KTV 1
     staff_1_user_id: s1.user_id || s1.phone || '',
     staff_1_id: s1.staff_id || 'KTV01',
     staff_1_phone: s1.phone || '',
@@ -1075,7 +1118,6 @@ function confirmSaveReceiptFromCheckout() {
     staff_1_comm: comm1,
     staff_1_tip: tip1,
 
-    // KTV 2
     has_staff_2: Boolean(s2),
     staff_2_user_id: s2 ? (s2.user_id || s2.phone) : '-',
     staff_2_id: s2 ? s2.staff_id : '-',
@@ -1084,7 +1126,6 @@ function confirmSaveReceiptFromCheckout() {
     staff_2_comm: comm2,
     staff_2_tip: tip2,
 
-    // Tương thích ngược
     staff_phone: s1.phone || '',
     staff_id: s1.staff_id || 'KTV01',
     staff_name: s1.name || 'KTV',
@@ -1128,10 +1169,15 @@ function confirmSaveReceiptFromCheckout() {
   callGasApi('create_receipt', receipt);
   confetti({ particleCount: 60, spread: 70, origin: { y: 0.6 } });
 
-  let successMsg = `✅ Đã hoàn tất và lưu hóa đơn tour gội!\n• Thời gian: ${receipt.start_time} - ${receipt.end_time} (${receipt.duration_min} phút)\n• Khách trả: ${grandTotal.toLocaleString('vi-VN')} đ (${checkoutPaymentMethod})`;
-  if (totalTip > 0) successMsg += `\n• Tổng tiền Tips: +${totalTip.toLocaleString('vi-VN')} đ`;
-  successMsg += `\n• KTV 1 (${receipt.staff_1_name}): Tour +${comm1.toLocaleString('vi-VN')} đ${tip1 > 0 ? ` + Tip +${tip1.toLocaleString('vi-VN')} đ` : ''}`;
-  if (receipt.has_staff_2) successMsg += `\n• KTV 2 (${receipt.staff_2_name}): Tour +${comm2.toLocaleString('vi-VN')} đ${tip2 > 0 ? ` + Tip +${tip2.toLocaleString('vi-VN')} đ` : ''}`;
+  let successMsg = `✅ Đã hoàn tất và lưu hóa đơn tour gội!
+• Thời gian: ${receipt.start_time} - ${receipt.end_time} (${receipt.duration_min} phút)
+• Khách trả: ${grandTotal.toLocaleString('vi-VN')} đ (${checkoutPaymentMethod})`;
+  if (totalTip > 0) successMsg += `
+• Tổng tiền Tips: +${totalTip.toLocaleString('vi-VN')} đ`;
+  successMsg += `
+• KTV 1 (${receipt.staff_1_name}): Tour +${comm1.toLocaleString('vi-VN')} đ${tip1 > 0 ? ` + Tip +${tip1.toLocaleString('vi-VN')} đ` : ''}`;
+  if (receipt.has_staff_2) successMsg += `
+• KTV 2 (${receipt.staff_2_name}): Tour +${comm2.toLocaleString('vi-VN')} đ${tip2 > 0 ? ` + Tip +${tip2.toLocaleString('vi-VN')} đ` : ''}`;
   alert(successMsg);
 
   closeCheckoutModal();
@@ -1146,6 +1192,5 @@ function confirmSaveReceiptFromCheckout() {
   document.getElementById('pos-customer-card').classList.add('hidden');
   useVoucher = false;
   renderExtraStaffUI();
-
-  showView('history');
+  updatePOSStaffInfo();
 }
