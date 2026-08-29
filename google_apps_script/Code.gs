@@ -20,14 +20,15 @@ function formatDateVal(val) {
     return Utilities.formatDate(val, 'GMT+7', 'yyyy-MM-dd');
   }
   let s = String(val).trim();
-  if (s.includes('GMT') || s.includes('T')) {
-    try {
-      return Utilities.formatDate(new Date(val), 'GMT+7', 'yyyy-MM-dd');
-    } catch(e) {}
-  }
   let match = s.match(/(\d{4})[/-](\d{1,2})[/-](\d{1,2})/);
   if (match) return `${match[1]}-${match[2].padStart(2, '0')}-${match[3].padStart(2, '0')}`;
-  return s;
+  try {
+    let d = new Date(val);
+    if (!isNaN(d.getTime()) && d.getFullYear() > 1970) {
+      return Utilities.formatDate(d, 'GMT+7', 'yyyy-MM-dd');
+    }
+  } catch(e) {}
+  return '2026-08-29';
 }
 
 /**

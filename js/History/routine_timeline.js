@@ -13,17 +13,32 @@ function formatCleanTime(val) {
 }
 
 function formatCleanDate(val) {
-  if (!val) return '08-29';
+  if (!val) return '29/08';
   let s = String(val).trim();
+  
+  // Khớp định dạng YYYY-MM-DD
   let matchFull = s.match(/(\d{4})[/-](\d{1,2})[/-](\d{1,2})/);
   if (matchFull) {
-    return `${matchFull[2].padStart(2, '0')}-${matchFull[3].padStart(2, '0')}`;
+    return `${matchFull[3].padStart(2, '0')}/${matchFull[2].padStart(2, '0')}`;
   }
+  
+  // Khớp định dạng DD/MM hoặc MM/DD
   let matchShort = s.match(/(\d{1,2})[/-](\d{1,2})/);
   if (matchShort) {
-    return `${matchShort[1].padStart(2, '0')}-${matchShort[2].padStart(2, '0')}`;
+    return `${matchShort[1].padStart(2, '0')}/${matchShort[2].padStart(2, '0')}`;
   }
-  return s.slice(-5);
+  
+  // Parse từ JavaScript Date
+  try {
+    let d = new Date(val);
+    if (!isNaN(d.getTime()) && d.getFullYear() > 1970) {
+      let day = d.getDate().toString().padStart(2, '0');
+      let month = (d.getMonth() + 1).toString().padStart(2, '0');
+      return `${day}/${month}`;
+    }
+  } catch(e) {}
+  
+  return '29/08';
 }
 
 function loadStaffHistoryList() {
