@@ -1,0 +1,48 @@
+<main id="view-income" class="flex-1 p-4 sm:p-6 max-w-4xl w-full mx-auto space-y-5 pb-28">
+  <!-- Header Owner -->
+  <div id="main-header" class="spa-card p-4 sm:p-5 flex items-center justify-between">
+    <div class="flex items-center gap-3.5">
+      <div class="w-11 h-11 rounded-2xl bg-[#FFF0EB] border border-[#FCDFD7] flex items-center justify-center text-[#E58A7B] font-extrabold text-lg shadow-sm">
+        👑
+      </div>
+      <div>
+        <div class="flex items-center gap-1.5">
+          <span class="font-extrabold text-base sm:text-lg tracking-tight text-[#2D2424]">Hi <span id="header-user-name">Miles</span>,</span>
+        </div>
+        <span id="header-role-badge" class="text-xs text-[#E58A7B] font-semibold block -mt-0.5">👑 Chủ Sáng Lập</span>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-2.5">
+      <button id="btn-sync-cloud" onclick="refreshDataFromGoogleSheets()" title="Đồng bộ Google Sheets 2 chiều" class="px-3.5 py-2.5 rounded-2xl bg-[#F7F2EC] hover:bg-[#FFF0EB] border border-[#EFE8DF] text-[#E58A7B] text-xs sm:text-sm font-bold flex items-center gap-2 transition shadow-sm cursor-pointer">
+        <i data-lucide="cloud-check" class="w-4 h-4 text-[#2E7D6D]"></i> <span class="hidden sm:inline">Đồng bộ Sheet</span>
+      </button>
+      <button onclick="logout()" title="Đăng xuất" class="p-2.5 rounded-2xl bg-[#F7F2EC] hover:bg-rose-50 text-[#7E7272] hover:text-rose-600 transition border border-[#EFE8DF] shadow-sm cursor-pointer">
+        <i data-lucide="log-out" class="w-4 h-4"></i>
+      </button>
+    </div>
+  </div>
+
+  <div class="flex justify-between items-center px-1 pt-1">
+    <div>
+      <h2 class="text-2xl font-extrabold text-[#2D2424]">Quản Lý Chi Phí Tiệm</h2>
+      <p class="text-xs sm:text-sm text-[#7E7272]">Kiểm soát chi phí cố định & biến phí vận hành</p>
+    </div>
+    <button onclick="loadIncomeView()" class="p-3 rounded-2xl bg-white hover:bg-[#FFF0EB] text-[#7E7272] hover:text-[#E58A7B] transition border border-[#F0EAE1] shadow-sm cursor-pointer">
+      <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+    </button>
+  </div>
+
+  <div class="spa-card p-5 sm:p-7 space-y-4">
+    <div class="flex justify-between items-center">
+      <div>
+        <h3 class="text-base sm:text-lg font-extrabold text-[#2D2424]">Danh Sách Chi Phí Vận Hành</h3>
+        <p class="text-xs text-[#7E7272]">Điện sấy, nước sạch, internet, mặt bằng, mỹ phẩm</p>
+      </div>
+      <button onclick="openAddExpenseModal()" class="px-4 py-2.5 rounded-full bg-[#E58A7B] hover:bg-[#D9796A] text-white font-bold text-xs shadow-md shadow-[#E58A7B]/20 flex items-center gap-1.5 transition cursor-pointer">
+        <i data-lucide="plus" class="w-4 h-4"></i> Nhập Chi Phí Mới
+      </button>
+    </div>
+    <div id="admin-expenses-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
+  </div>
+</main>

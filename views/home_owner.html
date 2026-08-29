@@ -1,0 +1,110 @@
+<main id="view-home" class="flex-1 p-4 sm:p-6 max-w-5xl w-full mx-auto space-y-6 pb-28">
+  <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+    <div>
+      <h2 class="text-2xl sm:text-3xl font-extrabold text-[#2D2424] flex items-center gap-2.5">👑 Quản Trị Selena Spa</h2>
+      <p class="text-xs sm:text-sm text-[#7E7272]">Thống kê tài chính dòng tiền & Kiểm soát vận hành</p>
+    </div>
+    <button onclick="loadAdminDashboard()" class="px-4 py-2.5 rounded-2xl bg-white hover:bg-[#FFF0EB] text-[#2D2424] hover:text-[#E58A7B] text-xs sm:text-sm font-bold flex items-center gap-2 transition border border-[#F0EAE1] shadow-sm cursor-pointer">
+      <i data-lucide="refresh-cw" class="w-4 h-4 text-[#E58A7B]"></i> Làm mới
+    </button>
+  </div>
+
+  <!-- Thông Báo Đang Phát Cho Nhân Viên (Chủ có thể sửa) -->
+  <div class="spa-card p-5 sm:p-6 bg-gradient-to-br from-[#FFF0EB]/80 via-[#FFFFFF] to-[#FAF6F1] border border-[#FCDFD7] space-y-3 shadow-sm">
+    <div class="flex items-center justify-between">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#FFF0EB] border border-[#FCDFD7] text-[#E58A7B] text-xs font-bold shadow-sm">
+        <i data-lucide="megaphone" class="w-3.5 h-3.5 text-[#E58A7B]"></i> Thông Báo Đang Phát Cho KTV
+      </div>
+      <button onclick="openEditAnnouncementModal()" class="px-3.5 py-1.5 rounded-full bg-[#E58A7B] hover:bg-[#D9796A] text-white text-xs font-bold transition shadow-sm flex items-center gap-1.5 cursor-pointer">
+        <i data-lucide="edit-3" class="w-3.5 h-3.5"></i> Sửa Thông Báo
+      </button>
+    </div>
+    <div class="text-sm sm:text-base font-bold text-[#2D2424] leading-relaxed" id="admin-announcement-content">
+      ✨ Chúc các kỹ thuật viên một ngày làm việc tràn đầy năng lượng!
+    </div>
+    <div class="flex items-center justify-between text-xs text-[#7E7272] pt-2 border-t border-[#FCDFD7]/60">
+      <span class="text-[11px] text-[#A39696]">Nhập trên Google Sheet (tab tb_config) hoặc bấm "Sửa" ở trên</span>
+      <span class="text-[11px] font-mono text-[#E58A7B]" id="admin-announcement-date">27/08/2026</span>
+    </div>
+  </div>
+
+  <!-- 4 Pastel Financial KPI Cards -->
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+    <div class="p-5 sm:p-6 rounded-3xl bg-[#E8F8F5] border border-[#B7EBDD] space-y-1 shadow-sm">
+      <span class="text-xs sm:text-sm font-bold text-[#2E7D6D] uppercase tracking-wider block">Doanh Thu Tổng</span>
+      <div class="text-2xl sm:text-3xl font-extrabold text-[#2D2424]" id="kpi-revenue">0 đ</div>
+      <span class="text-xs text-[#2E7D6D] font-medium block" id="kpi-tours">0 ca phục vụ</span>
+    </div>
+    <div class="p-5 sm:p-6 rounded-3xl bg-[#F5EEF8] border border-[#E8DAEF] space-y-1 shadow-sm">
+      <span class="text-xs sm:text-sm font-bold text-[#8E44AD] uppercase tracking-wider block">Tổng Lương KTV</span>
+      <div class="text-2xl sm:text-3xl font-extrabold text-[#2D2424]" id="kpi-salaries">0 đ</div>
+      <span class="text-xs text-[#8E44AD] font-medium block">Lương cứng + Tour</span>
+    </div>
+    <div class="p-5 sm:p-6 rounded-3xl bg-[#FFF0EB] border border-[#FCDFD7] space-y-1 shadow-sm">
+      <span class="text-xs sm:text-sm font-bold text-[#D35400] uppercase tracking-wider block">Chi Phí Vận Hành</span>
+      <div class="text-2xl sm:text-3xl font-extrabold text-[#2D2424]" id="kpi-expenses">0 đ</div>
+      <span class="text-xs text-[#D35400] font-medium block">Điện, nước, mạng, mặt bằng</span>
+    </div>
+    <div class="p-5 sm:p-6 rounded-3xl bg-[#E58A7B] text-white space-y-1 shadow-lg shadow-[#E58A7B]/20 col-span-2 sm:col-span-1">
+      <span class="text-xs sm:text-sm font-extrabold text-white/90 uppercase tracking-wider block">LỢI NHUẬN RÒNG</span>
+      <div class="text-2xl sm:text-3xl font-extrabold text-white" id="kpi-net-profit">0 đ</div>
+      <span class="text-xs text-white/90 font-medium block">Tiền thực nhận của Chủ</span>
+    </div>
+  </div>
+
+  <!-- Subtabs Navigation -->
+  <div class="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
+    <button onclick="switchAdminTab('users')" id="tab-btn-users" class="px-5 py-2.5 rounded-full text-xs sm:text-sm font-bold bg-[#E58A7B] text-white shadow-md shadow-[#E58A7B]/25 transition cursor-pointer shrink-0">💆 Nhân Viên (tb_users)</button>
+    <button onclick="switchAdminTab('customers')" id="tab-btn-customers" class="px-5 py-2.5 rounded-full text-xs sm:text-sm font-bold bg-white hover:bg-[#FFF0EB] text-[#7E7272] border border-[#F0EAE1] transition cursor-pointer shrink-0">👥 Khách Hàng (tb_customers)</button>
+    <button onclick="switchAdminTab('settings')" id="tab-btn-settings" class="px-5 py-2.5 rounded-full text-xs sm:text-sm font-bold bg-white hover:bg-[#FFF0EB] text-[#7E7272] border border-[#F0EAE1] transition cursor-pointer shrink-0">⚙️ Kết Nối Google Sheets</button>
+  </div>
+
+  <!-- Users Subtab -->
+  <div id="admin-subtab-users" class="spa-card p-5 sm:p-7 space-y-4">
+    <div class="flex justify-between items-center">
+      <div>
+        <h3 class="text-base sm:text-lg font-extrabold text-[#2D2424]">Danh Sách Nhân Viên (tb_users)</h3>
+        <p class="text-xs text-[#7E7272]">Thêm / sửa thợ trực tiếp trên Google Sheet</p>
+      </div>
+      <span class="text-xs sm:text-sm text-[#E58A7B] font-bold" id="admin-users-count">0 nhân sự</span>
+    </div>
+    <div id="admin-users-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5"></div>
+  </div>
+
+  <!-- Customers Subtab -->
+  <div id="admin-subtab-customers" class="hidden spa-card p-5 sm:p-7 space-y-4">
+    <div class="flex justify-between items-center">
+      <div>
+        <h3 class="text-base sm:text-lg font-extrabold text-[#2D2424]">Danh Sách Khách Hàng (tb_customers)</h3>
+        <p class="text-xs text-[#7E7272]">Tự động đồng bộ với Google Sheets</p>
+      </div>
+      <span class="text-xs sm:text-sm text-[#E58A7B] font-bold" id="admin-customer-count">0 khách</span>
+    </div>
+    <div id="admin-customers-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
+  </div>
+
+  <!-- Settings Subtab -->
+  <div id="admin-subtab-settings" class="hidden spa-card p-5 sm:p-7 space-y-6">
+    <div>
+      <h3 class="text-lg font-extrabold text-[#2D2424] flex items-center gap-2">
+        <i data-lucide="settings" class="w-5 h-5 text-[#E58A7B]"></i> Kết Nối Google Sheets
+      </h3>
+      <p class="text-xs sm:text-sm text-[#7E7272] mt-1">Đồng bộ trực tiếp về Google Sheets trên Google Drive của bạn</p>
+    </div>
+    <div class="p-4 rounded-3xl bg-[#F7F2EC] space-y-2 border border-[#EFE8DF]">
+      <label class="block text-xs sm:text-sm font-bold text-[#2D2424]">Đường dẫn Google Apps Script Web App URL:</label>
+      <div class="flex gap-2">
+        <input type="text" id="setting-gas-url" placeholder="https://script.google.com/macros/s/.../exec" class="flex-1 bg-white border border-[#EFE8DF] rounded-2xl p-3.5 text-xs sm:text-sm text-[#2D2424] focus:outline-none focus:border-[#E58A7B] font-mono">
+        <button onclick="saveGasUrl()" class="px-5 py-3 rounded-2xl bg-[#E58A7B] hover:bg-[#D9796A] text-white font-bold text-xs sm:text-sm transition cursor-pointer">Lưu</button>
+      </div>
+    </div>
+
+    <div class="p-4 rounded-3xl bg-rose-50 border border-rose-200 space-y-2">
+      <div class="text-xs sm:text-sm font-bold text-rose-700">Quản Lý Dữ Liệu Bộ Nhớ:</div>
+      <p class="text-xs text-rose-600">Nếu vừa cập nhật bảng trên Google Sheet và muốn App xóa dữ liệu thử nghiệm cũ để lấy dữ liệu mới nhất từ Sheet:</p>
+      <button onclick="resetLocalDataAndResync()" class="w-full py-3.5 rounded-2xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition cursor-pointer shadow-md shadow-rose-600/20">
+        <i data-lucide="refresh-cw" class="w-4 h-4"></i> Xóa Cache Cũ & Đồng Bộ Lại Từ Google Sheets
+      </button>
+    </div>
+  </div>
+</main>

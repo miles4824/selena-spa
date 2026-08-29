@@ -1,27 +1,37 @@
 // =============================================================
-// APP ROUTER, DYNAMIC VIEW LOADER & LIFECYCLE INITIALIZER
+// APP ROUTER, ROLE-BASED VIEW ISOLATION & LIFECYCLE INITIALIZER
 // =============================================================
+let loadedRole = null;
+
 function hideAllViews() {
-  document.getElementById('view-home')?.classList.add('hidden');
-  document.getElementById('view-add')?.classList.add('hidden');
-  document.getElementById('view-history')?.classList.add('hidden');
-  document.getElementById('view-income')?.classList.add('hidden');
+  const vHome = document.getElementById('view-home');
+  const vAdd = document.getElementById('view-add');
+  const vHistory = document.getElementById('view-history');
+  const vIncome = document.getElementById('view-income');
+
+  if (vHome) vHome.classList.add('hidden');
+  if (vAdd) vAdd.classList.add('hidden');
+  if (vHistory) vHistory.classList.add('hidden');
+  if (vIncome) vIncome.classList.add('hidden');
 }
 
-function showView(view) {
+async function showView(view) {
   currentTab = view;
-  hideAllViews();
+
+  // Đảm bảo chỉ nạp đúng bộ View của Role đó
   const isOwner = isUserOwner(currentUser);
+  const targetRole = isOwner ? 'owner' : 'ktv';
+  if (loadedRole !== targetRole) {
+    await loadRoleSpecificViews(isOwner);
+  }
+
+  hideAllViews();
 
   if (view === 'home') {
     document.getElementById('view-home')?.classList.remove('hidden');
     if (isOwner) {
-      document.getElementById('home-ktv-section')?.classList.add('hidden');
-      document.getElementById('home-owner-section')?.classList.remove('hidden');
       loadAdminDashboard();
     } else {
-      document.getElementById('home-owner-section')?.classList.add('hidden');
-      document.getElementById('home-ktv-section')?.classList.remove('hidden');
       loadKTVHomeStats();
     }
     renderAnnouncement();
@@ -35,7 +45,7 @@ function showView(view) {
     document.getElementById('view-income')?.classList.remove('hidden');
     const headerName = document.getElementById('header-user-name');
     const headerRole = document.getElementById('header-role-badge');
-    if (headerName) headerName.innerText = currentUser?.full_name || 'Mai Lan';
+    if (headerName) headerName.innerText = currentUser?.full_name || 'KTV';
     if (headerRole) headerRole.innerText = isOwner ? '👑 Chủ Sáng Lập' : '💆 Kỹ Thuật Viên';
     loadIncomeView();
   }
@@ -76,12 +86,8 @@ function renderBottomNavDock() {
 function loadHistoryView() {
   const isOwner = isUserOwner(currentUser);
   if (isOwner) {
-    document.getElementById('history-ktv-section')?.classList.add('hidden');
-    document.getElementById('history-owner-section')?.classList.remove('hidden');
     loadAdminReceiptsList();
   } else {
-    document.getElementById('history-owner-section')?.classList.add('hidden');
-    document.getElementById('history-ktv-section')?.classList.remove('hidden');
     loadStaffHistoryList();
   }
   lucide.createIcons();
@@ -90,47 +96,27 @@ function loadHistoryView() {
 function loadIncomeView() {
   const isOwner = isUserOwner(currentUser);
   if (isOwner) {
-    document.getElementById('income-ktv-section')?.classList.add('hidden');
-    document.getElementById('income-owner-section')?.classList.remove('hidden');
     loadAdminExpensesList();
   } else {
-    document.getElementById('income-owner-section')?.classList.add('hidden');
-    document.getElementById('income-ktv-section')?.classList.remove('hidden');
     loadStaffPayrollStats();
   }
   lucide.createIcons();
 }
 
-// Pull to refresh support for mobile
-let touchStartY = 0;
-let isPulling = false;
-window.addEventListener('touchstart', e => {
-  if (window.scrollY === 0) touchStartY = e.touches[0].clientY;
-}, { passive: true });
+// NẠP ĐỘNG ĐÚNG BỘ VIEW CỦA ROLE (CÔ LẬP BẢO MẬT 100%)
+async function loadRoleSpecificViews(isOwner) {
+  const roleSuffix = isOwner ? '_owner.html' : '_ktv.html';
+  loadedRole = isOwner ? 'owner' : 'ktv';
 
-window.addEventListener('touchmove', e => {
-  const touchY = e.touches[0].clientY;
-  const pullDist = touchY - touchStartY;
-  const ptr = document.getElementById('ptr-indicator');
-  if (window.scrollY === 0 && pullDist > 50 && ptr) {
-    isPulling = true;
-    ptr.style.transform = `translateY(${Math.min(pullDist - 50, 60)}px)`;
-  }
-}, { passive: true });
+  await Promise.all([
+    loadViewTemplate('container-home', `views/home${roleSuffix}`),
+    loadViewTemplate('container-history', `views/history${roleSuffix}`),
+    loadViewTemplate('container-wallet', `views/wallet${roleSuffix}`)
+  ]);
+  lucide.createIcons();
+}
 
-window.addEventListener('touchend', e => {
-  const ptr = document.getElementById('ptr-indicator');
-  if (isPulling && ptr) {
-    ptr.style.transform = 'translateY(0)';
-    setTimeout(() => {
-      ptr.style.transform = 'translateY(-100%)';
-      refreshDataFromGoogleSheets();
-    }, 600);
-  }
-  isPulling = false;
-});
-
-// Dynamic View Component Loader
+// Helper fetch view template
 async function loadViewTemplate(containerId, filePath) {
   try {
     const res = await fetch(filePath + '?v=' + Date.now());
@@ -146,14 +132,11 @@ async function loadViewTemplate(containerId, filePath) {
 
 // App Initialization
 window.addEventListener('DOMContentLoaded', async () => {
-  // Preload all separate HTML view files in parallel
+  // 1. Tải trước các thành phần dùng chung (Login, Add POS, Nav, Modals)
   await Promise.all([
     loadViewTemplate('container-ptr', 'components/pull_to_refresh.html'),
     loadViewTemplate('container-login', 'views/login.html'),
-    loadViewTemplate('container-home', 'views/home.html'),
     loadViewTemplate('container-add', 'views/add.html'),
-    loadViewTemplate('container-history', 'views/history.html'),
-    loadViewTemplate('container-wallet', 'views/wallet.html'),
     loadViewTemplate('container-nav', 'components/bottom_nav.html'),
     loadViewTemplate('container-modals', 'components/modals.html')
   ]);

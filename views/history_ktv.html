@@ -1,0 +1,48 @@
+<main id="view-history" class="flex-1 p-4 sm:p-6 max-w-2xl w-full mx-auto space-y-5 pb-28">
+  <div class="flex justify-between items-center px-1">
+    <div>
+      <h2 class="text-2xl font-extrabold text-[#2D2424]">Nhật Ký Ca Của Tôi</h2>
+      <p class="text-xs sm:text-sm text-[#7E7272]">Danh sách các ca bạn đã phục vụ</p>
+    </div>
+    <button onclick="loadHistoryView()" class="p-3 rounded-2xl bg-white hover:bg-[#FFF0EB] text-[#7E7272] hover:text-[#E58A7B] transition border border-[#F0EAE1] shadow-sm cursor-pointer">
+      <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+    </button>
+  </div>
+
+  <!-- Date Strip Pills -->
+  <div class="spa-card p-3.5 flex items-center justify-between gap-1 overflow-x-auto no-scrollbar" id="pos-date-strip">
+    <div class="flex items-center justify-between w-full gap-1.5 text-center">
+      <div class="flex-1 py-2 px-1 rounded-2xl bg-[#F7F2EC] text-[#7E7272] text-xs">
+        <span class="block text-[10px] text-[#A39696] uppercase font-bold">CN</span>
+        <span class="text-sm font-extrabold text-[#2D2424]">23</span>
+      </div>
+      <div class="flex-1 py-2 px-1 rounded-2xl bg-[#F7F2EC] text-[#7E7272] text-xs">
+        <span class="block text-[10px] text-[#A39696] uppercase font-bold">T2</span>
+        <span class="text-sm font-extrabold text-[#2D2424]">24</span>
+      </div>
+      <div class="flex-1 py-2 px-1 rounded-2xl bg-[#F7F2EC] text-[#7E7272] text-xs">
+        <span class="block text-[10px] text-[#A39696] uppercase font-bold">T3</span>
+        <span class="text-sm font-extrabold text-[#2D2424]">25</span>
+      </div>
+      <div class="flex-1 py-2 px-1 rounded-2xl bg-[#F7F2EC] text-[#7E7272] text-xs">
+        <span class="block text-[10px] text-[#A39696] uppercase font-bold">T4</span>
+        <span class="text-sm font-extrabold text-[#2D2424]">26</span>
+      </div>
+      <div class="flex-1 py-2 px-1 rounded-2xl bg-[#E58A7B] text-white shadow-md shadow-[#E58A7B]/25">
+        <span class="block text-[10px] text-white/80 uppercase font-bold">Hôm nay</span>
+        <span class="text-sm font-extrabold text-white">27</span>
+      </div>
+      <div class="flex-1 py-2 px-1 rounded-2xl bg-[#F7F2EC] text-[#7E7272] text-xs">
+        <span class="block text-[10px] text-[#A39696] uppercase font-bold">T6</span>
+        <span class="text-sm font-extrabold text-[#2D2424]">28</span>
+      </div>
+      <div class="flex-1 py-2 px-1 rounded-2xl bg-[#F7F2EC] text-[#7E7272] text-xs">
+        <span class="block text-[10px] text-[#A39696] uppercase font-bold">T7</span>
+        <span class="text-sm font-extrabold text-[#2D2424]">29</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- KTV Timeline -->
+  <div id="staff-receipts-list" class="space-y-3"></div>
+</main>
