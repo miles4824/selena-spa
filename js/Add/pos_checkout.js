@@ -195,132 +195,14 @@ function startLiveSession() {
   const staff2 = isStaff2Enabled ? users.find(u => normalizePhone(u.phone) === normalizePhone(s2Phone)) : null;
 
   const now = new Date();
-  const startTimeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
-  const startDateStr = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}`;
-
-  currentLiveSession = {
-    session_id: 'SS' + Date.now(),
-    service_id: service.service_id,
-    service_name: service.service_name,
-    price: service.price,
-    duration_target_min: service.duration_min || 45,
-    start_timestamp: Date.now(),
-    start_time: startTimeStr,
-    date: startDateStr,
-    customer_phone: phone,
-    customer_name: name,
-    staff_1_user_id: staff1?.user_id || staff1?.phone || '',
-    staff_1_phone: staff1?.phone || '',
-    staff_1_id: staff1?.staff_id || 'KTV01',
-    staff_1_name: staff1?.full_name || 'KTV 1',
-    has_staff_2: Boolean(isStaff2Enabled && staff2),
-    staff_2_user_id: staff2?.user_id || staff2?.phone || '-',
-    staff_2_phone: staff2?.phone || '-',
-    staff_2_id: staff2?.staff_id || '',
-    staff_2_name: staff2?.full_name || '',
-    use_voucher: useVoucher
-  };
-
-  localStorage.setItem('selena_active_live_session', JSON.stringify(currentLiveSession));
-  renderLiveSessionUI();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-function renderLiveSessionUI() {
-  const liveCard = document.getElementById('live-session-card');
-  const formBox = document.getElementById('pos-form-box');
-
-  if (!currentLiveSession) {
-    if (liveCard) liveCard.classList.add('hidden');
-    if (formBox) formBox.classList.remove('hidden');
-    clearInterval(liveTimerInterval);
-    return;
-  }
-
-  if (liveCard) liveCard.classList.remove('hidden');
-  if (formBox) formBox.classList.add('hidden');
-
-  document.getElementById('live-service-name').innerText = currentLiveSession.service_name;
-  document.getElementById('live-customer-badge').innerText = '👤 ' + (currentLiveSession.customer_name || 'Khách vãng lai');
-  document.getElementById('live-staff-badge').innerText = '💆 ' + currentLiveSession.staff_1_name + (currentLiveSession.has_staff_2 ? ` & ${currentLiveSession.staff_2_name}` : '');
-  document.getElementById('live-start-time-text').innerText = currentLiveSession.start_time;
-  document.getElementById('live-target-time-text').innerText = currentLiveSession.duration_target_min + ' phút';
-
-  clearInterval(liveTimerInterval);
-  updateLiveTimerTick();
-  liveTimerInterval = setInterval(updateLiveTimerTick, 1000);
-  lucide.createIcons();
-}
-
-function updateLiveTimerTick() {
-  if (!currentLiveSession) return;
-  const elapsedSec = Math.max(0, Math.floor((Date.now() - currentLiveSession.start_timestamp) / 1000));
-  const elapsedMin = Math.floor(elapsedSec / 60);
-  const remSec = elapsedSec % 60;
-
-  const timerEl = document.getElementById('live-timer-display');
-  const barEl = document.getElementById('live-progress-bar');
-  const hintEl = document.getElementById('live-status-hint');
-
-  if (timerEl) {
-    timerEl.innerText = `${elapsedMin.toString().padStart(2, '0')}:${remSec.toString().padStart(2, '0')}`;
-  }
-
-  const targetMin = currentLiveSession.duration_target_min || 45;
-  const pct = Math.min(100, Math.round((elapsedMin / targetMin) * 100));
-  if (barEl) barEl.style.width = pct + '%';
-
-  if (hintEl) {
-    if (elapsedMin >= targetMin) {
-      hintEl.innerText = '🔔 Đã đạt đủ thời gian liệu trình (' + targetMin + ' phút). Bấm nút bên dưới để thanh toán!';
-      hintEl.className = 'text-xs text-[#E58A7B] font-extrabold animate-bounce';
-    } else {
-      hintEl.innerText = `⏱️ Còn khoảng ${targetMin - elapsedMin} phút theo liệu trình`;
-      hintEl.className = 'text-xs text-[#2E7D6D] font-medium';
-    }
-  }
-}
-
-function cancelLiveSession() {
-  if (confirm('Bạn có chắc muốn hủy ca đang phục vụ này không?')) {
-    localStorage.removeItem('selena_active_live_session');
-    currentLiveSession = null;
-    clearInterval(liveTimerInterval);
-    renderLiveSessionUI();
-  }
-}
-
-function restoreLiveSessionIfExists() {
-  const saved = localStorage.getItem('selena_active_live_session');
-  if (saved) {
-    try {
-      currentLiveSession = JSON.parse(saved);
-      renderLiveSessionUI();
-    } catch(e) {
-      localStorage.removeItem('selena_active_live_session');
-    }
-  }
-}
-
-// =============================================================
-// BƯỚC 3: MỞ MODAL THANH TOÁN (PHA 1: KHÁCH XEM)
-// =============================================================
-
-function openCheckoutModal() {
-  if (!currentLiveSession) return;
-
-  const now = new Date();
   const endTimeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
   
-  // Tính phút chuẩn theo độ lệch giờ start_time và end_time để khớp 100% mắt nhìn
-  const [h1, m1] = (currentLiveSession.start_time || endTimeStr).split(':').map(Number);
-  const [h2, m2] = endTimeStr.split(':').map(Number);
-  let timeDiffMin = (h2 * 60 + m2) - (h1 * 60 + m1);
-  if (timeDiffMin < 0) timeDiffMin += 1440; // qua đêm
+  // LỰA CHỌN 3: Tính số phút thập phân chính xác từng giây (VD: 1.4 phút, 45.5 phút)
+  const elapsedSec = Math.max(1, Math.floor((Date.now() - (currentLiveSession.start_timestamp || Date.now())) / 1000));
+  const elapsedMinutes = Math.round((elapsedSec / 60) * 10) / 10;
   
-  const elapsedMinutes = timeDiffMin > 0 ? timeDiffMin : Math.max(1, Math.round((Date.now() - currentLiveSession.start_timestamp) / 60000));
   currentLiveSession.end_time = endTimeStr;
-  currentLiveSession.duration_actual_min = elapsedMinutes;
+  currentLiveSession.duration_actual_min = elapsedMinutes > 0 ? elapsedMinutes : 0.1;
 
   document.getElementById('chk-service-name').innerText = currentLiveSession.service_name;
   document.getElementById('chk-service-price').innerText = currentLiveSession.use_voucher ? '0 đ (Voucher)' : currentLiveSession.price.toLocaleString('vi-VN') + ' đ';

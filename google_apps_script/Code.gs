@@ -273,8 +273,8 @@ function createReceipt(params) {
 
   const startTime = params.start_time || params.time || timeStr;
   const endTime = params.end_time || timeStr;
-  let durationMin = Number(params.duration_min);
-  if (!durationMin || isNaN(durationMin)) {
+  let durationMin = parseFloat(params.duration_min);
+  if (isNaN(durationMin) || durationMin <= 0) {
     if (startTime && endTime && startTime.includes(':') && endTime.includes(':')) {
       let p1 = startTime.split(':').map(Number);
       let p2 = endTime.split(':').map(Number);
@@ -284,6 +284,8 @@ function createReceipt(params) {
     } else {
       durationMin = params.duration_target_min || 45;
     }
+  } else {
+    durationMin = Math.round(durationMin * 10) / 10;
   }
 
   const phone = normalizePhone(params.customer_phone);
