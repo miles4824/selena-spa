@@ -447,9 +447,17 @@ function openSwapStaffModal() {
     { phone: currentLiveSession.staff_1_phone, name: currentLiveSession.staff_1_name, pct: 100 }
   ]).map(s => ({ ...s }));
 
-  currentSplitMode = (tempSwapStaffs.length > 1 && currentLiveSession.split_mode) ? currentLiveSession.split_mode : (tempSwapStaffs.length === 2 ? 'timer' : 'equal');
+  // Nếu ca có từ 3 người hoặc ban đầu tạo làm chung -> mặc định là 'equal' (chia đều)
+  if (tempSwapStaffs.length >= 3) {
+    currentSplitMode = 'equal';
+  } else if (currentLiveSession.split_mode) {
+    currentSplitMode = currentLiveSession.split_mode;
+  } else {
+    currentSplitMode = 'equal';
+  }
 
   renderSwapModalStaffUI();
+  updateSplitButtonsUI();
   updateSwapPreviewDisplay();
 
   const modal = document.getElementById('modal-swap-staff');
@@ -462,29 +470,62 @@ function closeSwapStaffModal() {
   if (modal) modal.classList.add('hidden');
 }
 
+function updateSplitButtonsUI() {
+  const btnTimer = document.getElementById('btn-split-timer');
+  const btnHalf = document.getElementById('btn-split-half');
+  if (!btnTimer || !btnHalf) return;
+
+  const count = tempSwapStaffs.length;
+
+  if (count >= 3) {
+    btnTimer.disabled = true;
+    btnTimer.className = 'p-2.5 rounded-xl border bg-gray-100 border-gray-200 text-gray-400 font-bold text-xs flex flex-col items-center gap-0.5 cursor-not-allowed opacity-60';
+    btnHalf.disabled = false;
+    btnHalf.className = 'p-2.5 rounded-xl border bg-[#FFF0EB] border-[#E58A7B] text-[#E58A7B] font-bold text-xs flex flex-col items-center gap-0.5 cursor-pointer shadow-sm';
+  } else if (count === 2) {
+    btnTimer.disabled = false;
+    btnHalf.disabled = false;
+    if (currentSplitMode === 'timer') {
+      btnTimer.className = 'p-2.5 rounded-xl border bg-[#FFF0EB] border-[#E58A7B] text-[#E58A7B] font-bold text-xs flex flex-col items-center gap-0.5 cursor-pointer shadow-sm';
+      btnHalf.className = 'p-2.5 rounded-xl border bg-[#F7F2EC] border-[#EFE8DF] text-[#7E7272] hover:bg-[#FFF0EB] font-bold text-xs flex flex-col items-center gap-0.5 cursor-pointer';
+    } else {
+      btnHalf.className = 'p-2.5 rounded-xl border bg-[#FFF0EB] border-[#E58A7B] text-[#E58A7B] font-bold text-xs flex flex-col items-center gap-0.5 cursor-pointer shadow-sm';
+      btnTimer.className = 'p-2.5 rounded-xl border bg-[#F7F2EC] border-[#EFE8DF] text-[#7E7272] hover:bg-[#FFF0EB] font-bold text-xs flex flex-col items-center gap-0.5 cursor-pointer';
+    }
+  } else {
+    btnTimer.disabled = true;
+    btnHalf.disabled = true;
+    btnTimer.className = 'p-2.5 rounded-xl border bg-gray-100 border-gray-200 text-gray-400 font-bold text-xs flex flex-col items-center gap-0.5 cursor-not-allowed opacity-60';
+    btnHalf.className = 'p-2.5 rounded-xl border bg-[#FFF0EB] border-[#E58A7B] text-[#E58A7B] font-bold text-xs flex flex-col items-center gap-0.5 cursor-not-allowed';
+  }
+}
+
 function renderSwapModalStaffUI() {
   const container = document.getElementById('swap-modal-staff-container');
   const addBtn = document.getElementById('btn-swap-add-staff');
   if (!container) return;
 
   const users = getSortedUsersList();
+  const isOwner = currentUser && isUserOwner(currentUser);
 
   container.innerHTML = tempSwapStaffs.map((item, idx) => {
     const isFirst = idx === 0;
+    const isLocked = isFirst && !isOwner; // Khóa KTV1 nếu là Staff
     const usedOtherPhones = tempSwapStaffs.filter((_, i) => i !== idx).map(s => normalizePhone(s.phone));
     const selectable = users.filter(u => !usedOtherPhones.includes(normalizePhone(u.phone)));
 
     return `
       <div class="relative p-3 rounded-xl bg-[#FAF6F1] border border-[#F0EAE1] space-y-1.5">
         <div class="flex justify-between items-center pr-6">
-          <span class="text-xs font-bold text-[#2D2424] flex items-center gap-1">
-            <span class="text-[#E58A7B] font-extrabold">KTV ${idx + 1}:</span>
+          <span class="text-xs font-bold text-[#2D2424] flex items-center gap-1.5">
+            ${isLocked ? '<i data-lucide="lock" class="w-3.5 h-3.5 text-[#E58A7B]"></i>' : ''}
+            <span class="text-[#E58A7B] font-extrabold">KTV ${idx + 1}${isFirst ? ' (Chính)' : ''}:</span>
             <span>${item.name || ''}</span>
           </span>
           <span class="text-[11px] font-extrabold text-[#2E7D6D] bg-[#E8F8F5] px-2 py-0.5 rounded-full" id="swap-item-comm-${idx}">...</span>
         </div>
 
-        <select onchange="onSwapStaffSelectChange(${idx}, this.value)" class="w-full bg-white border border-[#EFE8DF] rounded-lg p-2.5 text-xs font-bold text-[#2D2424] focus:outline-none focus:border-[#E58A7B] cursor-pointer">
+        <select ${isLocked ? 'disabled' : ''} onchange="onSwapStaffSelectChange(${idx}, this.value)" class="w-full bg-white border border-[#EFE8DF] rounded-lg p-2.5 text-xs font-bold text-[#2D2424] focus:outline-none focus:border-[#E58A7B] ${isLocked ? 'disabled:bg-[#F7F2EC] disabled:opacity-90 cursor-not-allowed' : 'cursor-pointer'}">
           ${selectable.map(u => `
             <option value="${u.phone}" ${normalizePhone(u.phone) === normalizePhone(item.phone) ? 'selected' : ''}>
               ${isUserOwner(u) ? '👑' : '💆'} ${u.full_name} (${u.staff_id || u.phone})
@@ -541,29 +582,29 @@ function addStaffInSwapModal() {
     pct: 0
   });
 
+  if (tempSwapStaffs.length >= 3) {
+    currentSplitMode = 'equal';
+  }
+
   renderSwapModalStaffUI();
+  updateSplitButtonsUI();
   updateSwapPreviewDisplay();
 }
 
 function removeStaffInSwapModal(index) {
   if (index === 0 && tempSwapStaffs.length === 1) return;
   tempSwapStaffs.splice(index, 1);
+  if (tempSwapStaffs.length <= 1) {
+    currentSplitMode = 'equal';
+  }
   renderSwapModalStaffUI();
+  updateSplitButtonsUI();
   updateSwapPreviewDisplay();
 }
 
 function setSplitMode(mode) {
   currentSplitMode = mode;
-  const btnTimer = document.getElementById('btn-split-timer');
-  const btnHalf = document.getElementById('btn-split-half');
-
-  if (mode === 'timer') {
-    btnTimer.className = 'p-2.5 rounded-xl border bg-[#FFF0EB] border-[#E58A7B] text-[#E58A7B] font-bold text-xs flex flex-col items-center gap-0.5 cursor-pointer';
-    btnHalf.className = 'p-2.5 rounded-xl border bg-[#F7F2EC] border-[#EFE8DF] text-[#7E7272] font-bold text-xs flex flex-col items-center gap-0.5 cursor-pointer';
-  } else {
-    btnHalf.className = 'p-2.5 rounded-xl border bg-[#FFF0EB] border-[#E58A7B] text-[#E58A7B] font-bold text-xs flex flex-col items-center gap-0.5 cursor-pointer';
-    btnTimer.className = 'p-2.5 rounded-xl border bg-[#F7F2EC] border-[#EFE8DF] text-[#7E7272] font-bold text-xs flex flex-col items-center gap-0.5 cursor-pointer';
-  }
+  updateSplitButtonsUI();
   updateSwapPreviewDisplay();
 }
 
@@ -575,18 +616,26 @@ function updateSwapPreviewDisplay() {
   const elapsedSec = Math.max(1, Math.floor((Date.now() - currentLiveSession.start_timestamp) / 1000));
   const elapsedMin = Math.floor(elapsedSec / 60);
 
+  // Cập nhật text số phút trên nút theo thời gian thực
+  let p1Time = Math.min(90, Math.max(10, Math.round((elapsedMin / targetMin) * 100)));
+  let p2Time = 100 - p1Time;
+  const timerTextEl = document.getElementById('split-timer-pct');
+  if (timerTextEl) timerTextEl.innerText = `${p1Time}% - ${p2Time}% (${elapsedMin}p đã làm)`;
+
+  const equalTextEl = document.getElementById('split-equal-pct');
+  if (equalTextEl) equalTextEl.innerText = count === 2 ? '50% - 50%' : (count === 3 ? '34% - 33% - 33%' : 'Làm cùng từ đầu');
+
   // Tính tỷ lệ % cho từng KTV
   if (count === 1) {
     tempSwapStaffs[0].pct = 100;
   } else if (count === 2 && currentSplitMode === 'timer') {
-    let p1 = Math.min(90, Math.max(10, Math.round((elapsedMin / targetMin) * 100)));
-    tempSwapStaffs[0].pct = p1;
-    tempSwapStaffs[1].pct = 100 - p1;
-    document.getElementById('split-timer-pct').innerText = `${p1}% - ${100 - p1}% (${elapsedMin}p đã làm)`;
+    tempSwapStaffs[0].pct = p1Time;
+    tempSwapStaffs[1].pct = p2Time;
   } else {
-    const equalPct = Math.round(100 / count);
+    const basePct = Math.floor(100 / count);
+    const remainder = 100 - basePct * count;
     tempSwapStaffs.forEach((s, idx) => {
-      s.pct = idx === count - 1 ? (100 - equalPct * (count - 1)) : equalPct;
+      s.pct = basePct + (idx < remainder ? 1 : 0);
     });
   }
 
@@ -639,6 +688,7 @@ function saveSwapStaffSetting() {
   closeSwapStaffModal();
   renderLiveSessionUI();
 }
+
 
 
 function removeSecondStaffFromLive() {
