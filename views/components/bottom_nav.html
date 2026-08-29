@@ -1,3 +1,19 @@
-  <nav id="mobile-nav" class="hidden fixed bottom-4 left-4 right-4 z-40 max-w-sm mx-auto">
-    <div id="nav-buttons-container" class="bg-[#FAF6F1]/95 backdrop-blur-2xl rounded-full p-1.5 border border-[#F0EAE1] shadow-[0_12px_40px_rgba(0,0,0,0.08)] flex items-center justify-around"></div>
-  </nav>
+<nav id="mobile-nav" class="hidden fixed bottom-5 left-4 right-4 z-40 max-w-sm mx-auto">
+  <div id="nav-dock" class="nav-dock-container p-1.5 flex items-center justify-around relative">
+    <!-- VIÊN THUỐC TRƯỢT DI CHUYỂN TỰ ĐỘNG -->
+    <div id="nav-sliding-indicator" class="nav-sliding-pill opacity-0 transition-opacity duration-300"></div>
+
+    <button type="button" onclick="showView('home')" id="nav-btn-home" data-tab="home" title="Home" class="nav-btn">
+      <i data-lucide="home" class="w-5 h-5"></i>
+    </button>
+    <button type="button" onclick="showView('add')" id="nav-btn-add" data-tab="add" title="Tạo ca" class="nav-btn">
+      <i data-lucide="plus" class="w-5 h-5"></i>
+    </button>
+    <button type="button" onclick="showView('history')" id="nav-btn-history" data-tab="history" title="Lịch sử" class="nav-btn">
+      <i data-lucide="clock" class="w-5 h-5"></i>
+    </button>
+    <button type="button" onclick="showView('income')" id="nav-btn-income" data-tab="income" title="Thu nhập" class="nav-btn">
+      <i data-lucide="wallet" class="w-5 h-5"></i>
+    </button>
+  </div>
+</nav>

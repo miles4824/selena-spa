@@ -9,10 +9,22 @@ function hideAllViews() {
   const vHistory = document.getElementById('view-history');
   const vIncome = document.getElementById('view-income');
 
-  if (vHome) vHome.classList.add('hidden');
-  if (vAdd) vAdd.classList.add('hidden');
-  if (vHistory) vHistory.classList.add('hidden');
-  if (vIncome) vIncome.classList.add('hidden');
+  if (vHome) {
+    vHome.classList.add('hidden');
+    vHome.classList.remove('view-enter-active');
+  }
+  if (vAdd) {
+    vAdd.classList.add('hidden');
+    vAdd.classList.remove('view-enter-active');
+  }
+  if (vHistory) {
+    vHistory.classList.add('hidden');
+    vHistory.classList.remove('view-enter-active');
+  }
+  if (vIncome) {
+    vIncome.classList.add('hidden');
+    vIncome.classList.remove('view-enter-active');
+  }
 }
 
 async function showView(view) {
@@ -27,8 +39,10 @@ async function showView(view) {
 
   hideAllViews();
 
+  let targetEl = null;
+
   if (view === 'home') {
-    document.getElementById('view-home')?.classList.remove('hidden');
+    targetEl = document.getElementById('view-home');
     if (isOwner) {
       loadAdminDashboard();
     } else {
@@ -36,13 +50,13 @@ async function showView(view) {
     }
     renderAnnouncement();
   } else if (view === 'add') {
-    document.getElementById('view-add')?.classList.remove('hidden');
+    targetEl = document.getElementById('view-add');
     updatePOSStaffInfo();
   } else if (view === 'history') {
-    document.getElementById('view-history')?.classList.remove('hidden');
+    targetEl = document.getElementById('view-history');
     loadHistoryView();
   } else if (view === 'income') {
-    document.getElementById('view-income')?.classList.remove('hidden');
+    targetEl = document.getElementById('view-income');
     const headerName = document.getElementById('header-user-name');
     const headerRole = document.getElementById('header-role-badge');
     if (headerName) headerName.innerText = currentUser?.full_name || 'KTV';
@@ -50,37 +64,39 @@ async function showView(view) {
     loadIncomeView();
   }
 
-  renderBottomNavDock();
+  if (targetEl) {
+    targetEl.classList.remove('hidden');
+    // Kích hoạt hiệu ứng chuyển cảnh mượt mà Luxury View Transition
+    void targetEl.offsetWidth; // Trigger reflow
+    targetEl.classList.add('view-enter-active');
+  }
+
+  updateNavSlidingPill(view);
   lucide.createIcons();
 }
 
-function renderBottomNavDock() {
-  const navContainer = document.getElementById('nav-buttons-container');
-  if (!navContainer) return;
+// CẬP NHẬT HIỆU ỨNG VIÊN THUỐC TRƯỢT DI CHUYỂN DƯỚI ĐÁY
+function updateNavSlidingPill(activeTab) {
+  const tabs = ['home', 'add', 'history', 'income'];
+  const pill = document.getElementById('nav-sliding-indicator');
+  const activeBtn = document.getElementById('nav-btn-' + activeTab);
 
-  const tabs = [
-    { id: 'home', icon: 'home', label: 'Home' },
-    { id: 'add', icon: 'plus', label: 'Tạo ca' },
-    { id: 'history', icon: 'clock', label: 'Lịch sử' },
-    { id: 'income', icon: 'wallet', label: 'Thu nhập' }
-  ];
-
-  navContainer.innerHTML = tabs.map(t => {
-    const isActive = (currentTab === t.id);
-    if (isActive) {
-      return `
-        <button onclick="showView('${t.id}')" title="${t.label}" class="w-12 h-12 rounded-full bg-[#E58A7B] text-white flex items-center justify-center shadow-lg shadow-[#E58A7B]/25 scale-105 transition-all duration-300 cursor-pointer">
-          <i data-lucide="${t.icon}" class="w-5 h-5"></i>
-        </button>
-      `;
-    } else {
-      return `
-        <button onclick="showView('${t.id}')" title="${t.label}" class="w-12 h-12 rounded-full flex items-center justify-center text-[#8C827A] hover:text-[#2D2424] hover:bg-white/60 transition-all duration-200 cursor-pointer">
-          <i data-lucide="${t.icon}" class="w-5 h-5"></i>
-        </button>
-      `;
+  tabs.forEach(t => {
+    const btn = document.getElementById('nav-btn-' + t);
+    if (btn) {
+      if (t === activeTab) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
     }
-  }).join('');
+  });
+
+  if (pill && activeBtn) {
+    pill.style.transform = `translateX(${activeBtn.offsetLeft}px)`;
+    pill.classList.remove('opacity-0');
+    pill.classList.add('opacity-100');
+  }
 }
 
 function loadHistoryView() {
@@ -103,7 +119,7 @@ function loadIncomeView() {
   lucide.createIcons();
 }
 
-// NẠP ĐỘNG ĐÚNG BỘ VIEW CỦA ROLE TỪ VIEWS/OWNER HOẶC VIEWS/STAFF (CHUẨN MINDMAP)
+// NẠP ĐỘNG ĐÚNG BỘ VIEW CỦA ROLE TỪ VIEWS/OWNER HOẶC VIEWS/STAFF
 async function loadRoleSpecificViews(isOwner) {
   const folder = isOwner ? 'views/owner' : 'views/staff';
   loadedRole = isOwner ? 'owner' : 'staff';
@@ -132,7 +148,7 @@ async function loadViewTemplate(containerId, filePath) {
 
 // App Initialization
 window.addEventListener('DOMContentLoaded', async () => {
-  // 1. Tải các thành phần chung (views/login.html, views/add.html, views/components/*)
+  // 1. Tải các thành phần chung
   await Promise.all([
     loadViewTemplate('container-ptr', 'views/components/pull_to_refresh.html'),
     loadViewTemplate('container-login', 'views/login.html'),
@@ -158,6 +174,11 @@ window.addEventListener('DOMContentLoaded', async () => {
     }
   }
   
+  // Tự động căn chỉnh vị trí viên thuốc khi resize màn hình
+  window.addEventListener('resize', () => {
+    updateNavSlidingPill(currentTab);
+  });
+
   // Auto sync latest data from Google Sheets immediately on load
   refreshDataFromGoogleSheets();
   lucide.createIcons();
