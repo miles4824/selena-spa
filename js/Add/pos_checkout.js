@@ -304,14 +304,18 @@ function startLiveSession() {
       phone: staff1?.phone || '',
       staff_id: staff1?.staff_id || 'KTV01',
       name: staff1?.full_name || 'KTV 1',
-      pct: Math.round(100 / (1 + extraStaffList.length))
+      pct: Math.round(100 / (1 + extraStaffList.length)),
+      joined_min: 0,
+      is_midway: false
     },
     ...extraStaffList.map((s, idx) => ({
       user_id: s.user_id || s.phone,
       phone: s.phone,
       staff_id: s.staff_id || `KTV0${idx+2}`,
       name: s.full_name,
-      pct: Math.round(100 / (1 + extraStaffList.length))
+      pct: Math.round(100 / (1 + extraStaffList.length)),
+      joined_min: 0,
+      is_midway: false
     }))
   ];
 
@@ -326,6 +330,7 @@ function startLiveSession() {
     date: startDateStr,
     customer_phone: phone,
     customer_name: name,
+    initial_staff_count: allStaffs.length, // Số lượng KTV ban đầu lúc tạo ca
     staffs: allStaffs,
     staff_1_user_id: allStaffs[0].user_id,
     staff_1_phone: allStaffs[0].phone,
@@ -434,7 +439,7 @@ function restoreLiveSessionIfExists() {
 }
 
 // =============================================================
-// LOGIC MODAL ĐỔI / THÊM KTV GIỮA CA (PHƯƠNG ÁN B - DANH SÁCH ĐỘNG)
+// LOGIC MODAL ĐỔI / THÊM KTV GIỮA CA (PHƯƠNG ÁN B - DANH SÁCH ĐỘNG & GIAI ĐOẠN)
 // =============================================================
 let tempSwapStaffs = [];
 
@@ -442,18 +447,20 @@ function openSwapStaffModal() {
   if (!currentLiveSession) return;
   const users = getSortedUsersList();
 
-  // Khởi tạo danh sách tạm từ live session hiện tại
   tempSwapStaffs = (currentLiveSession.staffs || [
-    { phone: currentLiveSession.staff_1_phone, name: currentLiveSession.staff_1_name, pct: 100 }
+    { phone: currentLiveSession.staff_1_phone, name: currentLiveSession.staff_1_name, pct: 100, joined_min: 0 }
   ]).map(s => ({ ...s }));
 
-  // Nếu ca có từ 3 người hoặc ban đầu tạo làm chung -> mặc định là 'equal' (chia đều)
-  if (tempSwapStaffs.length >= 3) {
+  const initialCount = currentLiveSession.initial_staff_count || 1;
+  const hasNewMidwayStaff = tempSwapStaffs.some(s => s.is_midway);
+
+  // Nếu ca ban đầu có từ 2 người trở lên và chưa có người mới vào giữa ca -> CỐ ĐỊNH 'equal' (chia đều)
+  if (initialCount >= 2 && !hasNewMidwayStaff) {
     currentSplitMode = 'equal';
   } else if (currentLiveSession.split_mode) {
     currentSplitMode = currentLiveSession.split_mode;
   } else {
-    currentSplitMode = 'equal';
+    currentSplitMode = (initialCount === 1 && tempSwapStaffs.length > 1) ? 'timer' : 'equal';
   }
 
   renderSwapModalStaffUI();
@@ -476,13 +483,17 @@ function updateSplitButtonsUI() {
   if (!btnTimer || !btnHalf) return;
 
   const count = tempSwapStaffs.length;
+  const initialCount = currentLiveSession?.initial_staff_count || 1;
+  const hasMidwayJoiner = tempSwapStaffs.some(s => s.is_midway);
 
-  if (count >= 3) {
+  // Khóa nút "Thời gian thực" nếu ca làm cùng từ đầu và không có ai vào thêm giữa chừng
+  if (initialCount >= 2 && !hasMidwayJoiner) {
     btnTimer.disabled = true;
     btnTimer.className = 'p-2.5 rounded-xl border bg-gray-100 border-gray-200 text-gray-400 font-bold text-xs flex flex-col items-center gap-0.5 cursor-not-allowed opacity-60';
     btnHalf.disabled = false;
     btnHalf.className = 'p-2.5 rounded-xl border bg-[#FFF0EB] border-[#E58A7B] text-[#E58A7B] font-bold text-xs flex flex-col items-center gap-0.5 cursor-pointer shadow-sm';
-  } else if (count === 2) {
+    currentSplitMode = 'equal';
+  } else if (count >= 2) {
     btnTimer.disabled = false;
     btnHalf.disabled = false;
     if (currentSplitMode === 'timer') {
@@ -510,18 +521,20 @@ function renderSwapModalStaffUI() {
 
   container.innerHTML = tempSwapStaffs.map((item, idx) => {
     const isFirst = idx === 0;
-    const isLocked = isFirst && !isOwner; // Khóa KTV1 nếu là Staff
+    const isLocked = isFirst && !isOwner;
     const usedOtherPhones = tempSwapStaffs.filter((_, i) => i !== idx).map(s => normalizePhone(s.phone));
     const selectable = users.filter(u => !usedOtherPhones.includes(normalizePhone(u.phone)));
+    const joinHint = item.is_midway ? `<span class="text-[10px] text-amber-600 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded-md font-semibold">Vào từ phút ${item.joined_min}</span>` : '';
 
     return `
       <div class="relative p-3 rounded-xl bg-[#FAF6F1] border border-[#F0EAE1] space-y-1.5">
         <div class="flex justify-between items-center pr-6">
-          <span class="text-xs font-bold text-[#2D2424] flex items-center gap-1.5">
+          <div class="text-xs font-bold text-[#2D2424] flex items-center gap-1.5 flex-wrap">
             ${isLocked ? '<i data-lucide="lock" class="w-3.5 h-3.5 text-[#E58A7B]"></i>' : ''}
             <span class="text-[#E58A7B] font-extrabold">KTV ${idx + 1}${isFirst ? ' (Chính)' : ''}:</span>
             <span>${item.name || ''}</span>
-          </span>
+            ${joinHint}
+          </div>
           <span class="text-[11px] font-extrabold text-[#2E7D6D] bg-[#E8F8F5] px-2 py-0.5 rounded-full" id="swap-item-comm-${idx}">...</span>
         </div>
 
@@ -573,18 +586,21 @@ function addStaffInSwapModal() {
 
   if (available.length === 0) return;
 
+  const elapsedSec = Math.max(1, Math.floor((Date.now() - currentLiveSession.start_timestamp) / 1000));
+  const elapsedMin = Math.floor(elapsedSec / 60);
+
   const next = available[0];
   tempSwapStaffs.push({
     phone: next.phone,
     name: next.full_name,
     user_id: next.user_id || next.phone,
     staff_id: next.staff_id || (isUserOwner(next) ? 'FOUNDER_01' : 'KTV'),
-    pct: 0
+    pct: 0,
+    joined_min: elapsedMin,
+    is_midway: true // Đánh dấu là KTV vào giữa ca
   });
 
-  if (tempSwapStaffs.length >= 3) {
-    currentSplitMode = 'equal';
-  }
+  currentSplitMode = 'timer'; // Tự động gợi ý tính theo thời gian giai đoạn
 
   renderSwapModalStaffUI();
   updateSplitButtonsUI();
@@ -594,9 +610,6 @@ function addStaffInSwapModal() {
 function removeStaffInSwapModal(index) {
   if (index === 0 && tempSwapStaffs.length === 1) return;
   tempSwapStaffs.splice(index, 1);
-  if (tempSwapStaffs.length <= 1) {
-    currentSplitMode = 'equal';
-  }
   renderSwapModalStaffUI();
   updateSplitButtonsUI();
   updateSwapPreviewDisplay();
@@ -616,27 +629,56 @@ function updateSwapPreviewDisplay() {
   const elapsedSec = Math.max(1, Math.floor((Date.now() - currentLiveSession.start_timestamp) / 1000));
   const elapsedMin = Math.floor(elapsedSec / 60);
 
-  // Cập nhật text số phút trên nút theo thời gian thực
-  let p1Time = Math.min(90, Math.max(10, Math.round((elapsedMin / targetMin) * 100)));
-  let p2Time = 100 - p1Time;
-  const timerTextEl = document.getElementById('split-timer-pct');
-  if (timerTextEl) timerTextEl.innerText = `${p1Time}% - ${p2Time}% (${elapsedMin}p đã làm)`;
-
-  const equalTextEl = document.getElementById('split-equal-pct');
-  if (equalTextEl) equalTextEl.innerText = count === 2 ? '50% - 50%' : (count === 3 ? '34% - 33% - 33%' : 'Làm cùng từ đầu');
-
-  // Tính tỷ lệ % cho từng KTV
+  // Phân bổ tỷ lệ %
   if (count === 1) {
     tempSwapStaffs[0].pct = 100;
-  } else if (count === 2 && currentSplitMode === 'timer') {
-    tempSwapStaffs[0].pct = p1Time;
-    tempSwapStaffs[1].pct = p2Time;
+  } else if (currentSplitMode === 'timer') {
+    // THUẬT TOÁN TÍNH THEO GIAI ĐOẠN THỜI GIAN CHUẨN XÁC
+    // Giai đoạn 1: Số phút trước khi người cuối vào
+    // Giai đoạn 2: Số phút từ khi người cuối vào đến hết ca
+    const midwayStaff = tempSwapStaffs.find(s => s.is_midway);
+    const joinMin = midwayStaff ? (midwayStaff.joined_min || elapsedMin) : elapsedMin;
+    const boundedJoinMin = Math.min(targetMin, Math.max(1, joinMin));
+    
+    const stage1Pct = boundedJoinMin / targetMin; // Tỷ lệ thời lượng giai đoạn 1
+    const stage2Pct = 1 - stage1Pct;              // Tỷ lệ thời lượng giai đoạn 2
+
+    const earlyStaffs = tempSwapStaffs.filter(s => !s.is_midway);
+    const nEarly = earlyStaffs.length > 0 ? earlyStaffs.length : 1;
+    const nTotal = tempSwapStaffs.length;
+
+    let sumPct = 0;
+    tempSwapStaffs.forEach((s, idx) => {
+      let p = 0;
+      if (!s.is_midway) {
+        // KTV làm từ đầu: nhận (Giai đoạn 1 / nEarly) + (Giai đoạn 2 / nTotal)
+        p = (stage1Pct / nEarly) + (stage2Pct / nTotal);
+      } else {
+        // KTV vào sau: chỉ nhận (Giai đoạn 2 / nTotal)
+        p = (stage2Pct / nTotal);
+      }
+      s.pct = Math.round(p * 100);
+      sumPct += s.pct;
+    });
+
+    // Cân bằng tổng đúng 100%
+    const diff = 100 - sumPct;
+    if (diff !== 0 && tempSwapStaffs.length > 0) {
+      tempSwapStaffs[0].pct += diff;
+    }
+
+    const timerTextEl = document.getElementById('split-timer-pct');
+    if (timerTextEl) timerTextEl.innerText = `Theo phút vào ca (${boundedJoinMin}p đầu & ${targetMin - boundedJoinMin}p sau)`;
   } else {
+    // CHIA ĐỀU TUYỆT ĐỐI
     const basePct = Math.floor(100 / count);
     const remainder = 100 - basePct * count;
     tempSwapStaffs.forEach((s, idx) => {
       s.pct = basePct + (idx < remainder ? 1 : 0);
     });
+
+    const equalTextEl = document.getElementById('split-equal-pct');
+    if (equalTextEl) equalTextEl.innerText = count === 2 ? '50% - 50%' : (count === 3 ? '34% - 33% - 33%' : 'Chia đều trọn ca');
   }
 
   // Render danh sách preview hoa hồng
@@ -650,7 +692,7 @@ function updateSwapPreviewDisplay() {
 
     html += `
       <div class="flex justify-between items-center text-[#2D2424]">
-        <span>${s.name}:</span>
+        <span>${s.name}${s.is_midway ? ' (Vào sau)' : ''}:</span>
         <span class="font-extrabold text-[#2E7D6D]">${s.pct}% (${comm.toLocaleString('vi-VN')} đ)</span>
       </div>
     `;
@@ -688,6 +730,7 @@ function saveSwapStaffSetting() {
   closeSwapStaffModal();
   renderLiveSessionUI();
 }
+
 
 
 
