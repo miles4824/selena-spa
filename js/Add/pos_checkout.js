@@ -91,22 +91,21 @@ function updatePOSStaffInfo() {
 
 function addExtraStaff() {
   const users = getStored('users', DEFAULT_USERS);
-  const staffList = users.filter(u => !isUserOwner(u));
   const s1Phone = document.getElementById('pos-staff1-select')?.value || currentUser?.phone;
 
-  // Lọc ra những KTV chưa có trong ca
+  // Lọc ra những người chưa có trong ca (bao gồm cả Sếp/Chủ tiệm nếu cùng vào làm)
   const usedPhones = [normalizePhone(s1Phone), ...extraStaffList.map(s => normalizePhone(s.phone))];
-  const available = staffList.filter(u => !usedPhones.includes(normalizePhone(u.phone)));
+  const available = users.filter(u => !usedPhones.includes(normalizePhone(u.phone)));
 
   if (available.length === 0) {
-    alert('Đã thêm toàn bộ kỹ thuật viên hiện có trong tiệm!');
+    alert('Đã thêm toàn bộ nhân viên và quản lý hiện có trong tiệm!');
     return;
   }
 
   const nextStaff = available[0];
   extraStaffList.push({
     phone: nextStaff.phone,
-    staff_id: nextStaff.staff_id || 'KTV',
+    staff_id: nextStaff.staff_id || (isUserOwner(nextStaff) ? 'FOUNDER_01' : 'KTV'),
     full_name: nextStaff.full_name,
     user_id: nextStaff.user_id || nextStaff.phone
   });
@@ -152,43 +151,40 @@ function renderExtraStaffUI() {
   if (!container) return;
 
   const users = getStored('users', DEFAULT_USERS);
-  const staffList = users.filter(u => !isUserOwner(u));
   const s1Phone = document.getElementById('pos-staff1-select')?.value || currentUser?.phone;
 
   container.innerHTML = extraStaffList.map((item, idx) => {
     const ktvNum = idx + 2;
-    // Lọc danh sách dropdown: KTV 1 + các KTV khác ngoại trừ chính card này
     const otherUsedPhones = [normalizePhone(s1Phone), ...extraStaffList.filter((_, i) => i !== idx).map(s => normalizePhone(s.phone))];
-    const selectable = staffList.filter(u => !otherUsedPhones.includes(normalizePhone(u.phone)));
+    const selectable = users.filter(u => !otherUsedPhones.includes(normalizePhone(u.phone)));
 
     return `
       <div id="extra-staff-card-${idx}" class="relative p-3.5 rounded-2xl bg-[#FFF5F2] border border-[#FCDFD7] space-y-2 shadow-sm transition-all">
         <!-- 🔴 NÚT DẤU TRỪ ĐỎ ⊖ Ở GÓC TRÊN BÊN PHẢI -->
-        <button type="button" onclick="removeExtraStaff(${idx})" title="Xóa KTV này" class="absolute -top-2.5 -right-2.5 w-7 h-7 rounded-full bg-white border-2 border-rose-400 text-rose-500 hover:bg-rose-500 hover:text-white flex items-center justify-center shadow-md active:scale-75 transition-all cursor-pointer z-10">
+        <button type="button" onclick="removeExtraStaff(${idx})" title="Xóa người này" class="absolute -top-2.5 -right-2.5 w-7 h-7 rounded-full bg-white border-2 border-rose-400 text-rose-500 hover:bg-rose-500 hover:text-white flex items-center justify-center shadow-md active:scale-75 transition-all cursor-pointer z-10">
           <i data-lucide="minus" class="w-4 h-4 stroke-[3]"></i>
         </button>
 
         <div class="flex justify-between items-center pr-5">
           <span class="text-xs font-bold text-[#E58A7B] flex items-center gap-1">
             <i data-lucide="user-check" class="w-3.5 h-3.5 text-[#E58A7B]"></i>
-            <span class="font-extrabold">KTV ${ktvNum} (Cùng làm / Phụ):</span>
+            <span class="font-extrabold">Người cùng làm ${ktvNum}:</span>
           </span>
           <span id="pos-staff${ktvNum}-comm-preview" class="text-xs font-extrabold text-[#2E7D6D] bg-[#E8F8F5] px-2.5 py-0.5 rounded-full">+3.200 đ</span>
         </div>
 
         <select onchange="onExtraStaffSelectChange(${idx}, this.value)" class="w-full bg-white border border-[#FCDFD7] rounded-xl p-3 text-[#2D2424] font-bold text-sm focus:outline-none focus:border-[#E58A7B] cursor-pointer">
           ${selectable.map(u => `
-            <option value="${u.phone}" ${normalizePhone(u.phone) === normalizePhone(item.phone) ? 'selected' : ''}>💆 ${u.full_name} (${u.staff_id || u.phone})</option>
+            <option value="${u.phone}" ${normalizePhone(u.phone) === normalizePhone(item.phone) ? 'selected' : ''}>${isUserOwner(u) ? '👑' : '💆'} ${u.full_name} (${u.staff_id || u.phone})</option>
           `).join('')}
         </select>
       </div>
     `;
   }).join('');
 
-  // Ẩn nút thêm nếu đã add hết toàn bộ KTV trong tiệm
   const totalUsed = 1 + extraStaffList.length;
   if (addBtn) {
-    if (totalUsed >= staffList.length + (isUserOwner(currentUser) ? 1 : 0) || staffList.length <= 1) {
+    if (totalUsed >= users.length) {
       addBtn.classList.add('hidden');
     } else {
       addBtn.classList.remove('hidden');
@@ -436,7 +432,7 @@ function restoreLiveSessionIfExists() {
 function openSwapStaffModal() {
   if (!currentLiveSession) return;
   const users = getStored('users', DEFAULT_USERS);
-  const staffList = users.filter(u => !isUserOwner(u));
+  const staffList = users;
   const s2Select = document.getElementById('swap-staff2-select');
 
   if (s2Select) {
