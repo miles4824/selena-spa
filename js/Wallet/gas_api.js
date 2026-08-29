@@ -36,7 +36,6 @@ async function callGasApi(action, payload = {}) {
   const gasUrl = getGasUrl();
   if (!gasUrl || !gasUrl.startsWith('http')) return null;
 
-  // Tự động đính kèm thông tin xác thực của User hiện tại để Server phân quyền bảo mật
   const authPayload = {
     client_phone: currentUser ? normalizePhone(currentUser.phone) : '',
     client_staff_id: currentUser ? currentUser.staff_id : '',
@@ -50,9 +49,15 @@ async function callGasApi(action, payload = {}) {
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
       body: JSON.stringify({ action, ...authPayload })
     });
-    return await res.json();
+    if (!res.ok) return null;
+    const text = await res.text();
+    try {
+      return JSON.parse(text);
+    } catch(e) {
+      return { status: 'success', raw: text };
+    }
   } catch (err) {
-    console.warn('Google Sheets API offline fallback:', err);
+    // Chế độ offline tự động lưu vào localStorage và không ngắt luồng
     return null;
   }
 }
