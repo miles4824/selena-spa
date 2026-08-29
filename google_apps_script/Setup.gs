@@ -1,108 +1,146 @@
 /**
  * =========================================================================
- * SELENA SPA - SCRIPT KHỞI TẠO CƠ SỞ DỮ LIỆU GOOGLE SHEETS (1-CLICK SETUP)
+ * SELENA SPA - SETUP DATABASE SCRIPT (setup.gs)
  * =========================================================================
- * Hướng dẫn:
- * 1. Mở file Google Sheet mới trên Google Drive của bạn.
- * 2. Vào 'Tiện ích mở rộng' (Extensions) -> 'Apps Script'.
- * 3. Dán toàn bộ mã nguồn này vào file 'Setup.gs'.
- * 4. Chọn hàm 'initDatabase' và bấm nút 'Chạy' (Run).
- * 5. Cấp quyền truy cập cho Script. Toàn bộ 6 bảng sẽ được tạo tự động với dữ liệu mẫu!
+ * File này dùng để KHỞI TẠO & CẬP NHẬT TOÀN BỘ CỘT CSDL TRÊN GOOGLE SHEETS
+ * Chỉ cần chọn hàm `setupEntireDatabase` hoặc `upgradeReceiptsTable` rồi bấm RUN!
  */
 
-function initDatabase() {
+// 1. CẬP NHẬT RIÊNG BẢNG tb_receipts (GIỮ NGUYÊN DỮ LIỆU CŨ, THÊM CỘT 2 KTV VÀ TIPS)
+function upgradeReceiptsTable() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName('tb_receipts');
   
-  // 1. BẢNG tb_users (12 Cột với commission_rate riêng biệt)
-  let sheetUsers = getOrCreateSheet(ss, 'tb_users');
-  sheetUsers.clear();
-  sheetUsers.appendRow([
-    'user_id', 'staff_id', 'phone', 'password', 'full_name', 
-    'role', 'salary_type', 'commission_rate', 'base_salary', 
-    'bank_name', 'bank_account_no', 'bank_account_name'
-  ]);
-  sheetUsers.appendRow(["'0949251144", 'FOUNDER_01', "'0949251144", '123456', 'Miles (Đấng tối cao)', 'admin', 'owner', '100%', 0, 'MBBank', "'0912345678", 'MILES']);
-  sheetUsers.appendRow(["'0799625591", 'KTV01', "'0799625591", '123456', 'Thu Ngân', 'staff', 'fixed', '10%', 2000000, 'Vietcombank', "'1012345678", 'THU NGAN']);
-  sheetUsers.appendRow(["'0912345678", 'KTV02', "'0912345678", '123456', 'KTV Mai Lan', 'staff', 'commission', '20%', 2000000, 'Techcombank', "'19012345678", 'MAI LAN']);
-  formatHeader(sheetUsers, '#7c6cf0');
-
-  // 2. BẢNG tb_menu (Danh mục Combo & Dịch vụ)
-  let sheetMenu = getOrCreateSheet(ss, 'tb_menu');
-  sheetMenu.clear();
-  sheetMenu.appendRow([
-    'ma_dich_vu', 'ten_dich_vu', 'gia_tien', 'thoi_gian_phut', 'chi_phi_my_pham', 
-    'loai_hoa_hong', 'gia_tri_hoa_hong', 'dang_hoat_dong'
-  ]);
-  sheetMenu.appendRow(['CB_BE', 'Combo Bé (Gội cơ bản)', 45000, 30, 4500, '10%', 4500, true]);
-  sheetMenu.appendRow(['CB_01', 'Combo 1 (Gội dưỡng sinh thư giãn)', 64000, 50, 6400, '10%', 6400, true]);
-  sheetMenu.appendRow(['CB_02', 'Combo 2 (Dưỡng sinh chuyên sâu + Cổ vai gáy)', 109000, 75, 10000, '10%', 11000, true]);
-  sheetMenu.appendRow(['CB_03', 'Combo 3 (Dưỡng sinh thảo mộc cao cấp)', 139000, 85, 14000, '10%', 14000, true]);
-  sheetMenu.appendRow(['CB_04', 'Combo 4 (Liệu trình phục hồi da đầu + Massage)', 179000, 95, 18000, '10%', 18000, true]);
-  sheetMenu.appendRow(['CB_05', 'Combo 5 (Đại tiệc Thư giãn Hoàng Gia)', 219000, 110, 22000, '10%', 22000, true]);
-  formatHeader(sheetMenu, '#10b981');
-
-  // 3. BẢNG tb_receipts (Nhật ký Hóa đơn & Ca làm)
-  let sheetReceipts = getOrCreateSheet(ss, 'tb_receipts');
-  sheetReceipts.clear();
-  sheetReceipts.appendRow([
-    'ma_hoa_don', 'ngay_tao', 'ngay_lam', 'sdt_khach', 'ten_khach', 
-    'ma_dich_vu', 'ten_dich_vu', 'sdt_ktv', 'ten_ktv', 'gia_tien', 
-    'hoa_hong_ktv', 'giam_gia', 'tong_thu_thuc', 'phuong_thuc_tt', 
-    'dung_voucher', 'ghi_chu'
-  ]);
-  formatHeader(sheetReceipts, '#3b82f6');
-
-  // 4. BẢNG tb_expenses (Chi phí Vận hành)
-  let sheetExpenses = getOrCreateSheet(ss, 'tb_expenses');
-  sheetExpenses.clear();
-  sheetExpenses.appendRow([
-    'ma_chi_phi', 'ngay_chi', 'loai_chi_phi', 'so_tien', 'ghi_chu'
-  ]);
-  sheetExpenses.appendRow(['EXP01', '2026/08/01', 'Mặt bằng', 0, 'Chi phí thuê mặt bằng']);
-  sheetExpenses.appendRow(['EXP02', '2026/08/01', 'Mạng Internet', 350000, 'Gói cước mạng wifi']);
-  sheetExpenses.appendRow(['EXP03', '2026/08/01', 'Điện cố định', 1000000, 'Tiền điện sinh hoạt cố định']);
-  sheetExpenses.appendRow(['EXP04', '2026/08/01', 'Nước cố định', 250000, 'Tiền nước sinh hoạt']);
-  formatHeader(sheetExpenses, '#ef4444');
-
-  // 5. BẢNG tb_customers (Khách hàng & Tích điểm)
-  let sheetCustomers = getOrCreateSheet(ss, 'tb_customers');
-  sheetCustomers.clear();
-  sheetCustomers.appendRow([
-    'sdt_khach', 'ten_khach', 'so_lan_goi', 'so_voucher', 'ngay_goi_gan_nhat', 'luu_y_da_dau'
-  ]);
-  sheetCustomers.appendRow(["'0912345678", 'Chị Mai Lan', 8, 0, '2026/08/25', 'Da đầu nhạy cảm, thích sấy mát, gội nước ấm']);
-  sheetCustomers.appendRow(["'0987654321", 'Anh Nam', 2, 1, '2026/08/26', 'Thích massage mạnh cổ vai gáy']);
-  formatHeader(sheetCustomers, '#ec4899');
-
-  // 6. BẢNG tb_config (Cấu hình Bảo mật & Hệ thống)
-  let sheetConfig = getOrCreateSheet(ss, 'tb_config');
-  sheetConfig.clear();
-  sheetConfig.appendRow(['key', 'value', 'description']);
-  sheetConfig.appendRow(['WIFI_SPA_IP', '14.232.245.10', 'Địa chỉ IP Wifi công cộng của tiệm Spa để xác thực KTV']);
-  sheetConfig.appendRow(['BANK_NAME', 'MBBank', 'Tên ngân hàng nhận tiền của Chủ']);
-  sheetConfig.appendRow(['BANK_ACCOUNT_NO', '0912345678', 'Số tài khoản nhận tiền của Chủ']);
-  sheetConfig.appendRow(['BANK_ACCOUNT_NAME', 'CHU TIEM SELENA SPA', 'Tên chủ tài khoản ngân hàng']);
-  sheetConfig.appendRow(['LOYALTY_TARGET', '10', 'Số lần gội để được tặng 1 Voucher']);
-  formatHeader(sheetConfig, '#6b7280');
-
-  SpreadsheetApp.flush();
-  Logger.log('ĐÃ KHỞI TẠO THÀNH CÔNG 6 BẢNG DỮ LIỆU TIẾNG VIỆT CHO SELENA SPA!');
-}
-
-function getOrCreateSheet(ss, name) {
-  let sheet = ss.getSheetByName(name);
   if (!sheet) {
-    sheet = ss.insertSheet(name);
+    sheet = ss.insertSheet('tb_receipts');
   }
-  return sheet;
+
+  const newHeaders = [
+    'receipt_id',        // A: Mã hóa đơn
+    'date',              // B: Ngày (YYYY-MM-DD)
+    'time',              // C: Giờ (HH:mm)
+    'customer_phone',    // D: SĐT khách
+    'customer_name',     // E: Tên khách
+    'service_id',        // F: Mã combo
+    'service_name',      // G: Tên dịch vụ
+    'price',             // H: Giá dịch vụ gốc
+    'tip_amount',        // I: Tiền Tips
+    'total_paid',        // J: Tổng khách trả
+    'staff_1_phone',     // K: SĐT KTV 1
+    'staff_1_id',        // L: Mã KTV 1
+    'staff_1_name',      // M: Tên KTV 1
+    'staff_1_comm',      // N: Hoa hồng KTV 1
+    'staff_1_tip',       // O: Tiền Tips KTV 1
+    'staff_2_phone',     // P: SĐT KTV 2
+    'staff_2_id',        // Q: Mã KTV 2
+    'staff_2_name',      // R: Tên KTV 2
+    'staff_2_comm',      // S: Hoa hồng KTV 2
+    'staff_2_tip',       // T: Tiền Tips KTV 2
+    'payment_method',    // U: Phương thức TT
+    'is_voucher_used',   // V: Dùng voucher
+    'created_at'         // W: Thời gian chi tiết
+  ];
+
+  // Ghi đè dòng tiêu đề Hàng 1
+  sheet.getRange(1, 1, 1, newHeaders.length).setValues([newHeaders]);
+
+  // Định dạng style cho Hàng 1: Màu Tím Than Sang Trọng, Chữ Trắng In Đậm
+  const headerRange = sheet.getRange(1, 1, 1, newHeaders.length);
+  headerRange.setBackground('#3B185F');
+  headerRange.setFontColor('#FFFFFF');
+  headerRange.setFontWeight('bold');
+  headerRange.setHorizontalAlignment('center');
+  headerRange.setVerticalAlignment('middle');
+  sheet.setRowHeight(1, 35);
+  sheet.setFrozenRows(1);
+
+  Logger.log('✅ ĐÃ CẬP NHẬT TOÀN BỘ 23 CỘT CHO BẢNG tb_receipts THÀNH CÔNG!');
 }
 
-function formatHeader(sheet, bgColor) {
-  let range = sheet.getRange(1, 1, 1, sheet.getLastColumn());
-  range.setBackground(bgColor);
-  range.setFontColor('#ffffff');
-  range.setFontWeight('bold');
-  range.setHorizontalAlignment('center');
-  sheet.setFrozenRows(1);
-  sheet.autoResizeColumns(1, sheet.getLastColumn());
+// 2. KHỞI TẠO & ĐỒNG BỘ TOÀN BỘ 6 BẢNG DỮ LIỆU CỦA SELENA SPA
+function setupEntireDatabase() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+
+  const TABLES = {
+    'tb_users': {
+      headers: ['user_id', 'staff_id', 'phone', 'password', 'full_name', 'role', 'salary_type', 'commission_rate', 'base_salary'],
+      sampleData: [
+        ['0949251144', 'FOUNDER_01', '0949251144', '123456', 'Miles', 'Chủ tiệm', 'owner', '100%', 0],
+        ['0799625591', 'KTV01', '0799625591', '123456', 'Thu Ngân', 'Kỹ thuật viên', 'fixed', '10%', 2000000],
+        ['0912345678', 'KTV02', '0912345678', '123456', 'Mai Lan', 'Kỹ thuật viên', 'commission', '20%', 0]
+      ]
+    },
+    'tb_menu': {
+      headers: ['service_id', 'service_name', 'price', 'duration_min', 'cosmetics_cost', 'commission_type', 'commission_value'],
+      sampleData: [
+        ['CB01', 'Combo 1 (Gội Dưỡng Sinh)', 64000, 45, 3000, 'percent', 6400],
+        ['CB02', 'Combo 2 (Gội Chuyên Sâu)', 99000, 60, 5000, 'percent', 9900],
+        ['CB03', 'Combo 3 (Gội Dưỡng Sinh Hoàng Gia)', 149000, 75, 8000, 'percent', 14900],
+        ['CB04', 'Combo 4 (Gội + Massage Cổ Vai Gáy)', 199000, 90, 10000, 'percent', 19900]
+      ]
+    },
+    'tb_customers': {
+      headers: ['phone_number', 'customer_name', 'total_visits', 'voucher_count', 'last_visit_date', 'notes'],
+      sampleData: [
+        ['0912345678', 'Chị Mai Lan', 8, 0, '2026/08/27', 'Da đầu dầu, thích sấy mát'],
+        ['0988776655', 'Anh Nam', 3, 0, '2026/08/26', 'Thích bấm huyệt thái dương']
+      ]
+    },
+    'tb_receipts': {
+      headers: [
+        'receipt_id', 'date', 'time', 'customer_phone', 'customer_name', 'service_id', 'service_name', 
+        'price', 'tip_amount', 'total_paid', 
+        'staff_1_phone', 'staff_1_id', 'staff_1_name', 'staff_1_comm', 'staff_1_tip', 
+        'staff_2_phone', 'staff_2_id', 'staff_2_name', 'staff_2_comm', 'staff_2_tip', 
+        'payment_method', 'is_voucher_used', 'created_at'
+      ],
+      sampleData: []
+    },
+    'tb_expenses': {
+      headers: ['expense_id', 'date', 'expense_type', 'amount', 'note'],
+      sampleData: [
+        ['CP01', '2026-08-01', 'Mạng Internet', 350000, 'Gói cước wifi tiệm'],
+        ['CP02', '2026-08-01', 'Điện cố định', 1200000, 'Điện chiếu sáng & máy lạnh']
+      ]
+    },
+    'tb_config': {
+      headers: ['config_key', 'config_value', 'description'],
+      sampleData: [
+        ['ANNOUNCEMENT', '✨ Chúc các kỹ thuật viên một ngày làm việc tràn đầy năng lượng! Hãy luôn giữ nụ cười tươi, vệ sinh bồn gội sạch sẽ và tư vấn chu đáo cho khách nhé.', 'Miles (Chủ sáng lập) | 27/08/2026'],
+        ['WIFI_SPA_IP', '*', 'Địa chỉ IP Wifi tiệm'],
+        ['BANK_NAME', 'MBBank', 'Ngân hàng nhận chuyển khoản'],
+        ['BANK_ACCOUNT_NO', '0949251144', 'Số tài khoản nhận tiền'],
+        ['BANK_ACCOUNT_NAME', 'NGUYEN TIEN DUY', 'Tên chủ tài khoản']
+      ]
+    }
+  };
+
+  for (let tableName in TABLES) {
+    let sheet = ss.getSheetByName(tableName);
+    if (!sheet) {
+      sheet = ss.insertSheet(tableName);
+    }
+
+    const tData = TABLES[tableName];
+    
+    // Ghi Header
+    sheet.getRange(1, 1, 1, tData.headers.length).setValues([tData.headers]);
+
+    // Style Header
+    const headerRange = sheet.getRange(1, 1, 1, tData.headers.length);
+    headerRange.setBackground('#3B185F');
+    headerRange.setFontColor('#FFFFFF');
+    headerRange.setFontWeight('bold');
+    headerRange.setHorizontalAlignment('center');
+    headerRange.setVerticalAlignment('middle');
+    sheet.setRowHeight(1, 35);
+    sheet.setFrozenRows(1);
+
+    // Ghi dữ liệu mẫu nếu bảng đang trống (chỉ có 1 dòng header)
+    if (sheet.getLastRow() === 1 && tData.sampleData.length > 0) {
+      sheet.getRange(2, 1, tData.sampleData.length, tData.headers.length).setValues(tData.sampleData);
+    }
+  }
+
+  Logger.log('🎉 TOÀN BỘ 6 BẢNG DỮ LIỆU ĐÃ ĐƯỢC THIẾT LẬP HOÀN HẢO!');
 }
