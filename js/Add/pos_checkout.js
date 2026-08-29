@@ -17,29 +17,18 @@ let currentLiveSession = null;
 let currentSplitMode = 'timer';
 
 function initMenuUI() {
-  const menu = getStored('menu', DEFAULT_MENU);
+  let menu = getStored('menu', DEFAULT_MENU);
+  if (!menu || menu.length < 5) {
+    menu = DEFAULT_MENU;
+    setStored('menu', DEFAULT_MENU);
+  }
+
   const select = document.getElementById('pos-service-select');
-  const quickContainer = document.getElementById('pos-quick-combos');
   if (!select) return;
 
   select.innerHTML = menu.map(m => `
     <option value="${m.service_id}">${m.service_name} — ${m.price.toLocaleString('vi-VN')} đ (${m.duration_min}p)</option>
   `).join('');
-
-  const pastelBgs = [
-    'bg-[#FFF0EB] text-[#D35400] border-[#FCDFD7]',
-    'bg-[#E8F8F5] text-[#2E7D6D] border-[#B7EBDD]',
-    'bg-[#EBF5FB] text-[#2980B9] border-[#D4E6F1]',
-    'bg-[#F5EEF8] text-[#8E44AD] border-[#E8DAEF]'
-  ];
-
-  if (quickContainer) {
-    quickContainer.innerHTML = menu.slice(0, 4).map((m, idx) => `
-      <button type="button" onclick="selectQuickCombo('${m.service_id}')" class="px-3.5 py-2 rounded-2xl text-xs font-bold ${pastelBgs[idx % pastelBgs.length]} border transition cursor-pointer shadow-sm hover:scale-105">
-        ${m.service_name.split('(')[0].trim()} (${Math.round(m.price/1000)}k)
-      </button>
-    `).join('');
-  }
 
   restoreLiveSessionIfExists();
 }
