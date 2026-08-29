@@ -629,77 +629,146 @@ function updateSwapPreviewDisplay() {
   const elapsedSec = Math.max(1, Math.floor((Date.now() - currentLiveSession.start_timestamp) / 1000));
   const elapsedMin = Math.floor(elapsedSec / 60);
 
-  // Phân bổ tỷ lệ %
+  const staff1User = users.find(u => normalizePhone(u.phone) === normalizePhone(tempSwapStaffs[0].phone));
+  const rate1 = (staff1User && parsePercentage(staff1User?.commission_rate) > 0) ? parsePercentage(staff1User?.commission_rate) : 10;
+  const totalComm = Math.round(currentLiveSession.price * (rate1 / 100));
+
+  const summaryContainer = document.getElementById('swap-summary-pct-list');
+  let html = '';
+
   if (count === 1) {
     tempSwapStaffs[0].pct = 100;
+    tempSwapStaffs[0].comm_vnd = totalComm;
+    html = `
+      <div class="space-y-1">
+        <div class="flex justify-between items-center text-[#2D2424] font-bold">
+          <span>💆 ${tempSwapStaffs[0].name} (100% trọn ca):</span>
+          <span class="text-[#2E7D6D] font-extrabold">+${totalComm.toLocaleString('vi-VN')} đ</span>
+        </div>
+      </div>
+    `;
+    const itemCommBadge = document.getElementById('swap-item-comm-0');
+    if (itemCommBadge) itemCommBadge.innerText = `100% • +${totalComm.toLocaleString('vi-VN')} đ`;
   } else if (currentSplitMode === 'timer') {
-    // THUẬT TOÁN TÍNH THEO GIAI ĐOẠN THỜI GIAN CHUẨN XÁC
-    // Giai đoạn 1: Số phút trước khi người cuối vào
-    // Giai đoạn 2: Số phút từ khi người cuối vào đến hết ca
+    // =========================================================
+    // ⏱️ TÍNH TOÁN VÀ HIỂN THỊ CHI TIẾT THEO GIAI ĐOẠN 1 & 2
+    // =========================================================
     const midwayStaff = tempSwapStaffs.find(s => s.is_midway);
-    const joinMin = midwayStaff ? (midwayStaff.joined_min || elapsedMin) : elapsedMin;
-    const boundedJoinMin = Math.min(targetMin, Math.max(1, joinMin));
-    
-    const stage1Pct = boundedJoinMin / targetMin; // Tỷ lệ thời lượng giai đoạn 1
-    const stage2Pct = 1 - stage1Pct;              // Tỷ lệ thời lượng giai đoạn 2
+    const joinMin = Math.min(targetMin, Math.max(1, midwayStaff ? (midwayStaff.joined_min || elapsedMin) : elapsedMin));
+    const remMin = Math.max(0, targetMin - joinMin);
+
+    const stage1Comm = Math.round(totalComm * (joinMin / targetMin));
+    const stage2Comm = totalComm - stage1Comm;
 
     const earlyStaffs = tempSwapStaffs.filter(s => !s.is_midway);
     const nEarly = earlyStaffs.length > 0 ? earlyStaffs.length : 1;
     const nTotal = tempSwapStaffs.length;
 
-    let sumPct = 0;
+    const earlyStage1Vnd = Math.floor(stage1Comm / nEarly);
+    const stage1Rem = stage1Comm - (earlyStage1Vnd * nEarly);
+
+    const allStage2Vnd = Math.floor(stage2Comm / nTotal);
+    const stage2Rem = stage2Comm - (allStage2Vnd * nTotal);
+
     tempSwapStaffs.forEach((s, idx) => {
-      let p = 0;
+      let comm = 0;
       if (!s.is_midway) {
-        // KTV làm từ đầu: nhận (Giai đoạn 1 / nEarly) + (Giai đoạn 2 / nTotal)
-        p = (stage1Pct / nEarly) + (stage2Pct / nTotal);
+        comm = earlyStage1Vnd + allStage2Vnd + (idx === 0 ? (stage1Rem + stage2Rem) : 0);
       } else {
-        // KTV vào sau: chỉ nhận (Giai đoạn 2 / nTotal)
-        p = (stage2Pct / nTotal);
+        comm = allStage2Vnd;
       }
-      s.pct = Math.round(p * 100);
-      sumPct += s.pct;
+      s.comm_vnd = comm;
+      s.pct = totalComm > 0 ? Math.round((comm / totalComm) * 100) : Math.round(100 / count);
+
+      const itemCommBadge = document.getElementById(`swap-item-comm-${idx}`);
+      if (itemCommBadge) itemCommBadge.innerText = `${s.pct}% • +${comm.toLocaleString('vi-VN')} đ`;
     });
 
-    // Cân bằng tổng đúng 100%
-    const diff = 100 - sumPct;
-    if (diff !== 0 && tempSwapStaffs.length > 0) {
-      tempSwapStaffs[0].pct += diff;
-    }
+    // Tạo giao diện bảng chi tiết các pha cực kỳ dễ hiểu
+    html = `
+      <div class="space-y-2.5">
+        <!-- Giai đoạn 1 -->
+        <div class="p-2.5 rounded-xl bg-white border border-[#F0EAE1] space-y-1">
+          <div class="flex justify-between items-center text-[11px] font-bold text-[#E58A7B]">
+            <span>🔹 Giai đoạn 1: ${joinMin} phút đầu (${earlyStaffs.length} KTV làm)</span>
+            <span>${stage1Comm.toLocaleString('vi-VN')} đ</span>
+          </div>
+          ${earlyStaffs.map((s, i) => `
+            <div class="flex justify-between items-center text-[11px] text-[#7E7272] pl-2">
+              <span>• ${s.name}:</span>
+              <span class="font-semibold text-[#2D2424]">+${(earlyStage1Vnd + (i === 0 ? stage1Rem : 0)).toLocaleString('vi-VN')} đ</span>
+            </div>
+          `).join('')}
+        </div>
 
-    const timerTextEl = document.getElementById('split-timer-pct');
-    if (timerTextEl) timerTextEl.innerText = `Theo phút vào ca (${boundedJoinMin}p đầu & ${targetMin - boundedJoinMin}p sau)`;
-  } else {
-    // CHIA ĐỀU TUYỆT ĐỐI
-    const basePct = Math.floor(100 / count);
-    const remainder = 100 - basePct * count;
-    tempSwapStaffs.forEach((s, idx) => {
-      s.pct = basePct + (idx < remainder ? 1 : 0);
-    });
+        <!-- Giai đoạn 2 -->
+        <div class="p-2.5 rounded-xl bg-white border border-[#F0EAE1] space-y-1">
+          <div class="flex justify-between items-center text-[11px] font-bold text-[#2E7D6D]">
+            <span>🔹 Giai đoạn 2: ${remMin} phút sau (${nTotal} KTV cùng làm)</span>
+            <span>${stage2Comm.toLocaleString('vi-VN')} đ</span>
+          </div>
+          ${tempSwapStaffs.map((s, i) => `
+            <div class="flex justify-between items-center text-[11px] text-[#7E7272] pl-2">
+              <span>• ${s.name}${s.is_midway ? ' (Vào sau)' : ''}:</span>
+              <span class="font-semibold text-[#2D2424]">+${(allStage2Vnd + (i === 0 ? stage2Rem : 0)).toLocaleString('vi-VN')} đ</span>
+            </div>
+          `).join('')}
+        </div>
 
-    const equalTextEl = document.getElementById('split-equal-pct');
-    if (equalTextEl) equalTextEl.innerText = count === 2 ? '50% - 50%' : (count === 3 ? '34% - 33% - 33%' : 'Chia đều trọn ca');
-  }
-
-  // Render danh sách preview hoa hồng
-  const summaryContainer = document.getElementById('swap-summary-pct-list');
-  let html = '';
-
-  tempSwapStaffs.forEach((s, idx) => {
-    const u = users.find(user => normalizePhone(user.phone) === normalizePhone(s.phone));
-    const rate = (u && parsePercentage(u?.commission_rate) > 0) ? parsePercentage(u?.commission_rate) : 10;
-    const comm = Math.round(currentLiveSession.price * (rate / 100) * (s.pct / 100));
-
-    html += `
-      <div class="flex justify-between items-center text-[#2D2424]">
-        <span>${s.name}${s.is_midway ? ' (Vào sau)' : ''}:</span>
-        <span class="font-extrabold text-[#2E7D6D]">${s.pct}% (${comm.toLocaleString('vi-VN')} đ)</span>
+        <!-- Tổng cộng thực nhận -->
+        <div class="pt-1.5 border-t border-[#F0EAE1] space-y-1">
+          <div class="text-[11px] font-extrabold text-[#2D2424] uppercase tracking-wider">🏆 Tổng Cộng Thực Nhận:</div>
+          ${tempSwapStaffs.map(s => `
+            <div class="flex justify-between items-center text-xs font-bold">
+              <span class="text-[#2D2424]">${s.name}:</span>
+              <span class="text-[#2E7D6D] font-extrabold">+${s.comm_vnd.toLocaleString('vi-VN')} đ (${s.pct}%)</span>
+            </div>
+          `).join('')}
+        </div>
       </div>
     `;
 
-    const itemCommBadge = document.getElementById(`swap-item-comm-${idx}`);
-    if (itemCommBadge) itemCommBadge.innerText = `${s.pct}% • +${comm.toLocaleString('vi-VN')} đ`;
-  });
+    const timerTextEl = document.getElementById('split-timer-pct');
+    if (timerTextEl) timerTextEl.innerText = `Theo giai đoạn (${joinMin}p đầu & ${remMin}p sau)`;
+  } else {
+    // =========================================================
+    // 🤝 CHIA ĐỀU (ƯU TIÊN 34% & TIỀN DÔI CHO KTV 1)
+    // =========================================================
+    const perStaffVnd = Math.floor(totalComm / count);
+    const remVnd = totalComm - (perStaffVnd * count);
+    const equalPct = Math.floor(100 / count);
+    const remPct = 100 - (equalPct * count);
+
+    tempSwapStaffs.forEach((s, idx) => {
+      const isFirst = idx === 0;
+      s.pct = equalPct + (isFirst ? remPct : 0);
+      s.comm_vnd = perStaffVnd + (isFirst ? remVnd : 0);
+
+      const itemCommBadge = document.getElementById(`swap-item-comm-${idx}`);
+      if (itemCommBadge) itemCommBadge.innerText = `${s.pct}% • +${s.comm_vnd.toLocaleString('vi-VN')} đ`;
+    });
+
+    html = `
+      <div class="space-y-1.5">
+        <div class="text-[11px] font-bold text-[#7E7272] flex items-center gap-1">
+          <span>🤝 Cùng làm từ đầu (Chia đều trọn ca ${targetMin} phút):</span>
+        </div>
+        ${tempSwapStaffs.map((s, i) => `
+          <div class="flex justify-between items-center text-xs font-bold">
+            <span class="text-[#2D2424]">${s.name}${i === 0 ? ' (KTV Chính)' : ''}:</span>
+            <span class="text-[#2E7D6D] font-extrabold">+${s.comm_vnd.toLocaleString('vi-VN')} đ (${s.pct}%)</span>
+          </div>
+        `).join('')}
+      </div>
+    `;
+
+    const equalTextEl = document.getElementById('split-equal-pct');
+    if (equalTextEl) {
+      if (count === 2) equalTextEl.innerText = '50% - 50%';
+      else if (count === 3) equalTextEl.innerText = '34% - 33% - 33%';
+      else equalTextEl.innerText = 'Chia đều trọn ca';
+    }
+  }
 
   if (summaryContainer) summaryContainer.innerHTML = html;
 }
