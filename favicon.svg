@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFF0EB"/>
+      <stop offset="100%" stop-color="#FAF6F1"/>
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E58A7B"/>
+      <stop offset="50%" stop-color="#F09A8D"/>
+      <stop offset="100%" stop-color="#D9796A"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#E58A7B" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+
+  <!-- Background rounded squircle for App Icon -->
+  <rect width="512" height="512" rx="128" fill="url(#bgGrad)" stroke="#FCDFD7" stroke-width="8"/>
+
+  <!-- Spa Lotus Flower & Sparkles -->
+  <g transform="translate(256, 256)" filter="url(#shadow)">
+    <!-- Central Lotus Petal -->
+    <path d="M 0 -130 C 55 -50 65 50 0 110 C -65 50 -55 -50 0 -130 Z" fill="url(#goldGrad)"/>
+    <!-- Left Petal -->
+    <path d="M -20 -80 C -110 -20 -130 60 -30 100 C -10 60 -10 0 -20 -80 Z" fill="url(#goldGrad)" opacity="0.85"/>
+    <!-- Right Petal -->
+    <path d="M 20 -80 C 110 -20 130 60 30 100 C 10 60 10 0 20 -80 Z" fill="url(#goldGrad)" opacity="0.85"/>
+    <!-- Bottom Base Curve -->
+    <path d="M -110 110 C -40 145 40 145 110 110 C 60 160 -60 160 -110 110 Z" fill="#2E7D6D" opacity="0.9"/>
+    <!-- Center Sparkling Star -->
+    <path d="M 0 -20 Q 0 0 20 0 Q 0 0 0 20 Q 0 0 -20 0 Q 0 0 0 -20 Z" fill="#FFFFFF"/>
+    <!-- Top Sparkle -->
+    <circle cx="0" cy="-145" r="10" fill="#E58A7B"/>
+  </g>
+</svg>
