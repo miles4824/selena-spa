@@ -1,13 +1,10 @@
 /**
  * =========================================================================
- * SELENA SPA - API GOOGLE APPS SCRIPT (GAS SERVER BACKEND V2.1 - SECURE & 2 KTV TIPS)
+ * SELENA SPA - API GOOGLE APPS SCRIPT (GAS SERVER BACKEND V2.2 - DYNAMIC HEADER MAPPING)
  * =========================================================================
- * Cột dữ liệu cố định trên tb_receipts:
- * - receipt_id, date, time, customer_phone, customer_name, service_id, service_name
- * - price (giá combo), tip_amount (tiền tip), total_paid (khách trả)
- * - staff_1_id, staff_1_name, staff_1_comm, staff_1_tip
- * - staff_2_id, staff_2_name, staff_2_comm, staff_2_tip
- * - payment_method, is_voucher_used
+ * Sử dụng Dynamic Header Mapping:
+ * - Đọc cột theo đúng TÊN HEADER ở hàng 1 (A1:Z1), chống lệch cột 100%
+ * - Tương thích mượt mà với cả Sheet cũ và Sheet mới
  */
 
 function doGet(e) {
@@ -36,7 +33,7 @@ function handleRequest(e) {
 
     switch (action) {
       case 'ping':
-        result = { success: true, message: 'Selena Spa Secure Backend v2.1 is active!', timestamp: new Date().toISOString() };
+        result = { success: true, message: 'Selena Spa Dynamic Backend v2.2 is active!', timestamp: new Date().toISOString() };
         break;
 
       case 'login':
@@ -65,6 +62,10 @@ function handleRequest(e) {
 
       case 'update_announcement':
         result = updateAnnouncement(params);
+        break;
+
+      case 'setup_sheet_headers':
+        result = autoSetupSheetHeaders();
         break;
 
       default:
@@ -112,6 +113,31 @@ function isOwnerCheck(role, phone, staffId) {
   return (r === 'admin' || r === 'chủ tiệm' || r === 'chủ sáng lập' || r === 'owner' || p === '0949251144' || s === 'FOUNDER_01');
 }
 
+// Helper tạo bảng tra cứu Header động (Tên cột -> Chỉ số Index 0, 1, 2...)
+function createHeaderMap(sheet) {
+  const map = {};
+  if (!sheet) return map;
+  const lastCol = sheet.getLastColumn();
+  if (lastCol < 1) return map;
+  const headers = sheet.getRange(1, 1, 1, lastCol).getValues()[0];
+  for (let i = 0; i < headers.length; i++) {
+    let key = String(headers[i] || '').trim().toLowerCase();
+    if (key) map[key] = i;
+  }
+  return map;
+}
+
+function getCell(row, colMap, keyList, fallback = '') {
+  if (!Array.isArray(keyList)) keyList = [keyList];
+  for (let k of keyList) {
+    let lk = k.toLowerCase();
+    if (colMap[lk] !== undefined && row[colMap[lk]] !== undefined && row[colMap[lk]] !== '') {
+      return row[colMap[lk]];
+    }
+  }
+  return fallback;
+}
+
 // -------------------------------------------------------------
 // 1. XỬ LÝ ĐĂNG NHẬP
 // -------------------------------------------------------------
@@ -123,17 +149,19 @@ function handleLogin(params) {
 
   if (!sheetUsers) return { success: false, error: 'SHEET_USERS_NOT_FOUND' };
 
+  const colMap = createHeaderMap(sheetUsers);
   const data = sheetUsers.getDataRange().getValues();
+
   for (let i = 1; i < data.length; i++) {
     let row = data[i];
-    let uPhone = normalizePhone(row[0] || row[2]);
-    let uStaffId = String(row[1] || '').trim();
-    let uPwd = String(row[3] || '123456').trim();
-    let fullName = String(row[4] || '').trim();
-    let role = String(row[5] || 'staff').trim();
-    let salaryType = String(row[6] || 'fixed').trim();
-    let commRate = parsePercentage(row[7]);
-    let baseSalary = Number(String(row[8] || 0).replace(/[^\d]/g, '')) || 0;
+    let uPhone = normalizePhone(getCell(row, colMap, ['phone', 'user_id', 'so_dien_thoai']));
+    let uStaffId = String(getCell(row, colMap, ['staff_id', 'ma_ktv', 'user_id'])).trim();
+    let uPwd = String(getCell(row, colMap, ['password', 'mat_khau', 'pin'], '123456')).trim();
+    let fullName = String(getCell(row, colMap, ['full_name', 'ho_ten', 'ten_nhan_vien'])).trim();
+    let role = String(getCell(row, colMap, ['role', 'chuc_vu', 'vai_tro'], 'staff')).trim();
+    let salaryType = String(getCell(row, colMap, ['salary_type', 'loai_luong'], 'fixed')).trim();
+    let commRate = parsePercentage(getCell(row, colMap, ['commission_rate', 'hoa_hong', 'rate'], 10));
+    let baseSalary = Number(String(getCell(row, colMap, ['base_salary', 'luong_cung'], 0)).replace(/[^\d]/g, '')) || 0;
 
     if (uPhone === inputPhone || uStaffId === inputPhone) {
       if (uPwd === inputPwd || inputPwd === '123' || inputPwd === '123456') {
@@ -168,18 +196,27 @@ function getMenuList() {
   const sheet = ss.getSheetByName('tb_menu');
   if (!sheet) return { success: false, error: 'NO_MENU_SHEET' };
   
+  const colMap = createHeaderMap(sheet);
   const data = sheet.getDataRange().getValues();
   let menu = [];
+
   for (let i = 1; i < data.length; i++) {
     let r = data[i];
-    if (r[0] && r[1]) {
+    let id = String(getCell(r, colMap, ['service_id', 'ma_dich_vu', 'combo_id']));
+    let name = String(getCell(r, colMap, ['service_name', 'ten_dich_vu', 'ten_combo']));
+    if (id && name) {
+      let price = Number(getCell(r, colMap, ['price', 'gia', 'don_gia'], 0)) || 0;
+      let duration = Number(getCell(r, colMap, ['duration_min', 'thoi_gian', 'duration'], 30)) || 30;
+      let cosmetics = Number(getCell(r, colMap, ['cosmetics_cost', 'chi_phi_my_pham'], 0)) || 0;
+      let commVal = Number(getCell(r, colMap, ['commission_value', 'hoa_hong'], price * 0.1)) || (price * 0.1);
+
       menu.push({
-        service_id: String(r[0]),
-        service_name: String(r[1]),
-        price: Number(r[2]) || 0,
-        duration_min: Number(r[3]) || 30,
-        cosmetics_cost: Number(r[4]) || 0,
-        commission_value: Number(r[6]) || (Number(r[2]) * 0.1)
+        service_id: id,
+        service_name: name,
+        price: price,
+        duration_min: duration,
+        cosmetics_cost: cosmetics,
+        commission_value: commVal
       });
     }
   }
@@ -197,19 +234,22 @@ function checkCustomer(phoneNumber) {
   const sheet = ss.getSheetByName('tb_customers');
   if (!sheet) return { success: false, error: 'NO_CUSTOMER_SHEET' };
   
+  const colMap = createHeaderMap(sheet);
   const data = sheet.getDataRange().getValues();
+
   for (let i = 1; i < data.length; i++) {
     let row = data[i];
-    if (normalizePhone(row[0]) === phone) {
+    let cPhone = normalizePhone(getCell(row, colMap, ['phone_number', 'phone', 'so_dien_thoai']));
+    if (cPhone === phone) {
       return {
         success: true,
         found: true,
         customer: {
-          phone_number: normalizePhone(row[0]),
-          customer_name: String(row[1]),
-          total_visits: Number(row[2]) || 0,
-          voucher_count: Number(row[3]) || 0,
-          notes: String(row[5] || '')
+          phone_number: cPhone,
+          customer_name: String(getCell(row, colMap, ['customer_name', 'name', 'ten_khach'])),
+          total_visits: Number(getCell(row, colMap, ['total_visits', 'so_lan_goi', 'visits'], 0)) || 0,
+          voucher_count: Number(getCell(row, colMap, ['voucher_count', 'voucher'], 0)) || 0,
+          notes: String(getCell(row, colMap, ['notes', 'ghi_chu'], ''))
         }
       };
     }
@@ -219,7 +259,7 @@ function checkCustomer(phoneNumber) {
 }
 
 // -------------------------------------------------------------
-// 4. TẠO HÓA ĐƠN CA LÀM (GHI NHẬN 2 KTV VÀ TIỀN TIPS TÁCH BIỆT)
+// 4. TẠO HÓA ĐƠN CA LÀM (CHUẨN HÓA VÀ GHI NHẬN THEO TÊN CỘT)
 // -------------------------------------------------------------
 function createReceipt(params) {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -258,44 +298,71 @@ function createReceipt(params) {
   const paymentMethod = String(params.payment_method || 'Chuyển khoản').trim();
   const isVoucherUsed = Boolean(params.is_voucher_used);
 
-  // Ghi vào tb_receipts với các cột dữ liệu cố định
   if (sheetReceipts) {
-    sheetReceipts.appendRow([
-      receiptId,
-      dateStr,
-      timeStr,
-      phone,
-      customerName,
-      serviceId,
-      serviceName,
-      price,
-      tipAmount,
-      totalPaid,
-      s1Phone,
-      s1Id,
-      s1Name,
-      s1Comm,
-      s1Tip,
-      s2Phone,
-      s2Id,
-      s2Name,
-      s2Comm,
-      s2Tip,
-      paymentMethod,
-      isVoucherUsed ? 'TRUE' : 'FALSE',
-      fullTimeStr
-    ]);
+    const colMap = createHeaderMap(sheetReceipts);
+    const lastCol = Math.max(sheetReceipts.getLastColumn(), 23);
+    const newRow = new Array(lastCol).fill('');
+
+    // Hàm gán vào vị trí cột tương ứng
+    function assign(keyList, val) {
+      for (let k of keyList) {
+        if (colMap[k.toLowerCase()] !== undefined) {
+          newRow[colMap[k.toLowerCase()]] = val;
+          return;
+        }
+      }
+    }
+
+    if (Object.keys(colMap).length > 0) {
+      assign(['receipt_id', 'ma_hd'], receiptId);
+      assign(['date', 'ngay'], dateStr);
+      assign(['time', 'gio'], timeStr);
+      assign(['customer_phone', 'sdt_khach'], phone);
+      assign(['customer_name', 'ten_khach'], customerName);
+      assign(['service_id', 'ma_dich_vu'], serviceId);
+      assign(['service_name', 'ten_dich_vu'], serviceName);
+      assign(['price', 'gia_tien', 'don_gia'], price);
+      assign(['tip_amount', 'tien_tip'], tipAmount);
+      assign(['total_paid', 'tong_tien_khach_tra'], totalPaid);
+
+      assign(['staff_1_phone', 'staff_phone', 'sdt_ktv_1', 'sdt_ktv'], s1Phone);
+      assign(['staff_1_id', 'staff_id', 'ma_ktv_1', 'ma_ktv'], s1Id);
+      assign(['staff_1_name', 'staff_name', 'ten_ktv_1', 'ten_ktv'], s1Name);
+      assign(['staff_1_comm', 'commission_amount', 'hoa_hong_ktv_1', 'hoa_hong'], s1Comm);
+      assign(['staff_1_tip', 'tip_ktv_1'], s1Tip);
+
+      assign(['staff_2_phone', 'sdt_ktv_2'], s2Phone);
+      assign(['staff_2_id', 'ma_ktv_2'], s2Id);
+      assign(['staff_2_name', 'ten_ktv_2'], s2Name);
+      assign(['staff_2_comm', 'hoa_hong_ktv_2'], s2Comm);
+      assign(['staff_2_tip', 'tip_ktv_2'], s2Tip);
+
+      assign(['payment_method', 'phuong_thuc_tt'], paymentMethod);
+      assign(['is_voucher_used', 'dung_voucher'], isVoucherUsed ? 'TRUE' : 'FALSE');
+      assign(['created_at', 'thoi_gian_tao'], fullTimeStr);
+
+      sheetReceipts.appendRow(newRow);
+    } else {
+      sheetReceipts.appendRow([
+        receiptId, dateStr, timeStr, phone, customerName, serviceId, serviceName,
+        price, tipAmount, totalPaid, s1Phone, s1Id, s1Name, s1Comm, s1Tip,
+        s2Phone, s2Id, s2Name, s2Comm, s2Tip, paymentMethod, isVoucherUsed ? 'TRUE' : 'FALSE', fullTimeStr
+      ]);
+    }
   }
 
   // Cập nhật tích điểm tb_customers
   if (sheetCustomers && phone) {
+    const colMapC = createHeaderMap(sheetCustomers);
     const custData = sheetCustomers.getDataRange().getValues();
     let foundIndex = -1;
+
     for (let i = 1; i < custData.length; i++) {
-      if (normalizePhone(custData[i][0]) === phone) {
+      let cPhone = normalizePhone(getCell(custData[i], colMapC, ['phone_number', 'phone']));
+      if (cPhone === phone) {
         foundIndex = i + 1;
-        let visits = Number(custData[i][2]) || 0;
-        let vouchers = Number(custData[i][3]) || 0;
+        let visits = Number(getCell(custData[i], colMapC, ['total_visits', 'visits'], 0)) || 0;
+        let vouchers = Number(getCell(custData[i], colMapC, ['voucher_count', 'voucher'], 0)) || 0;
         if (isVoucherUsed) {
           vouchers = Math.max(0, vouchers - 1);
         } else {
@@ -305,25 +372,20 @@ function createReceipt(params) {
             visits -= 10;
           }
         }
-        sheetCustomers.getRange(foundIndex, 3).setValue(visits);
-        sheetCustomers.getRange(foundIndex, 4).setValue(vouchers);
-        sheetCustomers.getRange(foundIndex, 5).setValue(dateStr);
-        if (customerName && customerName !== 'Khách vãng lai') {
-          sheetCustomers.getRange(foundIndex, 2).setValue(customerName);
-        }
+        
+        let colVisits = colMapC['total_visits'] !== undefined ? colMapC['total_visits'] + 1 : 3;
+        let colVouchers = colMapC['voucher_count'] !== undefined ? colMapC['voucher_count'] + 1 : 4;
+        let colDate = colMapC['last_visit_date'] !== undefined ? colMapC['last_visit_date'] + 1 : 5;
+
+        sheetCustomers.getRange(foundIndex, colVisits).setValue(visits);
+        sheetCustomers.getRange(foundIndex, colVouchers).setValue(vouchers);
+        sheetCustomers.getRange(foundIndex, colDate).setValue(dateStr);
         break;
       }
     }
 
     if (foundIndex === -1) {
-      sheetCustomers.appendRow([
-        phone,
-        customerName,
-        isVoucherUsed ? 0 : 1,
-        0,
-        dateStr,
-        ''
-      ]);
+      sheetCustomers.appendRow([phone, customerName, isVoucherUsed ? 0 : 1, 0, dateStr, '']);
     }
   }
 
@@ -379,7 +441,7 @@ function updateAnnouncement(params) {
 }
 
 // -------------------------------------------------------------
-// 7. ĐỒNG BỘ TOÀN DIỆN PHÂN QUYỀN BẢO MẬT & 2 KTV
+// 7. ĐỒNG BỘ TOÀN DIỆN VỚI HEADER MAPPING ĐỘNG (CHỐNG LỆCH CỘT 100%)
 // -------------------------------------------------------------
 function syncAllData(params) {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -394,17 +456,25 @@ function syncAllData(params) {
   const sheetMenu = ss.getSheetByName('tb_menu');
   let menu = [];
   if (sheetMenu) {
+    const colMapM = createHeaderMap(sheetMenu);
     const data = sheetMenu.getDataRange().getValues();
     for (let i = 1; i < data.length; i++) {
       let r = data[i];
-      if (r[0] && r[1]) {
+      let id = String(getCell(r, colMapM, ['service_id', 'combo_id']));
+      let name = String(getCell(r, colMapM, ['service_name', 'ten_combo', 'name']));
+      if (id && name) {
+        let price = Number(getCell(r, colMapM, ['price', 'gia'], 0)) || 0;
+        let duration = Number(getCell(r, colMapM, ['duration_min', 'thoi_gian'], 30)) || 30;
+        let cosmetics = Number(getCell(r, colMapM, ['cosmetics_cost', 'my_pham'], 0)) || 0;
+        let commVal = Number(getCell(r, colMapM, ['commission_value', 'hoa_hong'], price * 0.1)) || (price * 0.1);
+
         menu.push({
-          service_id: String(r[0]),
-          service_name: String(r[1]),
-          price: Number(r[2]) || 0,
-          duration_min: Number(r[3]) || 30,
-          cosmetics_cost: Number(r[4]) || 0,
-          commission_value: Number(r[6]) || (Number(r[2]) * 0.1)
+          service_id: id,
+          service_name: name,
+          price: price,
+          duration_min: duration,
+          cosmetics_cost: cosmetics,
+          commission_value: commVal
         });
       }
     }
@@ -414,20 +484,21 @@ function syncAllData(params) {
   const sheetUsers = ss.getSheetByName('tb_users');
   let users = [];
   if (sheetUsers) {
+    const colMapU = createHeaderMap(sheetUsers);
     const data = sheetUsers.getDataRange().getValues();
     for (let i = 1; i < data.length; i++) {
       let r = data[i];
-      if (r[0] || r[1] || r[2]) {
-        let uUserId = normalizePhone(r[0]);
-        let uStaffId = String(r[1] || '').trim();
-        let uPhone = normalizePhone(r[2] || r[0]);
-        let uPwd = String(r[3] || '123456').trim();
-        let fullName = String(r[4] || '').trim();
-        let role = String(r[5] || 'staff').trim();
-        let salaryType = String(r[6] || 'fixed').trim();
-        let commRate = parsePercentage(r[7]);
-        let baseSalary = Number(String(r[8] || 0).replace(/[^\d]/g, '')) || 0;
+      let uUserId = normalizePhone(getCell(r, colMapU, ['user_id', 'phone', 'so_dien_thoai']));
+      let uStaffId = String(getCell(r, colMapU, ['staff_id', 'ma_ktv', 'user_id'])).trim();
+      let uPhone = normalizePhone(getCell(r, colMapU, ['phone', 'user_id', 'so_dien_thoai']));
+      let uPwd = String(getCell(r, colMapU, ['password', 'pin'], '123456')).trim();
+      let fullName = String(getCell(r, colMapU, ['full_name', 'ten_nhan_vien', 'ho_ten'])).trim();
+      let role = String(getCell(r, colMapU, ['role', 'chuc_vu'], 'staff')).trim();
+      let salaryType = String(getCell(r, colMapU, ['salary_type', 'loai_luong'], 'fixed')).trim();
+      let commRate = parsePercentage(getCell(r, colMapU, ['commission_rate', 'rate', 'hoa_hong'], 10));
+      let baseSalary = Number(String(getCell(r, colMapU, ['base_salary', 'luong_cung'], 0)).replace(/[^\d]/g, '')) || 0;
 
+      if (uPhone || uStaffId) {
         const uIsOwner = isOwnerCheck(role, uPhone, uStaffId);
 
         if (isOwner) {
@@ -464,65 +535,90 @@ function syncAllData(params) {
   const sheetCust = ss.getSheetByName('tb_customers');
   let customers = [];
   if (sheetCust) {
+    const colMapC = createHeaderMap(sheetCust);
     const data = sheetCust.getDataRange().getValues();
     for (let i = 1; i < data.length; i++) {
       let r = data[i];
-      if (r[0]) {
+      let phone = normalizePhone(getCell(r, colMapC, ['phone_number', 'phone', 'so_dien_thoai']));
+      if (phone) {
+        let lastVisit = '';
+        let rawDate = getCell(r, colMapC, ['last_visit_date', 'ngay_gan_nhat']);
+        if (rawDate) {
+          try {
+            lastVisit = Utilities.formatDate(new Date(rawDate), 'GMT+7', 'yyyy/MM/dd');
+          } catch(e) {
+            lastVisit = String(rawDate);
+          }
+        }
+
         customers.push({
-          phone_number: normalizePhone(r[0]),
-          customer_name: String(r[1]),
-          total_visits: Number(r[2]) || 0,
-          voucher_count: Number(r[3]) || 0,
-          last_visit_date: r[4] ? Utilities.formatDate(new Date(r[4]), 'GMT+7', 'yyyy/MM/dd') : '',
-          notes: String(r[5] || '')
+          phone_number: phone,
+          customer_name: String(getCell(r, colMapC, ['customer_name', 'name', 'ten_khach'])),
+          total_visits: Number(getCell(r, colMapC, ['total_visits', 'visits'], 0)) || 0,
+          voucher_count: Number(getCell(r, colMapC, ['voucher_count', 'voucher'], 0)) || 0,
+          last_visit_date: lastVisit,
+          notes: String(getCell(r, colMapC, ['notes', 'ghi_chu'], ''))
         });
       }
     }
   }
 
-  // 4. Receipts
+  // 4. Receipts (Đọc chính xác theo tên Header, chống lệch hoàn toàn!)
   const sheetRec = ss.getSheetByName('tb_receipts');
   let receipts = [];
   if (sheetRec) {
+    const colMapR = createHeaderMap(sheetRec);
     const data = sheetRec.getDataRange().getValues();
+
     for (let i = data.length - 1; i >= 1; i--) {
       let r = data[i];
-      if (r[0]) {
-        let rPrice = Number(String(r[7] || r[10] || 0).replace(/[^\d]/g, '')) || 0;
-        let rTip = Number(String(r[8] || 0).replace(/[^\d]/g, '')) || 0;
-        let rTotalPaid = Number(String(r[9] || r[13] || 0).replace(/[^\d]/g, '')) || (rPrice + rTip);
+      let rId = String(getCell(r, colMapR, ['receipt_id', 'ma_hd'])).trim();
 
-        let s1Phone = normalizePhone(r[10] || r[7]);
-        let s1Id = String(r[11] || r[8] || '').trim();
-        let s1Name = String(r[12] || r[9] || 'KTV 1');
-        let s1Comm = Number(String(r[13] || r[11] || 0).replace(/[^\d]/g, '')) || 0;
-        let s1Tip = Number(String(r[14] || 0).replace(/[^\d]/g, '')) || 0;
+      if (rId) {
+        let rDate = String(getCell(r, colMapR, ['date', 'ngay']));
+        let rTime = String(getCell(r, colMapR, ['time', 'gio'], '14:30'));
+        let custPhone = normalizePhone(getCell(r, colMapR, ['customer_phone', 'sdt_khach']));
+        let custName = String(getCell(r, colMapR, ['customer_name', 'ten_khach']));
+        let servId = String(getCell(r, colMapR, ['service_id', 'ma_dich_vu']));
+        let servName = String(getCell(r, colMapR, ['service_name', 'ten_dich_vu']));
 
-        let s2Phone = normalizePhone(r[15]);
-        let s2Id = String(r[16] || '').trim();
-        let s2Name = String(r[17] || '');
-        let s2Comm = Number(String(r[18] || 0).replace(/[^\d]/g, '')) || 0;
-        let s2Tip = Number(String(r[19] || 0).replace(/[^\d]/g, '')) || 0;
+        let price = Number(String(getCell(r, colMapR, ['price', 'don_gia', 'gia_tien'], 0)).replace(/[^\d]/g, '')) || 0;
+        let tipAmount = Number(String(getCell(r, colMapR, ['tip_amount', 'tien_tip'], 0)).replace(/[^\d]/g, '')) || 0;
+        let totalPaid = Number(String(getCell(r, colMapR, ['total_paid', 'tong_tien_khach_tra'], 0)).replace(/[^\d]/g, '')) || (price + tipAmount);
+
+        // KTV 1
+        let s1Phone = normalizePhone(getCell(r, colMapR, ['staff_1_phone', 'staff_phone', 'sdt_ktv_1', 'sdt_ktv']));
+        let s1Id = String(getCell(r, colMapR, ['staff_1_id', 'staff_id', 'ma_ktv_1', 'ma_ktv'])).trim();
+        let s1Name = String(getCell(r, colMapR, ['staff_1_name', 'staff_name', 'ten_ktv_1', 'ten_ktv']));
+        let s1Comm = Number(String(getCell(r, colMapR, ['staff_1_comm', 'commission_amount', 'hoa_hong_ktv_1', 'hoa_hong'], 0)).replace(/[^\d]/g, '')) || 0;
+        let s1Tip = Number(String(getCell(r, colMapR, ['staff_1_tip', 'tip_ktv_1'], 0)).replace(/[^\d]/g, '')) || 0;
+
+        // KTV 2
+        let s2Phone = normalizePhone(getCell(r, colMapR, ['staff_2_phone', 'sdt_ktv_2']));
+        let s2Id = String(getCell(r, colMapR, ['staff_2_id', 'ma_ktv_2'])).trim();
+        let s2Name = String(getCell(r, colMapR, ['staff_2_name', 'ten_ktv_2']));
+        let s2Comm = Number(String(getCell(r, colMapR, ['staff_2_comm', 'hoa_hong_ktv_2'], 0)).replace(/[^\d]/g, '')) || 0;
+        let s2Tip = Number(String(getCell(r, colMapR, ['staff_2_tip', 'tip_ktv_2'], 0)).replace(/[^\d]/g, '')) || 0;
         let hasStaff2 = Boolean(s2Phone || s2Id);
 
-        let paymentMethod = String(r[20] || r[14] || 'Chuyển khoản');
-        let isVoucher = (r[21] === true || String(r[21]).toUpperCase() === 'TRUE');
+        let paymentMethod = String(getCell(r, colMapR, ['payment_method', 'phuong_thuc_tt'], 'Chuyển khoản'));
+        let isVoucher = (getCell(r, colMapR, ['is_voucher_used', 'dung_voucher']) === true || String(getCell(r, colMapR, ['is_voucher_used', 'dung_voucher'])).toUpperCase() === 'TRUE');
 
         let isMyReceipt = (clientPhone && (s1Phone === clientPhone || s2Phone === clientPhone)) || 
                           (clientStaffId && (s1Id === clientStaffId || s2Id === clientStaffId));
 
         if (isOwner || isMyReceipt) {
           receipts.push({
-            receipt_id: String(r[0]),
-            date: String(r[1]),
-            time: String(r[2] || '14:30'),
-            customer_phone: normalizePhone(r[3]),
-            customer_name: String(r[4]),
-            service_id: String(r[5]),
-            service_name: String(r[6]),
-            price: rPrice,
-            tip_amount: rTip,
-            total_paid: rTotalPaid,
+            receipt_id: rId,
+            date: rDate,
+            time: rTime,
+            customer_phone: custPhone,
+            customer_name: custName,
+            service_id: servId,
+            service_name: servName,
+            price: price,
+            tip_amount: tipAmount,
+            total_paid: totalPaid,
 
             staff_1_phone: s1Phone,
             staff_1_id: s1Id,
@@ -555,16 +651,18 @@ function syncAllData(params) {
   if (isOwner) {
     const sheetExp = ss.getSheetByName('tb_expenses');
     if (sheetExp) {
+      const colMapE = createHeaderMap(sheetExp);
       const data = sheetExp.getDataRange().getValues();
       for (let i = data.length - 1; i >= 1; i--) {
         let r = data[i];
-        if (r[0]) {
+        let eId = String(getCell(r, colMapE, ['expense_id', 'ma_chi_phi'])).trim();
+        if (eId) {
           expenses.push({
-            expense_id: String(r[0]),
-            date: String(r[1]),
-            expense_type: String(r[2]),
-            amount: Number(r[3]) || 0,
-            note: String(r[4] || '')
+            expense_id: eId,
+            date: String(getCell(r, colMapE, ['date', 'ngay'])),
+            expense_type: String(getCell(r, colMapE, ['expense_type', 'loai_chi_phi'])),
+            amount: Number(getCell(r, colMapE, ['amount', 'so_tien'], 0)) || 0,
+            note: String(getCell(r, colMapE, ['note', 'ghi_chu'], ''))
           });
         }
       }
@@ -607,4 +705,26 @@ function syncAllData(params) {
       is_owner_authenticated: isOwner
     }
   };
+}
+
+// -------------------------------------------------------------
+// 8. TỰ ĐỘNG CẬP NHẬT HEADER CHUẨN TRÊN SHEET (CHẠY 1 LẦN)
+// -------------------------------------------------------------
+function autoSetupSheetHeaders() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+
+  const receiptHeaders = [
+    'receipt_id', 'date', 'time', 'customer_phone', 'customer_name', 'service_id', 'service_name', 
+    'price', 'tip_amount', 'total_paid', 
+    'staff_1_phone', 'staff_1_id', 'staff_1_name', 'staff_1_comm', 'staff_1_tip', 
+    'staff_2_phone', 'staff_2_id', 'staff_2_name', 'staff_2_comm', 'staff_2_tip', 
+    'payment_method', 'is_voucher_used', 'created_at'
+  ];
+
+  const sheetRec = ss.getSheetByName('tb_receipts');
+  if (sheetRec) {
+    sheetRec.getRange(1, 1, 1, receiptHeaders.length).setValues([receiptHeaders]);
+  }
+
+  return { success: true, message: 'Updated tb_receipts headers successfully!' };
 }
