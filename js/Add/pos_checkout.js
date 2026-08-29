@@ -476,8 +476,12 @@ function openCheckoutModal() {
   document.getElementById('checkout-step-customer')?.classList.remove('hidden');
   document.getElementById('checkout-step-staff')?.classList.add('hidden');
 
-  currentCheckoutTip = 0;
-  document.getElementById('chk-tip-input').value = '';
+  currentCheckoutTipS1 = 0;
+  currentCheckoutTipS2 = 0;
+  const inS1 = document.getElementById('chk-tip-input-s1');
+  const inS2 = document.getElementById('chk-tip-input-s2');
+  if (inS1) inS1.value = '';
+  if (inS2) inS2.value = '';
   setCheckoutPayment('Chuyển khoản');
 
   const modal = document.getElementById('modal-checkout');
