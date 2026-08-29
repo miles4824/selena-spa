@@ -561,8 +561,51 @@ function backToCustomerStep() {
   lucide.createIcons();
 }
 
+function parseRawNumber(val) {
+  return Number(String(val).replace(/\D/g, '')) || 0;
+}
+
 function onStaff1TipChange(val) {
-  currentCheckoutTipS1 = Math.max(0, Number(val) || 0);
+  let raw = parseRawNumber(val);
+  currentCheckoutTipS1 = raw;
+  const input = document.getElementById('chk-tip-input-s1');
+  if (input) input.value = raw > 0 ? raw.toLocaleString('vi-VN') : '';
+  updateStaffEarningPreview();
+}
+
+function onStaff2TipChange(val) {
+  let raw = parseRawNumber(val);
+  currentCheckoutTipS2 = raw;
+  const input = document.getElementById('chk-tip-input-s2');
+  if (input) input.value = raw > 0 ? raw.toLocaleString('vi-VN') : '';
+  updateStaffEarningPreview();
+}
+
+function setKTV1QuickTip(amount) {
+  currentCheckoutTipS1 = amount;
+  const input = document.getElementById('chk-tip-input-s1');
+  if (input) input.value = amount > 0 ? amount.toLocaleString('vi-VN') : '';
+  updateStaffEarningPreview();
+}
+
+function setKTV2QuickTip(amount) {
+  currentCheckoutTipS2 = amount;
+  const input = document.getElementById('chk-tip-input-s2');
+  if (input) input.value = amount > 0 ? amount.toLocaleString('vi-VN') : '';
+  updateStaffEarningPreview();
+}
+
+function splitSharedTip(totalAmount) {
+  let half1 = Math.round(totalAmount / 2);
+  let half2 = totalAmount - half1;
+  currentCheckoutTipS1 = half1;
+  currentCheckoutTipS2 = half2;
+
+  const inputS1 = document.getElementById('chk-tip-input-s1');
+  const inputS2 = document.getElementById('chk-tip-input-s2');
+  if (inputS1) inputS1.value = half1 > 0 ? half1.toLocaleString('vi-VN') : '';
+  if (inputS2) inputS2.value = half2 > 0 ? half2.toLocaleString('vi-VN') : '';
+
   updateStaffEarningPreview();
 }
 
