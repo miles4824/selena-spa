@@ -85,6 +85,39 @@ function onSelectServiceChange() {
   updatePOSCalculations();
 }
 
+function onStaff1SelectChange() {
+  renderExtraStaffUI();
+  updatePOSCalculations();
+}
+
+function updatePOSStaffInfo() {
+  const users = getSortedUsersList();
+  const s1Select = document.getElementById('pos-staff1-select');
+  const isOwner = currentUser && isUserOwner(currentUser);
+
+  if (s1Select) {
+    s1Select.innerHTML = users.map(u => `
+      <option value="${u.phone}" ${currentUser && normalizePhone(u.phone) === normalizePhone(currentUser.phone) ? 'selected' : ''}>
+        ${u.full_name}
+      </option>
+    `).join('');
+
+    if (isOwner) {
+      s1Select.disabled = false;
+      document.getElementById('pos-staff1-lock-icon')?.classList.add('hidden');
+      document.getElementById('pos-staff1-role-hint')?.classList.add('hidden');
+    } else {
+      s1Select.disabled = true;
+      if (currentUser) s1Select.value = currentUser.phone;
+      document.getElementById('pos-staff1-lock-icon')?.classList.remove('hidden');
+      document.getElementById('pos-staff1-role-hint')?.classList.remove('hidden');
+    }
+  }
+
+  renderExtraStaffUI();
+  updatePOSCalculations();
+}
+
 function onExtraStaffSelectChange(index, newPhone) {
   const users = getSortedUsersList();
   const staff = users.find(u => normalizePhone(u.phone) === normalizePhone(newPhone));
