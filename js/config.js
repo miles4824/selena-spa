@@ -1,4 +1,4 @@
-const APP_VERSION = 'v0.0.7.7';
+const APP_VERSION = 'v0.0.7.8';
 // =============================================================
 // SELENA SPA - GLOBAL CONFIG & CONSTANTS
 // =============================================================
@@ -265,6 +265,16 @@ function getWeekDaysFromMonday(baseDate = new Date()) {
 }
 
 // Component Lịch Tuần Dùng Chung Toàn Diện (T2 -> CN, Điều Hướng Tuần & Chọn Lịch Nhanh)
+function updateStickyDateOffset(containerId) {
+  const container = document.getElementById(containerId);
+  if (container) {
+    const h = container.offsetHeight;
+    if (h > 0) {
+      document.documentElement.style.setProperty('--sticky-date-offset', `${h - 2}px`);
+    }
+  }
+}
+
 function renderDateStripComponent(containerId, activeDateStr, onDateClickCallback) {
   const container = document.getElementById(containerId);
   if (!container) return;
@@ -345,4 +355,5 @@ function renderDateStripComponent(containerId, activeDateStr, onDateClickCallbac
     </div>
   `;
   lucide.createIcons();
+  requestAnimationFrame(() => updateStickyDateOffset(containerId));
 }
