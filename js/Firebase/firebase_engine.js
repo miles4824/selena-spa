@@ -247,3 +247,41 @@ async function fbSyncAllFromSheets(payload) {
     console.error('Lỗi fbSyncAllFromSheets:', e);
   }
 }
+
+
+// -------------------------------------------------------------
+// 4. TỰ ĐỘNG KHỞI ĐỘNG & HEARTBEAT LÀM MỚI LIÊN TỤC (5 GIÂY)
+// -------------------------------------------------------------
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initFirebaseEngine);
+} else {
+  initFirebaseEngine();
+}
+
+// Heartbeat kiểm tra dữ liệu ngầm mỗi 5 giây phòng trường hợp mạng rớt WebSocket
+setInterval(async () => {
+  try {
+    const res = await fetch('https://selena-spa-6a852-default-rtdb.asia-southeast1.firebasedatabase.app/config/announcement.json');
+    if (res.ok) {
+      const text = await res.json();
+      if (text && typeof text === 'string') {
+        const cleanStr = text.trim();
+        const curAnn = getStored('announcement', '');
+        const curStr = typeof curAnn === 'string' ? curAnn : (curAnn?.content || '');
+        if (cleanStr && cleanStr !== curStr) {
+          setStored('announcement', {
+            content: cleanStr,
+            author: 'Miles (Chủ sáng lập)',
+            date: 'Hôm nay'
+          });
+          const elStaff = document.getElementById('home-announcement-content');
+          const elAdmin = document.getElementById('admin-announcement-content');
+          if (elStaff) elStaff.innerText = cleanStr;
+          if (elAdmin) elAdmin.innerText = cleanStr;
+          if (typeof renderAnnouncement === 'function') renderAnnouncement();
+          console.log('⚡ [Auto-Sync Heartbeat] Đã tự động cập nhật thông báo:', cleanStr);
+        }
+      }
+    }
+  } catch(e) {}
+}, 5000);
