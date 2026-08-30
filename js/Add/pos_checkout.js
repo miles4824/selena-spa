@@ -588,7 +588,17 @@ function startLiveSession() {
   const users = getSortedUsersList();
   const service = menu.find(m => m.service_id === selectedComboId) || findComboByNumber(menu, 1) || menu[0];
 
-  const phone = document.getElementById('pos-customer-phone')?.value.trim() || '';
+  let phone = document.getElementById('pos-customer-phone')?.value.trim() || '';
+  if (currentCustomer && (phone.includes('*') || phone === currentCustomer.phone_number || phone === currentCustomer.raw_phone)) {
+    phone = currentCustomer.phone_number || currentCustomer.raw_phone || phone;
+  } else {
+    const digits = phone.replace(/[^0-9]/g, '');
+    if (digits.length === 9 && !digits.startsWith('0')) {
+      phone = '0' + digits;
+    } else if (digits.length >= 7) {
+      phone = digits;
+    }
+  }
   const name = document.getElementById('pos-customer-name')?.value.trim() || 'Khách vãng lai';
   const birthMonth = document.getElementById('pos-birth-month')?.value.trim() || (currentCustomer?.birth_month ? String(currentCustomer.birth_month) : '');
 
@@ -1385,7 +1395,7 @@ function confirmSaveReceiptFromCheckout() {
     price: currentLiveSession.price,
     tip_amount: totalTip,
     total_paid: grandTotal,
-    customer_phone: currentLiveSession.customer_phone,
+    customer_phone: (currentCustomer && currentCustomer.phone_number) ? currentCustomer.phone_number : currentLiveSession.customer_phone,
     customer_name: currentLiveSession.customer_name,
     birth_month: currentLiveSession.birth_month || 0,
     birthday: currentLiveSession.birth_month ? Number(currentLiveSession.birth_month) : (currentLiveSession.birthday || ''),
