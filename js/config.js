@@ -7,21 +7,21 @@ function isUserOwner(u) {
   return (r === 'admin' || r === 'chủ tiệm' || r === 'chủ sáng lập' || r === 'owner' || p === '0949251144' || s === 'FOUNDER_01');
 }
 
-function maskPhoneNumber(phone, showFull = false, queryInput = '') {
+function maskPhoneNumber(phone, isOwner = false, queryInput = '') {
   if (!phone) return '';
   const clean = String(phone).replace(/[^0-9]/g, '');
   const std = clean.startsWith('0') ? clean : ('0' + clean);
-  if (showFull) return std;
+  if (isOwner) return std;
 
-  const totalLen = std.length; // Thường là 10 số
-  const tailLen = 3; // 3 số cuối để nhận diện (144)
+  const totalLen = std.length; // Thường là 10 số (0949251144)
+  const tailLen = 3; // 3 số cuối nhận diện (144)
   if (totalLen <= tailLen + 2) return std;
 
   const tail = std.slice(-tailLen);
   const q = String(queryInput || '').replace(/[^0-9]/g, '');
   const qStd = q.startsWith('0') ? q : ('0' + q);
 
-  // Số lượng ký tự đầu lộ ra theo những gì Staff đang gõ (tối thiểu 2 số '09', tối đa không đè vào đuôi)
+  // Số lượng ký tự đầu lộ ra theo những gì Staff đang gõ (VD: '094' -> 3, '0949' -> 4)
   const revealHeadLen = Math.min(totalLen - tailLen, Math.max(2, qStd.length));
   const head = std.slice(0, revealHeadLen);
   const maskLen = Math.max(1, totalLen - revealHeadLen - tailLen);
@@ -41,7 +41,7 @@ function parseBirthMonth(val) {
   return 0;
 }
 
-const APP_VERSION = 'v0.1.2.1';
+const APP_VERSION = 'v0.1.2.2';
 // =============================================================
 // SELENA SPA - GLOBAL CONFIG & CONSTANTS
 // =============================================================
@@ -605,13 +605,4 @@ function renderDateStripComponent(containerId, activeDateStr, onDateClickCallbac
   requestAnimationFrame(() => updateStickyDateOffset(containerId));
 }
 
-function maskPhoneNumber(phone, isOwner) {
-  if (!phone) return 'Khách vãng lai';
-  let p = normalizePhone(phone);
-  if (!p) return phone;
-  if (isOwner) return p;
-  if (p.length >= 7) {
-    return p.slice(0, 3) + '***' + p.slice(-3);
-  }
-  return p;
-}
+
