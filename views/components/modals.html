@@ -228,3 +228,46 @@
       </form>
     </div>
   </div>
+
+  <!-- ============================================================= -->
+  <!-- MODAL CHỌN LỊCH THÁNG NHANH CHUẨN THẨM MỸ SELENA SPA (KHÔNG LỖI SAFARI) -->
+  <!-- ============================================================= -->
+  <div id="modal-month-calendar-picker" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs" onclick="if(event.target === this) closeMonthPickerModal()">
+    <div class="w-full max-w-xs spa-modal p-5 space-y-4 relative my-auto shadow-2xl animate-in fade-in zoom-in-95">
+      <!-- Header: Chuyển Tháng + Tiêu Đề + Đóng -->
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-1">
+          <button type="button" onclick="changePickerMonth(-1)" class="p-1.5 rounded-xl hover:bg-[#FAF6F1] text-[#7E7272] hover:text-[#E58A7B] transition cursor-pointer">
+            <i data-lucide="chevron-left" class="w-4 h-4"></i>
+          </button>
+          <span id="picker-month-header-label" class="text-sm font-extrabold text-[#2D2424] font-heading px-1">
+            Tháng 8 / 2026
+          </span>
+          <button type="button" onclick="changePickerMonth(1)" class="p-1.5 rounded-xl hover:bg-[#FAF6F1] text-[#7E7272] hover:text-[#E58A7B] transition cursor-pointer">
+            <i data-lucide="chevron-right" class="w-4 h-4"></i>
+          </button>
+        </div>
+        <button type="button" onclick="closeMonthPickerModal()" class="p-1.5 rounded-xl hover:bg-[#FAF6F1] text-[#7E7272] hover:text-[#E58A7B] transition cursor-pointer">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- 7 Cột Thứ: T2 -> CN -->
+      <div class="grid grid-cols-7 gap-1 text-center text-[10px] font-bold text-[#A39696] uppercase">
+        <span>T2</span><span>T3</span><span>T4</span><span>T5</span><span>T6</span><span>T7</span><span>CN</span>
+      </div>
+
+      <!-- Lưới Các Ngày Trong Tháng -->
+      <div id="picker-month-grid" class="grid grid-cols-7 gap-1 text-center"></div>
+
+      <!-- Nút Chức Năng Nhanh Đáy Modal -->
+      <div class="flex items-center justify-between pt-2 border-t border-[#F0EAE1] text-xs">
+        <button type="button" onclick="selectPickerToday()" class="font-bold text-[#E58A7B] hover:underline cursor-pointer">
+          Hôm nay
+        </button>
+        <button type="button" onclick="closeMonthPickerModal()" class="font-semibold text-[#7E7272] hover:text-[#2D2424] cursor-pointer">
+          Đóng
+        </button>
+      </div>
+    </div>
+  </div>

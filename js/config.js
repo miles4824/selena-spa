@@ -1,4 +1,4 @@
-const APP_VERSION = 'v0.0.9.0';
+const APP_VERSION = 'v0.0.9.1';
 // =============================================================
 // SELENA SPA - GLOBAL CONFIG & CONSTANTS
 // =============================================================
@@ -195,7 +195,12 @@ function normalizeDateKey(val) {
 // Map lưu baseDate cho từng container lịch để chuyển tuần độc lập
 // Map lưu baseDate cho từng container lịch để chuyển tuần độc lập
 // Map lưu baseDate cho từng container lịch để chuyển tuần độc lập
+// Map lưu baseDate cho từng container lịch để chuyển tuần độc lập
 const dateStripBaseDates = {};
+let currentPickerYear = new Date().getFullYear();
+let currentPickerMonth = new Date().getMonth(); // 0 - 11
+let currentPickerContainerId = '';
+let currentPickerCallback = '';
 
 function updateStickyDateOffset(containerId) {
   const container = document.getElementById(containerId);
@@ -225,16 +230,99 @@ function changeWeekOffset(containerId, offsetWeeks, onDateClickCallback) {
   renderDateStripComponent(containerId, activeDate, onDateClickCallback);
 }
 
-function onCustomDatePicked(containerId, pickedDateStr, onDateClickCallback) {
-  if (!pickedDateStr || String(pickedDateStr).trim() === '') return;
-  const normDate = normalizeDateKey(pickedDateStr);
-  if (!normDate) return;
-
-  dateStripBaseDates[containerId] = new Date(normDate + 'T12:00:00');
+// BẬT MODAL LỊCH THÁNG SELENA SPA
+function openMonthPickerModal(containerId, onDateClickCallback) {
+  currentPickerContainerId = containerId;
+  currentPickerCallback = onDateClickCallback;
   
-  if (typeof window[onDateClickCallback] === 'function') {
-    window[onDateClickCallback](normDate);
+  const base = dateStripBaseDates[containerId] || new Date();
+  currentPickerYear = base.getFullYear();
+  currentPickerMonth = base.getMonth();
+
+  renderMonthPickerGrid();
+  const modal = document.getElementById('modal-month-calendar-picker');
+  if (modal) {
+    modal.classList.remove('hidden');
+    lucide.createIcons();
   }
+}
+
+function closeMonthPickerModal() {
+  const modal = document.getElementById('modal-month-calendar-picker');
+  if (modal) {
+    modal.classList.add('hidden');
+  }
+}
+
+function changePickerMonth(offset) {
+  currentPickerMonth += offset;
+  if (currentPickerMonth > 11) {
+    currentPickerMonth = 0;
+    currentPickerYear += 1;
+  } else if (currentPickerMonth < 0) {
+    currentPickerMonth = 11;
+    currentPickerYear -= 1;
+  }
+  renderMonthPickerGrid();
+}
+
+function renderMonthPickerGrid() {
+  const labelEl = document.getElementById('picker-month-header-label');
+  const gridEl = document.getElementById('picker-month-grid');
+  if (labelEl) {
+    labelEl.textContent = `Tháng ${currentPickerMonth + 1} / ${currentPickerYear}`;
+  }
+  if (!gridEl) return;
+
+  const firstDay = new Date(currentPickerYear, currentPickerMonth, 1);
+  const totalDays = new Date(currentPickerYear, currentPickerMonth + 1, 0).getDate();
+  const dayOfWeek = firstDay.getDay(); // 0: CN, 1: T2
+  const startOffset = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // Số ô trống đầu tuần
+
+  const todayStr = normalizeDateKey(new Date());
+  const activeDate = (currentPickerContainerId === 'staff-date-strip-container') ? selectedStaffHistoryDate : selectedAdminHistoryDate;
+
+  let html = '';
+  for (let i = 0; i < startOffset; i++) {
+    html += '<div class="h-8"></div>';
+  }
+
+  for (let d = 1; d <= totalDays; d++) {
+    const dStr = `${currentPickerYear}-${String(currentPickerMonth + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+    const isToday = dStr === todayStr;
+    const isSelected = activeDate !== 'ALL' && dStr === activeDate;
+
+    let btnClass = 'bg-[#FAF6F1] text-[#2D2424] hover:bg-[#FFF0EB] hover:text-[#E58A7B]';
+    if (isSelected) {
+      btnClass = 'bg-[#E58A7B] text-white font-extrabold shadow-sm';
+    } else if (isToday) {
+      btnClass = 'bg-[#FFF0EB] border border-[#FCDFD7] text-[#E58A7B] font-extrabold';
+    }
+
+    html += `
+      <button type="button" onclick="selectPickerDate('${dStr}')" class="h-8 w-8 mx-auto flex items-center justify-center rounded-xl text-xs transition cursor-pointer active:scale-95 ${btnClass}">
+        ${d}
+      </button>
+    `;
+  }
+
+  gridEl.innerHTML = html;
+}
+
+function selectPickerDate(pickedDateStr) {
+  closeMonthPickerModal();
+  if (!pickedDateStr) return;
+  const normDate = normalizeDateKey(pickedDateStr);
+  dateStripBaseDates[currentPickerContainerId] = new Date(normDate + 'T12:00:00');
+
+  if (typeof window[currentPickerCallback] === 'function') {
+    window[currentPickerCallback](normDate);
+  }
+}
+
+function selectPickerToday() {
+  const todayStr = normalizeDateKey(new Date());
+  selectPickerDate(todayStr);
 }
 
 // Lấy danh sách 7 ngày trong tuần tính từ Thứ 2 (T2) đến Chủ Nhật (CN)
@@ -409,7 +497,7 @@ function attachContinuousSwiperToCalendar(containerId, onDateClickCallback) {
   window.addEventListener('mouseup', onMouseUp);
 }
 
-// Component Lịch Tuần Dùng Chung Toàn Diện (Hỗ Trợ 100% Cả Safari iPhone & Desktop Browser)
+// Component Lịch Tuần Dùng Chung Toàn Diện (Sử Dụng Modal Lịch Tháng Thuần SPA Tuyệt Đẹp)
 function renderDateStripComponent(containerId, activeDateStr, onDateClickCallback) {
   const container = document.getElementById(containerId);
   if (!container) return;
@@ -431,11 +519,10 @@ function renderDateStripComponent(containerId, activeDateStr, onDateClickCallbac
 
   const startLabel = `${currWeekDays[0].dayNum}/${currWeekDays[0].monthNum}`;
   const endLabel = `${currWeekDays[6].dayNum}/${currWeekDays[6].monthNum}`;
-  const pickerId = `${containerId}-date-picker`;
 
   container.innerHTML = `
     <div class="spa-card p-3.5 space-y-2.5 touch-pan-y select-none">
-      <!-- Header: Khoảng Ngày + Nút Chọn Ngày (Native Overlay Tương Thích Tuyệt Đối) + Tất Cả -->
+      <!-- Header: Khoảng Ngày + Nút Chọn Ngày (Mở Popup Lịch Tháng Tuyệt Đẹp) + Tất Cả -->
       <div class="flex items-center justify-between gap-2">
         <div class="flex items-center gap-1.5 text-xs font-bold text-[#2D2424]">
           <i data-lucide="calendar" class="w-3.5 h-3.5 text-[#E58A7B]"></i>
@@ -443,19 +530,13 @@ function renderDateStripComponent(containerId, activeDateStr, onDateClickCallbac
         </div>
 
         <div class="flex items-center gap-1.5">
-          <!-- Chọn Ngày Tương Thích Hoàn Hảo 100% Cả Safari iPhone & Desktop -->
-          <div class="relative inline-flex items-center overflow-hidden rounded-xl">
-            <div class="inline-flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-1.5 bg-[#FAF6F1] text-[#2D2424] border border-[#F0EAE1] pointer-events-none rounded-xl">
-              <i data-lucide="calendar" class="w-3.5 h-3.5 text-[#E58A7B]"></i>
-              <span>Chọn ngày</span>
-            </div>
-            <input type="date" 
-                   id="${pickerId}" 
-                   value="${isAllActive ? '' : currentActive}" 
-                   onclick="this.showPicker && this.showPicker()" 
-                   onchange="onCustomDatePicked('${containerId}', this.value, '${onDateClickCallback}')" 
-                   class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
-          </div>
+          <!-- Nút Chọn Ngày (Mở Modal Lịch Tháng Đẹp Chuẩn Spa, Hoạt Động 100% Trên iPhone Safari) -->
+          <button type="button" 
+                  onclick="openMonthPickerModal('${containerId}', '${onDateClickCallback}')" 
+                  class="inline-flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-1.5 rounded-xl bg-[#FAF6F1] hover:bg-[#FFF0EB] text-[#2D2424] hover:text-[#E58A7B] border border-[#F0EAE1] cursor-pointer transition active:scale-95">
+            <i data-lucide="calendar" class="w-3.5 h-3.5 text-[#E58A7B]"></i>
+            <span>Chọn ngày</span>
+          </button>
 
           <!-- Nút Xem Tất Cả -->
           <button type="button" onclick="${onDateClickCallback}('ALL')" class="text-[11px] font-extrabold px-3 py-1.5 rounded-xl transition cursor-pointer ${isAllActive ? 'bg-[#E58A7B] text-white font-black' : 'bg-[#FAF6F1] text-[#7E7272] hover:bg-[#FFF0EB] hover:text-[#E58A7B] border border-[#F0EAE1]'}">
