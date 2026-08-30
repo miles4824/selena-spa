@@ -221,8 +221,14 @@ async function fbSyncAllFromSheets(payload) {
       updates['expenses'] = expObj;
     }
 
-    if (payload.config && payload.config.announcement) {
-      updates['config/announcement'] = payload.config.announcement;
+    if (payload.config) {
+      const cfg = payload.config;
+      const realAnn = (cfg.ANNOUNCEMENT && cfg.ANNOUNCEMENT !== 'Chào mừng bạn đến với Selena Spa!') 
+        ? cfg.ANNOUNCEMENT 
+        : (cfg.announcement || cfg.ANNOUNCEMENT || '');
+      if (realAnn) {
+        updates['config/announcement'] = String(realAnn).trim();
+      }
     }
 
     await fbDb.ref().update(updates);
