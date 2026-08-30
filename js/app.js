@@ -1,3 +1,20 @@
+// Tự động dọn dẹp dữ liệu khách hàng mẫu ảo cũ
+(function purgeMockCustomerData() {
+  try {
+    const raw = localStorage.getItem('selena_customers');
+    if (raw) {
+      const list = JSON.parse(raw);
+      if (Array.isArray(list)) {
+        const cleaned = list.filter(c => {
+          const p = String(c.phone_number || c.raw_phone || '').replace(/[^0-9]/g, '');
+          return p !== '0912345678' && p !== '0987654321' && p !== '0988776655';
+        });
+        localStorage.setItem('selena_customers', JSON.stringify(cleaned));
+      }
+    }
+  } catch(e) {}
+})();
+
 // =============================================================
 // APP ROUTER, ROLE-BASED VIEW ISOLATION & LIFECYCLE INITIALIZER
 // =============================================================

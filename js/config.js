@@ -9,7 +9,7 @@ function parseBirthMonth(val) {
   return 0;
 }
 
-const APP_VERSION = 'v0.1.1.6';
+const APP_VERSION = 'v0.1.1.7';
 // =============================================================
 // SELENA SPA - GLOBAL CONFIG & CONSTANTS
 // =============================================================
@@ -27,22 +27,11 @@ const DEFAULT_MENU = [
   { service_id: 'CB05', service_name: 'Combo 5 (Gội Thư Giãn Toàn Diện)', price: 249000, duration_min: 105, commission_ktv_fixed: 24900, commission_ktv_commission: 49800, cosmetics_cost: 12000 }
 ];
 
-const DEFAULT_CUSTOMERS = [
-  { phone_number: '0912345678', customer_name: 'Chị Mai Lan', birthday: '1995-08-15', birth_month: 8, cycle_start_date: '2026-08-01', cycle_end_date: '2026-09-30', cycle_visits: 8, total_visits: 16, voucher_count: 1, notes: 'Da đầu nhạy cảm, thích gội nước ấm, sấy mát' },
-  { phone_number: '0987654321', customer_name: 'Anh Tuấn', birthday: '1990-09-20', birth_month: 9, cycle_start_date: '2026-08-20', cycle_end_date: '2026-10-19', cycle_visits: 2, total_visits: 2, voucher_count: 0, notes: 'Thích massage cổ vai gáy mạnh' },
-  { phone_number: '0988776655', customer_name: 'Anh Nam', birthday: '1992-05-10', birth_month: 5, cycle_start_date: '2026-08-23', cycle_end_date: '2026-10-22', cycle_visits: 2, total_visits: 3, voucher_count: 0, notes: 'Thích bấm huyệt thái dương nhẹ nhàng' }
-];
+const DEFAULT_CUSTOMERS = [];
 
-const DEFAULT_LOYALTY_CYCLES = [
-  { cycle_id: 'CYC_01', customer_phone: '0912345678', customer_name: 'Chị Mai Lan', start_date: '2026-06-01', end_date: '2026-07-31', visits_count: 8, status: 'EXPIRED', reward_voucher_id: '', notes: 'Hết hạn 60 ngày (đạt 8/10 ca)' },
-  { cycle_id: 'CYC_02', customer_phone: '0912345678', customer_name: 'Chị Mai Lan', start_date: '2026-08-01', end_date: '2026-09-30', visits_count: 8, status: 'ACTIVE', reward_voucher_id: '', notes: 'Đang tích chu kỳ 2 (8/10 ca)' },
-  { cycle_id: 'CYC_03', customer_phone: '0987654321', customer_name: 'Anh Tuấn', start_date: '2026-08-20', end_date: '2026-10-19', visits_count: 2, status: 'ACTIVE', reward_voucher_id: '', notes: 'Đang tích chu kỳ 1 (2/10 ca)' }
-];
+const DEFAULT_LOYALTY_CYCLES = [];
 
-const DEFAULT_VOUCHERS = [
-  { voucher_id: 'VC01', customer_phone: '0912345678', customer_name: 'Chị Mai Lan', voucher_type: 'Tích 10 lần gội', discount_value: '1 ca miễn phí', expiry_date: '2026-09-30', status: 'Chưa dùng', used_receipt_id: '', notes: 'Thưởng hoàn thành chu kỳ tích 10 ca' },
-  { voucher_id: 'VC02', customer_phone: '0912345678', customer_name: 'Chị Mai Lan', voucher_type: 'Sinh nhật 20%', discount_value: '20%', expiry_date: '2026-08-31', status: 'Đã dùng', used_receipt_id: 'HD082503', notes: 'Quà sinh nhật tháng 8' }
-];
+const DEFAULT_VOUCHERS = [];
 
 const DEFAULT_ANNOUNCEMENT = {
   content: '✨ Chúc các kỹ thuật viên một ngày làm việc tràn đầy năng lượng! Hãy luôn giữ nụ cười tươi, vệ sinh bồn gội sạch sẽ và tư vấn chu đáo cho khách nhé.',
