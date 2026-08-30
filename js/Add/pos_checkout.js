@@ -904,13 +904,29 @@ function openCheckoutModal() {
   const elapsedMinutes = Math.max(1, Math.round((Date.now() - currentLiveSession.start_timestamp) / 60000));
   currentLiveSession.duration_actual_min = elapsedMinutes;
 
-  document.getElementById('checkout-service-name').innerText = currentLiveSession.service_name;
-  document.getElementById('checkout-customer-name').innerText = '👤 Khách: ' + (currentLiveSession.customer_name || 'Khách vãng lai');
-  document.getElementById('checkout-time-summary').innerText = `⏱️ ${currentLiveSession.start_time} - ${currentLiveSession.end_time} (${elapsedMinutes} phút)`;
+  // 1. Fill Step 1 (Customer view)
+  const sNameEl = document.getElementById('chk-service-name');
+  if (sNameEl) sNameEl.innerText = currentLiveSession.service_name;
+
+  const cNameEl = document.getElementById('chk-customer-name');
+  if (cNameEl) cNameEl.innerText = currentLiveSession.customer_name || 'Khách vãng lai';
+
+  const timeRangeEl = document.getElementById('chk-time-range');
+  if (timeRangeEl) timeRangeEl.innerText = `${currentLiveSession.start_time} - ${currentLiveSession.end_time} (${elapsedMinutes} phút)`;
 
   const price = currentLiveSession.use_voucher ? 0 : currentLiveSession.price;
-  document.getElementById('checkout-service-price').innerText = price.toLocaleString('vi-VN') + ' đ';
+  const sPriceEl = document.getElementById('chk-service-price');
+  if (sPriceEl) sPriceEl.innerText = price.toLocaleString('vi-VN') + ' đ';
 
+  // 2. Default to Step 1
+  const stepCust = document.getElementById('checkout-step-customer');
+  const stepStaff = document.getElementById('checkout-step-staff');
+  if (stepCust) stepCust.classList.remove('hidden');
+  if (stepStaff) stepStaff.classList.add('hidden');
+
+  setCheckoutPayment('Chuyển khoản');
+
+  // 3. Reset tips
   staffTipMap = {};
   const currentStaffs = currentLiveSession.staffs || [
     { phone: currentLiveSession.staff_1_phone, name: currentLiveSession.staff_1_name, pct: 100 }
@@ -918,9 +934,6 @@ function openCheckoutModal() {
   currentStaffs.forEach(s => {
     staffTipMap[s.phone] = 0;
   });
-
-  renderDynamicTipInputs();
-  updateCheckoutGrandTotal();
 
   const modal = document.getElementById('modal-checkout');
   if (modal) modal.classList.remove('hidden');
@@ -930,6 +943,62 @@ function openCheckoutModal() {
 function closeCheckoutModal() {
   const modal = document.getElementById('modal-checkout');
   if (modal) modal.classList.add('hidden');
+}
+
+function setCheckoutPayment(method) {
+  checkoutPaymentMethod = method;
+  const btnQr = document.getElementById('chk-btn-qr');
+  const btnCash = document.getElementById('chk-btn-cash');
+  const qrBox = document.getElementById('chk-qr-display-box');
+
+  if (method === 'Chuyển khoản') {
+    if (btnQr) {
+      btnQr.className = 'p-3.5 rounded-2xl border bg-[#FFF0EB] border-[#E58A7B] text-[#E58A7B] font-extrabold text-sm flex items-center justify-center gap-2 transition cursor-pointer shadow-xs';
+    }
+    if (btnCash) {
+      btnCash.className = 'p-3.5 rounded-2xl border bg-[#F7F2EC] border-[#EFE8DF] text-[#7E7272] hover:bg-[#FFF0EB] font-bold text-sm flex items-center justify-center gap-2 transition cursor-pointer';
+    }
+    if (qrBox) qrBox.classList.remove('hidden');
+  } else {
+    if (btnCash) {
+      btnCash.className = 'p-3.5 rounded-2xl border bg-[#FFF0EB] border-[#E58A7B] text-[#E58A7B] font-extrabold text-sm flex items-center justify-center gap-2 transition cursor-pointer shadow-xs';
+    }
+    if (btnQr) {
+      btnQr.className = 'p-3.5 rounded-2xl border bg-[#F7F2EC] border-[#EFE8DF] text-[#7E7272] hover:bg-[#FFF0EB] font-bold text-sm flex items-center justify-center gap-2 transition cursor-pointer';
+    }
+    if (qrBox) qrBox.classList.add('hidden');
+  }
+
+  const staffPayMethodEl = document.getElementById('staff-step-pay-method');
+  if (staffPayMethodEl) staffPayMethodEl.innerText = method;
+
+  updateCheckoutGrandTotal();
+}
+
+function goToStaffTipStep() {
+  const stepCust = document.getElementById('checkout-step-customer');
+  const stepStaff = document.getElementById('checkout-step-staff');
+  if (stepCust) stepCust.classList.add('hidden');
+  if (stepStaff) stepStaff.classList.remove('hidden');
+
+  const price = currentLiveSession?.use_voucher ? 0 : (currentLiveSession?.price || 0);
+  const staffPriceEl = document.getElementById('staff-step-service-price');
+  if (staffPriceEl) staffPriceEl.innerText = price.toLocaleString('vi-VN') + ' đ';
+
+  const staffPayMethodEl = document.getElementById('staff-step-pay-method');
+  if (staffPayMethodEl) staffPayMethodEl.innerText = checkoutPaymentMethod;
+
+  renderDynamicTipInputs();
+  updateCheckoutGrandTotal();
+  lucide.createIcons();
+}
+
+function backToCustomerStep() {
+  const stepCust = document.getElementById('checkout-step-customer');
+  const stepStaff = document.getElementById('checkout-step-staff');
+  if (stepCust) stepCust.classList.remove('hidden');
+  if (stepStaff) stepStaff.classList.add('hidden');
+  lucide.createIcons();
 }
 
 function renderDynamicTipInputs() {
@@ -944,7 +1013,6 @@ function renderDynamicTipInputs() {
   const quickAmounts = [0, 5000, 10000, 20000, 30000, 50000, 100000];
 
   container.innerHTML = currentStaffs.map((s, idx) => {
-    const isFirst = idx === 0;
     const staffObj = users.find(u => normalizePhone(u.phone) === normalizePhone(s.phone));
     const rate = (staffObj && parsePercentage(staffObj?.commission_rate) > 0) ? parsePercentage(staffObj?.commission_rate) : 10;
     const commVnd = Math.round(currentLiveSession.price * (rate / 100) * ((s.pct || Math.round(100/currentStaffs.length)) / 100));
@@ -976,28 +1044,6 @@ function renderDynamicTipInputs() {
       </div>
     `;
   }).join('');
-
-  const sharedSplitDiv = document.getElementById('checkout-shared-split-box');
-  if (sharedSplitDiv) {
-    if (currentStaffs.length > 1) {
-      sharedSplitDiv.classList.remove('hidden');
-      const sharedAmounts = [20000, 50000, 100000];
-      sharedSplitDiv.innerHTML = `
-        <div class="p-3 rounded-2xl bg-[#F7F2EC] border border-[#EFE8DF] space-y-1.5">
-          <span class="text-xs font-bold text-[#7E7272] block">💡 Khách đưa Tips chung chia đều cho ${currentStaffs.length} bạn:</span>
-          <div class="flex flex-wrap gap-2">
-            ${sharedAmounts.map(amt => `
-              <button type="button" onclick="splitSharedTipDynamic(${amt})" class="px-3 py-1.5 rounded-xl bg-white border border-[#EFE8DF] hover:border-[#E58A7B] text-xs font-extrabold text-[#E58A7B] transition active:scale-95 cursor-pointer">
-                Chia ${amt/1000}k
-              </button>
-            `).join('')}
-          </div>
-        </div>
-      `;
-    } else {
-      sharedSplitDiv.classList.add('hidden');
-    }
-  }
 
   lucide.createIcons();
 }
@@ -1065,7 +1111,10 @@ function updateCheckoutGrandTotal() {
   });
 
   const grandTotal = basePrice + totalTip;
-  document.getElementById('checkout-grand-total').innerText = grandTotal.toLocaleString('vi-VN') + ' đ';
+  const grandTotalEl = document.getElementById('staff-step-grand-total');
+  if (grandTotalEl) {
+    grandTotalEl.innerText = grandTotal.toLocaleString('vi-VN') + ' đ';
+  }
 
   const staffSummaryEl = document.getElementById('checkout-summary-staff-list');
   if (staffSummaryEl) {
@@ -1088,32 +1137,6 @@ function updateCheckoutGrandTotal() {
       `;
     }).join('');
   }
-
-  const qrContainer = document.getElementById('checkout-qr-container');
-  if (checkoutPaymentMethod === 'Chuyển khoản') {
-    if (qrContainer) {
-      qrContainer.classList.remove('hidden');
-      renderVietQR('checkout-qr-img', 'checkout-qr-account', grandTotal, `SELENA SPA ${currentLiveSession.service_name.slice(0, 15)}`);
-    }
-  } else {
-    if (qrContainer) qrContainer.classList.add('hidden');
-  }
-}
-
-function setCheckoutPayment(method) {
-  checkoutPaymentMethod = method;
-  const btnBank = document.getElementById('btn-pay-bank');
-  const btnCash = document.getElementById('btn-pay-cash');
-
-  if (method === 'Chuyển khoản') {
-    btnBank.className = 'py-3 rounded-2xl border bg-[#FFF0EB] border-[#E58A7B] text-[#E58A7B] font-extrabold text-sm flex items-center justify-center gap-2 cursor-pointer ';
-    btnCash.className = 'py-3 rounded-2xl border bg-[#F7F2EC] border-[#EFE8DF] text-[#7E7272] font-extrabold text-sm flex items-center justify-center gap-2 cursor-pointer';
-  } else {
-    btnCash.className = 'py-3 rounded-2xl border bg-[#FFF0EB] border-[#E58A7B] text-[#E58A7B] font-extrabold text-sm flex items-center justify-center gap-2 cursor-pointer ';
-    btnBank.className = 'py-3 rounded-2xl border bg-[#F7F2EC] border-[#EFE8DF] text-[#7E7272] font-extrabold text-sm flex items-center justify-center gap-2 cursor-pointer';
-  }
-
-  updateCheckoutGrandTotal();
 }
 
 function confirmSaveReceiptFromCheckout() {
