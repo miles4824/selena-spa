@@ -1217,3 +1217,193 @@ function syncAllData(params) {
     config: config
   };
 }
+
+
+// =============================================================
+// 7. TỰ ĐỘNG BẮN DỮ LIỆU TỪ GOOGLE SHEET SANG FIREBASE (REALTIME PUSH)
+// Tốc độ cập nhật: 0.2s ngay khi anh bấm Enter trên Google Sheet
+// =============================================================
+
+const FIREBASE_RTDB_URL = 'https://selena-spa-6a852-default-rtdb.asia-southeast1.firebasedatabase.app';
+
+// Tự động kích hoạt khi anh chỉnh sửa bất kỳ ô nào trên Google Sheet
+function onEdit(e) {
+  if (!e || !e.range) return;
+  try {
+    const sheet = e.range.getSheet();
+    const sheetName = sheet.getName();
+    const row = e.range.getRow();
+
+    // Bỏ qua nếu sửa dòng tiêu đề (Dòng 1)
+    if (row <= 1) return;
+
+    if (sheetName === 'tb_customers') {
+      pushSingleCustomerToFirebase(sheet, row);
+    } else if (sheetName === 'tb_menu') {
+      pushSingleMenuToFirebase(sheet, row);
+    } else if (sheetName === 'tb_config') {
+      pushConfigToFirebase(sheet);
+    } else if (sheetName === 'tb_receipts') {
+      pushSingleReceiptToFirebase(sheet, row);
+    }
+  } catch (err) {
+    Logger.log('Lỗi onEdit push Firebase: ' + err.message);
+  }
+}
+
+// Bắn 1 khách hàng vừa sửa sang Firebase
+function pushSingleCustomerToFirebase(sheet, row) {
+  const colMap = createHeaderMap(sheet);
+  const rowData = sheet.getRange(row, 1, 1, sheet.getLastColumn()).getValues()[0];
+  const phone = normalizePhone(getCell(rowData, colMap, ['phone_number', 'phone']));
+  if (!phone) return;
+
+  const rawBday = getCell(rowData, colMap, ['birthday', 'birth_month', 'ngay_sinh']);
+  const bMonth = Number(rawBday) || parseBirthMonth(rawBday);
+
+  const custObj = {
+    phone_number: phone,
+    raw_phone: phone,
+    customer_name: String(getCell(rowData, colMap, ['customer_name', 'ten_khach', 'name'], 'Khách hàng')).trim(),
+    birthday: bMonth ? bMonth : (formatDateVal(rawBday) || String(rawBday || '')),
+    birth_month: bMonth,
+    cycle_start_date: formatDateVal(getCell(rowData, colMap, ['cycle_start_date', 'ngay_bat_dau_chu_ky'])),
+    cycle_end_date: formatDateVal(getCell(rowData, colMap, ['cycle_end_date', 'ngay_ket_thuc_chu_ky'])),
+    cycle_visits: Number(getCell(rowData, colMap, ['cycle_visits', 'so_lan_chu_ky'], 0)) || 0,
+    total_visits: Number(getCell(rowData, colMap, ['total_visits', 'tong_so_lan'], 0)) || 0,
+    voucher_count: Number(getCell(rowData, colMap, ['voucher_count', 'so_voucher'], 0)) || 0,
+    notes: String(getCell(rowData, colMap, ['notes', 'ghi_chu'], '')).trim()
+  };
+
+  firebasePut(`customers/${phone}`, custObj);
+}
+
+// Bắn 1 món menu vừa sửa sang Firebase
+function pushSingleMenuToFirebase(sheet, row) {
+  const colMap = createHeaderMap(sheet);
+  const rowData = sheet.getRange(row, 1, 1, sheet.getLastColumn()).getValues()[0];
+  const sId = String(getCell(rowData, colMap, ['service_id', 'combo_id', 'id'])).trim();
+  if (!sId) return;
+
+  const menuObj = {
+    service_id: sId,
+    combo_id: sId,
+    service_name: String(getCell(rowData, colMap, ['service_name', 'combo_name', 'ten_combo'])).trim(),
+    combo_name: String(getCell(rowData, colMap, ['service_name', 'combo_name', 'ten_combo'])).trim(),
+    price: Number(getCell(rowData, colMap, ['price', 'gia'], 0)) || 0,
+    duration_min: Number(getCell(rowData, colMap, ['duration_min', 'thoi_luong_phut', 'duration'], 45)) || 45,
+    commission_rate: String(getCell(rowData, colMap, ['commission_rate', 'ti_le_hoa_hong'], '10%')),
+    description: String(getCell(rowData, colMap, ['description', 'mo_ta'], ''))
+  };
+
+  firebasePut(`menu/${sId}`, menuObj);
+}
+
+// Bắn thông báo nội bộ sang Firebase
+function pushConfigToFirebase(sheet) {
+  const colMap = createHeaderMap(sheet);
+  const data = sheet.getDataRange().getValues();
+  let ann = '';
+  for (let i = 1; i < data.length; i++) {
+    let k = String(getCell(data[i], colMap, ['key', 'khoa'])).trim().toLowerCase();
+    let v = String(getCell(data[i], colMap, ['value', 'gia_tri'])).trim();
+    if (k === 'announcement' || k === 'thong_bao') ann = v;
+  }
+  firebasePut('config/announcement', ann);
+}
+
+// Bắn 1 hóa đơn vừa sửa sang Firebase
+function pushSingleReceiptToFirebase(sheet, row) {
+  const colMap = createHeaderMap(sheet);
+  const rowData = sheet.getRange(row, 1, 1, sheet.getLastColumn()).getValues()[0];
+  const rId = String(getCell(rowData, colMap, ['receipt_id', 'ma_hoa_don', 'id'])).trim();
+  if (!rId) return;
+
+  const phone = normalizePhone(getCell(rowData, colMap, ['customer_phone', 'sdt_khach', 'phone']));
+  const isVoucher = String(getCell(rowData, colMap, ['is_voucher_used', 'dung_voucher'])).toUpperCase() === 'TRUE';
+
+  const receiptObj = {
+    receipt_id: rId,
+    date: formatDateVal(getCell(rowData, colMap, ['date', 'ngay'])),
+    start_time: formatTimeVal(getCell(rowData, colMap, ['start_time', 'gio_bat_dau', 'time', 'gio'])),
+    end_time: formatTimeVal(getCell(rowData, colMap, ['end_time', 'gio_ket_thuc'])),
+    duration_min: Number(getCell(rowData, colMap, ['duration_min', 'thoi_luong_phut', 'duration'], 45)) || 45,
+    customer_phone: phone,
+    raw_phone: phone,
+    customer_name: String(getCell(rowData, colMap, ['customer_name', 'ten_khach'], 'Khách hàng')).trim(),
+    service_id: String(getCell(rowData, colMap, ['service_id', 'combo_id'])).trim(),
+    service_name: String(getCell(rowData, colMap, ['service_name', 'ten_combo'])).trim(),
+    price: Number(getCell(rowData, colMap, ['price', 'gia'], 0)) || 0,
+    tip_amount: Number(getCell(rowData, colMap, ['tip_amount', 'tien_tip', 'tip'], 0)) || 0,
+    total_paid: Number(getCell(rowData, colMap, ['total_paid', 'tong_tien', 'thanh_toan'], 0)) || 0,
+    staff_1_user_id: normalizePhone(getCell(rowData, colMap, ['staff_1_user_id', 'staff_1_phone'])),
+    staff_1_name: String(getCell(rowData, colMap, ['staff_1_name', 'ten_ktv_1'])).trim(),
+    staff_1_comm: Number(getCell(rowData, colMap, ['staff_1_comm', 'hoa_hong_ktv_1'], 0)) || 0,
+    staff_1_tip: Number(getCell(rowData, colMap, ['staff_1_tip', 'tip_ktv_1'], 0)) || 0,
+    staff_2_user_id: normalizePhone(getCell(rowData, colMap, ['staff_2_user_id', 'staff_2_phone'])),
+    staff_2_name: String(getCell(rowData, colMap, ['staff_2_name', 'ten_ktv_2'])).trim(),
+    staff_2_comm: Number(getCell(rowData, colMap, ['staff_2_comm', 'hoa_hong_ktv_2'], 0)) || 0,
+    staff_2_tip: Number(getCell(rowData, colMap, ['staff_2_tip', 'tip_ktv_2'], 0)) || 0,
+    payment_method: String(getCell(rowData, colMap, ['payment_method', 'phuong_thuc_tt'], 'Tiền mặt')).trim(),
+    is_voucher_used: isVoucher
+  };
+
+  firebasePut(`receipts/${rId}`, receiptObj);
+}
+
+// Hàm gửi HTTP PUT lên Firebase REST API
+function firebasePut(path, data) {
+  const url = `${FIREBASE_RTDB_URL}/${path}.json`;
+  const options = {
+    method: 'put',
+    contentType: 'application/json; charset=utf-8',
+    payload: JSON.stringify(data),
+    muteHttpExceptions: true
+  };
+  try {
+    UrlFetchApp.fetch(url, options);
+  } catch (e) {
+    Logger.log('Lỗi firebasePut: ' + e.message);
+  }
+}
+
+// Thêm Menu trên Google Sheet để anh bấm 1 nút là đồng bộ toàn bộ bảng tính sang Firebase
+function onOpen() {
+  SpreadsheetApp.getUi()
+    .createMenu('🌟 Selena Spa')
+    .addItem('⚡ Bắn toàn bộ Sheet sang App (Firebase)', 'menuSyncAllToFirebase')
+    .addToUi();
+}
+
+function menuSyncAllToFirebase() {
+  const res = syncAllData({ client_role: 'owner' });
+  const payload = {
+    menu: res.menu,
+    customers: res.customers,
+    receipts: res.receipts,
+    expenses: res.expenses,
+    config: res.config
+  };
+
+  const menuObj = {};
+  if (Array.isArray(payload.menu)) payload.menu.forEach(m => { if (m.service_id) menuObj[m.service_id] = m; });
+
+  const custObj = {};
+  if (Array.isArray(payload.customers)) payload.customers.forEach(c => { if (c.phone_number) custObj[c.phone_number] = c; });
+
+  const recObj = {};
+  if (Array.isArray(payload.receipts)) payload.receipts.forEach(r => { if (r.receipt_id) recObj[r.receipt_id] = r; });
+
+  const expObj = {};
+  if (Array.isArray(payload.expenses)) payload.expenses.forEach(e => { if (e.expense_id) expObj[e.expense_id] = e; });
+
+  firebasePut('menu', menuObj);
+  firebasePut('customers', custObj);
+  firebasePut('receipts', recObj);
+  firebasePut('expenses', expObj);
+  if (payload.config && payload.config.announcement) {
+    firebasePut('config/announcement', payload.config.announcement);
+  }
+
+  SpreadsheetApp.getUi().alert('✅ Đã bắn toàn bộ dữ liệu từ Google Sheet sang App (Firebase) siêu tốc thành công!');
+}
