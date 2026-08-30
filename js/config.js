@@ -1,4 +1,4 @@
-const APP_VERSION = 'v0.0.8.1';
+const APP_VERSION = 'v0.0.8.2';
 // =============================================================
 // SELENA SPA - GLOBAL CONFIG & CONSTANTS
 // =============================================================
@@ -190,6 +190,7 @@ function normalizeDateKey(val) {
 // Map lưu baseDate cho từng container lịch để chuyển tuần độc lập
 // Map lưu baseDate cho từng container lịch để chuyển tuần độc lập
 // Map lưu baseDate cho từng container lịch để chuyển tuần độc lập
+// Map lưu baseDate cho từng container lịch để chuyển tuần độc lập
 const dateStripBaseDates = {};
 const lastSlideDirection = {};
 
@@ -232,43 +233,120 @@ function onCustomDatePicked(containerId, pickedDateStr, onDateClickCallback) {
   }
 }
 
-// CÀI ĐẶT CẢM ỨNG VUỐT TRÁI / PHẢI ĐỔI TUẦN TRÊN MOBILE
-function attachSwipeToCalendar(containerId, onDateClickCallback) {
+// CƠ CHẾ NẮM KÉO BÁM THEO NGÓN TAY THỜI GIAN THỰC (REAL-TIME TOUCH DRAGGING)
+function attachInteractiveDragToCalendar(containerId, onDateClickCallback) {
   const container = document.getElementById(containerId);
-  if (!container || container.dataset.swipeAttached) return;
-  container.dataset.swipeAttached = 'true';
+  if (!container) return;
 
-  let touchStartX = 0;
-  let touchStartY = 0;
-  let touchEndX = 0;
-  let touchEndY = 0;
+  const daysRow = document.getElementById(`${containerId}-days-row`);
+  if (!daysRow) return;
 
-  container.addEventListener('touchstart', e => {
-    touchStartX = e.changedTouches[0].screenX;
-    touchStartY = e.changedTouches[0].screenY;
+  let isDragging = false;
+  let startX = 0;
+  let startY = 0;
+  let currentDeltaX = 0;
+  let isHorizontalMove = false;
+
+  daysRow.addEventListener('touchstart', e => {
+    isDragging = true;
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+    currentDeltaX = 0;
+    isHorizontalMove = false;
+    daysRow.style.transition = 'none';
   }, { passive: true });
 
-  container.addEventListener('touchend', e => {
-    touchEndX = e.changedTouches[0].screenX;
-    touchEndY = e.changedTouches[0].screenY;
-    handleSwipe();
-  }, { passive: true });
+  daysRow.addEventListener('touchmove', e => {
+    if (!isDragging) return;
+    const currentX = e.touches[0].clientX;
+    const currentY = e.touches[0].clientY;
+    const diffX = currentX - startX;
+    const diffY = currentY - startY;
 
-  function handleSwipe() {
-    const diffX = touchEndX - touchStartX;
-    const diffY = touchEndY - touchStartY;
-    
-    // Nếu vuốt ngang > 35px và khoảng cách ngang lớn hơn dọc
-    if (Math.abs(diffX) > 35 && Math.abs(diffX) > Math.abs(diffY)) {
-      if (diffX < 0) {
-        // Vuốt sang trái -> Sang tuần sau (Tiến)
-        changeWeekOffset(containerId, 1, onDateClickCallback);
-      } else {
-        // Vuốt sang phải -> Về tuần trước (Lùi)
-        changeWeekOffset(containerId, -1, onDateClickCallback);
+    if (!isHorizontalMove) {
+      if (Math.abs(diffX) > 6 && Math.abs(diffX) > Math.abs(diffY)) {
+        isHorizontalMove = true;
+      } else if (Math.abs(diffY) > 8) {
+        isDragging = false;
+        return;
       }
     }
-  }
+
+    if (isHorizontalMove) {
+      currentDeltaX = diffX;
+      daysRow.style.transform = `translateX(${diffX}px)`;
+      daysRow.style.opacity = `${Math.max(0.65, 1 - Math.abs(diffX) / 350)}`;
+    }
+  }, { passive: true });
+
+  const endDrag = () => {
+    if (!isDragging) return;
+    if (!isHorizontalMove) {
+      isDragging = false;
+      daysRow.style.transition = 'transform 0.25s ease, opacity 0.25s ease';
+      daysRow.style.transform = 'translateX(0px)';
+      daysRow.style.opacity = '1';
+      return;
+    }
+    isDragging = false;
+    isHorizontalMove = false;
+
+    const threshold = 45; // Kéo hơn 45px là xác nhận đổi tuần
+    if (currentDeltaX < -threshold) {
+      // Kéo sang trái -> Chuyển sang tuần sau
+      daysRow.style.transition = 'transform 0.2s ease-out, opacity 0.2s ease-out';
+      daysRow.style.transform = 'translateX(-100px)';
+      daysRow.style.opacity = '0';
+      setTimeout(() => {
+        changeWeekOffset(containerId, 1, onDateClickCallback);
+      }, 140);
+    } else if (currentDeltaX > threshold) {
+      // Kéo sang phải -> Chuyển về tuần trước
+      daysRow.style.transition = 'transform 0.2s ease-out, opacity 0.2s ease-out';
+      daysRow.style.transform = 'translateX(100px)';
+      daysRow.style.opacity = '0';
+      setTimeout(() => {
+        changeWeekOffset(containerId, -1, onDateClickCallback);
+      }, 140);
+    } else {
+      // Nhả tay khi chưa đủ lực -> Hút về lại vị trí cũ đàn hồi
+      daysRow.style.transition = 'transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.28s ease';
+      daysRow.style.transform = 'translateX(0px)';
+      daysRow.style.opacity = '1';
+    }
+  };
+
+  daysRow.addEventListener('touchend', endDrag, { passive: true });
+  daysRow.addEventListener('touchcancel', endDrag, { passive: true });
+
+  // Hỗ trợ cả chuột trên máy tính (Mouse Drag)
+  daysRow.addEventListener('mousedown', e => {
+    isDragging = true;
+    startX = e.clientX;
+    startY = e.clientY;
+    currentDeltaX = 0;
+    isHorizontalMove = true;
+    daysRow.style.transition = 'none';
+  });
+
+  const onMouseMove = e => {
+    if (!isDragging || !isHorizontalMove) return;
+    const diffX = e.clientX - startX;
+    currentDeltaX = diffX;
+    daysRow.style.transform = `translateX(${diffX}px)`;
+    daysRow.style.opacity = `${Math.max(0.65, 1 - Math.abs(diffX) / 350)}`;
+  };
+
+  const onMouseUp = () => {
+    if (isDragging) {
+      endDrag();
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mouseup', onMouseUp);
+    }
+  };
+
+  window.addEventListener('mousemove', onMouseMove);
+  window.addEventListener('mouseup', onMouseUp);
 }
 
 // Lấy danh sách 7 ngày trong tuần tính từ Thứ 2 (T2) đến Chủ Nhật (CN)
@@ -300,7 +378,7 @@ function getWeekDaysFromMonday(baseDate = new Date()) {
   return weekDays;
 }
 
-// Component Lịch Tuần Dùng Chung Toàn Diện (Hỗ Trợ Vuốt Trái/Phải & Chọn Ngày iOS iPhone)
+// Component Lịch Tuần Dùng Chung Toàn Diện (Hỗ Trợ Kéo Bám Ngón Tay Real-time & Chọn Ngày iOS)
 function renderDateStripComponent(containerId, activeDateStr, onDateClickCallback) {
   const container = document.getElementById(containerId);
   if (!container) return;
@@ -344,8 +422,8 @@ function renderDateStripComponent(containerId, activeDateStr, onDateClickCallbac
         </div>
       </div>
 
-      <!-- 7 Nút Ngày: T2, T3, T4, T5, T6, T7, CN (Có Thể Vuốt Ngang Trái/Phải Để Chuyển Tuần) -->
-      <div id="${containerId}-days-row" class="flex items-center justify-between w-full gap-1.5 text-center ${animClass}">
+      <!-- 7 Nút Ngày: T2, T3, T4, T5, T6, T7, CN (Nắm Kéo Bám Theo Ngón Tay) -->
+      <div id="${containerId}-days-row" class="flex items-center justify-between w-full gap-1.5 text-center cursor-grab active:cursor-grabbing ${animClass}">
         ${weekDays.map(item => {
           const isSelected = !isAllActive && (item.dateStr === currentActive);
           const isToday = item.isToday;
@@ -366,7 +444,7 @@ function renderDateStripComponent(containerId, activeDateStr, onDateClickCallbac
           }
 
           return `
-            <button type="button" onclick="${onDateClickCallback}('${item.dateStr}')" class="flex-1 py-2 px-1 rounded-2xl ${bgClass} transition-all duration-200 active:scale-95 cursor-pointer">
+            <button type="button" onclick="${onDateClickCallback}('${item.dateStr}')" class="flex-1 py-2 px-1 rounded-2xl ${bgClass} transition-all duration-200 active:scale-95 cursor-pointer select-none">
               <span class="block ${labelClass}">${labelText}</span>
               <span class="${numClass}">${item.dayNum}</span>
             </button>
@@ -376,7 +454,7 @@ function renderDateStripComponent(containerId, activeDateStr, onDateClickCallbac
     </div>
   `;
 
-  attachSwipeToCalendar(containerId, onDateClickCallback);
+  attachInteractiveDragToCalendar(containerId, onDateClickCallback);
   lucide.createIcons();
   requestAnimationFrame(() => updateStickyDateOffset(containerId));
 }
