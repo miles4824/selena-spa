@@ -73,14 +73,24 @@ function setupRealtimeListeners() {
     }
   });
 
-  // Lắng nghe Thông báo nội bộ (tb_config)
+    // Lắng nghe Thông báo nội bộ (tb_config)
   fbDb.ref('config/announcement').on('value', snapshot => {
     const text = snapshot.val();
     if (text !== null && text !== undefined) {
-      setStored('announcement', String(text));
+      const cleanStr = String(text).trim();
+      setStored('announcement', {
+        content: cleanStr,
+        author: 'Miles (Chủ sáng lập)',
+        date: 'Hôm nay'
+      });
+      const elStaff = document.getElementById('home-announcement-content');
+      const elAdmin = document.getElementById('admin-announcement-content');
+      if (elStaff) elStaff.innerText = cleanStr;
+      if (elAdmin) elAdmin.innerText = cleanStr;
       if (typeof renderAnnouncement === 'function') {
         renderAnnouncement();
       }
+      console.log('⚡ [Firebase Realtime] Nhận thông báo mới:', cleanStr);
     }
   });
 
