@@ -1226,8 +1226,8 @@ function syncAllData(params) {
 
 const FIREBASE_RTDB_URL = 'https://selena-spa-6a852-default-rtdb.asia-southeast1.firebasedatabase.app';
 
-// Tự động kích hoạt khi anh chỉnh sửa bất kỳ ô nào trên Google Sheet
-function onEdit(e) {
+// Kích hoạt khi anh chỉnh sửa bất kỳ ô nào trên Google Sheet (Installable Trigger)
+function installedOnEdit(e) {
   if (!e || !e.range) return;
   try {
     const sheet = e.range.getSheet();
@@ -1247,8 +1247,25 @@ function onEdit(e) {
       pushSingleReceiptToFirebase(sheet, row);
     }
   } catch (err) {
-    Logger.log('Lỗi onEdit push Firebase: ' + err.message);
+    Logger.log('Lỗi installedOnEdit push Firebase: ' + err.message);
   }
+}
+
+// Cài đặt Trigger tự động kết nối mạng (chỉ cần chạy 1 lần)
+function installAutoSyncTrigger() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const triggers = ScriptApp.getProjectTriggers();
+  for (let t of triggers) {
+    if (t.getHandlerFunction() === 'installedOnEdit') {
+      ScriptApp.deleteTrigger(t);
+    }
+  }
+  ScriptApp.newTrigger('installedOnEdit')
+    .forSpreadsheet(ss)
+    .onEdit()
+    .create();
+
+  SpreadsheetApp.getUi().alert('🎉 Đã kích hoạt Tự Động Bắn Dữ Liệu sang Firebase thành công! Từ giờ mỗi khi anh sửa ô và Enter, App sẽ tự nhảy số ngay tức thì!');
 }
 
 // Bắn 1 khách hàng vừa sửa sang Firebase
@@ -1367,11 +1384,12 @@ function firebasePut(path, data) {
   }
 }
 
-// Thêm Menu trên Google Sheet để anh bấm 1 nút là đồng bộ toàn bộ bảng tính sang Firebase
+// Thêm Menu trên Google Sheet
 function onOpen() {
   SpreadsheetApp.getUi()
     .createMenu('🌟 Selena Spa')
-    .addItem('⚡ Bắn toàn bộ Sheet sang App (Firebase)', 'menuSyncAllToFirebase')
+    .addItem('⚡ 1. Kích hoạt Tự Động Bắn Realtime (Chạy 1 lần)', 'installAutoSyncTrigger')
+    .addItem('🚀 2. Bắn toàn bộ dữ liệu Sheet sang App ngay', 'menuSyncAllToFirebase')
     .addToUi();
 }
 
