@@ -203,7 +203,10 @@ async function openCustomerNoteModal(phone, name) {
   document.getElementById('modal-note-cust-phone').innerText = maskPhoneNumber(rawPhone, isOwner);
 
   const monthSelect = document.getElementById('modal-note-birth-month');
+  const monthContainer = document.getElementById('modal-note-birth-month-container');
   const noteInput = document.getElementById('modal-note-content');
+  const phoneEl = document.getElementById('modal-note-cust-phone');
+  const maskedP = maskPhoneNumber(rawPhone, isOwner);
 
   // 1. Tìm thông tin trong bộ nhớ (từ customers và receipts)
   const allCusts = typeof getAllAvailableCustomers === 'function' ? getAllAvailableCustomers() : getStored('customers', []);
@@ -214,6 +217,14 @@ async function openCustomerNoteModal(phone, name) {
 
   let initialMonth = (cust && cust.birth_month) ? cust.birth_month : (cust && cust.birthday ? parseBirthMonth(cust.birthday) : 0);
   let initialNotes = (cust && cust.notes) ? cust.notes : '';
+
+  if (initialMonth && initialMonth >= 1 && initialMonth <= 12) {
+    if (phoneEl) phoneEl.innerText = `${maskedP} • Sinh nhật: Tháng ${initialMonth}`;
+    if (monthContainer) monthContainer.classList.add('hidden');
+  } else {
+    if (phoneEl) phoneEl.innerText = maskedP;
+    if (monthContainer) monthContainer.classList.remove('hidden');
+  }
 
   if (monthSelect) {
     monthSelect.value = (initialMonth && initialMonth >= 1 && initialMonth <= 12) ? String(initialMonth) : '';
@@ -234,6 +245,13 @@ async function openCustomerNoteModal(phone, name) {
         let liveMonth = liveCust.birth_month || parseBirthMonth(liveCust.birthday);
         let liveNotes = liveCust.notes || '';
         
+        if (liveMonth && liveMonth >= 1 && liveMonth <= 12) {
+          if (phoneEl) phoneEl.innerText = `${maskedP} • Sinh nhật: Tháng ${liveMonth}`;
+          if (monthContainer) monthContainer.classList.add('hidden');
+        } else {
+          if (monthContainer) monthContainer.classList.remove('hidden');
+        }
+
         if (monthSelect) {
           monthSelect.value = (liveMonth && liveMonth >= 1 && liveMonth <= 12) ? String(liveMonth) : '';
         }
