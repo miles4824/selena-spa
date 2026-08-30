@@ -292,12 +292,12 @@ function getAllAvailableCustomers() {
 
   // 1. Từ danh sách customers
   storedCusts.forEach(c => {
-    const rawP = String(c.phone_number || c.raw_phone || '').replace(/[^0-9]/g, '');
-    if (rawP) {
-      const standardP = rawP.startsWith('0') ? rawP : ('0' + rawP);
-      custMap.set(standardP, {
-        phone_number: standardP,
-        raw_phone: rawP,
+    let p = String(c.raw_phone || c.phone_number || '').replace(/[^0-9]/g, '');
+    if (p.length === 9 && !p.startsWith('0')) p = '0' + p;
+    if (p && p.length >= 7) {
+      custMap.set(p, {
+        phone_number: p,
+        raw_phone: p,
         customer_name: c.customer_name || 'Khách hàng',
         birthday: c.birthday || '',
         birth_month: c.birth_month || parseBirthMonth(c.birthday),
@@ -314,24 +314,22 @@ function getAllAvailableCustomers() {
   // 2. Gom thêm từ danh sách receipts nếu customers chưa sync kịp
   const receipts = getStored('receipts', []);
   receipts.forEach(r => {
-    const rawP = String(r.customer_phone || r.raw_phone || '').replace(/[^0-9]/g, '');
-    if (rawP && !rawP.includes('*')) {
-      const standardP = rawP.startsWith('0') ? rawP : ('0' + rawP);
-      if (!custMap.has(standardP)) {
-        custMap.set(standardP, {
-          phone_number: standardP,
-          raw_phone: rawP,
-          customer_name: r.customer_name || 'Khách hàng',
-          birthday: '',
-          birth_month: 0,
-          cycle_start_date: r.date || '',
-          cycle_end_date: '',
-          cycle_visits: 1,
-          total_visits: 1,
-          voucher_count: 0,
-          notes: ''
-        });
-      }
+    let p = String(r.raw_phone || r.customer_phone || '').replace(/[^0-9]/g, '');
+    if (p.length === 9 && !p.startsWith('0')) p = '0' + p;
+    if (p && p.length >= 7 && !custMap.has(p)) {
+      custMap.set(p, {
+        phone_number: p,
+        raw_phone: p,
+        customer_name: r.customer_name || 'Khách hàng',
+        birthday: '',
+        birth_month: 0,
+        cycle_start_date: r.date || '',
+        cycle_end_date: '',
+        cycle_visits: 1,
+        total_visits: 1,
+        voucher_count: 0,
+        notes: ''
+      });
     }
   });
 

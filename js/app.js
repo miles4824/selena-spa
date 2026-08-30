@@ -1,7 +1,7 @@
 // Tự động dọn dẹp cache hóa đơn thử nghiệm cũ để lấy chuẩn 100% từ Google Sheet
 (function purgeOldTestCache() {
   try {
-    const versionKey = 'selena_cache_cleaned_v0125';
+    const versionKey = 'selena_cache_cleaned_v0132';
     if (!localStorage.getItem(versionKey)) {
       localStorage.removeItem('selena_receipts');
       localStorage.removeItem('selena_customers');

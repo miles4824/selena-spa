@@ -1007,7 +1007,7 @@ function syncAllData(params) {
         let cycleEndDate = cycleStartDate ? addDaysToDate(cycleStartDate, 60) : '';
 
         customers.push({
-          phone_number: isOwner ? phone : (phone.length >= 7 ? (phone.slice(0, 3) + '***' + phone.slice(-3)) : phone),
+          phone_number: phone,
           raw_phone: phone,
           customer_name: name,
           birthday: birthMonth ? birthMonth : (formatDateVal(rawBday) || String(rawBday)),
