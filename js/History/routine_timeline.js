@@ -116,20 +116,28 @@ function loadStaffHistoryList(targetDate) {
                 </div>
               </div>
 
-              ${r.has_staff_2 || myTip > 0 ? `
-                <div class="bg-[#FAF6F1] p-2.5 rounded-2xl border border-[#F0EAE1] flex justify-between items-center text-xs flex-wrap gap-1">
-                  <div class="flex items-center gap-1 text-[#7E7272]">
+              <!-- KHUNG CHI TIẾT THU NHẬP CỦA BẠN -->
+              <div class="bg-[#FAF6F1] p-2.5 rounded-2xl border border-[#F0EAE1] space-y-1 text-xs">
+                ${r.has_staff_2 ? `
+                  <div class="flex items-center gap-1 text-[#7E7272] mb-1">
                     <i data-lucide="users" class="w-3.5 h-3.5 text-[#E58A7B]"></i>
                     <span>Cùng làm: <b class="text-[#2D2424]">${r.staff_1_name} & ${r.staff_2_name}</b></span>
                   </div>
-                  ${myTip > 0 ? `
-                    <span class="text-[#E58A7B] font-extrabold flex items-center gap-1">
-                      <i data-lucide="gift" class="w-3.5 h-3.5 text-[#E58A7B]"></i>
-                      <span>Được tip: +${myTip.toLocaleString('vi-VN')} đ</span>
-                    </span>
-                  ` : ''}
+                ` : ''}
+                <div class="flex justify-between items-center">
+                  <span class="text-[#7E7272]">Hoa hồng tour:</span>
+                  <span class="text-[#2E7D6D] font-extrabold">+${myComm.toLocaleString('vi-VN')} đ</span>
                 </div>
-              ` : ''}
+                ${myTip > 0 ? `
+                  <div class="flex justify-between items-center text-[#E58A7B] font-bold pt-0.5 border-t border-[#F0EAE1]">
+                    <span class="flex items-center gap-1">
+                      <i data-lucide="gift" class="w-3.5 h-3.5 text-[#E58A7B]"></i>
+                      <span>Tiền tip nhận được:</span>
+                    </span>
+                    <span class="font-extrabold">+${myTip.toLocaleString('vi-VN')} đ</span>
+                  </div>
+                ` : ''}
+              </div>
             </div>
           </div>
         `;

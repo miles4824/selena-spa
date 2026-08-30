@@ -111,36 +111,51 @@ function loadOwnerReceiptsList(targetDate) {
                 </div>
               </div>
 
-              <!-- KHUNG KỸ THUẬT VIÊN VÀ CHI TIẾT TIPS TỪNG NGƯỜI (SVG ICON ĐỒNG BỘ) -->
+              <!-- KHUNG KỸ THUẬT VIÊN XUỐNG DÒNG RÕ RÀNG & TỔNG TIP DƯỚI CÙNG -->
               <div class="bg-[#FAF6F1] p-2.5 rounded-2xl border border-[#F0EAE1] space-y-1.5 text-xs">
-                <div class="font-bold text-[#7E7272] flex items-center justify-between">
-                  <span class="flex items-center gap-1.5">
-                    <i data-lucide="users" class="w-3.5 h-3.5 text-[#E58A7B]"></i>
-                    <span>Kỹ thuật viên:</span>
-                  </span>
-                  ${totalTip > 0 ? `
-                    <span class="inline-flex items-center gap-1 text-[11px] font-extrabold text-[#E58A7B]">
-                      <i data-lucide="gift" class="w-3.5 h-3.5 text-[#E58A7B]"></i>
-                      <span>Tổng tip: +${totalTip.toLocaleString('vi-VN')} đ</span>
-                    </span>
+                <div class="font-bold text-[#7E7272] flex items-center gap-1.5 mb-1">
+                  <i data-lucide="users" class="w-3.5 h-3.5 text-[#E58A7B]"></i>
+                  <span>Kỹ thuật viên:</span>
+                </div>
+
+                <!-- KTV 1 -->
+                <div class="space-y-0.5 pl-2">
+                  <div class="flex justify-between items-center">
+                    <span class="text-[#2D2424] font-medium">• ${staff1Name}:</span>
+                    <span class="text-[#2E7D6D] font-extrabold">+${staff1Comm.toLocaleString('vi-VN')} đ</span>
+                  </div>
+                  ${staff1Tip > 0 ? `
+                    <div class="flex justify-between items-center pl-3 text-[#7E7272]">
+                      <span class="text-[11px] font-medium">Tip:</span>
+                      <span class="text-[#E58A7B] font-extrabold text-[11px]">+${staff1Tip.toLocaleString('vi-VN')} đ</span>
+                    </div>
                   ` : ''}
                 </div>
 
-                <div class="flex justify-between items-center pl-2">
-                  <span class="text-[#2D2424] font-medium">• ${staff1Name}:</span>
-                  <span class="font-extrabold">
-                    <span class="text-[#2E7D6D]">+${staff1Comm.toLocaleString('vi-VN')} đ</span>
-                    ${staff1Tip > 0 ? `<span class="text-[#E58A7B] font-bold text-[11px] ml-1">(Tip +${staff1Tip.toLocaleString('vi-VN')} đ)</span>` : ''}
-                  </span>
-                </div>
-
+                <!-- KTV 2 (Nếu có) -->
                 ${r.has_staff_2 && staff2Name ? `
-                  <div class="flex justify-between items-center pl-2">
-                    <span class="text-[#2D2424] font-medium">• ${staff2Name}:</span>
-                    <span class="font-extrabold">
-                      <span class="text-[#2E7D6D]">+${staff2Comm.toLocaleString('vi-VN')} đ</span>
-                      ${staff2Tip > 0 ? `<span class="text-[#E58A7B] font-bold text-[11px] ml-1">(Tip +${staff2Tip.toLocaleString('vi-VN')} đ)</span>` : ''}
+                  <div class="space-y-0.5 pl-2 pt-0.5">
+                    <div class="flex justify-between items-center">
+                      <span class="text-[#2D2424] font-medium">• ${staff2Name}:</span>
+                      <span class="text-[#2E7D6D] font-extrabold">+${staff2Comm.toLocaleString('vi-VN')} đ</span>
+                    </div>
+                    ${staff2Tip > 0 ? `
+                      <div class="flex justify-between items-center pl-3 text-[#7E7272]">
+                        <span class="text-[11px] font-medium">Tip:</span>
+                        <span class="text-[#E58A7B] font-extrabold text-[11px]">+${staff2Tip.toLocaleString('vi-VN')} đ</span>
+                      </div>
+                    ` : ''}
+                  </div>
+                ` : ''}
+
+                <!-- Đường Gạch Phân Cách & Tổng Tip -->
+                ${totalTip > 0 ? `
+                  <div class="pt-1.5 border-t border-[#F0EAE1] flex justify-between items-center pl-1 font-bold text-[#E58A7B]">
+                    <span class="flex items-center gap-1 text-[11px]">
+                      <i data-lucide="gift" class="w-3.5 h-3.5 text-[#E58A7B]"></i>
+                      <span>Tổng tip:</span>
                     </span>
+                    <span class="font-extrabold text-xs">+${totalTip.toLocaleString('vi-VN')} đ</span>
                   </div>
                 ` : ''}
               </div>
