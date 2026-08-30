@@ -1,4 +1,4 @@
-const APP_VERSION = 'v0.0.6.3';
+const APP_VERSION = 'v0.0.6.4';
 // =============================================================
 // SELENA SPA - GLOBAL CONFIG & CONSTANTS
 // =============================================================
@@ -76,29 +76,47 @@ function parsePercentage(val) {
 function normalizeDateKey(val) {
   if (!val) return '';
   if (val instanceof Date) {
+    if (isNaN(val.getTime())) return '';
     let y = val.getFullYear();
     let m = (val.getMonth() + 1).toString().padStart(2, '0');
     let d = val.getDate().toString().padStart(2, '0');
     return `${y}-${m}-${d}`;
   }
   let s = String(val).trim();
-  let parts = s.split(' ');
-  let datePart = parts[0].replace(/\//g, '-');
-  let subParts = datePart.split('-');
-  if (subParts.length === 3) {
-    if (subParts[0].length === 4) {
-      let y = subParts[0];
-      let m = subParts[1].padStart(2, '0');
-      let d = subParts[2].padStart(2, '0');
-      return `${y}-${m}-${d}`;
-    } else if (subParts[2].length === 4) {
-      let d = subParts[0].padStart(2, '0');
-      let m = subParts[1].padStart(2, '0');
-      let y = subParts[2];
-      return `${y}-${m}-${d}`;
-    }
+  if (s.includes('GMT') || s.includes('T') || s.includes('Z')) {
+    try {
+      let d = new Date(val);
+      if (!isNaN(d.getTime()) && d.getFullYear() > 1970) {
+        let y = d.getFullYear();
+        let m = (d.getMonth() + 1).toString().padStart(2, '0');
+        let day = d.getDate().toString().padStart(2, '0');
+        return `${y}-${m}-${day}`;
+      }
+    } catch(e) {}
   }
-  return datePart;
+  let m1 = s.match(/(\d{4})[/-](\d{1,2})[/-](\d{1,2})/);
+  if (m1) return `${m1[1]}-${m1[2].padStart(2, '0')}-${m1[3].padStart(2, '0')}`;
+
+  let m2 = s.match(/(\d{1,2})[/-](\d{1,2})[/-](\d{4})/);
+  if (m2) return `${m2[3]}-${m2[2].padStart(2, '0')}-${m2[1].padStart(2, '0')}`;
+
+  let m3 = s.match(/^(\d{1,2})[/-](\d{1,2})$/);
+  if (m3) {
+    let curYear = new Date().getFullYear();
+    return `${curYear}-${m3[2].padStart(2, '0')}-${m3[1].padStart(2, '0')}`;
+  }
+
+  try {
+    let d = new Date(val);
+    if (!isNaN(d.getTime()) && d.getFullYear() > 1970) {
+      let y = d.getFullYear();
+      let m = (d.getMonth() + 1).toString().padStart(2, '0');
+      let day = d.getDate().toString().padStart(2, '0');
+      return `${y}-${m}-${day}`;
+    }
+  } catch(e) {}
+
+  return s;
 }
 
 // Lấy danh sách 7 ngày trong tuần tính từ Thứ 2 (T2) đến Chủ Nhật (CN)
@@ -137,8 +155,33 @@ function renderDateStripComponent(containerId, activeDateStr, onDateClickCallbac
   const weekDays = getWeekDaysFromMonday(new Date());
   const todayStr = normalizeDateKey(new Date());
   const currentActive = activeDateStr || todayStr;
-
   const isAllActive = currentActive === 'ALL';
+
+  // Quét danh sách hóa đơn để đánh dấu ngày nào có tour
+  const receipts = getStored('receipts', []);
+  const staffPhone = normalizePhone(currentUser?.phone);
+  const staffCode = String(currentUser?.staff_id || '').trim();
+  const isOwner = currentUser && isUserOwner(currentUser);
+
+  const activeDatesSet = new Set();
+  receipts.forEach(r => {
+    const rDate = normalizeDateKey(r.date || r.created_at);
+    if (!rDate) return;
+
+    if (isOwner) {
+      activeDatesSet.add(rDate);
+    } else {
+      const s1Phone = normalizePhone(r.staff_1_user_id || r.staff_1_phone || r.staff_phone);
+      const s1Code = String(r.staff_1_id || r.staff_id || '').trim();
+      const s2Phone = normalizePhone(r.staff_2_user_id || r.staff_2_phone);
+      const s2Code = String(r.staff_2_id || '').trim();
+
+      if ((staffPhone && (s1Phone === staffPhone || s2Phone === staffPhone)) || 
+          (staffCode && (s1Code === staffCode || s2Code === staffCode))) {
+        activeDatesSet.add(rDate);
+      }
+    }
+  });
 
   container.innerHTML = `
     <div class="spa-card p-3.5 space-y-2.5">
@@ -156,6 +199,7 @@ function renderDateStripComponent(containerId, activeDateStr, onDateClickCallbac
         ${weekDays.map(item => {
           const isSelected = !isAllActive && (item.dateStr === currentActive);
           const isToday = item.isToday;
+          const hasTour = activeDatesSet.has(item.dateStr);
 
           let bgClass = 'bg-[#F7F2EC] text-[#7E7272] hover:bg-[#FFF0EB] hover:text-[#E58A7B]';
           let labelText = item.label;
@@ -175,9 +219,10 @@ function renderDateStripComponent(containerId, activeDateStr, onDateClickCallbac
           }
 
           return `
-            <button type="button" onclick="${onDateClickCallback}('${item.dateStr}')" class="flex-1 py-2 px-1 rounded-2xl ${bgClass} transition active:scale-95 cursor-pointer">
+            <button type="button" onclick="${onDateClickCallback}('${item.dateStr}')" class="relative flex-1 py-2 px-1 rounded-2xl ${bgClass} transition active:scale-95 cursor-pointer">
               <span class="block ${labelClass}">${labelText}</span>
               <span class="${numClass}">${item.dayNum}</span>
+              ${hasTour ? `<span class="absolute bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-white' : 'bg-[#E58A7B]'}"></span>` : ''}
             </button>
           `;
         }).join('')}
