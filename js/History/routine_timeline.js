@@ -98,10 +98,10 @@ function loadStaffHistoryList(targetDate) {
         const isCash = r.payment_method === 'Tiền mặt';
 
         return `
-          <div class="flex gap-3.5 items-start">
-            <div class="text-right w-12 pt-3 shrink-0">
-              <span class="text-xs font-extrabold text-[#2D2424] block font-mono">${cleanTime}</span>
-              <span class="text-[10px] text-[#2E7D6D] font-extrabold block">${durationMin}p</span>
+          <div class="flex gap-3.5 items-center">
+            <div class="text-right w-12 shrink-0 py-1">
+              <span class="text-xs font-extrabold text-[#2D2424] block font-mono leading-tight">${cleanTime}</span>
+              <span class="text-[10px] text-[#2E7D6D] font-extrabold block leading-tight mt-0.5">${durationMin}p</span>
             </div>
 
             <div class="spa-card p-4 flex-1 space-y-2.5">
