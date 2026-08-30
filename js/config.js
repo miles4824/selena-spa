@@ -1,4 +1,4 @@
-const APP_VERSION = 'v0.0.6.2';
+const APP_VERSION = 'v0.0.6.3';
 // =============================================================
 // SELENA SPA - GLOBAL CONFIG & CONSTANTS
 // =============================================================
@@ -73,10 +73,15 @@ function parsePercentage(val) {
   return Math.round(num);
 }
 
-function normalizeDateKey(dateStr) {
-  if (!dateStr) return '';
-  let s = String(dateStr).trim();
-  s = s.replace(/-/g, '-');
+function normalizeDateKey(val) {
+  if (!val) return '';
+  if (val instanceof Date) {
+    let y = val.getFullYear();
+    let m = (val.getMonth() + 1).toString().padStart(2, '0');
+    let d = val.getDate().toString().padStart(2, '0');
+    return `${y}-${m}-${d}`;
+  }
+  let s = String(val).trim();
   let parts = s.split(' ');
   let datePart = parts[0].replace(/\//g, '-');
   let subParts = datePart.split('-');
@@ -94,4 +99,90 @@ function normalizeDateKey(dateStr) {
     }
   }
   return datePart;
+}
+
+// Lấy danh sách 7 ngày trong tuần tính từ Thứ 2 (T2) đến Chủ Nhật (CN)
+function getWeekDaysFromMonday(baseDate = new Date()) {
+  const current = new Date(baseDate);
+  const day = current.getDay();
+  const diffToMonday = day === 0 ? -6 : 1 - day;
+  const monday = new Date(current);
+  monday.setDate(current.getDate() + diffToMonday);
+
+  const dayLabels = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
+  const weekDays = [];
+
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(monday);
+    d.setDate(monday.getDate() + i);
+    const dateStr = normalizeDateKey(d);
+    weekDays.push({
+      label: dayLabels[i],
+      dayNum: d.getDate(),
+      monthNum: d.getMonth() + 1,
+      dateStr: dateStr,
+      dateObj: d,
+      isToday: dateStr === normalizeDateKey(new Date())
+    });
+  }
+
+  return weekDays;
+}
+
+// Component Lịch Tuần Dùng Chung Cho Mọi Trang (Admin & Staff)
+function renderDateStripComponent(containerId, activeDateStr, onDateClickCallback) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+
+  const weekDays = getWeekDaysFromMonday(new Date());
+  const todayStr = normalizeDateKey(new Date());
+  const currentActive = activeDateStr || todayStr;
+
+  const isAllActive = currentActive === 'ALL';
+
+  container.innerHTML = `
+    <div class="spa-card p-3.5 space-y-2.5">
+      <div class="flex items-center justify-between px-1">
+        <div class="text-xs font-bold text-[#2D2424] flex items-center gap-1.5">
+          <i data-lucide="calendar" class="w-3.5 h-3.5 text-[#E58A7B]"></i>
+          <span>Tuần này: T2 ${weekDays[0].dayNum}/${weekDays[0].monthNum} — CN ${weekDays[6].dayNum}/${weekDays[6].monthNum}</span>
+        </div>
+        <button type="button" onclick="${onDateClickCallback}('ALL')" class="text-[11px] font-extrabold px-3 py-1 rounded-xl transition cursor-pointer ${isAllActive ? 'bg-[#E58A7B] text-white font-black' : 'bg-[#FAF6F1] text-[#E58A7B] hover:bg-[#FFF0EB] border border-[#FCDFD7]'}">
+          Xem tất cả
+        </button>
+      </div>
+
+      <div class="flex items-center justify-between w-full gap-1.5 text-center">
+        ${weekDays.map(item => {
+          const isSelected = !isAllActive && (item.dateStr === currentActive);
+          const isToday = item.isToday;
+
+          let bgClass = 'bg-[#F7F2EC] text-[#7E7272] hover:bg-[#FFF0EB] hover:text-[#E58A7B]';
+          let labelText = item.label;
+          let labelClass = 'text-[10px] text-[#A39696] uppercase font-bold';
+          let numClass = 'text-sm font-extrabold text-[#2D2424]';
+
+          if (isSelected) {
+            bgClass = 'bg-[#E58A7B] text-white ring-2 ring-[#E58A7B]/40 font-black';
+            labelClass = 'text-[10px] text-white/90 uppercase font-extrabold';
+            numClass = 'text-sm font-black text-white';
+            if (isToday) labelText = 'Hôm nay';
+          } else if (isToday) {
+            labelText = 'Hôm nay';
+            labelClass = 'text-[10px] text-[#E58A7B] uppercase font-extrabold';
+            numClass = 'text-sm font-extrabold text-[#E58A7B]';
+            bgClass = 'bg-[#FFF0EB] border border-[#FCDFD7] text-[#E58A7B]';
+          }
+
+          return `
+            <button type="button" onclick="${onDateClickCallback}('${item.dateStr}')" class="flex-1 py-2 px-1 rounded-2xl ${bgClass} transition active:scale-95 cursor-pointer">
+              <span class="block ${labelClass}">${labelText}</span>
+              <span class="${numClass}">${item.dayNum}</span>
+            </button>
+          `;
+        }).join('')}
+      </div>
+    </div>
+  `;
+  lucide.createIcons();
 }
