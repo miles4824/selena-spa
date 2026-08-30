@@ -278,9 +278,6 @@ function onCustomerPhoneInput(val) {
   const normInput = normalizePhone(rawInput);
   const card = document.getElementById('pos-customer-card');
   const customers = getStored('customers', DEFAULT_CUSTOMERS);
-  const loyaltyCycles = getStored('loyalty_cycles', DEFAULT_LOYALTY_CYCLES);
-  const vouchers = getStored('vouchers', DEFAULT_VOUCHERS);
-  const todayStr = normalizeDateKey(new Date());
   const currentMonth = new Date().getMonth() + 1;
 
   if (rawInput.length >= 7) {
@@ -302,18 +299,17 @@ function onCustomerPhoneInput(val) {
       document.getElementById('pos-cust-phone-badge').innerText = '(' + cPhone + ')';
       
       const bSelect = document.getElementById('pos-birth-month');
-      if (bSelect && cust.birth_month) {
-        bSelect.value = String(cust.birth_month);
+      if (bSelect) {
+        if (cust.birth_month) bSelect.value = String(cust.birth_month);
+        else if (cust.birthday) {
+          let m = String(cust.birthday).match(/(\d{4})[/-](\d{1,2})[/-](\d{1,2})/);
+          if (m) bSelect.value = String(Number(m[2]));
+        }
       }
 
-      // Check Active Loyalty Cycle
-      const activeCycle = loyaltyCycles.find(cy => {
-        const cyP = normalizePhone(cy.customer_phone || cy.raw_phone);
-        return cyP === cPhone && cy.status === 'ACTIVE';
-      });
-
-      let visits = activeCycle ? (Number(activeCycle.visits_count) || 0) : (cust.cycle_visits || 0);
-      let expiryDate = activeCycle ? formatDateVN(activeCycle.end_date) : '';
+      // Check Active 60-Day Loyalty Cycle directly from cust fields (Cột D & E)
+      let visits = Number(cust.cycle_visits) || 0;
+      let expiryDate = cust.cycle_end_date ? formatDateVN(cust.cycle_end_date) : '';
 
       document.getElementById('pos-cust-visits-badge').innerText = visits + ' / 10 Ca gội';
       document.getElementById('pos-cust-progress-bar').style.width = Math.min(100, (visits / 10) * 100) + '%';
@@ -324,9 +320,15 @@ function onCustomerPhoneInput(val) {
       }
 
       // Check Birthday Month
+      let custMonth = cust.birth_month || 0;
+      if (!custMonth && cust.birthday) {
+        let m = String(cust.birthday).match(/(\d{4})[/-](\d{1,2})[/-](\d{1,2})/);
+        if (m) custMonth = Number(m[2]);
+      }
+
       const bBanner = document.getElementById('pos-birthday-banner');
       if (bBanner) {
-        if (Number(cust.birth_month) === currentMonth) {
+        if (custMonth === currentMonth) {
           bBanner.classList.remove('hidden');
         } else {
           bBanner.classList.add('hidden');
@@ -343,17 +345,11 @@ function onCustomerPhoneInput(val) {
         document.getElementById('pos-cust-notes-box').classList.add('hidden');
       }
 
-      // Check Available Vouchers
-      const userVouchers = vouchers.filter(v => {
-        const vP = normalizePhone(v.customer_phone || v.raw_phone);
-        const vStatus = String(v.status || '').toLowerCase();
-        return vP === cPhone && (vStatus.includes('chưa') || vStatus === 'active' || vStatus === 'unused');
-      });
-
-      if (userVouchers.length > 0 || (cust.voucher_count || 0) > 0) {
-        const vCount = Math.max(userVouchers.length, cust.voucher_count || 0);
+      // Check Vouchers
+      const vCount = Number(cust.voucher_count) || 0;
+      if (vCount > 0) {
         document.getElementById('pos-voucher-banner').classList.remove('hidden');
-        document.getElementById('pos-voucher-text').innerText = `Khách có ${vCount} Voucher khả dụng!`;
+        document.getElementById('pos-voucher-text').innerText = `Khách có ${vCount} Voucher ca miễn phí!`;
       } else {
         document.getElementById('pos-voucher-banner').classList.add('hidden');
       }

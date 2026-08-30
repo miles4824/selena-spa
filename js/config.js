@@ -1,4 +1,4 @@
-const APP_VERSION = 'v0.1.1.1';
+const APP_VERSION = 'v0.1.1.2';
 // =============================================================
 // SELENA SPA - GLOBAL CONFIG & CONSTANTS
 // =============================================================
@@ -17,9 +17,9 @@ const DEFAULT_MENU = [
 ];
 
 const DEFAULT_CUSTOMERS = [
-  { phone_number: '0912345678', customer_name: 'Chị Mai Lan', birth_month: 8, total_visits: 16, voucher_count: 1, notes: 'Da đầu nhạy cảm, thích gội nước ấm, sấy mát', created_at: '2026-08-01' },
-  { phone_number: '0987654321', customer_name: 'Anh Tuấn', birth_month: 9, total_visits: 2, voucher_count: 0, notes: 'Thích massage cổ vai gáy mạnh', created_at: '2026-08-10' },
-  { phone_number: '0988776655', customer_name: 'Anh Nam', birth_month: 5, total_visits: 3, voucher_count: 0, notes: 'Thích bấm huyệt thái dương', created_at: '2026-08-15' }
+  { phone_number: '0912345678', customer_name: 'Chị Mai Lan', birthday: '1995-08-15', birth_month: 8, cycle_start_date: '2026-08-01', cycle_end_date: '2026-09-30', cycle_visits: 8, total_visits: 16, voucher_count: 1, notes: 'Da đầu nhạy cảm, thích gội nước ấm, sấy mát' },
+  { phone_number: '0987654321', customer_name: 'Anh Tuấn', birthday: '1990-09-20', birth_month: 9, cycle_start_date: '2026-08-20', cycle_end_date: '2026-10-19', cycle_visits: 2, total_visits: 2, voucher_count: 0, notes: 'Thích massage cổ vai gáy mạnh' },
+  { phone_number: '0988776655', customer_name: 'Anh Nam', birthday: '1992-05-10', birth_month: 5, cycle_start_date: '2026-08-23', cycle_end_date: '2026-10-22', cycle_visits: 2, total_visits: 3, voucher_count: 0, notes: 'Thích bấm huyệt thái dương nhẹ nhàng' }
 ];
 
 const DEFAULT_LOYALTY_CYCLES = [

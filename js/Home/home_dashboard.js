@@ -170,8 +170,6 @@ function filterAdminCustomers(query) {
 
 function loadAdminCustomersList() {
   const customers = getStored('customers', DEFAULT_CUSTOMERS);
-  const loyaltyCycles = getStored('loyalty_cycles', DEFAULT_LOYALTY_CYCLES);
-  const vouchers = getStored('vouchers', DEFAULT_VOUCHERS);
   const countEl = document.getElementById('admin-customer-count');
   if (countEl) countEl.innerText = customers.length + ' khách hàng';
   const container = document.getElementById('admin-customers-list');
@@ -199,17 +197,16 @@ function loadAdminCustomersList() {
 
   container.innerHTML = filtered.map(c => {
     const rawP = normalizePhone(c.phone_number || c.raw_phone);
-    const activeCycle = loyaltyCycles.find(cy => normalizePhone(cy.customer_phone || cy.raw_phone) === rawP && cy.status === 'ACTIVE');
-    const visits = activeCycle ? (Number(activeCycle.visits_count) || 0) : (c.cycle_visits || 0);
-    const endDate = activeCycle ? formatDateVN(activeCycle.end_date) : '';
+    const visits = Number(c.cycle_visits) || 0;
+    const endDate = c.cycle_end_date ? formatDateVN(c.cycle_end_date) : '';
+    const vCount = Number(c.voucher_count) || 0;
 
-    const custVouchers = vouchers.filter(v => {
-      const vP = normalizePhone(v.customer_phone || v.raw_phone);
-      const vStatus = String(v.status || '').toLowerCase();
-      return vP === rawP && (vStatus.includes('chưa') || vStatus === 'active' || vStatus === 'unused');
-    });
-
-    const isBirthMonth = (Number(c.birth_month) === currentMonth);
+    let bMonth = c.birth_month || 0;
+    if (!bMonth && c.birthday) {
+      let m = String(c.birthday).match(/(\d{4})[/-](\d{1,2})[/-](\d{1,2})/);
+      if (m) bMonth = Number(m[2]);
+    }
+    const isBirthMonth = (bMonth === currentMonth);
 
     return `
       <div class="p-4 rounded-3xl bg-[#FAF6F1] border border-[#F0EAE1] space-y-3 shadow-xs">
@@ -217,7 +214,7 @@ function loadAdminCustomersList() {
           <div>
             <div class="font-extrabold text-sm sm:text-base text-[#2D2424] flex items-center gap-1.5">
               <span>👤 ${c.customer_name}</span>
-              ${isBirthMonth ? `<span class="px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 text-[10px] font-extrabold flex items-center gap-1">🎂 Sinh nhật T${c.birth_month}</span>` : (c.birth_month ? `<span class="text-[10px] text-[#A39696] font-semibold">(T${c.birth_month})</span>` : '')}
+              ${isBirthMonth ? `<span class="px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 text-[10px] font-extrabold flex items-center gap-1">🎂 Sinh nhật T${bMonth}</span>` : (bMonth ? `<span class="text-[10px] text-[#A39696] font-semibold">(T${bMonth})</span>` : '')}
             </div>
             <div class="text-xs text-[#7E7272] font-mono mt-0.5">${rawP}</div>
           </div>
@@ -226,10 +223,10 @@ function loadAdminCustomersList() {
           </span>
         </div>
 
-        <!-- Chu Kỳ Tích Điểm 60 Ngày -->
+        <!-- Chu Kỳ Tích Điểm 60 Ngày (Cột D & E) -->
         <div class="p-3 rounded-2xl bg-white space-y-1.5 text-xs border border-[#F0EAE1]">
           <div class="flex justify-between items-center text-[#7E7272]">
-            <span class="font-bold text-[#2D2424]">🎯 Tiến trình chu kỳ:</span>
+            <span class="font-bold text-[#2D2424]">🎯 Chu kỳ 60 ngày:</span>
             <span class="font-extrabold text-[#E58A7B] font-mono">${visits} / 10 ca</span>
           </div>
           <div class="w-full h-2 bg-[#FAF6F1] rounded-full overflow-hidden">
@@ -245,10 +242,9 @@ function loadAdminCustomersList() {
           </div>
         ` : ''}
 
-        ${custVouchers.length > 0 ? `
+        ${vCount > 0 ? `
           <div class="text-xs font-bold text-[#2E7D6D] bg-[#E8F8F5] p-2.5 rounded-2xl border border-[#B7EBDD] flex items-center justify-between">
-            <span class="flex items-center gap-1.5"><i data-lucide="gift" class="w-3.5 h-3.5"></i> Có ${custVouchers.length} Voucher khả dụng</span>
-            <span class="text-[10px] font-semibold text-[#2E7D6D] underline cursor-pointer" onclick="alert('Chi tiết voucher: ' + '${custVouchers.map(v => v.voucher_type + ' (' + v.discount_value + ')').join(', ')}')">Chi tiết</span>
+            <span class="flex items-center gap-1.5"><i data-lucide="gift" class="w-3.5 h-3.5"></i> Có ${vCount} Voucher ca miễn phí</span>
           </div>
         ` : ''}
 
