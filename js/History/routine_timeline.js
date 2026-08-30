@@ -150,8 +150,7 @@ function loadStaffHistoryList(targetDate) {
                   <div class="flex items-center gap-1.5 min-w-0">
                     <span class="inline-flex items-center gap-1 truncate text-[#2D2424] font-medium">
                       <i data-lucide="user" class="w-3 h-3 text-[#A39696] shrink-0"></i>
-                      <span class="truncate">${r.customer_name || 'Khách vãng lai'}</span>
-                      ${r.raw_phone || r.customer_phone ? `<span class="text-[10px] text-[#A39696] font-mono">(${maskPhoneNumber(r.raw_phone || r.customer_phone, isUserOwner(currentUser))})</span>` : ''}
+                      <span class="truncate font-semibold text-[#2D2424]">${r.customer_name || 'Khách vãng lai'}</span>
                     </span>
                     <span class="text-[#D4C5B9]">•</span>
                     <span class="inline-flex items-center gap-1 font-semibold ${isCash ? 'text-[#D35400]' : 'text-[#2E7D6D]'} shrink-0">
@@ -189,32 +188,71 @@ function loadStaffHistoryList(targetDate) {
 
 
 // =============================================================
+// =============================================================
 // MODAL GHI CHÚ KHÁCH HÀNG (DÀNH CHO KTV & CHỦ TIỆM SAU CA)
 // =============================================================
-function openCustomerNoteModal(phone, name) {
+async function openCustomerNoteModal(phone, name) {
   const modal = document.getElementById('modal-customer-note');
   if (!modal) return;
 
   const rawPhone = normalizePhone(phone);
+  const isOwner = typeof isUserOwner === 'function' ? isUserOwner(currentUser) : false;
+
   document.getElementById('modal-note-cust-raw-phone').value = rawPhone;
   document.getElementById('modal-note-cust-name').innerText = name || 'Khách Hàng';
-  document.getElementById('modal-note-cust-phone').innerText = maskPhoneNumber(rawPhone, isUserOwner(currentUser));
-
-  const customers = getStored('customers', DEFAULT_CUSTOMERS);
-  const cust = customers.find(c => normalizePhone(c.phone_number || c.raw_phone) === rawPhone);
+  document.getElementById('modal-note-cust-phone').innerText = maskPhoneNumber(rawPhone, isOwner);
 
   const monthSelect = document.getElementById('modal-note-birth-month');
   const noteInput = document.getElementById('modal-note-content');
 
+  // 1. Tìm thông tin trong bộ nhớ (từ customers và receipts)
+  const allCusts = typeof getAllAvailableCustomers === 'function' ? getAllAvailableCustomers() : getStored('customers', []);
+  let cust = allCusts.find(c => {
+    const p = normalizePhone(c.phone_number || c.raw_phone);
+    return p === rawPhone || p.endsWith(rawPhone) || rawPhone.endsWith(p);
+  });
+
+  let initialMonth = (cust && cust.birth_month) ? cust.birth_month : (cust && cust.birthday ? parseBirthMonth(cust.birthday) : 0);
+  let initialNotes = (cust && cust.notes) ? cust.notes : '';
+
   if (monthSelect) {
-    monthSelect.value = (cust && cust.birth_month) ? String(cust.birth_month) : '';
+    monthSelect.value = initialMonth ? String(initialMonth) : '';
   }
   if (noteInput) {
-    noteInput.value = (cust && cust.notes) ? cust.notes : '';
+    noteInput.value = initialNotes;
   }
 
   modal.classList.remove('hidden');
   lucide.createIcons();
+
+  // 2. Đồng bộ ngầm live trực tiếp từ Google Apps Script
+  if (rawPhone) {
+    try {
+      const res = await callGasApi('check_customer', { phone_number: rawPhone });
+      if (res && res.found && res.customer) {
+        const liveCust = res.customer;
+        let liveMonth = liveCust.birth_month || parseBirthMonth(liveCust.birthday);
+        let liveNotes = liveCust.notes || '';
+        
+        if (monthSelect && liveMonth) {
+          monthSelect.value = String(liveMonth);
+        }
+        if (noteInput && liveNotes && !noteInput.value) {
+          noteInput.value = liveNotes;
+        }
+
+        // Cập nhật lại vào local storage
+        const curCusts = getStored('customers', []);
+        const idx = curCusts.findIndex(c => normalizePhone(c.phone_number || c.raw_phone) === rawPhone);
+        if (idx >= 0) {
+          curCusts[idx] = { ...curCusts[idx], ...liveCust };
+        } else {
+          curCusts.push(liveCust);
+        }
+        setStored('customers', curCusts);
+      }
+    } catch(e) {}
+  }
 }
 
 function closeCustomerNoteModal() {
@@ -233,13 +271,16 @@ function handleSaveCustomerNote(e) {
     return;
   }
 
+  const bMonthNum = Number(birthMonth) || 0;
+
   // 1. Update Local Storage
-  const customers = getStored('customers', DEFAULT_CUSTOMERS);
+  const customers = getStored('customers', []);
   let found = false;
   customers.forEach(c => {
     if (normalizePhone(c.phone_number || c.raw_phone) === rawPhone) {
       c.notes = notes;
-      if (birthMonth) c.birth_month = Number(birthMonth);
+      c.birth_month = bMonthNum;
+      c.birthday = bMonthNum ? bMonthNum : '';
       found = true;
     }
   });
@@ -249,35 +290,28 @@ function handleSaveCustomerNote(e) {
       phone_number: rawPhone,
       raw_phone: rawPhone,
       customer_name: name || 'Khách hàng',
-      birth_month: birthMonth ? Number(birthMonth) : 0,
+      birth_month: bMonthNum,
+      birthday: bMonthNum ? bMonthNum : '',
+      cycle_start_date: normalizeDateKey(new Date()),
+      cycle_visits: 1,
       total_visits: 1,
       voucher_count: 0,
-      notes: notes,
-      created_at: normalizeDateKey(new Date())
+      notes: notes
     });
   }
+
   setStored('customers', customers);
 
-  // 2. Call Google Apps Script Backend in Background
-  const gasUrl = getStored('gas_url', '');
-  if (gasUrl) {
-    fetch(gasUrl, {
-      method: 'POST',
-      body: JSON.stringify({
-        action: 'update_customer_notes',
-        phone_number: rawPhone,
-        customer_name: name,
-        birth_month: birthMonth ? Number(birthMonth) : '',
-        notes: notes
-      })
-    }).catch(() => {});
-  }
+  // 2. Call Google Apps Script API
+  callGasApi('update_customer_notes', {
+    phone_number: rawPhone,
+    customer_phone: rawPhone,
+    customer_name: name,
+    birth_month: bMonthNum,
+    birthday: bMonthNum ? bMonthNum : '',
+    notes: notes
+  });
 
   closeCustomerNoteModal();
-  alert('✨ Đã lưu ghi chú sở thích khách hàng thành công!');
-  
-  if (currentTab === 'history') {
-    if (isUserOwner(currentUser)) loadOwnerReceiptsList();
-    else loadStaffHistoryList();
-  }
+  alert('✅ Đã lưu ghi chú và tháng sinh khách hàng thành công!');
 }
