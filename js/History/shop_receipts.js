@@ -39,6 +39,10 @@ function formatCleanDate(val) {
   return '29/08';
 }
 
+function loadAdminReceiptsList() {
+  loadOwnerReceiptsList();
+}
+
 function loadOwnerReceiptsList() {
   const receipts = getStored('receipts', []);
   const container = document.getElementById('owner-receipts-list');
