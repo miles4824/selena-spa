@@ -15,7 +15,7 @@ function formatTimeVal(val) {
 }
 
 function formatDateVal(val) {
-  if (!val) return '2026-08-29';
+  if (!val) return '';
   if (val instanceof Date) {
     return Utilities.formatDate(val, 'GMT+7', 'yyyy-MM-dd');
   }
@@ -28,7 +28,7 @@ function formatDateVal(val) {
       return Utilities.formatDate(d, 'GMT+7', 'yyyy-MM-dd');
     }
   } catch(e) {}
-  return '2026-08-29';
+  return s;
 }
 
 function addDaysToDate(dateStr, days) {
@@ -44,9 +44,34 @@ function addDaysToDate(dateStr, days) {
   }
 }
 
+function getDaysDiff(d1Str, d2Str) {
+  try {
+    let d1 = new Date(d1Str);
+    let d2 = new Date(d2Str);
+    let diff = Math.abs(d2.getTime() - d1.getTime());
+    return Math.floor(diff / (1000 * 60 * 60 * 24));
+  } catch(e) {
+    return 0;
+  }
+}
+
+function parseBirthMonth(val) {
+  if (!val) return 0;
+  if (typeof val === 'number' && val >= 1 && val <= 12) return val;
+  if (val instanceof Date) {
+    return val.getMonth() + 1;
+  }
+  let s = String(val).trim();
+  let mMatch = s.match(/(\d{4})[/-](\d{1,2})[/-](\d{1,2})/);
+  if (mMatch) return Number(mMatch[2]);
+  let num = parseInt(s.replace(/[^\d]/g, ''), 10);
+  if (!isNaN(num) && num >= 1 && num <= 12) return num;
+  return 0;
+}
+
 /**
  * =========================================================================
- * SELENA SPA - API GOOGLE APPS SCRIPT (GAS SERVER BACKEND V2.4 - LOYALTY CYCLES & VOUCHERS)
+ * SELENA SPA - API GOOGLE APPS SCRIPT (GAS SERVER BACKEND V2.5 - KHỚP 100% 8 CỘT TB_CUSTOMERS)
  * =========================================================================
  */
 
@@ -76,7 +101,7 @@ function handleRequest(e) {
 
     switch (action) {
       case 'ping':
-        result = { success: true, message: 'Selena Spa Dynamic Backend v2.4 is active!', timestamp: new Date().toISOString() };
+        result = { success: true, message: 'Selena Spa Dynamic Backend v2.5 is active!', timestamp: new Date().toISOString() };
         break;
 
       case 'login':
@@ -270,7 +295,7 @@ function getMenuList() {
 }
 
 // -------------------------------------------------------------
-// 3. TRA CỨU KHÁCH HÀNG, CHU KỲ & VOUCHER
+// 3. TRA CỨU KHÁCH HÀNG (DỰA TRÊN 8 CỘT CHUẨN CỦA TB_CUSTOMERS)
 // -------------------------------------------------------------
 function checkCustomer(phoneNumber) {
   const phone = normalizePhone(phoneNumber);
@@ -278,10 +303,12 @@ function checkCustomer(phoneNumber) {
 
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheetCust = ss.getSheetByName('tb_customers');
-  const sheetCycles = ss.getSheetByName('tb_loyalty_cycles');
-  const sheetVouchers = ss.getSheetByName('tb_vouchers');
 
   let customer = null;
+  const now = new Date();
+  const todayStr = Utilities.formatDate(now, 'GMT+7', 'yyyy-MM-dd');
+  const currentMonth = now.getMonth() + 1;
+
   if (sheetCust) {
     const colMapC = createHeaderMap(sheetCust);
     const dataC = sheetCust.getDataRange().getValues();
@@ -289,68 +316,31 @@ function checkCustomer(phoneNumber) {
       let row = dataC[i];
       let cPhone = normalizePhone(getCell(row, colMapC, ['phone_number', 'phone', 'so_dien_thoai']));
       if (cPhone === phone) {
+        let rawBday = getCell(row, colMapC, ['birthday', 'birth_month', 'ngay_sinh']);
+        let cycleStart = formatDateVal(getCell(row, colMapC, ['cycle_start_date', 'ngay_bat_dau_chu_ky']));
+        let cycleVisits = Number(getCell(row, colMapC, ['cycle_visits', 'so_lan_chu_ky'], 0)) || 0;
+        let totalVisits = Number(getCell(row, colMapC, ['total_visits', 'tong_so_lan'], 0)) || 0;
+        let voucherCount = Number(getCell(row, colMapC, ['voucher_count', 'so_voucher'], 0)) || 0;
+        let notes = String(getCell(row, colMapC, ['notes', 'ghi_chu'], ''));
+
+        let bMonth = parseBirthMonth(rawBday);
+        let cycleEnd = cycleStart ? addDaysToDate(cycleStart, 60) : '';
+        let isCycleExpired = (cycleEnd && todayStr > cycleEnd);
+
         customer = {
           phone_number: cPhone,
           customer_name: String(getCell(row, colMapC, ['customer_name', 'name', 'ten_khach'])),
-          birth_month: Number(getCell(row, colMapC, ['birth_month', 'thang_sinh', 'birthday'], 0)) || 0,
-          total_visits: Number(getCell(row, colMapC, ['total_visits', 'so_lan_goi', 'visits'], 0)) || 0,
-          voucher_count: Number(getCell(row, colMapC, ['voucher_count', 'voucher'], 0)) || 0,
-          notes: String(getCell(row, colMapC, ['notes', 'ghi_chu'], ''))
+          birthday: formatDateVal(rawBday) || String(rawBday),
+          birth_month: bMonth,
+          cycle_start_date: cycleStart,
+          cycle_end_date: cycleEnd,
+          cycle_visits: isCycleExpired ? 0 : cycleVisits,
+          total_visits: totalVisits,
+          voucher_count: voucherCount,
+          notes: notes,
+          is_cycle_expired: isCycleExpired
         };
         break;
-      }
-    }
-  }
-
-  // Active Loyalty Cycle
-  let activeCycle = null;
-  const now = new Date();
-  const todayStr = Utilities.formatDate(now, 'GMT+7', 'yyyy-MM-dd');
-  const currentMonth = now.getMonth() + 1;
-
-  if (sheetCycles) {
-    const colMapCy = createHeaderMap(sheetCycles);
-    const dataCy = sheetCycles.getDataRange().getValues();
-    for (let i = 1; i < dataCy.length; i++) {
-      let row = dataCy[i];
-      let cyPhone = normalizePhone(getCell(row, colMapCy, ['customer_phone', 'phone']));
-      let status = String(getCell(row, colMapCy, ['status', 'trang_thai'], '')).toUpperCase();
-      if (cyPhone === phone && status === 'ACTIVE') {
-        let endDateStr = formatDateVal(getCell(row, colMapCy, ['end_date', 'ngay_ket_thuc']));
-        let isExpired = (todayStr > endDateStr);
-        activeCycle = {
-          cycle_id: String(getCell(row, colMapCy, ['cycle_id', 'ma_chu_ky'])),
-          start_date: formatDateVal(getCell(row, colMapCy, ['start_date', 'ngay_bat_dau'])),
-          end_date: endDateStr,
-          visits_count: Number(getCell(row, colMapCy, ['visits_count', 'so_lan'], 0)) || 0,
-          status: isExpired ? 'EXPIRED' : 'ACTIVE',
-          is_expired: isExpired
-        };
-        break;
-      }
-    }
-  }
-
-  // Vouchers
-  let availableVouchers = [];
-  if (sheetVouchers) {
-    const colMapV = createHeaderMap(sheetVouchers);
-    const dataV = sheetVouchers.getDataRange().getValues();
-    for (let i = 1; i < dataV.length; i++) {
-      let row = dataV[i];
-      let vPhone = normalizePhone(getCell(row, colMapV, ['customer_phone', 'phone']));
-      let status = String(getCell(row, colMapV, ['status', 'trang_thai'], '')).toLowerCase();
-      if (vPhone === phone && (status.includes('chưa') || status === 'active' || status === 'unused')) {
-        let expDate = formatDateVal(getCell(row, colMapV, ['expiry_date', 'han_dung']));
-        if (!expDate || expDate >= todayStr) {
-          availableVouchers.push({
-            voucher_id: String(getCell(row, colMapV, ['voucher_id', 'ma_voucher'])),
-            voucher_type: String(getCell(row, colMapV, ['voucher_type', 'loai_voucher'])),
-            discount_value: String(getCell(row, colMapV, ['discount_value', 'giam_gia'])),
-            expiry_date: expDate,
-            notes: String(getCell(row, colMapV, ['notes', 'ghi_chu']))
-          });
-        }
       }
     }
   }
@@ -362,14 +352,12 @@ function checkCustomer(phoneNumber) {
     found: !!customer,
     phone_number: phone,
     customer: customer,
-    active_cycle: activeCycle,
-    vouchers: availableVouchers,
     is_birth_month: isBirthMonth
   };
 }
 
 // -------------------------------------------------------------
-// 3B. CẬP NHẬT GHI CHÚ SỞ THÍCH & THÁNG SINH KHÁCH HÀNG
+// 3B. CẬP NHẬT GHI CHÚ SỞ THÍCH & NGÀY SINH KHÁCH HÀNG (8 CỘT)
 // -------------------------------------------------------------
 function updateCustomerNotes(params) {
   const phone = normalizePhone(params.phone_number || params.customer_phone);
@@ -392,17 +380,17 @@ function updateCustomerNotes(params) {
   }
 
   const newNotes = params.notes !== undefined ? String(params.notes).trim() : null;
-  const newBirthMonth = params.birth_month !== undefined ? Number(params.birth_month) : null;
+  const newBirthday = params.birthday || (params.birth_month ? `2000-${String(params.birth_month).padStart(2, '0')}-01` : null);
   const newName = params.customer_name ? String(params.customer_name).trim() : null;
 
   if (foundRow > 0) {
     if (newNotes !== null) {
-      let colNotes = colMapC['notes'] !== undefined ? colMapC['notes'] + 1 : 6;
+      let colNotes = colMapC['notes'] !== undefined ? colMapC['notes'] + 1 : 8;
       sheetCust.getRange(foundRow, colNotes).setValue(newNotes);
     }
-    if (newBirthMonth !== null && newBirthMonth >= 1 && newBirthMonth <= 12) {
-      let colBM = colMapC['birth_month'] !== undefined ? colMapC['birth_month'] + 1 : 3;
-      sheetCust.getRange(foundRow, colBM).setValue(newBirthMonth);
+    if (newBirthday !== null) {
+      let colBday = colMapC['birthday'] !== undefined ? colMapC['birthday'] + 1 : 3;
+      sheetCust.getRange(foundRow, colBday).setValue(newBirthday);
     }
     if (newName) {
       let colName = colMapC['customer_name'] !== undefined ? colMapC['customer_name'] + 1 : 2;
@@ -410,14 +398,16 @@ function updateCustomerNotes(params) {
     }
   } else {
     const todayStr = Utilities.formatDate(new Date(), 'GMT+7', 'yyyy-MM-dd');
+    // Chuẩn 8 cột: phone_number, customer_name, birthday, cycle_start_date, cycle_visits, total_visits, voucher_count, notes
     sheetCust.appendRow([
       phone,
       newName || 'Khách hàng',
-      (newBirthMonth && newBirthMonth >= 1 && newBirthMonth <= 12) ? newBirthMonth : '',
+      newBirthday || '',
+      todayStr,
+      1,
+      1,
       0,
-      0,
-      newNotes || '',
-      todayStr
+      newNotes || ''
     ]);
   }
 
@@ -425,7 +415,7 @@ function updateCustomerNotes(params) {
 }
 
 // -------------------------------------------------------------
-// 3C. CHỦ TIỆM TẶNG VOUCHER CHO KHÁCH
+// 3C. CHỦ TIỆM TẶNG VOUCHER CHO KHÁCH (8 CỘT)
 // -------------------------------------------------------------
 function giftVoucher(params) {
   const phone = normalizePhone(params.customer_phone || params.phone_number);
@@ -433,58 +423,49 @@ function giftVoucher(params) {
   if (!phone) return { success: false, error: 'PHONE_EMPTY' };
 
   const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheetVouchers = ss.getSheetByName('tb_vouchers');
   const sheetCust = ss.getSheetByName('tb_customers');
-
-  const now = new Date();
-  const todayStr = Utilities.formatDate(now, 'GMT+7', 'yyyy-MM-dd');
-  const voucherId = 'VC' + Utilities.formatDate(now, 'GMT+7', 'yyMMddHHmmss');
-  const vType = String(params.voucher_type || 'Chủ tiệm tặng').trim();
-  const discountVal = String(params.discount_value || '50.000 đ').trim();
-  const expiryDays = Number(params.expiry_days) || 60;
-  const expiryDate = params.expiry_date || addDaysToDate(todayStr, expiryDays);
-  const notes = String(params.notes || 'Tri ân khách hàng thân thiết').trim();
-
-  if (sheetVouchers) {
-    sheetVouchers.appendRow([
-      voucherId,
-      phone,
-      name,
-      vType,
-      discountVal,
-      expiryDate,
-      'Chưa dùng',
-      '',
-      notes
-    ]);
-  }
 
   if (sheetCust) {
     const colMapC = createHeaderMap(sheetCust);
     const dataC = sheetCust.getDataRange().getValues();
+    let found = false;
+
     for (let i = 1; i < dataC.length; i++) {
       let cPhone = normalizePhone(getCell(dataC[i], colMapC, ['phone_number', 'phone']));
       if (cPhone === phone) {
-        let vCount = Number(getCell(dataC[i], colMapC, ['voucher_count', 'voucher'], 0)) || 0;
-        let colV = colMapC['voucher_count'] !== undefined ? colMapC['voucher_count'] + 1 : 5;
+        let vCount = Number(getCell(dataC[i], colMapC, ['voucher_count', 'so_voucher'], 0)) || 0;
+        let colV = colMapC['voucher_count'] !== undefined ? colMapC['voucher_count'] + 1 : 7;
         sheetCust.getRange(i + 1, colV).setValue(vCount + 1);
+        found = true;
         break;
       }
     }
+
+    if (!found) {
+      const todayStr = Utilities.formatDate(new Date(), 'GMT+7', 'yyyy-MM-dd');
+      sheetCust.appendRow([
+        phone,
+        name,
+        '',
+        todayStr,
+        0,
+        0,
+        1,
+        params.notes || 'Chủ tiệm tặng voucher'
+      ]);
+    }
   }
 
-  return { success: true, voucher_id: voucherId, message: 'Đã tặng voucher thành công!' };
+  return { success: true, message: 'Đã tặng voucher thành công!' };
 }
 
 // -------------------------------------------------------------
-// 4. TẠO HÓA ĐƠN CA LÀM & TỰ ĐỘNG XỬ LÝ CHU KỲ / VOUCHER
+// 4. TẠO HÓA ĐƠN CA LÀM & TỰ ĐỘNG XỬ LÝ 8 CỘT TB_CUSTOMERS
 // -------------------------------------------------------------
 function createReceipt(params) {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheetReceipts = ss.getSheetByName('tb_receipts');
   const sheetCustomers = ss.getSheetByName('tb_customers');
-  const sheetCycles = ss.getSheetByName('tb_loyalty_cycles');
-  const sheetVouchers = ss.getSheetByName('tb_vouchers');
 
   const now = new Date();
   const timeStr = Utilities.formatDate(now, 'GMT+7', 'HH:mm');
@@ -531,11 +512,8 @@ function createReceipt(params) {
 
   const paymentMethod = params.payment_method || 'Tiền mặt';
   const isVoucherUsed = (params.is_voucher_used === true || params.is_voucher_used === 'TRUE' || params.is_voucher_used === 'true');
-  const usedVoucherId = params.used_voucher_id || '';
-  const birthMonth = Number(params.birth_month) || 0;
+  const birthdayVal = params.birthday || (params.birth_month ? `2000-${String(params.birth_month).padStart(2, '0')}-01` : '');
   const customerNotes = params.notes || '';
-
-  let activeCycleId = '';
 
   // 1. GHI VÀO TB_RECEIPTS
   if (sheetReceipts) {
@@ -583,169 +561,83 @@ function createReceipt(params) {
       assign(['created_at', 'thoi_gian_tao'], fullTimeStr);
 
       sheetReceipts.appendRow(newRow);
-    } else {
-      sheetReceipts.appendRow([
-        receiptId, dateStr, startTime, endTime, durationMin,
-        phone, customerName, serviceId, serviceName,
-        price, tipAmount, totalPaid,
-        s1Phone, s1Id, s1Name, s1Comm, s1Tip,
-        s2Phone ? s2Phone : '-', s2Id ? s2Id : '-', s2Name ? s2Name : '-', s2Comm, s2Tip,
-        paymentMethod, isVoucherUsed ? 'TRUE' : 'FALSE', fullTimeStr
+    }
+  }
+
+  // 2. CẬP NHẬT TB_CUSTOMERS CHUẨN 8 CỘT (phone_number, customer_name, birthday, cycle_start_date, cycle_visits, total_visits, voucher_count, notes)
+  if (phone && sheetCustomers) {
+    const colMapC = createHeaderMap(sheetCustomers);
+    const dataC = sheetCustomers.getDataRange().getValues();
+    let foundIndex = -1;
+
+    for (let i = 1; i < dataC.length; i++) {
+      let cPhone = normalizePhone(getCell(dataC[i], colMapC, ['phone_number', 'phone']));
+      if (cPhone === phone) {
+        foundIndex = i + 1;
+        
+        let curName = String(getCell(dataC[i], colMapC, ['customer_name', 'name']));
+        let curBday = getCell(dataC[i], colMapC, ['birthday', 'ngay_sinh']);
+        let curCycleStart = formatDateVal(getCell(dataC[i], colMapC, ['cycle_start_date', 'ngay_bat_dau_chu_ky']));
+        let curCycleVisits = Number(getCell(dataC[i], colMapC, ['cycle_visits', 'so_lan_chu_ky'], 0)) || 0;
+        let curTotalVisits = Number(getCell(dataC[i], colMapC, ['total_visits', 'tong_so_lan'], 0)) || 0;
+        let curVouchers = Number(getCell(dataC[i], colMapC, ['voucher_count', 'so_voucher'], 0)) || 0;
+        let curNotes = String(getCell(dataC[i], colMapC, ['notes', 'ghi_chu']));
+
+        // Xử lý Tổng lượt ghé
+        curTotalVisits += 1;
+
+        // Xử lý Voucher dùng
+        if (isVoucherUsed) {
+          curVouchers = Math.max(0, curVouchers - 1);
+        } else {
+          // Xử lý Chu kỳ 60 ngày
+          if (!curCycleStart || getDaysDiff(curCycleStart, dateStr) > 60 || curCycleVisits >= 10) {
+            curCycleStart = dateStr;
+            curCycleVisits = 1;
+          } else {
+            curCycleVisits += 1;
+            if (curCycleVisits >= 10) {
+              curVouchers += 1; // Thưởng 1 voucher
+            }
+          }
+        }
+
+        // Ghi lại vào đúng cột
+        let colName = colMapC['customer_name'] !== undefined ? colMapC['customer_name'] + 1 : 2;
+        let colBday = colMapC['birthday'] !== undefined ? colMapC['birthday'] + 1 : 3;
+        let colCycStart = colMapC['cycle_start_date'] !== undefined ? colMapC['cycle_start_date'] + 1 : 4;
+        let colCycVis = colMapC['cycle_visits'] !== undefined ? colMapC['cycle_visits'] + 1 : 5;
+        let colTotVis = colMapC['total_visits'] !== undefined ? colMapC['total_visits'] + 1 : 6;
+        let colVouch = colMapC['voucher_count'] !== undefined ? colMapC['voucher_count'] + 1 : 7;
+        let colNotes = colMapC['notes'] !== undefined ? colMapC['notes'] + 1 : 8;
+
+        if (customerName && customerName !== 'Khách hàng') sheetCustomers.getRange(foundIndex, colName).setValue(customerName);
+        if (birthdayVal) sheetCustomers.getRange(foundIndex, colBday).setValue(birthdayVal);
+        sheetCustomers.getRange(foundIndex, colCycStart).setValue(curCycleStart);
+        sheetCustomers.getRange(foundIndex, colCycVis).setValue(curCycleVisits);
+        sheetCustomers.getRange(foundIndex, colTotVis).setValue(curTotalVisits);
+        sheetCustomers.getRange(foundIndex, colVouch).setValue(curVouchers);
+        if (customerNotes) sheetCustomers.getRange(foundIndex, colNotes).setValue(customerNotes);
+        break;
+      }
+    }
+
+    if (foundIndex === -1) {
+      // Thêm dòng mới CHUẨN XÁC 8 CỘT
+      sheetCustomers.appendRow([
+        phone,
+        customerName || 'Khách hàng',
+        birthdayVal || '',
+        dateStr,
+        isVoucherUsed ? 0 : 1,
+        1,
+        0,
+        customerNotes || ''
       ]);
     }
   }
 
-  // 2. XỬ LÝ VOUCHER & CHU KỲ TÍCH ĐIỂM
-  if (phone) {
-    // A. Nếu dùng voucher -> cập nhật tb_vouchers
-    if (isVoucherUsed && sheetVouchers) {
-      const colMapV = createHeaderMap(sheetVouchers);
-      const dataV = sheetVouchers.getDataRange().getValues();
-      for (let i = 1; i < dataV.length; i++) {
-        let vId = String(getCell(dataV[i], colMapV, ['voucher_id', 'ma_voucher']));
-        let vPhone = normalizePhone(getCell(dataV[i], colMapV, ['customer_phone', 'phone']));
-        let vStatus = String(getCell(dataV[i], colMapV, ['status', 'trang_thai'], '')).toLowerCase();
-        
-        if (vPhone === phone && (vId === usedVoucherId || (!usedVoucherId && (vStatus.includes('chưa') || vStatus === 'active')))) {
-          let colStatus = colMapV['status'] !== undefined ? colMapV['status'] + 1 : 7;
-          let colUsed = colMapV['used_receipt_id'] !== undefined ? colMapV['used_receipt_id'] + 1 : 8;
-          sheetVouchers.getRange(i + 1, colStatus).setValue('Đã dùng');
-          sheetVouchers.getRange(i + 1, colUsed).setValue(receiptId);
-          break;
-        }
-      }
-    }
-
-    // B. Nếu ca trả tiền thật -> xử lý tb_loyalty_cycles
-    if (!isVoucherUsed && sheetCycles) {
-      const colMapCy = createHeaderMap(sheetCycles);
-      const dataCy = sheetCycles.getDataRange().getValues();
-      let activeCycleRow = -1;
-      let activeCycleVisits = 0;
-      let activeCycleEndDate = '';
-
-      for (let i = 1; i < dataCy.length; i++) {
-        let cyPhone = normalizePhone(getCell(dataCy[i], colMapCy, ['customer_phone', 'phone']));
-        let status = String(getCell(dataCy[i], colMapCy, ['status', 'trang_thai'], '')).toUpperCase();
-        if (cyPhone === phone && status === 'ACTIVE') {
-          activeCycleRow = i + 1;
-          activeCycleVisits = Number(getCell(dataCy[i], colMapCy, ['visits_count', 'so_lan'], 0)) || 0;
-          activeCycleEndDate = formatDateVal(getCell(dataCy[i], colMapCy, ['end_date', 'ngay_ket_thuc']));
-          activeCycleId = String(getCell(dataCy[i], colMapCy, ['cycle_id', 'ma_chu_ky']));
-          break;
-        }
-      }
-
-      // Kiểm tra hạn 60 ngày
-      if (activeCycleRow > 0 && dateStr > activeCycleEndDate) {
-        // Chu kỳ cũ hết hạn
-        let colStatus = colMapCy['status'] !== undefined ? colMapCy['status'] + 1 : 7;
-        let colNotes = colMapCy['notes'] !== undefined ? colMapCy['notes'] + 1 : 9;
-        sheetCycles.getRange(activeCycleRow, colStatus).setValue('EXPIRED');
-        sheetCycles.getRange(activeCycleRow, colNotes).setValue(`Hết hạn 60 ngày (đạt ${activeCycleVisits}/10 ca)`);
-        activeCycleRow = -1; // Cần mở chu kỳ mới
-      }
-
-      if (activeCycleRow > 0) {
-        // Tăng lượt tích chu kỳ
-        activeCycleVisits += 1;
-        let colVisits = colMapCy['visits_count'] !== undefined ? colMapCy['visits_count'] + 1 : 6;
-        sheetCycles.getRange(activeCycleRow, colVisits).setValue(activeCycleVisits);
-
-        if (activeCycleVisits >= 10) {
-          // Hoàn thành chu kỳ -> Thưởng Voucher
-          let newVoucherId = 'VC' + Utilities.formatDate(now, 'GMT+7', 'yyMMddHHmmss');
-          let colStatus = colMapCy['status'] !== undefined ? colMapCy['status'] + 1 : 7;
-          let colVoucher = colMapCy['reward_voucher_id'] !== undefined ? colMapCy['reward_voucher_id'] + 1 : 8;
-          let colNotes = colMapCy['notes'] !== undefined ? colMapCy['notes'] + 1 : 9;
-
-          sheetCycles.getRange(activeCycleRow, colStatus).setValue('REWARDED');
-          sheetCycles.getRange(activeCycleRow, colVoucher).setValue(newVoucherId);
-          sheetCycles.getRange(activeCycleRow, colNotes).setValue('Hoàn thành 10 ca -> Nhận 1 ca miễn phí');
-
-          // Thêm voucher mới vào tb_vouchers
-          if (sheetVouchers) {
-            sheetVouchers.appendRow([
-              newVoucherId,
-              phone,
-              customerName,
-              'Tích 10 lần gội',
-              '1 ca miễn phí',
-              addDaysToDate(dateStr, 60),
-              'Chưa dùng',
-              '',
-              'Thưởng hoàn thành chu kỳ tích 10 ca'
-            ]);
-          }
-        }
-      } else {
-        // Mở chu kỳ 60 ngày mới
-        activeCycleId = 'CYC_' + Utilities.formatDate(now, 'GMT+7', 'yyMMddHHmmss');
-        let endDateNew = addDaysToDate(dateStr, 60);
-        sheetCycles.appendRow([
-          activeCycleId,
-          phone,
-          customerName,
-          dateStr,
-          endDateNew,
-          1,
-          'ACTIVE',
-          '',
-          'Đang tích chu kỳ (1/10 ca)'
-        ]);
-      }
-    }
-
-    // C. Cập nhật tb_customers
-    if (sheetCustomers) {
-      const colMapC = createHeaderMap(sheetCustomers);
-      const dataC = sheetCustomers.getDataRange().getValues();
-      let foundIndex = -1;
-
-      for (let i = 1; i < dataC.length; i++) {
-        let cPhone = normalizePhone(getCell(dataC[i], colMapC, ['phone_number', 'phone']));
-        if (cPhone === phone) {
-          foundIndex = i + 1;
-          let visits = Number(getCell(dataC[i], colMapC, ['total_visits', 'visits'], 0)) || 0;
-          let vouchers = Number(getCell(dataC[i], colMapC, ['voucher_count', 'voucher'], 0)) || 0;
-          
-          visits += 1;
-          if (isVoucherUsed) {
-            vouchers = Math.max(0, vouchers - 1);
-          }
-
-          let colVisits = colMapC['total_visits'] !== undefined ? colMapC['total_visits'] + 1 : 4;
-          let colVouchers = colMapC['voucher_count'] !== undefined ? colMapC['voucher_count'] + 1 : 5;
-          let colNotes = colMapC['notes'] !== undefined ? colMapC['notes'] + 1 : 6;
-          let colBM = colMapC['birth_month'] !== undefined ? colMapC['birth_month'] + 1 : 3;
-
-          sheetCustomers.getRange(foundIndex, colVisits).setValue(visits);
-          sheetCustomers.getRange(foundIndex, colVouchers).setValue(vouchers);
-          if (customerNotes) {
-            sheetCustomers.getRange(foundIndex, colNotes).setValue(customerNotes);
-          }
-          if (birthMonth >= 1 && birthMonth <= 12) {
-            sheetCustomers.getRange(foundIndex, colBM).setValue(birthMonth);
-          }
-          break;
-        }
-      }
-
-      if (foundIndex === -1) {
-        sheetCustomers.appendRow([
-          phone,
-          customerName,
-          (birthMonth >= 1 && birthMonth <= 12) ? birthMonth : '',
-          1,
-          0,
-          customerNotes || '',
-          dateStr
-        ]);
-      }
-    }
-  }
-
-  return { success: true, receipt_id: receiptId, cycle_id: activeCycleId };
+  return { success: true, receipt_id: receiptId };
 }
 
 // -------------------------------------------------------------
@@ -798,7 +690,7 @@ function updateAnnouncement(params) {
 }
 
 // -------------------------------------------------------------
-// 7. ĐỒNG BỘ TOÀN BỘ DỮ LIỆU (SYNC ALL DATA V2.4)
+// 7. ĐỒNG BỘ TOÀN BỘ DỮ LIỆU (SYNC ALL DATA V2.5 - KHỚP 8 CỘT TB_CUSTOMERS)
 // -------------------------------------------------------------
 function syncAllData(params) {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -888,92 +780,45 @@ function syncAllData(params) {
     }
   }
 
-  // 3. Customers
+  // 3. Customers (CHUẨN 8 CỘT: phone_number, customer_name, birthday, cycle_start_date, cycle_visits, total_visits, voucher_count, notes)
   const sheetCust = ss.getSheetByName('tb_customers');
   let customers = [];
   if (sheetCust) {
     const colMapC = createHeaderMap(sheetCust);
-    const data = sheetCust.getDataRange().getValues();
-    for (let i = 1; i < data.length; i++) {
-      let r = data[i];
+    const dataC = sheetCust.getDataRange().getValues();
+    for (let i = 1; i < dataC.length; i++) {
+      let r = dataC[i];
       let phone = normalizePhone(getCell(r, colMapC, ['phone_number', 'phone', 'so_dien_thoai']));
       if (phone) {
         let name = String(getCell(r, colMapC, ['customer_name', 'name', 'ten_khach']));
-        let birthMonth = Number(getCell(r, colMapC, ['birth_month', 'thang_sinh', 'birthday'], 0)) || 0;
-        let visits = Number(getCell(r, colMapC, ['total_visits', 'visits'], 0)) || 0;
-        let vouchers = Number(getCell(r, colMapC, ['voucher_count', 'voucher'], 0)) || 0;
+        let rawBday = getCell(r, colMapC, ['birthday', 'birth_month', 'ngay_sinh']);
+        let cycleStartDate = formatDateVal(getCell(r, colMapC, ['cycle_start_date', 'ngay_bat_dau_chu_ky']));
+        let cycleVisits = Number(getCell(r, colMapC, ['cycle_visits', 'so_lan_chu_ky'], 0)) || 0;
+        let totalVisits = Number(getCell(r, colMapC, ['total_visits', 'tong_so_lan'], 0)) || 0;
+        let voucherCount = Number(getCell(r, colMapC, ['voucher_count', 'so_voucher'], 0)) || 0;
         let notes = String(getCell(r, colMapC, ['notes', 'ghi_chu']));
-        let createdAt = formatDateVal(getCell(r, colMapC, ['created_at', 'ngay_tao']));
+
+        let birthMonth = parseBirthMonth(rawBday);
+        let cycleEndDate = cycleStartDate ? addDaysToDate(cycleStartDate, 60) : '';
 
         customers.push({
           phone_number: isOwner ? phone : (phone.length >= 7 ? (phone.slice(0, 3) + '***' + phone.slice(-3)) : phone),
           raw_phone: phone,
           customer_name: name,
+          birthday: formatDateVal(rawBday) || String(rawBday),
           birth_month: birthMonth,
-          total_visits: visits,
-          voucher_count: vouchers,
-          notes: notes,
-          created_at: createdAt
+          cycle_start_date: cycleStartDate,
+          cycle_end_date: cycleEndDate,
+          cycle_visits: cycleVisits,
+          total_visits: totalVisits,
+          voucher_count: voucherCount,
+          notes: notes
         });
       }
     }
   }
 
-  // 4. Loyalty Cycles
-  const sheetCycles = ss.getSheetByName('tb_loyalty_cycles');
-  let loyaltyCycles = [];
-  if (sheetCycles) {
-    const colMapCy = createHeaderMap(sheetCycles);
-    const data = sheetCycles.getDataRange().getValues();
-    for (let i = 1; i < data.length; i++) {
-      let r = data[i];
-      let cyId = String(getCell(r, colMapCy, ['cycle_id', 'ma_chu_ky']));
-      let cyPhone = normalizePhone(getCell(r, colMapCy, ['customer_phone', 'phone']));
-      if (cyId && cyPhone) {
-        loyaltyCycles.push({
-          cycle_id: cyId,
-          customer_phone: isOwner ? cyPhone : (cyPhone.length >= 7 ? (cyPhone.slice(0, 3) + '***' + cyPhone.slice(-3)) : cyPhone),
-          raw_phone: cyPhone,
-          customer_name: String(getCell(r, colMapCy, ['customer_name', 'name'])),
-          start_date: formatDateVal(getCell(r, colMapCy, ['start_date', 'ngay_bat_dau'])),
-          end_date: formatDateVal(getCell(r, colMapCy, ['end_date', 'ngay_ket_thuc'])),
-          visits_count: Number(getCell(r, colMapCy, ['visits_count', 'so_lan'], 0)) || 0,
-          status: String(getCell(r, colMapCy, ['status', 'trang_thai'], 'ACTIVE')),
-          reward_voucher_id: String(getCell(r, colMapCy, ['reward_voucher_id', 'voucher'])),
-          notes: String(getCell(r, colMapCy, ['notes', 'ghi_chu']))
-        });
-      }
-    }
-  }
-
-  // 5. Vouchers
-  const sheetVouchers = ss.getSheetByName('tb_vouchers');
-  let vouchers = [];
-  if (sheetVouchers) {
-    const colMapV = createHeaderMap(sheetVouchers);
-    const data = sheetVouchers.getDataRange().getValues();
-    for (let i = 1; i < data.length; i++) {
-      let r = data[i];
-      let vId = String(getCell(r, colMapV, ['voucher_id', 'ma_voucher']));
-      let vPhone = normalizePhone(getCell(r, colMapV, ['customer_phone', 'phone']));
-      if (vId && vPhone) {
-        vouchers.push({
-          voucher_id: vId,
-          customer_phone: isOwner ? vPhone : (vPhone.length >= 7 ? (vPhone.slice(0, 3) + '***' + vPhone.slice(-3)) : vPhone),
-          raw_phone: vPhone,
-          customer_name: String(getCell(r, colMapV, ['customer_name', 'name'])),
-          voucher_type: String(getCell(r, colMapV, ['voucher_type', 'loai_voucher'])),
-          discount_value: String(getCell(r, colMapV, ['discount_value', 'giam_gia'])),
-          expiry_date: formatDateVal(getCell(r, colMapV, ['expiry_date', 'han_dung'])),
-          status: String(getCell(r, colMapV, ['status', 'trang_thai'], 'Chưa dùng')),
-          used_receipt_id: String(getCell(r, colMapV, ['used_receipt_id', 'ma_bill'])),
-          notes: String(getCell(r, colMapV, ['notes', 'ghi_chu']))
-        });
-      }
-    }
-  }
-
-  // 6. Receipts
+  // 4. Receipts
   const sheetReceipts = ss.getSheetByName('tb_receipts');
   let receipts = [];
   if (sheetReceipts) {
@@ -1043,7 +888,7 @@ function syncAllData(params) {
     }
   }
 
-  // 7. Expenses
+  // 5. Expenses
   const sheetExpenses = ss.getSheetByName('tb_expenses');
   let expenses = [];
   if (sheetExpenses) {
@@ -1064,7 +909,7 @@ function syncAllData(params) {
     }
   }
 
-  // 8. Config
+  // 6. Config
   const sheetConfig = ss.getSheetByName('tb_config');
   let config = {
     announcement: 'Chào mừng bạn đến với Selena Spa!',
@@ -1089,8 +934,6 @@ function syncAllData(params) {
     menu: menu,
     users: users,
     customers: isOwner ? customers : [],
-    loyalty_cycles: isOwner ? loyaltyCycles : [],
-    vouchers: isOwner ? vouchers : [],
     receipts: receipts,
     expenses: isOwner ? expenses : [],
     config: config
