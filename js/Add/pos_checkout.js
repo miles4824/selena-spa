@@ -508,13 +508,13 @@ function applyCustomerData(cust) {
   const nameInput = document.getElementById('pos-customer-name');
   if (nameInput) {
     nameInput.value = cust.customer_name || '';
-    // Khóa ô Tên nếu khách đã có hồ sơ tên chính thức trong hệ thống
+    // Khóa hoàn toàn ô Tên nếu khách đã có hồ sơ tên chính thức trong hệ thống
     if (cust.customer_name && cust.customer_name !== 'Khách hàng' && cust.customer_name !== 'Khách vãng lai') {
-      nameInput.readOnly = true;
-      nameInput.classList.add('bg-[#EFE8DF]', 'text-[#7E7272]', 'cursor-not-allowed');
+      nameInput.disabled = true;
+      nameInput.classList.add('bg-[#EFE8DF]', 'text-[#7E7272]', 'cursor-not-allowed', 'opacity-85', 'pointer-events-none', 'select-none');
     } else {
-      nameInput.readOnly = false;
-      nameInput.classList.remove('bg-[#EFE8DF]', 'text-[#7E7272]', 'cursor-not-allowed');
+      nameInput.disabled = false;
+      nameInput.classList.remove('bg-[#EFE8DF]', 'text-[#7E7272]', 'cursor-not-allowed', 'opacity-85', 'pointer-events-none', 'select-none');
     }
   }
   
@@ -525,13 +525,13 @@ function applyCustomerData(cust) {
   const bSelect = document.getElementById('pos-birth-month');
   if (bSelect) {
     bSelect.value = (custMonth && custMonth >= 1 && custMonth <= 12) ? String(custMonth) : '';
-    // Khóa ô Tháng sinh nếu khách đã có tháng sinh trong hệ thống
+    // Khóa hoàn toàn ô Tháng sinh nếu khách đã có tháng sinh trong hệ thống
     if (custMonth && custMonth >= 1 && custMonth <= 12) {
       bSelect.disabled = true;
-      bSelect.classList.add('bg-[#EFE8DF]', 'text-[#7E7272]', 'cursor-not-allowed');
+      bSelect.classList.add('bg-[#EFE8DF]', 'text-[#7E7272]', 'cursor-not-allowed', 'opacity-85', 'pointer-events-none', 'select-none');
     } else {
       bSelect.disabled = false;
-      bSelect.classList.remove('bg-[#EFE8DF]', 'text-[#7E7272]', 'cursor-not-allowed');
+      bSelect.classList.remove('bg-[#EFE8DF]', 'text-[#7E7272]', 'cursor-not-allowed', 'opacity-85', 'pointer-events-none', 'select-none');
     }
   }
 
