@@ -1,4 +1,4 @@
-const APP_VERSION = 'v0.0.7.4';
+const APP_VERSION = 'v0.0.7.5';
 // =============================================================
 // SELENA SPA - GLOBAL CONFIG & CONSTANTS
 // =============================================================
@@ -212,11 +212,14 @@ function formatDateVN(dateStr) {
   return dateStr;
 }
 
+const lastSlideDirection = {};
+
 function changeWeekOffset(containerId, offsetWeeks, onDateClickCallback) {
   let base = dateStripBaseDates[containerId] || new Date();
   const newBase = new Date(base);
   newBase.setDate(newBase.getDate() + (offsetWeeks * 7));
   dateStripBaseDates[containerId] = newBase;
+  lastSlideDirection[containerId] = offsetWeeks < 0 ? 'slide-from-left' : 'slide-from-right';
 
   const activeDate = (containerId === 'staff-date-strip-container') ? selectedStaffHistoryDate : selectedAdminHistoryDate;
   renderDateStripComponent(containerId, activeDate, onDateClickCallback);
@@ -274,6 +277,8 @@ function renderDateStripComponent(containerId, activeDateStr, onDateClickCallbac
   const startLabel = `${weekDays[0].dayNum}/${weekDays[0].monthNum}`;
   const endLabel = `${weekDays[6].dayNum}/${weekDays[6].monthNum}`;
   const pickerId = `${containerId}-date-picker`;
+  const animClass = lastSlideDirection[containerId] || 'date-strip-anim';
+  lastSlideDirection[containerId] = null;
 
   container.innerHTML = `
     <div class="spa-card p-3.5 space-y-3">
@@ -309,7 +314,7 @@ function renderDateStripComponent(containerId, activeDateStr, onDateClickCallbac
       </div>
 
       <!-- 7 Nút Ngày: T2, T3, T4, T5, T6, T7, CN (Không Có Dấu Chấm Rối Mắt) -->
-      <div id="${containerId}-days-row" class="flex items-center justify-between w-full gap-1.5 text-center date-strip-anim">
+      <div id="${containerId}-days-row" class="flex items-center justify-between w-full gap-1.5 text-center ${animClass}">
         ${weekDays.map(item => {
           const isSelected = !isAllActive && (item.dateStr === currentActive);
           const isToday = item.isToday;
