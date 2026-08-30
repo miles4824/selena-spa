@@ -527,9 +527,14 @@ function applyCustomerData(cust) {
   const progressBar = document.getElementById('pos-cust-progress-bar');
   if (progressBar) progressBar.style.width = Math.min(100, (visits / 10) * 100) + '%';
 
+  const cycleStatusEl = document.getElementById('pos-cust-cycle-status-text');
+  if (cycleStatusEl) {
+    cycleStatusEl.innerText = `Chu kỳ 60 ngày (${visits}/10 ca)`;
+  }
+
   const expTextEl = document.getElementById('pos-cust-cycle-expiry-text');
   if (expTextEl) {
-    expTextEl.innerText = expiryDate ? `Hạn đến: ${expiryDate}` : 'Chu kỳ 60 ngày';
+    expTextEl.innerText = expiryDate ? `Hạn đến: ${expiryDate}` : 'Hạn 60 ngày';
   }
 
   // Birthday banner
