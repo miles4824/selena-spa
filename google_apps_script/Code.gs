@@ -723,7 +723,9 @@ function createReceipt(params) {
         calculatedCycleVisits = activeCycleVisits;
 
         let colVisits = colMapCy['visits_count'] !== undefined ? colMapCy['visits_count'] + 1 : 6;
+        let colNotes = colMapCy['notes'] !== undefined ? colMapCy['notes'] + 1 : 9;
         sheetCycles.getRange(activeCycleRow, colVisits).setValue(activeCycleVisits);
+        sheetCycles.getRange(activeCycleRow, colNotes).setValue(`Đang tích chu kỳ (${activeCycleVisits}/10 ca)`);
 
         if (activeCycleVisits >= 10) {
           // Hoàn thành chu kỳ -> Thưởng Voucher
