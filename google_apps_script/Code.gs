@@ -1177,7 +1177,7 @@ function syncAllData(params) {
     is_owner: isOwner,
     menu: menu,
     users: users,
-    customers: isOwner ? customers : [],
+    customers: customers,
     loyalty_cycles: isOwner ? loyaltyCycles : [],
     vouchers: isOwner ? vouchers : [],
     receipts: receipts,

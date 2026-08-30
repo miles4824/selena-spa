@@ -273,9 +273,33 @@ function updatePOSCalculations() {
   });
 }
 
+function matchCustomerPhoneOrName(c, rawInput, normInput) {
+  if (!c) return false;
+  const name = (c.customer_name || '').toLowerCase();
+  const rawTarget = String(c.phone_number || c.raw_phone || '').replace(/[^0-9]/g, '');
+  
+  // Format with leading 0 and without leading 0
+  const cWith0 = rawTarget.startsWith('0') ? rawTarget : ('0' + rawTarget);
+  const cNo0 = rawTarget.replace(/^0+/, '');
+
+  const uWith0 = normInput.startsWith('0') ? normInput : ('0' + normInput);
+  const uNo0 = normInput.replace(/^0+/, '');
+
+  const matchPhone = (normInput && (
+    cWith0.includes(normInput) || 
+    cWith0.includes(uWith0) || 
+    cNo0.includes(uNo0) || 
+    rawTarget.includes(normInput)
+  ));
+
+  const matchName = (rawInput && name.includes(rawInput.toLowerCase()));
+
+  return Boolean(matchPhone || matchName);
+}
+
 function onCustomerPhoneInput(val) {
   const rawInput = val.trim();
-  const normInput = normalizePhone(rawInput);
+  const normInput = String(rawInput).replace(/[^0-9]/g, '');
   const card = document.getElementById('pos-customer-card');
   const suggestionsBox = document.getElementById('pos-customer-suggestions');
   const customers = getStored('customers', DEFAULT_CUSTOMERS);
@@ -283,28 +307,25 @@ function onCustomerPhoneInput(val) {
   // 1. Hiển thị Dropdown Gợi ý Khách hàng khi gõ (từ 1 ký tự trở lên)
   if (suggestionsBox) {
     if (rawInput.length >= 1) {
-      const matches = customers.filter(c => {
-        const cPhone = normalizePhone(c.phone_number || c.raw_phone);
-        const cName = (c.customer_name || '').toLowerCase();
-        return cPhone.includes(normInput) || cName.includes(rawInput.toLowerCase());
-      }).slice(0, 6);
+      const matches = customers.filter(c => matchCustomerPhoneOrName(c, rawInput, normInput)).slice(0, 8);
 
       if (matches.length > 0) {
         suggestionsBox.innerHTML = matches.map(c => {
-          const cPhone = normalizePhone(c.phone_number || c.raw_phone);
+          let rawP = String(c.phone_number || c.raw_phone || '').replace(/[^0-9]/g, '');
+          let displayP = rawP.startsWith('0') ? rawP : ('0' + rawP);
           let bMonth = c.birth_month || parseBirthMonth(c.birthday);
           const visits = Number(c.cycle_visits) || 0;
           const vCount = Number(c.voucher_count) || 0;
 
           return `
-            <div onclick="selectCustomerSuggestion('${cPhone}')" class="p-3 hover:bg-[#FFF5F2] cursor-pointer transition flex items-center justify-between gap-2">
+            <div onclick="selectCustomerSuggestion('${displayP}')" class="p-3 hover:bg-[#FFF5F2] cursor-pointer transition flex items-center justify-between gap-2 border-b border-[#FAF6F1] last:border-b-0">
               <div>
                 <div class="font-bold text-xs sm:text-sm text-[#2D2424] flex items-center gap-1.5">
                   <span>👤 ${c.customer_name}</span>
                   ${bMonth ? `<span class="text-[10px] text-[#A39696] font-semibold">(T${bMonth})</span>` : ''}
                   ${vCount > 0 ? `<span class="text-[9px] font-extrabold px-1.5 py-0.5 rounded-full bg-[#E8F8F5] text-[#2E7D6D]">🎁 ${vCount} Voucher</span>` : ''}
                 </div>
-                <div class="text-[11px] font-mono text-[#E58A7B] font-semibold mt-0.5">${cPhone}</div>
+                <div class="text-[11px] font-mono text-[#E58A7B] font-semibold mt-0.5">${displayP}</div>
               </div>
               <span class="text-[11px] font-extrabold px-2 py-0.5 rounded-full bg-[#FAF6F1] text-[#7E7272] border border-[#F0EAE1]">
                 ${visits}/10 ca
@@ -322,13 +343,13 @@ function onCustomerPhoneInput(val) {
   }
 
   // 2. Tìm chính xác nếu đã nhập từ 7 số trở lên
-  if (rawInput.length >= 7) {
+  if (normInput.length >= 7) {
     const cust = customers.find(c => {
-      const cNorm = normalizePhone(c.phone_number || c.raw_phone);
-      return cNorm === normInput || 
-             cNorm.endsWith(normInput) || 
-             normInput.endsWith(cNorm) || 
-             String(c.phone_number).includes(rawInput);
+      const rawTarget = String(c.phone_number || c.raw_phone || '').replace(/[^0-9]/g, '');
+      const cWith0 = rawTarget.startsWith('0') ? rawTarget : ('0' + rawTarget);
+      const cNo0 = rawTarget.replace(/^0+/, '');
+      const uNo0 = normInput.replace(/^0+/, '');
+      return cWith0 === normInput || cNo0 === uNo0 || rawTarget === normInput || cWith0.endsWith(normInput);
     });
 
     if (cust) {
@@ -346,15 +367,23 @@ function onCustomerPhoneInput(val) {
 
 function selectCustomerSuggestion(phone) {
   const customers = getStored('customers', DEFAULT_CUSTOMERS);
-  const norm = normalizePhone(phone);
-  const cust = customers.find(c => normalizePhone(c.phone_number || c.raw_phone) === norm);
+  const cleanPhone = String(phone).replace(/[^0-9]/g, '');
+  const cleanNo0 = cleanPhone.replace(/^0+/, '');
+
+  const cust = customers.find(c => {
+    const rawTarget = String(c.phone_number || c.raw_phone || '').replace(/[^0-9]/g, '');
+    const cWith0 = rawTarget.startsWith('0') ? rawTarget : ('0' + rawTarget);
+    const cNo0 = rawTarget.replace(/^0+/, '');
+    return cWith0 === cleanPhone || cNo0 === cleanNo0 || rawTarget === cleanPhone;
+  });
   
   const suggestionsBox = document.getElementById('pos-customer-suggestions');
   if (suggestionsBox) suggestionsBox.classList.add('hidden');
 
+  const pInput = document.getElementById('pos-customer-phone');
+  if (pInput) pInput.value = phone.startsWith('0') ? phone : ('0' + phone);
+
   if (cust) {
-    const pInput = document.getElementById('pos-customer-phone');
-    if (pInput) pInput.value = normalizePhone(cust.phone_number || cust.raw_phone);
     applyCustomerData(cust);
   }
 }
@@ -364,7 +393,8 @@ function applyCustomerData(cust) {
   const card = document.getElementById('pos-customer-card');
   if (card) card.classList.remove('hidden');
   const currentMonth = new Date().getMonth() + 1;
-  const cPhone = normalizePhone(cust.phone_number || cust.raw_phone);
+  const rawP = String(cust.phone_number || cust.raw_phone || '').replace(/[^0-9]/g, '');
+  const cPhone = rawP.startsWith('0') ? rawP : ('0' + rawP);
 
   const nameInput = document.getElementById('pos-customer-name');
   if (nameInput) nameInput.value = cust.customer_name;
@@ -433,16 +463,6 @@ function applyCustomerData(cust) {
     }
   }
 }
-
-// Đóng gợi ý khi bấm ra ngoài
-document.addEventListener('click', function(e) {
-  const suggestionsBox = document.getElementById('pos-customer-suggestions');
-  const phoneInput = document.getElementById('pos-customer-phone');
-  if (suggestionsBox && phoneInput && !phoneInput.contains(e.target) && !suggestionsBox.contains(e.target)) {
-    suggestionsBox.classList.add('hidden');
-  }
-});
-
 
 function applyBirthdayDiscount() {
   alert('🎂 Đã áp dụng ưu đãi giảm 20% cho khách sinh nhật trong tháng!');
