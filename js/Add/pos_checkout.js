@@ -342,21 +342,30 @@ function matchCustomerPhoneOrName(c, rawInput, normInput) {
   if (!c) return false;
   const name = (c.customer_name || '').toLowerCase();
   const rawTarget = String(c.phone_number || c.raw_phone || '').replace(/[^0-9]/g, '');
-  
+  if (!rawTarget && !name) return false;
+
   const cWith0 = rawTarget.startsWith('0') ? rawTarget : ('0' + rawTarget);
   const cNo0 = rawTarget.replace(/^0+/, '');
 
   const uWith0 = normInput.startsWith('0') ? normInput : ('0' + normInput);
   const uNo0 = normInput.replace(/^0+/, '');
 
-  const matchPhone = (normInput && (
-    cWith0.includes(normInput) || 
-    cWith0.includes(uWith0) || 
-    cNo0.includes(uNo0) || 
-    rawTarget.includes(normInput)
-  ));
+  // 1. Khớp SĐT: Bắt buộc phải BẮT ĐẦU từ đầu số (Prefix Match chuẩn xác)
+  let matchPhone = false;
+  if (normInput) {
+    matchPhone = (
+      cWith0.startsWith(normInput) || 
+      cWith0.startsWith(uWith0) || 
+      cNo0.startsWith(uNo0) || 
+      rawTarget.startsWith(normInput)
+    );
+  }
 
-  const matchName = (rawInput && name.includes(rawInput.toLowerCase()));
+  // 2. Khớp Tên: Tìm theo chữ cái trong tên khách
+  let matchName = false;
+  if (rawInput && /[a-zA-ZÀ-ỹ]/.test(rawInput)) {
+    matchName = name.includes(rawInput.toLowerCase());
+  }
 
   return Boolean(matchPhone || matchName);
 }
@@ -433,29 +442,35 @@ function renderSuggestionsHTML(matches) {
   const suggestionsBox = document.getElementById('pos-customer-suggestions');
   if (!suggestionsBox) return;
 
-  suggestionsBox.innerHTML = matches.map(c => {
-    let rawP = String(c.phone_number || c.raw_phone || '').replace(/[^0-9]/g, '');
-    let displayP = rawP.startsWith('0') ? rawP : ('0' + rawP);
-    let bMonth = c.birth_month || parseBirthMonth(c.birthday);
-    const visits = Number(c.cycle_visits) || 0;
-    const vCount = Number(c.voucher_count) || 0;
+  suggestionsBox.innerHTML = `
+    <div class="px-3 py-1.5 bg-[#FAF6F1] text-[10px] font-extrabold text-[#7E7272] uppercase tracking-wider flex items-center justify-between border-b border-[#F0EAE1]">
+      <span>🔍 Khách hàng tìm thấy (${matches.length})</span>
+      <span class="text-[9px] text-[#A39696]">Chạm để chọn</span>
+    </div>
+    ${matches.map(c => {
+      let rawP = String(c.phone_number || c.raw_phone || '').replace(/[^0-9]/g, '');
+      let displayP = rawP.startsWith('0') ? rawP : ('0' + rawP);
+      let bMonth = c.birth_month || parseBirthMonth(c.birthday);
+      const visits = Number(c.cycle_visits) || 0;
+      const vCount = Number(c.voucher_count) || 0;
 
-    return `
-      <div onclick="selectCustomerSuggestion('${displayP}')" class="p-3.5 hover:bg-[#FFF5F2] cursor-pointer transition flex items-center justify-between gap-2 border-b border-[#FAF6F1] last:border-b-0 bg-white">
-        <div>
-          <div class="font-bold text-xs sm:text-sm text-[#2D2424] flex items-center gap-1.5">
-            <span>👤 ${c.customer_name}</span>
-            ${bMonth ? `<span class="text-[10px] text-[#A39696] font-semibold">(T${bMonth})</span>` : ''}
-            ${vCount > 0 ? `<span class="text-[9px] font-extrabold px-1.5 py-0.5 rounded-full bg-[#E8F8F5] text-[#2E7D6D]">🎁 ${vCount} Voucher</span>` : ''}
+      return `
+        <div onclick="selectCustomerSuggestion('${displayP}')" class="p-3 hover:bg-[#FFF5F2] cursor-pointer transition flex items-center justify-between gap-2 border-b border-[#FAF6F1] last:border-b-0 bg-white">
+          <div>
+            <div class="font-bold text-xs sm:text-sm text-[#2D2424] flex items-center gap-1.5">
+              <span>👤 ${c.customer_name}</span>
+              ${bMonth ? `<span class="text-[10px] text-[#A39696] font-semibold">(T${bMonth})</span>` : ''}
+              ${vCount > 0 ? `<span class="text-[9px] font-extrabold px-1.5 py-0.5 rounded-full bg-[#E8F8F5] text-[#2E7D6D]">🎁 ${vCount} Voucher</span>` : ''}
+            </div>
+            <div class="text-[11px] font-mono text-[#E58A7B] font-semibold mt-0.5">${displayP}</div>
           </div>
-          <div class="text-[11px] font-mono text-[#E58A7B] font-semibold mt-0.5">${displayP}</div>
+          <span class="text-[11px] font-extrabold px-2 py-0.5 rounded-full bg-[#FAF6F1] text-[#7E7272] border border-[#F0EAE1]">
+            ${visits}/10 ca
+          </span>
         </div>
-        <span class="text-[11px] font-extrabold px-2 py-0.5 rounded-full bg-[#FAF6F1] text-[#7E7272] border border-[#F0EAE1]">
-          ${visits}/10 ca
-        </span>
-      </div>
-    `;
-  }).join('');
+      `;
+    }).join('')}
+  `;
 
   suggestionsBox.classList.remove('hidden');
 }
