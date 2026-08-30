@@ -1,4 +1,4 @@
-const APP_VERSION = 'v0.0.7.0';
+const APP_VERSION = 'v0.0.7.1';
 // =============================================================
 // SELENA SPA - GLOBAL CONFIG & CONSTANTS
 // =============================================================
@@ -71,6 +71,39 @@ function parsePercentage(val) {
   if (isNaN(num)) return 10;
   if (num > 0 && num <= 1) return Math.round(num * 100);
   return Math.round(num);
+}
+
+function getReceiptDurationStatus(r) {
+  const menu = getStored('menu', DEFAULT_MENU);
+  let targetMin = Number(r.duration_target_min) || 0;
+
+  if (!targetMin) {
+    const s = menu.find(m => m.service_id === r.service_id || (m.service_name && r.service_name && m.service_name.toLowerCase() === r.service_name.toLowerCase()));
+    if (s && s.duration_min) {
+      targetMin = Number(s.duration_min);
+    } else {
+      const sName = (r.service_name || '').toLowerCase();
+      if (sName.includes('bé') || sName.includes('be')) targetMin = 30;
+      else if (sName.includes('1')) targetMin = 45;
+      else if (sName.includes('2')) targetMin = 60;
+      else if (sName.includes('3')) targetMin = 75;
+      else if (sName.includes('4')) targetMin = 90;
+      else if (sName.includes('5')) targetMin = 105;
+      else targetMin = 45;
+    }
+  }
+
+  const actualMin = Number(r.duration_min) || Number(r.duration_actual_min) || 45;
+  const isFullTime = actualMin >= targetMin;
+
+  return {
+    actualMin: actualMin,
+    targetMin: targetMin,
+    isFullTime: isFullTime,
+    colorClass: isFullTime ? 'text-[#2E7D6D]' : 'text-[#D97706]',
+    label: `${actualMin}p`,
+    title: isFullTime ? `Đủ giờ (${actualMin}/${targetMin}p)` : `Thiếu giờ (${actualMin}/${targetMin}p)`
+  };
 }
 
 function formatCleanTime(val) {

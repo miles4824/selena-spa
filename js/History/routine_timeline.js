@@ -94,14 +94,14 @@ function loadStaffHistoryList(targetDate) {
         const totalEarn = myComm + myTip;
 
         const cleanTime = formatCleanTime(r.start_time || r.time);
-        const durationMin = getReceiptDuration(r);
+        const durStatus = getReceiptDurationStatus(r);
         const isCash = r.payment_method === 'Tiền mặt';
 
         return `
           <div class="flex gap-3.5 items-center">
             <div class="text-right w-12 shrink-0 py-1">
               <span class="text-xs font-extrabold text-[#2D2424] block font-mono leading-tight">${cleanTime}</span>
-              <span class="text-[10px] text-[#2E7D6D] font-extrabold block leading-tight mt-0.5">${durationMin}p</span>
+              <span class="text-[10px] ${durStatus.colorClass} font-extrabold block leading-tight mt-0.5" title="${durStatus.title}">${durStatus.label}</span>
             </div>
 
             <div class="spa-card p-4 flex-1 space-y-2.5">
