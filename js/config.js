@@ -1,4 +1,4 @@
-const APP_VERSION = 'v0.0.8.0';
+const APP_VERSION = 'v0.0.8.1';
 // =============================================================
 // SELENA SPA - GLOBAL CONFIG & CONSTANTS
 // =============================================================
@@ -189,19 +189,18 @@ function normalizeDateKey(val) {
 // Lấy danh sách 7 ngày trong tuần tính từ Thứ 2 (T2) đến Chủ Nhật (CN)
 // Map lưu baseDate cho từng container lịch để chuyển tuần độc lập
 // Map lưu baseDate cho từng container lịch để chuyển tuần độc lập
+// Map lưu baseDate cho từng container lịch để chuyển tuần độc lập
 const dateStripBaseDates = {};
+const lastSlideDirection = {};
 
-function openSystemDatePicker(pickerId) {
-  const inp = document.getElementById(pickerId);
-  if (!inp) return;
-  if (typeof inp.showPicker === 'function') {
-    try {
-      inp.showPicker();
-      return;
-    } catch (e) {}
+function updateStickyDateOffset(containerId) {
+  const container = document.getElementById(containerId);
+  if (container) {
+    const h = container.offsetHeight;
+    if (h > 0) {
+      document.documentElement.style.setProperty('--sticky-date-offset', `${h - 2}px`);
+    }
   }
-  inp.focus();
-  inp.click();
 }
 
 function formatDateVN(dateStr) {
@@ -211,8 +210,6 @@ function formatDateVN(dateStr) {
   if (m) return `${m[3]}/${m[2]}/${m[1]}`;
   return dateStr;
 }
-
-const lastSlideDirection = {};
 
 function changeWeekOffset(containerId, offsetWeeks, onDateClickCallback) {
   let base = dateStripBaseDates[containerId] || new Date();
@@ -232,6 +229,45 @@ function onCustomDatePicked(containerId, pickedDateStr, onDateClickCallback) {
   
   if (typeof window[onDateClickCallback] === 'function') {
     window[onDateClickCallback](normDate);
+  }
+}
+
+// CÀI ĐẶT CẢM ỨNG VUỐT TRÁI / PHẢI ĐỔI TUẦN TRÊN MOBILE
+function attachSwipeToCalendar(containerId, onDateClickCallback) {
+  const container = document.getElementById(containerId);
+  if (!container || container.dataset.swipeAttached) return;
+  container.dataset.swipeAttached = 'true';
+
+  let touchStartX = 0;
+  let touchStartY = 0;
+  let touchEndX = 0;
+  let touchEndY = 0;
+
+  container.addEventListener('touchstart', e => {
+    touchStartX = e.changedTouches[0].screenX;
+    touchStartY = e.changedTouches[0].screenY;
+  }, { passive: true });
+
+  container.addEventListener('touchend', e => {
+    touchEndX = e.changedTouches[0].screenX;
+    touchEndY = e.changedTouches[0].screenY;
+    handleSwipe();
+  }, { passive: true });
+
+  function handleSwipe() {
+    const diffX = touchEndX - touchStartX;
+    const diffY = touchEndY - touchStartY;
+    
+    // Nếu vuốt ngang > 35px và khoảng cách ngang lớn hơn dọc
+    if (Math.abs(diffX) > 35 && Math.abs(diffX) > Math.abs(diffY)) {
+      if (diffX < 0) {
+        // Vuốt sang trái -> Sang tuần sau (Tiến)
+        changeWeekOffset(containerId, 1, onDateClickCallback);
+      } else {
+        // Vuốt sang phải -> Về tuần trước (Lùi)
+        changeWeekOffset(containerId, -1, onDateClickCallback);
+      }
+    }
   }
 }
 
@@ -264,57 +300,42 @@ function getWeekDaysFromMonday(baseDate = new Date()) {
   return weekDays;
 }
 
-// Component Lịch Tuần Dùng Chung Toàn Diện (T2 -> CN, Điều Hướng Tuần & Chọn Lịch Nhanh)
-function updateStickyDateOffset(containerId) {
-  const container = document.getElementById(containerId);
-  if (container) {
-    const h = container.offsetHeight;
-    if (h > 0) {
-      document.documentElement.style.setProperty('--sticky-date-offset', `${h - 2}px`);
-    }
-  }
-}
-
+// Component Lịch Tuần Dùng Chung Toàn Diện (Hỗ Trợ Vuốt Trái/Phải & Chọn Ngày iOS iPhone)
 function renderDateStripComponent(containerId, activeDateStr, onDateClickCallback) {
   const container = document.getElementById(containerId);
   if (!container) return;
 
   const baseDate = dateStripBaseDates[containerId] || new Date();
   const weekDays = getWeekDaysFromMonday(baseDate);
-  const currentActive = activeDateStr || 'ALL'; // MẶC ĐỊNH LÀ 'ALL'
+  const currentActive = activeDateStr || 'ALL';
   const isAllActive = currentActive === 'ALL';
 
   const startLabel = `${weekDays[0].dayNum}/${weekDays[0].monthNum}`;
   const endLabel = `${weekDays[6].dayNum}/${weekDays[6].monthNum}`;
-  const pickerId = `${containerId}-date-picker`;
   const animClass = lastSlideDirection[containerId] || '';
   lastSlideDirection[containerId] = null;
+  const pickerId = `${containerId}-date-picker`;
 
   container.innerHTML = `
-    <div class="spa-card p-3.5 space-y-3">
-      <!-- Thanh Điều Hướng: Chuyển Tuần + Nút Chọn Ngày Lịch + Tất Cả -->
-      <div class="flex items-center justify-between gap-2 flex-wrap">
-        <div class="flex items-center gap-1.5 bg-[#FAF6F1] p-1 rounded-2xl border border-[#F0EAE1]">
-          <button type="button" onclick="changeWeekOffset('${containerId}', -1, '${onDateClickCallback}')" title="Tuần trước" class="w-7 h-7 rounded-xl bg-white hover:bg-[#FFF0EB] text-[#7E7272] hover:text-[#E58A7B] flex items-center justify-center transition cursor-pointer active:scale-90">
-            <i data-lucide="chevron-left" class="w-4 h-4"></i>
-          </button>
-          <span class="text-xs font-bold text-[#2D2424] px-1.5 font-mono">
-            ${startLabel} — ${endLabel}
-          </span>
-          <button type="button" onclick="changeWeekOffset('${containerId}', 1, '${onDateClickCallback}')" title="Tuần sau" class="w-7 h-7 rounded-xl bg-white hover:bg-[#FFF0EB] text-[#7E7272] hover:text-[#E58A7B] flex items-center justify-center transition cursor-pointer active:scale-90">
-            <i data-lucide="chevron-right" class="w-4 h-4"></i>
-          </button>
+    <div class="spa-card p-3.5 space-y-2.5 touch-pan-y select-none">
+      <!-- Header: Khoảng Ngày + Chọn Ngày (Hỗ trợ iPhone 100%) + Tất Cả -->
+      <div class="flex items-center justify-between gap-2">
+        <div class="flex items-center gap-1.5 text-xs font-bold text-[#2D2424]">
+          <i data-lucide="calendar" class="w-3.5 h-3.5 text-[#E58A7B]"></i>
+          <span class="font-mono">${startLabel} — ${endLabel}</span>
         </div>
 
         <div class="flex items-center gap-1.5">
-          <!-- Chọn Ngày Lịch Bất Kỳ -->
-          <div class="relative">
-            <button type="button" onclick="openSystemDatePicker('${pickerId}')" class="flex items-center gap-1 text-[11px] font-bold px-2.5 py-1.5 rounded-xl bg-[#FAF6F1] hover:bg-[#FFF0EB] text-[#2D2424] hover:text-[#E58A7B] border border-[#F0EAE1] cursor-pointer transition active:scale-95">
-              <i data-lucide="calendar" class="w-3.5 h-3.5 text-[#E58A7B]"></i>
-              <span>Chọn ngày</span>
-            </button>
-            <input type="date" id="${pickerId}" value="${isAllActive ? '' : currentActive}" onchange="onCustomDatePicked('${containerId}', this.value, '${onDateClickCallback}')" class="absolute inset-0 opacity-0 pointer-events-none w-full h-full">
-          </div>
+          <!-- Chọn Ngày Tương Thích Hoàn Hảo iPhone iOS Safari -->
+          <label class="relative inline-flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-1.5 rounded-xl bg-[#FAF6F1] hover:bg-[#FFF0EB] text-[#2D2424] hover:text-[#E58A7B] border border-[#F0EAE1] cursor-pointer transition active:scale-95 overflow-hidden">
+            <i data-lucide="calendar" class="w-3.5 h-3.5 text-[#E58A7B]"></i>
+            <span>Chọn ngày</span>
+            <input type="date" 
+                   id="${pickerId}" 
+                   value="${isAllActive ? '' : currentActive}" 
+                   onchange="onCustomDatePicked('${containerId}', this.value, '${onDateClickCallback}')" 
+                   class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
+          </label>
 
           <!-- Nút Xem Tất Cả -->
           <button type="button" onclick="${onDateClickCallback}('ALL')" class="text-[11px] font-extrabold px-3 py-1.5 rounded-xl transition cursor-pointer ${isAllActive ? 'bg-[#E58A7B] text-white font-black' : 'bg-[#FAF6F1] text-[#7E7272] hover:bg-[#FFF0EB] hover:text-[#E58A7B] border border-[#F0EAE1]'}">
@@ -323,14 +344,14 @@ function renderDateStripComponent(containerId, activeDateStr, onDateClickCallbac
         </div>
       </div>
 
-      <!-- 7 Nút Ngày: T2, T3, T4, T5, T6, T7, CN (Không Có Dấu Chấm Rối Mắt) -->
+      <!-- 7 Nút Ngày: T2, T3, T4, T5, T6, T7, CN (Có Thể Vuốt Ngang Trái/Phải Để Chuyển Tuần) -->
       <div id="${containerId}-days-row" class="flex items-center justify-between w-full gap-1.5 text-center ${animClass}">
         ${weekDays.map(item => {
           const isSelected = !isAllActive && (item.dateStr === currentActive);
           const isToday = item.isToday;
 
           let bgClass = 'bg-[#F7F2EC] text-[#7E7272] hover:bg-[#FFF0EB] hover:text-[#E58A7B]';
-          let labelText = item.label; // LUÔN LÀ T2, T3, T4, T5, T6, T7, CN
+          let labelText = item.label;
           let labelClass = 'text-[10px] text-[#A39696] uppercase font-bold';
           let numClass = 'text-sm font-extrabold text-[#2D2424]';
 
@@ -354,6 +375,8 @@ function renderDateStripComponent(containerId, activeDateStr, onDateClickCallbac
       </div>
     </div>
   `;
+
+  attachSwipeToCalendar(containerId, onDateClickCallback);
   lucide.createIcons();
   requestAnimationFrame(() => updateStickyDateOffset(containerId));
 }
