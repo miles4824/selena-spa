@@ -1,3 +1,14 @@
+function parseBirthMonth(val) {
+  if (!val) return 0;
+  if (typeof val === 'number' && val >= 1 && val <= 12) return val;
+  let s = String(val).trim();
+  let mMatch = s.match(/(\d{4})[/-](\d{1,2})[/-](\d{1,2})/);
+  if (mMatch) return Number(mMatch[2]);
+  let num = parseInt(s.replace(/[^\d]/g, ''), 10);
+  if (!isNaN(num) && num >= 1 && num <= 12) return num;
+  return 0;
+}
+
 // Helper lấy danh sách users với KTV xếp trước, Sếp luôn ở dưới cùng
 function getSortedUsersList() {
   const users = getStored('users', DEFAULT_USERS);

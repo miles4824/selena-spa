@@ -1,4 +1,15 @@
-const APP_VERSION = 'v0.1.1.5';
+function parseBirthMonth(val) {
+  if (!val) return 0;
+  if (typeof val === 'number' && val >= 1 && val <= 12) return val;
+  let s = String(val).trim();
+  let mMatch = s.match(/(\d{4})[/-](\d{1,2})[/-](\d{1,2})/);
+  if (mMatch) return Number(mMatch[2]);
+  let num = parseInt(s.replace(/[^\d]/g, ''), 10);
+  if (!isNaN(num) && num >= 1 && num <= 12) return num;
+  return 0;
+}
+
+const APP_VERSION = 'v0.1.1.6';
 // =============================================================
 // SELENA SPA - GLOBAL CONFIG & CONSTANTS
 // =============================================================
