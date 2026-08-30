@@ -9,6 +9,13 @@ function onStaffDateSelect(dateStr) {
   loadStaffHistoryList(dateStr);
 }
 
+function getReceiptDuration(r) {
+  if (r.duration_min && Number(r.duration_min) > 0) return Number(r.duration_min);
+  if (r.duration_actual_min && Number(r.duration_actual_min) > 0) return Number(r.duration_actual_min);
+  if (r.duration_target_min && Number(r.duration_target_min) > 0) return Number(r.duration_target_min);
+  return 45;
+}
+
 function loadStaffHistoryList(targetDate) {
   const receipts = getStored('receipts', []);
   const container = document.getElementById('staff-receipts-list');
@@ -87,14 +94,14 @@ function loadStaffHistoryList(targetDate) {
         const totalEarn = myComm + myTip;
 
         const cleanTime = formatCleanTime(r.start_time || r.time);
-        const cleanDate = formatCleanDate(r.date || r.created_at);
+        const durationMin = getReceiptDuration(r);
         const isCash = r.payment_method === 'Tiền mặt';
 
         return `
           <div class="flex gap-3.5 items-start">
             <div class="text-right w-12 pt-3 shrink-0">
               <span class="text-xs font-extrabold text-[#2D2424] block font-mono">${cleanTime}</span>
-              <span class="text-[10px] text-[#A39696] font-mono block">${cleanDate}</span>
+              <span class="text-[10px] text-[#2E7D6D] font-extrabold block">${durationMin}p</span>
             </div>
 
             <div class="spa-card p-4 flex-1 space-y-2.5">
@@ -117,7 +124,7 @@ function loadStaffHistoryList(targetDate) {
               </div>
 
               ${r.has_staff_2 || myTip > 0 ? `
-                <div class="bg-[#FAF6F1] p-2.5 rounded-2xl border border-[#F0EAE1] flex justify-between items-center text-xs">
+                <div class="bg-[#FAF6F1] p-2.5 rounded-2xl border border-[#F0EAE1] flex justify-between items-center text-xs flex-wrap gap-1">
                   <div class="flex items-center gap-1 text-[#7E7272]">
                     <i data-lucide="users" class="w-3.5 h-3.5 text-[#E58A7B]"></i>
                     <span>Cùng làm: <b class="text-[#2D2424]">${r.staff_1_name} & ${r.staff_2_name}</b></span>
