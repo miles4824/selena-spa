@@ -717,6 +717,19 @@ function createReceipt(params) {
         activeCycleRow = -1; // Cần mở chu kỳ 60 ngày mới
       }
 
+      // Đếm số chu kỳ của khách hàng này
+      let custCycleCount = 0;
+      let activeCycleIndexForCust = 1;
+      for (let i = 1; i < dataCy.length; i++) {
+        let cyPhone = getCell(dataCy[i], colMapCy, ['customer_phone', 'phone']);
+        if (matchPhone(cyPhone, phone)) {
+          custCycleCount += 1;
+          if (i + 1 === activeCycleRow) {
+            activeCycleIndexForCust = custCycleCount;
+          }
+        }
+      }
+
       if (activeCycleRow > 0) {
         activeCycleVisits += 1;
         calculatedCycleStart = activeCycleStartDate;
@@ -725,7 +738,7 @@ function createReceipt(params) {
         let colVisits = colMapCy['visits_count'] !== undefined ? colMapCy['visits_count'] + 1 : 6;
         let colNotes = colMapCy['notes'] !== undefined ? colMapCy['notes'] + 1 : 9;
         sheetCycles.getRange(activeCycleRow, colVisits).setValue(activeCycleVisits);
-        sheetCycles.getRange(activeCycleRow, colNotes).setValue(`Đang tích chu kỳ (${activeCycleVisits}/10 ca)`);
+        sheetCycles.getRange(activeCycleRow, colNotes).setValue(`Đang tích chu kỳ ${activeCycleIndexForCust} (${activeCycleVisits}/10 ca)`);
 
         if (activeCycleVisits >= 10) {
           // Hoàn thành chu kỳ -> Thưởng Voucher
@@ -755,7 +768,9 @@ function createReceipt(params) {
         }
       } else {
         // Mở chu kỳ 60 ngày mới trong tb_loyalty_cycles
-        let activeCycleId = 'CYC_' + Utilities.formatDate(now, 'GMT+7', 'yyMMddHHmmss');
+        let newCycleNumber = custCycleCount + 1;
+        let rowCount = dataCy.length;
+        let activeCycleId = 'CYC_' + (rowCount < 10 ? '0' + rowCount : rowCount);
         let endDateNew = addDaysToDate(dateStr, 60);
         calculatedCycleStart = dateStr;
         calculatedCycleVisits = 1;
@@ -769,7 +784,7 @@ function createReceipt(params) {
           1,
           'ACTIVE',
           '',
-          'Đang tích chu kỳ (1/10 ca)'
+          `Đang tích chu kỳ ${newCycleNumber} (1/10 ca)`
         ]);
       }
     }
