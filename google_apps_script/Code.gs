@@ -69,9 +69,28 @@ function parseBirthMonth(val) {
   return 0;
 }
 
+function normalizePhone(p) {
+  if (!p) return '';
+  let clean = String(p).replace(/[^0-9]/g, '');
+  if (clean.length === 9 && !clean.startsWith('0')) {
+    clean = '0' + clean;
+  }
+  return clean;
+}
+
+function matchPhone(p1, p2) {
+  if (!p1 || !p2) return false;
+  let s1 = normalizePhone(p1);
+  let s2 = normalizePhone(p2);
+  if (s1 === s2) return true;
+  let raw1 = s1.replace(/^0+/, '');
+  let raw2 = s2.replace(/^0+/, '');
+  return raw1 === raw2;
+}
+
 /**
  * =========================================================================
- * SELENA SPA - API GOOGLE APPS SCRIPT (GAS SERVER BACKEND V2.6 - ĐỒNG BỘ 4 BẢNG KHỚP 8 CỘT)
+ * SELENA SPA - API GOOGLE APPS SCRIPT (GAS SERVER BACKEND V2.7 - FIX KHỚP SĐT 100%)
  * =========================================================================
  */
 
@@ -101,7 +120,7 @@ function handleRequest(e) {
 
     switch (action) {
       case 'ping':
-        result = { success: true, message: 'Selena Spa Dynamic Backend v2.6 is active!', timestamp: new Date().toISOString() };
+        result = { success: true, message: 'Selena Spa Dynamic Backend v2.7 is active!', timestamp: new Date().toISOString() };
         break;
 
       case 'login':
@@ -154,11 +173,6 @@ function handleRequest(e) {
       message: err.toString()
     })).setMimeType(ContentService.MimeType.JSON);
   }
-}
-
-function normalizePhone(p) {
-  if (!p) return '';
-  return String(p).replace(/[^0-9]/g, '');
 }
 
 function parsePercentage(val) {
@@ -225,9 +239,9 @@ function handleLogin(params) {
 
   for (let i = 1; i < data.length; i++) {
     let row = data[i];
-    let uUserId = normalizePhone(getCell(row, colMap, ['user_id', 'phone', 'so_dien_thoai']));
+    let uUserId = getCell(row, colMap, ['user_id', 'phone', 'so_dien_thoai']);
     let uStaffId = String(getCell(row, colMap, ['staff_id', 'ma_ktv', 'user_id'])).trim();
-    let uPhone = normalizePhone(getCell(row, colMap, ['phone', 'user_id', 'so_dien_thoai']));
+    let uPhone = getCell(row, colMap, ['phone', 'user_id', 'so_dien_thoai']);
     let uPwd = String(getCell(row, colMap, ['password', 'pin'], '123456')).trim();
     let fullName = String(getCell(row, colMap, ['full_name', 'ten_nhan_vien', 'ho_ten'])).trim();
     let role = String(getCell(row, colMap, ['role', 'chuc_vu'], 'staff')).trim();
@@ -235,7 +249,7 @@ function handleLogin(params) {
     let commRate = parsePercentage(getCell(row, colMap, ['commission_rate', 'rate', 'hoa_hong'], 10));
     let baseSalary = Number(String(getCell(row, colMap, ['base_salary', 'luong_cung'], 0)).replace(/[^\d]/g, '')) || 0;
 
-    let matchUser = (inputPhone === uPhone || inputPhone === uUserId || inputPhone === uStaffId);
+    let matchUser = (matchPhone(inputPhone, uPhone) || matchPhone(inputPhone, uUserId) || inputPhone === uStaffId);
     let matchPwd = (inputPwd === uPwd);
 
     if (matchUser && matchPwd) {
@@ -243,9 +257,9 @@ function handleLogin(params) {
       return {
         success: true,
         user: {
-          user_id: uUserId || uPhone,
+          user_id: normalizePhone(uUserId) || normalizePhone(uPhone),
           staff_id: uStaffId || uUserId,
-          phone: uPhone,
+          phone: normalizePhone(uPhone),
           full_name: fullName || (isOwner ? 'Miles (Chủ tiệm)' : 'KTV Selena'),
           role: isOwner ? 'Chủ tiệm' : 'Kỹ thuật viên',
           salary_type: salaryType,
@@ -316,8 +330,8 @@ function checkCustomer(phoneNumber) {
     const dataC = sheetCust.getDataRange().getValues();
     for (let i = 1; i < dataC.length; i++) {
       let row = dataC[i];
-      let cPhone = normalizePhone(getCell(row, colMapC, ['phone_number', 'phone', 'so_dien_thoai']));
-      if (cPhone === phone) {
+      let cPhone = getCell(row, colMapC, ['phone_number', 'phone', 'so_dien_thoai']);
+      if (matchPhone(cPhone, phone)) {
         let rawBday = getCell(row, colMapC, ['birthday', 'birth_month', 'ngay_sinh']);
         let cycleStart = formatDateVal(getCell(row, colMapC, ['cycle_start_date', 'ngay_bat_dau_chu_ky']));
         let cycleVisits = Number(getCell(row, colMapC, ['cycle_visits', 'so_lan_chu_ky'], 0)) || 0;
@@ -330,9 +344,9 @@ function checkCustomer(phoneNumber) {
         let isCycleExpired = (cycleEnd && todayStr > cycleEnd);
 
         customer = {
-          phone_number: cPhone,
+          phone_number: normalizePhone(cPhone),
           customer_name: String(getCell(row, colMapC, ['customer_name', 'name', 'ten_khach'])),
-          birthday: formatDateVal(rawBday) || String(rawBday),
+          birthday: bMonth ? bMonth : (formatDateVal(rawBday) || String(rawBday)),
           birth_month: bMonth,
           cycle_start_date: cycleStart,
           cycle_end_date: cycleEnd,
@@ -354,9 +368,9 @@ function checkCustomer(phoneNumber) {
     const dataCy = sheetCycles.getDataRange().getValues();
     for (let i = 1; i < dataCy.length; i++) {
       let row = dataCy[i];
-      let cyPhone = normalizePhone(getCell(row, colMapCy, ['customer_phone', 'phone']));
+      let cyPhone = getCell(row, colMapCy, ['customer_phone', 'phone']);
       let status = String(getCell(row, colMapCy, ['status', 'trang_thai'], '')).toUpperCase();
-      if (cyPhone === phone && status === 'ACTIVE') {
+      if (matchPhone(cyPhone, phone) && status === 'ACTIVE') {
         let endDateStr = formatDateVal(getCell(row, colMapCy, ['end_date', 'ngay_ket_thuc']));
         let isExpired = (todayStr > endDateStr);
         activeCycle = {
@@ -379,9 +393,9 @@ function checkCustomer(phoneNumber) {
     const dataV = sheetVouchers.getDataRange().getValues();
     for (let i = 1; i < dataV.length; i++) {
       let row = dataV[i];
-      let vPhone = normalizePhone(getCell(row, colMapV, ['customer_phone', 'phone']));
+      let vPhone = getCell(row, colMapV, ['customer_phone', 'phone']);
       let status = String(getCell(row, colMapV, ['status', 'trang_thai'], '')).toLowerCase();
-      if (vPhone === phone && (status.includes('chưa') || status === 'active' || status === 'unused')) {
+      if (matchPhone(vPhone, phone) && (status.includes('chưa') || status === 'active' || status === 'unused')) {
         let expDate = formatDateVal(getCell(row, colMapV, ['expiry_date', 'han_dung']));
         if (!expDate || expDate >= todayStr) {
           availableVouchers.push({
@@ -425,8 +439,8 @@ function updateCustomerNotes(params) {
   let foundRow = -1;
 
   for (let i = 1; i < dataC.length; i++) {
-    let cPhone = normalizePhone(getCell(dataC[i], colMapC, ['phone_number', 'phone']));
-    if (cPhone === phone) {
+    let cPhone = getCell(dataC[i], colMapC, ['phone_number', 'phone']);
+    if (matchPhone(cPhone, phone)) {
       foundRow = i + 1;
       break;
     }
@@ -446,7 +460,7 @@ function updateCustomerNotes(params) {
       let colBday = colMapC['birthday'] !== undefined ? colMapC['birthday'] + 1 : 3;
       sheetCust.getRange(foundRow, colBday).setValue(newBirthday);
     }
-    if (newName) {
+    if (newName && newName !== 'Khách hàng') {
       let colName = colMapC['customer_name'] !== undefined ? colMapC['customer_name'] + 1 : 2;
       sheetCust.getRange(foundRow, colName).setValue(newName);
     }
@@ -511,8 +525,8 @@ function giftVoucher(params) {
     let found = false;
 
     for (let i = 1; i < dataC.length; i++) {
-      let cPhone = normalizePhone(getCell(dataC[i], colMapC, ['phone_number', 'phone']));
-      if (cPhone === phone) {
+      let cPhone = getCell(dataC[i], colMapC, ['phone_number', 'phone']);
+      if (matchPhone(cPhone, phone)) {
         let vCount = Number(getCell(dataC[i], colMapC, ['voucher_count', 'so_voucher'], 0)) || 0;
         let colV = colMapC['voucher_count'] !== undefined ? colMapC['voucher_count'] + 1 : 7;
         sheetCust.getRange(i + 1, colV).setValue(vCount + 1);
@@ -660,10 +674,10 @@ function createReceipt(params) {
       const dataV = sheetVouchers.getDataRange().getValues();
       for (let i = 1; i < dataV.length; i++) {
         let vId = String(getCell(dataV[i], colMapV, ['voucher_id', 'ma_voucher']));
-        let vPhone = normalizePhone(getCell(dataV[i], colMapV, ['customer_phone', 'phone']));
+        let vPhone = getCell(dataV[i], colMapV, ['customer_phone', 'phone']);
         let vStatus = String(getCell(dataV[i], colMapV, ['status', 'trang_thai'], '')).toLowerCase();
         
-        if (vPhone === phone && (vId === usedVoucherId || (!usedVoucherId && (vStatus.includes('chưa') || vStatus === 'active')))) {
+        if (matchPhone(vPhone, phone) && (vId === usedVoucherId || (!usedVoucherId && (vStatus.includes('chưa') || vStatus === 'active')))) {
           let colStatus = colMapV['status'] !== undefined ? colMapV['status'] + 1 : 7;
           let colUsed = colMapV['used_receipt_id'] !== undefined ? colMapV['used_receipt_id'] + 1 : 8;
           sheetVouchers.getRange(i + 1, colStatus).setValue('Đã dùng');
@@ -683,9 +697,9 @@ function createReceipt(params) {
       let activeCycleStartDate = '';
 
       for (let i = 1; i < dataCy.length; i++) {
-        let cyPhone = normalizePhone(getCell(dataCy[i], colMapCy, ['customer_phone', 'phone']));
+        let cyPhone = getCell(dataCy[i], colMapCy, ['customer_phone', 'phone']);
         let status = String(getCell(dataCy[i], colMapCy, ['status', 'trang_thai'], '')).toUpperCase();
-        if (cyPhone === phone && status === 'ACTIVE') {
+        if (matchPhone(cyPhone, phone) && status === 'ACTIVE') {
           activeCycleRow = i + 1;
           activeCycleVisits = Number(getCell(dataCy[i], colMapCy, ['visits_count', 'so_lan'], 0)) || 0;
           activeCycleStartDate = formatDateVal(getCell(dataCy[i], colMapCy, ['start_date', 'ngay_bat_dau']));
@@ -766,8 +780,8 @@ function createReceipt(params) {
       let foundIndex = -1;
 
       for (let i = 1; i < dataC.length; i++) {
-        let cPhone = normalizePhone(getCell(dataC[i], colMapC, ['phone_number', 'phone']));
-        if (cPhone === phone) {
+        let cPhone = getCell(dataC[i], colMapC, ['phone_number', 'phone']);
+        if (matchPhone(cPhone, phone)) {
           foundIndex = i + 1;
           
           let curBday = getCell(dataC[i], colMapC, ['birthday', 'ngay_sinh']);
@@ -880,7 +894,7 @@ function updateAnnouncement(params) {
 }
 
 // -------------------------------------------------------------
-// 7. ĐỒNG BỘ TOÀN BỘ DỮ LIỆU (SYNC ALL DATA V2.6 - ĐỒNG BỘ CẢ 4 BẢNG LIÊN KẾT)
+// 7. ĐỒNG BỘ TOÀN BỘ DỮ LIỆU (SYNC ALL DATA V2.7)
 // -------------------------------------------------------------
 function syncAllData(params) {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -927,9 +941,9 @@ function syncAllData(params) {
     const data = sheetUsers.getDataRange().getValues();
     for (let i = 1; i < data.length; i++) {
       let r = data[i];
-      let uUserId = normalizePhone(getCell(r, colMapU, ['user_id', 'phone', 'so_dien_thoai']));
+      let uUserId = getCell(r, colMapU, ['user_id', 'phone', 'so_dien_thoai']);
       let uStaffId = String(getCell(r, colMapU, ['staff_id', 'ma_ktv', 'user_id'])).trim();
-      let uPhone = normalizePhone(getCell(r, colMapU, ['phone', 'user_id', 'so_dien_thoai']));
+      let uPhone = getCell(r, colMapU, ['phone', 'user_id', 'so_dien_thoai']);
       let uPwd = String(getCell(r, colMapU, ['password', 'pin'], '123456')).trim();
       let fullName = String(getCell(r, colMapU, ['full_name', 'ten_nhan_vien', 'ho_ten'])).trim();
       let role = String(getCell(r, colMapU, ['role', 'chuc_vu'], 'staff')).trim();
@@ -942,9 +956,9 @@ function syncAllData(params) {
 
         if (isOwner) {
           users.push({
-            user_id: uUserId || uPhone,
+            user_id: normalizePhone(uUserId) || normalizePhone(uPhone),
             staff_id: uStaffId || uUserId,
-            phone: uPhone,
+            phone: normalizePhone(uPhone),
             password: uPwd,
             full_name: fullName || (uIsOwner ? 'Miles (Đấng tối cao)' : 'KTV'),
             role: uIsOwner ? 'Chủ tiệm' : 'Kỹ thuật viên',
@@ -953,11 +967,11 @@ function syncAllData(params) {
             base_salary: baseSalary
           });
         } else {
-          let isMe = (clientPhone && uPhone === clientPhone) || (clientStaffId && uStaffId === clientStaffId);
+          let isMe = (clientPhone && matchPhone(uPhone, clientPhone)) || (clientStaffId && uStaffId === clientStaffId);
           users.push({
-            user_id: uUserId || uPhone,
+            user_id: normalizePhone(uUserId) || normalizePhone(uPhone),
             staff_id: uStaffId || uUserId,
-            phone: uPhone,
+            phone: normalizePhone(uPhone),
             password: isMe ? uPwd : '***',
             full_name: fullName,
             role: uIsOwner ? 'Chủ tiệm' : 'Kỹ thuật viên',
@@ -978,7 +992,8 @@ function syncAllData(params) {
     const dataC = sheetCust.getDataRange().getValues();
     for (let i = 1; i < dataC.length; i++) {
       let r = dataC[i];
-      let phone = normalizePhone(getCell(r, colMapC, ['phone_number', 'phone', 'so_dien_thoai']));
+      let rawP = getCell(r, colMapC, ['phone_number', 'phone', 'so_dien_thoai']);
+      let phone = normalizePhone(rawP);
       if (phone) {
         let name = String(getCell(r, colMapC, ['customer_name', 'name', 'ten_khach']));
         let rawBday = getCell(r, colMapC, ['birthday', 'birth_month', 'ngay_sinh']);
@@ -995,7 +1010,7 @@ function syncAllData(params) {
           phone_number: isOwner ? phone : (phone.length >= 7 ? (phone.slice(0, 3) + '***' + phone.slice(-3)) : phone),
           raw_phone: phone,
           customer_name: name,
-          birthday: formatDateVal(rawBday) || String(rawBday),
+          birthday: birthMonth ? birthMonth : (formatDateVal(rawBday) || String(rawBday)),
           birth_month: birthMonth,
           cycle_start_date: cycleStartDate,
           cycle_end_date: cycleEndDate,
@@ -1017,12 +1032,12 @@ function syncAllData(params) {
     for (let i = 1; i < dataCy.length; i++) {
       let r = dataCy[i];
       let cyId = String(getCell(r, colMapCy, ['cycle_id', 'ma_chu_ky']));
-      let cyPhone = normalizePhone(getCell(r, colMapCy, ['customer_phone', 'phone']));
+      let cyPhone = getCell(r, colMapCy, ['customer_phone', 'phone']);
       if (cyId && cyPhone) {
         loyaltyCycles.push({
           cycle_id: cyId,
-          customer_phone: isOwner ? cyPhone : (cyPhone.length >= 7 ? (cyPhone.slice(0, 3) + '***' + cyPhone.slice(-3)) : cyPhone),
-          raw_phone: cyPhone,
+          customer_phone: isOwner ? normalizePhone(cyPhone) : (normalizePhone(cyPhone).length >= 7 ? (normalizePhone(cyPhone).slice(0, 3) + '***' + normalizePhone(cyPhone).slice(-3)) : cyPhone),
+          raw_phone: normalizePhone(cyPhone),
           customer_name: String(getCell(r, colMapCy, ['customer_name', 'name'])),
           start_date: formatDateVal(getCell(r, colMapCy, ['start_date', 'ngay_bat_dau'])),
           end_date: formatDateVal(getCell(r, colMapCy, ['end_date', 'ngay_ket_thuc'])),
@@ -1044,12 +1059,12 @@ function syncAllData(params) {
     for (let i = 1; i < dataV.length; i++) {
       let r = dataV[i];
       let vId = String(getCell(r, colMapV, ['voucher_id', 'ma_voucher']));
-      let vPhone = normalizePhone(getCell(r, colMapV, ['customer_phone', 'phone']));
+      let vPhone = getCell(r, colMapV, ['customer_phone', 'phone']);
       if (vId && vPhone) {
         vouchers.push({
           voucher_id: vId,
-          customer_phone: isOwner ? vPhone : (vPhone.length >= 7 ? (vPhone.slice(0, 3) + '***' + vPhone.slice(-3)) : vPhone),
-          raw_phone: vPhone,
+          customer_phone: isOwner ? normalizePhone(vPhone) : (normalizePhone(vPhone).length >= 7 ? (normalizePhone(vPhone).slice(0, 3) + '***' + normalizePhone(vPhone).slice(-3)) : vPhone),
+          raw_phone: normalizePhone(vPhone),
           customer_name: String(getCell(r, colMapV, ['customer_name', 'name'])),
           voucher_type: String(getCell(r, colMapV, ['voucher_type', 'loai_voucher'])),
           discount_value: String(getCell(r, colMapV, ['discount_value', 'giam_gia'])),
@@ -1076,7 +1091,7 @@ function syncAllData(params) {
         let startTime = formatTimeVal(getCell(r, colMapR, ['start_time', 'time', 'gio_bat_dau']));
         let endTime = formatTimeVal(getCell(r, colMapR, ['end_time', 'gio_ket_thuc']));
         let durationMin = Number(getCell(r, colMapR, ['duration_min', 'duration'], 45)) || 45;
-        let cPhone = normalizePhone(getCell(r, colMapR, ['customer_phone', 'phone']));
+        let cPhone = getCell(r, colMapR, ['customer_phone', 'phone']);
         let cName = String(getCell(r, colMapR, ['customer_name', 'ten_khach']));
         let sId = String(getCell(r, colMapR, ['service_id', 'combo_id']));
         let sName = String(getCell(r, colMapR, ['service_name', 'ten_combo']));
@@ -1084,13 +1099,13 @@ function syncAllData(params) {
         let tip = Number(getCell(r, colMapR, ['tip_amount', 'tip'], 0)) || 0;
         let totalPaid = Number(getCell(r, colMapR, ['total_paid', 'tong_tien'], price + tip)) || (price + tip);
 
-        let s1Phone = normalizePhone(getCell(r, colMapR, ['staff_1_user_id', 'staff_1_phone', 'user_id_1']));
+        let s1Phone = getCell(r, colMapR, ['staff_1_user_id', 'staff_1_phone', 'user_id_1']);
         let s1Id = String(getCell(r, colMapR, ['staff_1_id', 'staff_id', 'ma_ktv_1']));
         let s1Name = String(getCell(r, colMapR, ['staff_1_name', 'staff_name', 'ten_ktv_1']));
         let s1Comm = Number(getCell(r, colMapR, ['staff_1_comm', 'hoa_hong_ktv_1', 'commission_amount'], 0)) || 0;
         let s1Tip = Number(getCell(r, colMapR, ['staff_1_tip', 'tip_ktv_1'], tip)) || 0;
 
-        let s2Phone = normalizePhone(getCell(r, colMapR, ['staff_2_user_id', 'staff_2_phone', 'user_id_2']));
+        let s2Phone = getCell(r, colMapR, ['staff_2_user_id', 'staff_2_phone', 'user_id_2']);
         let s2Id = String(getCell(r, colMapR, ['staff_2_id', 'ma_ktv_2'], '-'));
         let s2Name = String(getCell(r, colMapR, ['staff_2_name', 'ten_ktv_2'], '-'));
         let s2Comm = Number(getCell(r, colMapR, ['staff_2_comm', 'hoa_hong_ktv_2'], 0)) || 0;
@@ -1106,20 +1121,20 @@ function syncAllData(params) {
           start_time: startTime,
           end_time: endTime,
           duration_min: durationMin,
-          customer_phone: isOwner ? cPhone : (cPhone.length >= 7 ? (cPhone.slice(0, 3) + '***' + cPhone.slice(-3)) : cPhone),
-          raw_phone: cPhone,
+          customer_phone: isOwner ? normalizePhone(cPhone) : (normalizePhone(cPhone).length >= 7 ? (normalizePhone(cPhone).slice(0, 3) + '***' + normalizePhone(cPhone).slice(-3)) : cPhone),
+          raw_phone: normalizePhone(cPhone),
           customer_name: cName,
           service_id: sId,
           service_name: sName,
           price: price,
           tip_amount: tip,
           total_paid: totalPaid,
-          staff_1_user_id: s1Phone,
+          staff_1_user_id: normalizePhone(s1Phone),
           staff_1_id: s1Id,
           staff_1_name: s1Name,
           staff_1_comm: s1Comm,
           staff_1_tip: s1Tip,
-          staff_2_user_id: s2Phone,
+          staff_2_user_id: normalizePhone(s2Phone),
           staff_2_id: s2Id,
           staff_2_name: s2Name,
           staff_2_comm: s2Comm,
