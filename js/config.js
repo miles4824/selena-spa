@@ -1,4 +1,4 @@
-const APP_VERSION = 'v0.0.6.6';
+const APP_VERSION = 'v0.0.6.7';
 // =============================================================
 // SELENA SPA - GLOBAL CONFIG & CONSTANTS
 // =============================================================
@@ -155,7 +155,29 @@ function normalizeDateKey(val) {
 
 // Lấy danh sách 7 ngày trong tuần tính từ Thứ 2 (T2) đến Chủ Nhật (CN)
 // Map lưu baseDate cho từng container lịch để chuyển tuần độc lập
+// Map lưu baseDate cho từng container lịch để chuyển tuần độc lập
 const dateStripBaseDates = {};
+
+function openSystemDatePicker(pickerId) {
+  const inp = document.getElementById(pickerId);
+  if (!inp) return;
+  if (typeof inp.showPicker === 'function') {
+    try {
+      inp.showPicker();
+      return;
+    } catch (e) {}
+  }
+  inp.focus();
+  inp.click();
+}
+
+function formatDateVN(dateStr) {
+  if (!dateStr) return '';
+  const norm = normalizeDateKey(dateStr);
+  const m = norm.match(/(\d{4})-(\d{2})-(\d{2})/);
+  if (m) return `${m[3]}/${m[2]}/${m[1]}`;
+  return dateStr;
+}
 
 function changeWeekOffset(containerId, offsetWeeks, onDateClickCallback) {
   let base = dateStripBaseDates[containerId] || new Date();
@@ -163,7 +185,6 @@ function changeWeekOffset(containerId, offsetWeeks, onDateClickCallback) {
   newBase.setDate(newBase.getDate() + (offsetWeeks * 7));
   dateStripBaseDates[containerId] = newBase;
 
-  // Lấy ngày hiện tại đang được chọn (nếu có)
   const activeDate = (containerId === 'staff-date-strip-container') ? selectedStaffHistoryDate : selectedAdminHistoryDate;
   renderDateStripComponent(containerId, activeDate, onDateClickCallback);
 }
@@ -214,38 +235,12 @@ function renderDateStripComponent(containerId, activeDateStr, onDateClickCallbac
 
   const baseDate = dateStripBaseDates[containerId] || new Date();
   const weekDays = getWeekDaysFromMonday(baseDate);
-  const todayStr = normalizeDateKey(new Date());
-  const currentActive = activeDateStr || todayStr;
+  const currentActive = activeDateStr || 'ALL'; // MẶC ĐỊNH LÀ 'ALL'
   const isAllActive = currentActive === 'ALL';
-
-  // Quét danh sách hóa đơn để đánh dấu ngày nào có tour
-  const receipts = getStored('receipts', []);
-  const staffPhone = normalizePhone(currentUser?.phone);
-  const staffCode = String(currentUser?.staff_id || '').trim();
-  const isOwner = currentUser && isUserOwner(currentUser);
-
-  const activeDatesSet = new Set();
-  receipts.forEach(r => {
-    const rDate = normalizeDateKey(r.date || r.created_at);
-    if (!rDate) return;
-
-    if (isOwner) {
-      activeDatesSet.add(rDate);
-    } else {
-      const s1Phone = normalizePhone(r.staff_1_user_id || r.staff_1_phone || r.staff_phone);
-      const s1Code = String(r.staff_1_id || r.staff_id || '').trim();
-      const s2Phone = normalizePhone(r.staff_2_user_id || r.staff_2_phone);
-      const s2Code = String(r.staff_2_id || '').trim();
-
-      if ((staffPhone && (s1Phone === staffPhone || s2Phone === staffPhone)) || 
-          (staffCode && (s1Code === staffCode || s2Code === staffCode))) {
-        activeDatesSet.add(rDate);
-      }
-    }
-  });
 
   const startLabel = `${weekDays[0].dayNum}/${weekDays[0].monthNum}`;
   const endLabel = `${weekDays[6].dayNum}/${weekDays[6].monthNum}`;
+  const pickerId = `${containerId}-date-picker`;
 
   container.innerHTML = `
     <div class="spa-card p-3.5 space-y-3">
@@ -265,11 +260,13 @@ function renderDateStripComponent(containerId, activeDateStr, onDateClickCallbac
 
         <div class="flex items-center gap-1.5">
           <!-- Chọn Ngày Lịch Bất Kỳ -->
-          <label class="relative inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-1.5 rounded-xl bg-[#FAF6F1] hover:bg-[#FFF0EB] text-[#2D2424] hover:text-[#E58A7B] border border-[#F0EAE1] cursor-pointer transition active:scale-95">
-            <i data-lucide="calendar" class="w-3.5 h-3.5 text-[#E58A7B]"></i>
-            <span>Chọn ngày</span>
-            <input type="date" value="${isAllActive ? '' : currentActive}" onchange="onCustomDatePicked('${containerId}', this.value, '${onDateClickCallback}')" class="absolute inset-0 opacity-0 w-full h-full cursor-pointer">
-          </label>
+          <div class="relative">
+            <button type="button" onclick="openSystemDatePicker('${pickerId}')" class="flex items-center gap-1 text-[11px] font-bold px-2.5 py-1.5 rounded-xl bg-[#FAF6F1] hover:bg-[#FFF0EB] text-[#2D2424] hover:text-[#E58A7B] border border-[#F0EAE1] cursor-pointer transition active:scale-95">
+              <i data-lucide="calendar" class="w-3.5 h-3.5 text-[#E58A7B]"></i>
+              <span>Chọn ngày</span>
+            </button>
+            <input type="date" id="${pickerId}" value="${isAllActive ? '' : currentActive}" onchange="onCustomDatePicked('${containerId}', this.value, '${onDateClickCallback}')" class="absolute inset-0 opacity-0 pointer-events-none w-full h-full">
+          </div>
 
           <!-- Nút Xem Tất Cả -->
           <button type="button" onclick="${onDateClickCallback}('ALL')" class="text-[11px] font-extrabold px-3 py-1.5 rounded-xl transition cursor-pointer ${isAllActive ? 'bg-[#E58A7B] text-white font-black' : 'bg-[#FAF6F1] text-[#7E7272] hover:bg-[#FFF0EB] hover:text-[#E58A7B] border border-[#F0EAE1]'}">
@@ -278,15 +275,14 @@ function renderDateStripComponent(containerId, activeDateStr, onDateClickCallbac
         </div>
       </div>
 
-      <!-- 7 Nút Ngày: T2, T3, T4, T5, T6, T7, CN (Chuẩn Xác 100%) -->
+      <!-- 7 Nút Ngày: T2, T3, T4, T5, T6, T7, CN (Không Có Dấu Chấm Rối Mắt) -->
       <div class="flex items-center justify-between w-full gap-1.5 text-center">
         ${weekDays.map(item => {
           const isSelected = !isAllActive && (item.dateStr === currentActive);
           const isToday = item.isToday;
-          const hasTour = activeDatesSet.has(item.dateStr);
 
           let bgClass = 'bg-[#F7F2EC] text-[#7E7272] hover:bg-[#FFF0EB] hover:text-[#E58A7B]';
-          let labelText = item.label; // LUÔN GIỮ ĐÚNG T2, T3, T4, T5, T6, T7, CN
+          let labelText = item.label; // LUÔN LÀ T2, T3, T4, T5, T6, T7, CN
           let labelClass = 'text-[10px] text-[#A39696] uppercase font-bold';
           let numClass = 'text-sm font-extrabold text-[#2D2424]';
 
@@ -301,10 +297,9 @@ function renderDateStripComponent(containerId, activeDateStr, onDateClickCallbac
           }
 
           return `
-            <button type="button" onclick="${onDateClickCallback}('${item.dateStr}')" class="relative flex-1 py-2 px-1 rounded-2xl ${bgClass} transition active:scale-95 cursor-pointer">
+            <button type="button" onclick="${onDateClickCallback}('${item.dateStr}')" class="flex-1 py-2 px-1 rounded-2xl ${bgClass} transition active:scale-95 cursor-pointer">
               <span class="block ${labelClass}">${labelText}</span>
               <span class="${numClass}">${item.dayNum}</span>
-              ${hasTour ? `<span class="absolute bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-white' : 'bg-[#E58A7B]'}"></span>` : ''}
             </button>
           `;
         }).join('')}
