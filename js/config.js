@@ -1,4 +1,4 @@
-const APP_VERSION = 'v0.0.8.8';
+const APP_VERSION = 'v0.0.8.9';
 // =============================================================
 // SELENA SPA - GLOBAL CONFIG & CONSTANTS
 // =============================================================
@@ -193,6 +193,7 @@ function normalizeDateKey(val) {
 // Map lưu baseDate cho từng container lịch để chuyển tuần độc lập
 // Map lưu baseDate cho từng container lịch để chuyển tuần độc lập
 // Map lưu baseDate cho từng container lịch để chuyển tuần độc lập
+// Map lưu baseDate cho từng container lịch để chuyển tuần độc lập
 const dateStripBaseDates = {};
 
 function updateStickyDateOffset(containerId) {
@@ -223,9 +224,24 @@ function changeWeekOffset(containerId, offsetWeeks, onDateClickCallback) {
   renderDateStripComponent(containerId, activeDate, onDateClickCallback);
 }
 
+function handleDatePickerClick(pickerId) {
+  const inp = document.getElementById(pickerId);
+  if (!inp) return;
+  if (typeof inp.showPicker === 'function') {
+    try {
+      inp.showPicker();
+      return;
+    } catch (e) {}
+  }
+  inp.focus();
+  inp.click();
+}
+
 function onCustomDatePicked(containerId, pickedDateStr, onDateClickCallback) {
-  if (!pickedDateStr) return;
+  if (!pickedDateStr || String(pickedDateStr).trim() === '') return;
   const normDate = normalizeDateKey(pickedDateStr);
+  if (!normDate) return;
+
   dateStripBaseDates[containerId] = new Date(normDate + 'T12:00:00');
   
   if (typeof window[onDateClickCallback] === 'function') {
@@ -405,7 +421,7 @@ function attachContinuousSwiperToCalendar(containerId, onDateClickCallback) {
   window.addEventListener('mouseup', onMouseUp);
 }
 
-// Component Lịch Tuần Dùng Chung Toàn Diện (Băng Chuyền 3 Tuần Căn Giữa Tuyệt Đối)
+// Component Lịch Tuần Dùng Chung Toàn Diện (Fix Chọn Ngày 100% Trình Duyệt & iPhone)
 function renderDateStripComponent(containerId, activeDateStr, onDateClickCallback) {
   const container = document.getElementById(containerId);
   if (!container) return;
@@ -431,7 +447,7 @@ function renderDateStripComponent(containerId, activeDateStr, onDateClickCallbac
 
   container.innerHTML = `
     <div class="spa-card p-3.5 space-y-2.5 touch-pan-y select-none">
-      <!-- Header: Khoảng Ngày + Chọn Ngày (Hỗ trợ iPhone 100%) + Tất Cả -->
+      <!-- Header: Khoảng Ngày + Nút Chọn Ngày (Bật Popup Siêu Nhạy) + Tất Cả -->
       <div class="flex items-center justify-between gap-2">
         <div class="flex items-center gap-1.5 text-xs font-bold text-[#2D2424]">
           <i data-lucide="calendar" class="w-3.5 h-3.5 text-[#E58A7B]"></i>
@@ -439,16 +455,20 @@ function renderDateStripComponent(containerId, activeDateStr, onDateClickCallbac
         </div>
 
         <div class="flex items-center gap-1.5">
-          <!-- Chọn Ngày Tương Thích Hoàn Hảo iPhone iOS Safari -->
-          <label class="relative inline-flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-1.5 rounded-xl bg-[#FAF6F1] hover:bg-[#FFF0EB] text-[#2D2424] hover:text-[#E58A7B] border border-[#F0EAE1] cursor-pointer transition active:scale-95 overflow-hidden">
-            <i data-lucide="calendar" class="w-3.5 h-3.5 text-[#E58A7B]"></i>
-            <span>Chọn ngày</span>
+          <!-- Chọn Ngày Tương Thích 100% Cả Trình Duyệt Desktop & iPhone Safari -->
+          <div class="relative inline-block">
+            <button type="button" 
+                    onclick="handleDatePickerClick('${pickerId}')" 
+                    class="relative inline-flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-1.5 rounded-xl bg-[#FAF6F1] hover:bg-[#FFF0EB] text-[#2D2424] hover:text-[#E58A7B] border border-[#F0EAE1] cursor-pointer transition active:scale-95">
+              <i data-lucide="calendar" class="w-3.5 h-3.5 text-[#E58A7B]"></i>
+              <span>Chọn ngày</span>
+            </button>
             <input type="date" 
                    id="${pickerId}" 
                    value="${isAllActive ? '' : currentActive}" 
                    onchange="onCustomDatePicked('${containerId}', this.value, '${onDateClickCallback}')" 
-                   class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
-          </label>
+                   class="absolute top-0 left-0 w-0 h-0 opacity-0 pointer-events-none">
+          </div>
 
           <!-- Nút Xem Tất Cả -->
           <button type="button" onclick="${onDateClickCallback}('ALL')" class="text-[11px] font-extrabold px-3 py-1.5 rounded-xl transition cursor-pointer ${isAllActive ? 'bg-[#E58A7B] text-white font-black' : 'bg-[#FAF6F1] text-[#7E7272] hover:bg-[#FFF0EB] hover:text-[#E58A7B] border border-[#F0EAE1]'}">
