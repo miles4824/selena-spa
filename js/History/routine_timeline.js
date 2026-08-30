@@ -9,13 +9,6 @@ function onStaffDateSelect(dateStr) {
   loadStaffHistoryList(dateStr);
 }
 
-function getReceiptDuration(r) {
-  if (r.duration_min && Number(r.duration_min) > 0) return Number(r.duration_min);
-  if (r.duration_actual_min && Number(r.duration_actual_min) > 0) return Number(r.duration_actual_min);
-  if (r.duration_target_min && Number(r.duration_target_min) > 0) return Number(r.duration_target_min);
-  return 45;
-}
-
 function loadStaffHistoryList(targetDate) {
   const receipts = getStored('receipts', []);
   const container = document.getElementById('staff-receipts-list');
@@ -131,7 +124,8 @@ function loadStaffHistoryList(targetDate) {
                   </div>
                   ${myTip > 0 ? `
                     <span class="text-[#E58A7B] font-extrabold flex items-center gap-1">
-                      🎁 Được tip: +${myTip.toLocaleString('vi-VN')} đ
+                      <i data-lucide="gift" class="w-3.5 h-3.5 text-[#E58A7B]"></i>
+                      <span>Được tip: +${myTip.toLocaleString('vi-VN')} đ</span>
                     </span>
                   ` : ''}
                 </div>

@@ -13,13 +13,6 @@ function loadAdminReceiptsList(targetDate) {
   loadOwnerReceiptsList(targetDate);
 }
 
-function getReceiptDuration(r) {
-  if (r.duration_min && Number(r.duration_min) > 0) return Number(r.duration_min);
-  if (r.duration_actual_min && Number(r.duration_actual_min) > 0) return Number(r.duration_actual_min);
-  if (r.duration_target_min && Number(r.duration_target_min) > 0) return Number(r.duration_target_min);
-  return 45;
-}
-
 function loadOwnerReceiptsList(targetDate) {
   const receipts = getStored('receipts', []);
   const container = document.getElementById('admin-receipts-list') || document.getElementById('admin-receipts-mobile-cards') || document.getElementById('owner-receipts-list');
@@ -81,12 +74,16 @@ function loadOwnerReceiptsList(targetDate) {
         const durStatus = getReceiptDurationStatus(r);
         const isCash = r.payment_method === 'Tiền mặt';
         const totalPaid = Number(r.total_paid) || ((Number(r.price) || 0) + (Number(r.tip_amount) || 0));
-        const tipAmount = Number(r.tip_amount) || 0;
 
         const staff1Name = r.staff_1_name || 'KTV 1';
         const staff1Comm = Number(r.staff_1_comm || r.commission_amount || 0);
+        const staff1Tip = Number(r.staff_1_tip) || 0;
+
         const staff2Name = r.staff_2_name;
         const staff2Comm = Number(r.staff_2_comm || 0);
+        const staff2Tip = Number(r.staff_2_tip) || 0;
+
+        const totalTip = Number(r.tip_amount) || (staff1Tip + staff2Tip);
 
         return `
           <div class="flex gap-3.5 items-center">
@@ -114,26 +111,36 @@ function loadOwnerReceiptsList(targetDate) {
                 </div>
               </div>
 
-              <!-- KHUNG KỸ THUẬT VIÊN XUỐNG DÒNG RÕ RÀNG VÀ ĐỔI MÀU TIỀN -->
-              <div class="bg-[#FAF6F1] p-2.5 rounded-2xl border border-[#F0EAE1] space-y-1 text-xs">
-                <div class="font-bold text-[#7E7272] flex items-center gap-1.5 mb-1">
-                  <i data-lucide="users" class="w-3.5 h-3.5 text-[#E58A7B]"></i>
-                  <span>Kỹ thuật viên:</span>
+              <!-- KHUNG KỸ THUẬT VIÊN VÀ CHI TIẾT TIPS TỪNG NGƯỜI (SVG ICON ĐỒNG BỘ) -->
+              <div class="bg-[#FAF6F1] p-2.5 rounded-2xl border border-[#F0EAE1] space-y-1.5 text-xs">
+                <div class="font-bold text-[#7E7272] flex items-center justify-between">
+                  <span class="flex items-center gap-1.5">
+                    <i data-lucide="users" class="w-3.5 h-3.5 text-[#E58A7B]"></i>
+                    <span>Kỹ thuật viên:</span>
+                  </span>
+                  ${totalTip > 0 ? `
+                    <span class="inline-flex items-center gap-1 text-[11px] font-extrabold text-[#E58A7B]">
+                      <i data-lucide="gift" class="w-3.5 h-3.5 text-[#E58A7B]"></i>
+                      <span>Tổng tip: +${totalTip.toLocaleString('vi-VN')} đ</span>
+                    </span>
+                  ` : ''}
                 </div>
+
                 <div class="flex justify-between items-center pl-2">
                   <span class="text-[#2D2424] font-medium">• ${staff1Name}:</span>
-                  <span class="text-[#2E7D6D] font-extrabold">+${staff1Comm.toLocaleString('vi-VN')} đ</span>
+                  <span class="font-extrabold">
+                    <span class="text-[#2E7D6D]">+${staff1Comm.toLocaleString('vi-VN')} đ</span>
+                    ${staff1Tip > 0 ? `<span class="text-[#E58A7B] font-bold text-[11px] ml-1">(Tip +${staff1Tip.toLocaleString('vi-VN')} đ)</span>` : ''}
+                  </span>
                 </div>
+
                 ${r.has_staff_2 && staff2Name ? `
                   <div class="flex justify-between items-center pl-2">
                     <span class="text-[#2D2424] font-medium">• ${staff2Name}:</span>
-                    <span class="text-[#2E7D6D] font-extrabold">+${staff2Comm.toLocaleString('vi-VN')} đ</span>
-                  </div>
-                ` : ''}
-                ${tipAmount > 0 ? `
-                  <div class="flex justify-between items-center pl-2 pt-1 border-t border-[#F0EAE1] text-[#E58A7B] font-bold">
-                    <span class="flex items-center gap-1">🎁 Tiền tip:</span>
-                    <span class="font-extrabold">+${tipAmount.toLocaleString('vi-VN')} đ</span>
+                    <span class="font-extrabold">
+                      <span class="text-[#2E7D6D]">+${staff2Comm.toLocaleString('vi-VN')} đ</span>
+                      ${staff2Tip > 0 ? `<span class="text-[#E58A7B] font-bold text-[11px] ml-1">(Tip +${staff2Tip.toLocaleString('vi-VN')} đ)</span>` : ''}
+                    </span>
                   </div>
                 ` : ''}
               </div>
