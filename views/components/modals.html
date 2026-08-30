@@ -271,3 +271,122 @@
       </div>
     </div>
   </div>
+
+  <!-- ============================================================= -->
+  <!-- MODAL GHI CHÚ SỞ THÍCH & THÁNG SINH KHÁCH HÀNG (SAU KHI XONG CA) -->
+  <!-- ============================================================= -->
+  <div id="modal-customer-note" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs" onclick="if(event.target === this) closeCustomerNoteModal()">
+    <div class="w-full max-w-md bg-white rounded-[32px] border border-[#F0EAE1] shadow-[0_25px_50px_-12px_rgba(45,36,36,0.15)] p-6 space-y-4 relative my-auto animate-in fade-in zoom-in-95">
+      <div class="flex justify-between items-center">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-full bg-[#FFF0EB] flex items-center justify-center text-[#E58A7B]">
+            <i data-lucide="edit-3" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <h3 class="text-base font-extrabold text-[#2D2424]" id="modal-note-cust-name">Ghi Chú Khách Hàng</h3>
+            <p class="text-xs text-[#7E7272]" id="modal-note-cust-phone">0912***678</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeCustomerNoteModal()" class="p-2 rounded-xl hover:bg-[#FAF6F1] text-[#7E7272] hover:text-[#E58A7B] transition cursor-pointer">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <form onsubmit="handleSaveCustomerNote(event)" class="space-y-3.5">
+        <input type="hidden" id="modal-note-cust-raw-phone">
+        
+        <div>
+          <label class="block text-xs font-bold text-[#2D2424] mb-1">🎂 Tháng Sinh Nhật (Tùy chọn):</label>
+          <select id="modal-note-birth-month" class="w-full bg-[#F7F2EC] border border-[#EFE8DF] rounded-2xl p-3 text-xs sm:text-sm text-[#2D2424] font-bold focus:outline-none focus:border-[#E58A7B] focus:bg-white transition cursor-pointer">
+            <option value="">-- Chọn tháng sinh (để tiệm tặng voucher 20%) --</option>
+            <option value="1">Tháng 1</option>
+            <option value="2">Tháng 2</option>
+            <option value="3">Tháng 3</option>
+            <option value="4">Tháng 4</option>
+            <option value="5">Tháng 5</option>
+            <option value="6">Tháng 6</option>
+            <option value="7">Tháng 7</option>
+            <option value="8">Tháng 8</option>
+            <option value="9">Tháng 9</option>
+            <option value="10">Tháng 10</option>
+            <option value="11">Tháng 11</option>
+            <option value="12">Tháng 12</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-[#2D2424] mb-1">📝 Ghi Chú Sở Thích / Lưu Ý Khi Phục Vụ:</label>
+          <textarea id="modal-note-content" rows="3" placeholder="VD: Thích gội nước ấm, sấy mát, da đầu nhạy cảm, massage vai gáy nhẹ..." class="w-full bg-[#F7F2EC] border border-[#EFE8DF] rounded-2xl p-3 text-xs sm:text-sm text-[#2D2424] focus:outline-none focus:border-[#E58A7B] focus:bg-white transition leading-relaxed" required></textarea>
+        </div>
+
+        <div class="flex gap-2 pt-2">
+          <button type="button" onclick="closeCustomerNoteModal()" class="flex-1 py-3 rounded-full bg-[#F7F2EC] hover:bg-[#EFE8DF] text-[#7E7272] font-bold text-xs sm:text-sm cursor-pointer">Đóng</button>
+          <button type="submit" id="btn-save-customer-note" class="flex-1 py-3 rounded-full bg-[#E58A7B] hover:bg-[#D9796A] text-white font-bold text-xs sm:text-sm shadow-md shadow-[#E58A7B]/20 flex items-center justify-center gap-1.5 cursor-pointer">
+            <i data-lucide="check" class="w-4 h-4"></i> Lưu Ghi Chú
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ============================================================= -->
+  <!-- MODAL CHỦ TIỆM TẶNG VOUCHER CHO KHÁCH HÀNG -->
+  <!-- ============================================================= -->
+  <div id="modal-gift-voucher" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs" onclick="if(event.target === this) closeGiftVoucherModal()">
+    <div class="w-full max-w-md bg-white rounded-[32px] border border-[#F0EAE1] shadow-[0_25px_50px_-12px_rgba(45,36,36,0.15)] p-6 space-y-4 relative my-auto animate-in fade-in zoom-in-95">
+      <div class="flex justify-between items-center">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-full bg-[#E8F8F5] flex items-center justify-center text-[#2E7D6D]">
+            <i data-lucide="gift" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <h3 class="text-base font-extrabold text-[#2D2424]">🎁 Tặng Voucher Khách Hàng</h3>
+            <p class="text-xs text-[#7E7272]" id="modal-gift-cust-info">Chị Mai Lan (0912345678)</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeGiftVoucherModal()" class="p-2 rounded-xl hover:bg-[#FAF6F1] text-[#7E7272] hover:text-[#E58A7B] transition cursor-pointer">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <form onsubmit="handleSaveGiftVoucher(event)" class="space-y-3.5">
+        <input type="hidden" id="modal-gift-raw-phone">
+        <input type="hidden" id="modal-gift-cust-name">
+
+        <div>
+          <label class="block text-xs font-bold text-[#2D2424] mb-1">Loại Voucher Ưu Đãi:</label>
+          <select id="modal-gift-type" onchange="onGiftTypeChange(this.value)" class="w-full bg-[#F7F2EC] border border-[#EFE8DF] rounded-2xl p-3 text-xs sm:text-sm text-[#2D2424] font-bold focus:outline-none focus:border-[#E58A7B] focus:bg-white transition cursor-pointer">
+            <option value="Chủ tiệm tặng 1 ca">Tặng 1 Ca Gội Miễn Phí (100%)</option>
+            <option value="Giảm 20% sinh nhật">Giảm 20% Hóa Đơn</option>
+            <option value="Giảm tiền mặt">Giảm Số Tiền Cố Định (50.000 đ)</option>
+          </select>
+        </div>
+
+        <div id="modal-gift-val-box" class="hidden">
+          <label class="block text-xs font-bold text-[#2D2424] mb-1">Giá trị giảm:</label>
+          <input type="text" id="modal-gift-val" value="50.000 đ" class="w-full bg-[#F7F2EC] border border-[#EFE8DF] rounded-2xl p-3 text-xs sm:text-sm text-[#2D2424] font-bold focus:outline-none focus:border-[#E58A7B] focus:bg-white transition">
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-[#2D2424] mb-1">Hạn Sử Dụng (Kể từ hôm nay):</label>
+          <select id="modal-gift-days" class="w-full bg-[#F7F2EC] border border-[#EFE8DF] rounded-2xl p-3 text-xs sm:text-sm text-[#2D2424] font-bold focus:outline-none focus:border-[#E58A7B] focus:bg-white transition cursor-pointer">
+            <option value="30">Hạn 30 ngày (1 tháng)</option>
+            <option value="60" selected>Hạn 60 ngày (2 tháng)</option>
+            <option value="90">Hạn 90 ngày (3 tháng)</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-[#2D2424] mb-1">Lý Do / Ghi Chú Tặng:</label>
+          <input type="text" id="modal-gift-notes" value="Tri ân khách hàng thân thiết" placeholder="VD: Khách VIP, Quà tri ân..." class="w-full bg-[#F7F2EC] border border-[#EFE8DF] rounded-2xl p-3 text-xs sm:text-sm text-[#2D2424] focus:outline-none focus:border-[#E58A7B] focus:bg-white transition">
+        </div>
+
+        <div class="flex gap-2 pt-2">
+          <button type="button" onclick="closeGiftVoucherModal()" class="flex-1 py-3 rounded-full bg-[#F7F2EC] hover:bg-[#EFE8DF] text-[#7E7272] font-bold text-xs sm:text-sm cursor-pointer">Đóng</button>
+          <button type="submit" id="btn-save-gift-voucher" class="flex-1 py-3 rounded-full bg-[#2E7D6D] hover:bg-[#25685B] text-white font-bold text-xs sm:text-sm shadow-md shadow-[#2E7D6D]/20 flex items-center justify-center gap-1.5 cursor-pointer">
+            <i data-lucide="gift" class="w-4 h-4"></i> Xác Nhận Tặng
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>

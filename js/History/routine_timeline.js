@@ -145,12 +145,13 @@ function loadStaffHistoryList(targetDate) {
                   <span class="text-sm font-extrabold text-[#2E7D6D] whitespace-nowrap shrink-0">+${totalEarn.toLocaleString('vi-VN')} đ</span>
                 </div>
 
-                <!-- Hàng 2: Khách Hàng (SVG User) + Thanh Toán (SVG) + Mã Phiếu -->
-                <div class="flex items-center justify-between gap-1 text-[11px] text-[#7E7272] flex-wrap">
+                <!-- Hàng 2: Khách Hàng (SVG User) + Thanh Toán (SVG) + Ghi Chú Nhanh + Mã Phiếu -->
+                <div class="flex items-center justify-between gap-1.5 text-[11px] text-[#7E7272] flex-wrap">
                   <div class="flex items-center gap-1.5 min-w-0">
                     <span class="inline-flex items-center gap-1 truncate text-[#2D2424] font-medium">
                       <i data-lucide="user" class="w-3 h-3 text-[#A39696] shrink-0"></i>
                       <span class="truncate">${r.customer_name || 'Khách vãng lai'}</span>
+                      ${r.raw_phone || r.customer_phone ? `<span class="text-[10px] text-[#A39696] font-mono">(${maskPhoneNumber(r.raw_phone || r.customer_phone, isUserOwner(currentUser))})</span>` : ''}
                     </span>
                     <span class="text-[#D4C5B9]">•</span>
                     <span class="inline-flex items-center gap-1 font-semibold ${isCash ? 'text-[#D35400]' : 'text-[#2E7D6D]'} shrink-0">
@@ -158,7 +159,14 @@ function loadStaffHistoryList(targetDate) {
                       ${r.payment_method || 'Chuyển khoản'}
                     </span>
                   </div>
-                  <span class="text-[10px] text-[#A39696] font-mono shrink-0 ml-auto">${r.receipt_id}</span>
+                  <div class="flex items-center gap-1.5 ml-auto">
+                    ${(r.raw_phone || r.customer_phone) ? `
+                      <button type="button" onclick="openCustomerNoteModal('${r.raw_phone || r.customer_phone}', '${(r.customer_name || 'Khách hàng').replace(/'/g, "\\'")}')" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#FFF0EB] hover:bg-[#FCDFD7] text-[#E58A7B] text-[10px] font-bold border border-[#FCDFD7] transition cursor-pointer active:scale-95" title="Thêm / sửa ghi chú sở thích của khách">
+                        <i data-lucide="edit-3" class="w-3 h-3"></i> Ghi chú
+                      </button>
+                    ` : ''}
+                    <span class="text-[10px] text-[#A39696] font-mono shrink-0">${r.receipt_id}</span>
+                  </div>
                 </div>
               </div>
 
@@ -177,4 +185,99 @@ function loadStaffHistoryList(targetDate) {
   container.classList.add('history-list-anim');
   container.innerHTML = html;
   lucide.createIcons();
+}
+
+
+// =============================================================
+// MODAL GHI CHÚ KHÁCH HÀNG (DÀNH CHO KTV & CHỦ TIỆM SAU CA)
+// =============================================================
+function openCustomerNoteModal(phone, name) {
+  const modal = document.getElementById('modal-customer-note');
+  if (!modal) return;
+
+  const rawPhone = normalizePhone(phone);
+  document.getElementById('modal-note-cust-raw-phone').value = rawPhone;
+  document.getElementById('modal-note-cust-name').innerText = name || 'Khách Hàng';
+  document.getElementById('modal-note-cust-phone').innerText = maskPhoneNumber(rawPhone, isUserOwner(currentUser));
+
+  const customers = getStored('customers', DEFAULT_CUSTOMERS);
+  const cust = customers.find(c => normalizePhone(c.phone_number || c.raw_phone) === rawPhone);
+
+  const monthSelect = document.getElementById('modal-note-birth-month');
+  const noteInput = document.getElementById('modal-note-content');
+
+  if (monthSelect) {
+    monthSelect.value = (cust && cust.birth_month) ? String(cust.birth_month) : '';
+  }
+  if (noteInput) {
+    noteInput.value = (cust && cust.notes) ? cust.notes : '';
+  }
+
+  modal.classList.remove('hidden');
+  lucide.createIcons();
+}
+
+function closeCustomerNoteModal() {
+  document.getElementById('modal-customer-note')?.classList.add('hidden');
+}
+
+function handleSaveCustomerNote(e) {
+  e.preventDefault();
+  const rawPhone = document.getElementById('modal-note-cust-raw-phone')?.value;
+  const name = document.getElementById('modal-note-cust-name')?.innerText;
+  const birthMonth = document.getElementById('modal-note-birth-month')?.value;
+  const notes = document.getElementById('modal-note-content')?.value.trim();
+
+  if (!rawPhone) {
+    alert('Không tìm thấy số điện thoại khách!');
+    return;
+  }
+
+  // 1. Update Local Storage
+  const customers = getStored('customers', DEFAULT_CUSTOMERS);
+  let found = false;
+  customers.forEach(c => {
+    if (normalizePhone(c.phone_number || c.raw_phone) === rawPhone) {
+      c.notes = notes;
+      if (birthMonth) c.birth_month = Number(birthMonth);
+      found = true;
+    }
+  });
+
+  if (!found) {
+    customers.push({
+      phone_number: rawPhone,
+      raw_phone: rawPhone,
+      customer_name: name || 'Khách hàng',
+      birth_month: birthMonth ? Number(birthMonth) : 0,
+      total_visits: 1,
+      voucher_count: 0,
+      notes: notes,
+      created_at: normalizeDateKey(new Date())
+    });
+  }
+  setStored('customers', customers);
+
+  // 2. Call Google Apps Script Backend in Background
+  const gasUrl = getStored('gas_url', '');
+  if (gasUrl) {
+    fetch(gasUrl, {
+      method: 'POST',
+      body: JSON.stringify({
+        action: 'update_customer_notes',
+        phone_number: rawPhone,
+        customer_name: name,
+        birth_month: birthMonth ? Number(birthMonth) : '',
+        notes: notes
+      })
+    }).catch(() => {});
+  }
+
+  closeCustomerNoteModal();
+  alert('✨ Đã lưu ghi chú sở thích khách hàng thành công!');
+  
+  if (currentTab === 'history') {
+    if (isUserOwner(currentUser)) loadOwnerReceiptsList();
+    else loadStaffHistoryList();
+  }
 }

@@ -161,22 +161,203 @@ function loadAdminUsersList() {
   }).join('');
 }
 
+let adminCustomerSearchQuery = '';
+
+function filterAdminCustomers(query) {
+  adminCustomerSearchQuery = (query || '').trim().toLowerCase();
+  loadAdminCustomersList();
+}
+
 function loadAdminCustomersList() {
   const customers = getStored('customers', DEFAULT_CUSTOMERS);
+  const loyaltyCycles = getStored('loyalty_cycles', DEFAULT_LOYALTY_CYCLES);
+  const vouchers = getStored('vouchers', DEFAULT_VOUCHERS);
   const countEl = document.getElementById('admin-customer-count');
-  if (countEl) countEl.innerText = customers.length + ' khách';
+  if (countEl) countEl.innerText = customers.length + ' khách hàng';
   const container = document.getElementById('admin-customers-list');
   if (!container) return;
 
-  container.innerHTML = customers.map(c => `
-    <div class="p-4 rounded-3xl bg-[#F7F2EC] border border-[#EFE8DF] space-y-2">
-      <div class="flex justify-between items-center">
-        <div class="font-bold text-[#2D2424] text-sm">${c.customer_name}</div>
-        <span class="text-xs font-extrabold text-[#E58A7B] bg-[#FFF0EB] px-2.5 py-0.5 rounded-full">${c.total_visits || 0}/10 lần</span>
+  const currentMonth = new Date().getMonth() + 1;
+
+  let filtered = customers;
+  if (adminCustomerSearchQuery) {
+    filtered = customers.filter(c => {
+      const name = (c.customer_name || '').toLowerCase();
+      const phone = normalizePhone(c.phone_number || c.raw_phone);
+      return name.includes(adminCustomerSearchQuery) || phone.includes(adminCustomerSearchQuery);
+    });
+  }
+
+  if (filtered.length === 0) {
+    container.innerHTML = `
+      <div class="col-span-full py-8 text-center text-xs text-[#A39696] italic">
+        Không tìm thấy khách hàng nào phù hợp với tìm kiếm
       </div>
-      <div class="text-xs text-[#7E7272] font-mono">${c.phone_number}</div>
-      ${c.notes ? `<div class="text-xs text-[#D35400] bg-white/70 p-2 rounded-xl">📝 ${c.notes}</div>` : ''}
-      ${c.voucher_count > 0 ? `<div class="text-xs font-bold text-[#2E7D6D] bg-[#E8F8F5] p-2 rounded-xl flex items-center gap-1.5"><i data-lucide="gift" class="w-3.5 h-3.5"></i> Có ${c.voucher_count} Voucher Combo 1</div>` : ''}
-    </div>
-  `).join('');
+    `;
+    return;
+  }
+
+  container.innerHTML = filtered.map(c => {
+    const rawP = normalizePhone(c.phone_number || c.raw_phone);
+    const activeCycle = loyaltyCycles.find(cy => normalizePhone(cy.customer_phone || cy.raw_phone) === rawP && cy.status === 'ACTIVE');
+    const visits = activeCycle ? (Number(activeCycle.visits_count) || 0) : (c.cycle_visits || 0);
+    const endDate = activeCycle ? formatDateVN(activeCycle.end_date) : '';
+
+    const custVouchers = vouchers.filter(v => {
+      const vP = normalizePhone(v.customer_phone || v.raw_phone);
+      const vStatus = String(v.status || '').toLowerCase();
+      return vP === rawP && (vStatus.includes('chưa') || vStatus === 'active' || vStatus === 'unused');
+    });
+
+    const isBirthMonth = (Number(c.birth_month) === currentMonth);
+
+    return `
+      <div class="p-4 rounded-3xl bg-[#FAF6F1] border border-[#F0EAE1] space-y-3 shadow-xs">
+        <div class="flex justify-between items-start">
+          <div>
+            <div class="font-extrabold text-sm sm:text-base text-[#2D2424] flex items-center gap-1.5">
+              <span>👤 ${c.customer_name}</span>
+              ${isBirthMonth ? `<span class="px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 text-[10px] font-extrabold flex items-center gap-1">🎂 Sinh nhật T${c.birth_month}</span>` : (c.birth_month ? `<span class="text-[10px] text-[#A39696] font-semibold">(T${c.birth_month})</span>` : '')}
+            </div>
+            <div class="text-xs text-[#7E7272] font-mono mt-0.5">${rawP}</div>
+          </div>
+          <span class="text-xs font-extrabold px-2.5 py-1 rounded-full bg-[#FFF0EB] text-[#E58A7B] border border-[#FCDFD7]">
+            ${c.total_visits || 0} lần ghé
+          </span>
+        </div>
+
+        <!-- Chu Kỳ Tích Điểm 60 Ngày -->
+        <div class="p-3 rounded-2xl bg-white space-y-1.5 text-xs border border-[#F0EAE1]">
+          <div class="flex justify-between items-center text-[#7E7272]">
+            <span class="font-bold text-[#2D2424]">🎯 Tiến trình chu kỳ:</span>
+            <span class="font-extrabold text-[#E58A7B] font-mono">${visits} / 10 ca</span>
+          </div>
+          <div class="w-full h-2 bg-[#FAF6F1] rounded-full overflow-hidden">
+            <div class="h-full bg-gradient-to-r from-[#E58A7B] to-[#F09A8D] rounded-full" style="width: ${Math.min(100, (visits / 10) * 100)}%"></div>
+          </div>
+          ${endDate ? `<div class="text-[10px] text-[#A39696] text-right">Hạn chót 60 ngày: ${endDate}</div>` : ''}
+        </div>
+
+        <!-- Sở Thích & Voucher -->
+        ${c.notes ? `
+          <div class="text-xs text-[#D35400] bg-white/90 p-2.5 rounded-2xl border border-[#FCDFD7]">
+            <span class="font-bold">📝 Sở thích:</span> ${c.notes}
+          </div>
+        ` : ''}
+
+        ${custVouchers.length > 0 ? `
+          <div class="text-xs font-bold text-[#2E7D6D] bg-[#E8F8F5] p-2.5 rounded-2xl border border-[#B7EBDD] flex items-center justify-between">
+            <span class="flex items-center gap-1.5"><i data-lucide="gift" class="w-3.5 h-3.5"></i> Có ${custVouchers.length} Voucher khả dụng</span>
+            <span class="text-[10px] font-semibold text-[#2E7D6D] underline cursor-pointer" onclick="alert('Chi tiết voucher: ' + '${custVouchers.map(v => v.voucher_type + ' (' + v.discount_value + ')').join(', ')}')">Chi tiết</span>
+          </div>
+        ` : ''}
+
+        <!-- Nút Hành Động -->
+        <div class="flex gap-2 pt-1">
+          <button type="button" onclick="openCustomerNoteModal('${rawP}', '${(c.customer_name || 'Khách').replace(/'/g, "\\'")}')" class="flex-1 py-2 px-3 rounded-full bg-white hover:bg-[#FFF0EB] text-[#7E7272] hover:text-[#E58A7B] border border-[#F0EAE1] text-xs font-bold transition flex items-center justify-center gap-1 cursor-pointer">
+            <i data-lucide="edit-3" class="w-3.5 h-3.5"></i> Sửa Info
+          </button>
+          <button type="button" onclick="openGiftVoucherModal('${rawP}', '${(c.customer_name || 'Khách').replace(/'/g, "\\'")}')" class="flex-1 py-2 px-3 rounded-full bg-[#E8F8F5] hover:bg-[#D1F2EB] text-[#2E7D6D] border border-[#B7EBDD] text-xs font-extrabold transition flex items-center justify-center gap-1 cursor-pointer">
+            <i data-lucide="gift" class="w-3.5 h-3.5"></i> Tặng Voucher
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('');
+  lucide.createIcons();
+}
+
+function openGiftVoucherModal(phone, name) {
+  const modal = document.getElementById('modal-gift-voucher');
+  if (!modal) return;
+
+  const rawP = normalizePhone(phone);
+  document.getElementById('modal-gift-raw-phone').value = rawP;
+  document.getElementById('modal-gift-cust-name').value = name;
+  document.getElementById('modal-gift-cust-info').innerText = `${name} (${rawP})`;
+
+  modal.classList.remove('hidden');
+  lucide.createIcons();
+}
+
+function closeGiftVoucherModal() {
+  document.getElementById('modal-gift-voucher')?.classList.add('hidden');
+}
+
+function onGiftTypeChange(val) {
+  const box = document.getElementById('modal-gift-val-box');
+  if (!box) return;
+  if (val.includes('tiền')) {
+    box.classList.remove('hidden');
+  } else {
+    box.classList.add('hidden');
+  }
+}
+
+function handleSaveGiftVoucher(e) {
+  e.preventDefault();
+  const rawP = document.getElementById('modal-gift-raw-phone')?.value;
+  const name = document.getElementById('modal-gift-cust-name')?.value;
+  const type = document.getElementById('modal-gift-type')?.value;
+  const days = Number(document.getElementById('modal-gift-days')?.value) || 60;
+  const notes = document.getElementById('modal-gift-notes')?.value;
+  let discountVal = '1 ca miễn phí';
+  if (type.includes('20%')) discountVal = '20%';
+  if (type.includes('tiền')) discountVal = document.getElementById('modal-gift-val')?.value || '50.000 đ';
+
+  if (!rawP) {
+    alert('Không tìm thấy SĐT khách!');
+    return;
+  }
+
+  // Add Voucher to local storage
+  const vouchers = getStored('vouchers', DEFAULT_VOUCHERS);
+  const vId = 'VC' + Date.now().toString().slice(-6);
+  const now = new Date();
+  now.setDate(now.getDate() + days);
+  const expDate = normalizeDateKey(now);
+
+  vouchers.push({
+    voucher_id: vId,
+    customer_phone: rawP,
+    raw_phone: rawP,
+    customer_name: name,
+    voucher_type: type,
+    discount_value: discountVal,
+    expiry_date: expDate,
+    status: 'Chưa dùng',
+    used_receipt_id: '',
+    notes: notes
+  });
+  setStored('vouchers', vouchers);
+
+  // Increment voucher_count in customer
+  const customers = getStored('customers', DEFAULT_CUSTOMERS);
+  customers.forEach(c => {
+    if (normalizePhone(c.phone_number || c.raw_phone) === rawP) {
+      c.voucher_count = (c.voucher_count || 0) + 1;
+    }
+  });
+  setStored('customers', customers);
+
+  // Call Google Apps Script in background
+  const gasUrl = getStored('gas_url', '');
+  if (gasUrl) {
+    fetch(gasUrl, {
+      method: 'POST',
+      body: JSON.stringify({
+        action: 'gift_voucher',
+        customer_phone: rawP,
+        customer_name: name,
+        voucher_type: type,
+        discount_value: discountVal,
+        expiry_days: days,
+        notes: notes
+      })
+    }).catch(() => {});
+  }
+
+  closeGiftVoucherModal();
+  alert(`🎁 Đã tặng thành công Voucher cho ${name}!`);
+  loadAdminCustomersList();
 }

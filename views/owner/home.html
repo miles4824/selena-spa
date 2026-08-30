@@ -73,14 +73,21 @@
 
   <!-- Customers Subtab -->
   <div id="admin-subtab-customers" class="hidden bg-white rounded-[28px] border border-[#F0EAE1] shadow-[0_10px_30px_-5px_rgba(229,138,123,0.05),0_4px_12px_rgba(0,0,0,0.02)] p-5 sm:p-7 space-y-4">
-    <div class="flex justify-between items-center">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
       <div>
-        <h3 class="text-base sm:text-lg font-extrabold text-[#2D2424]">Danh Sách Khách Hàng (tb_customers)</h3>
-        <p class="text-xs text-[#7E7272]">Tự động đồng bộ với Google Sheets</p>
+        <h3 class="text-base sm:text-lg font-extrabold text-[#2D2424]">👥 Hồ Sơ Khách Hàng & Chu Kỳ Tích Điểm</h3>
+        <p class="text-xs text-[#7E7272]">Quản lý chu kỳ 60 ngày, ví voucher & ghi chú sở thích của khách</p>
       </div>
-      <span class="text-xs sm:text-sm text-[#E58A7B] font-bold" id="admin-customer-count">0 khách</span>
+      <span class="text-xs font-extrabold px-3 py-1 rounded-full bg-[#FFF0EB] text-[#E58A7B] border border-[#FCDFD7] self-start sm:self-auto" id="admin-customer-count">0 khách hàng</span>
     </div>
-    <div id="admin-customers-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
+
+    <!-- Search Input -->
+    <div class="relative">
+      <input type="text" id="admin-customer-search-input" oninput="filterAdminCustomers(this.value)" placeholder="🔍 Tìm kiếm theo tên hoặc số điện thoại..." class="w-full bg-[#F7F2EC] border border-[#EFE8DF] rounded-2xl p-3.5 pl-10 text-xs sm:text-sm text-[#2D2424] focus:outline-none focus:border-[#E58A7B] focus:bg-white transition">
+      <i data-lucide="search" class="w-4 h-4 text-[#A39696] absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+    </div>
+
+    <div id="admin-customers-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5"></div>
   </div>
 
   <!-- Settings Subtab -->

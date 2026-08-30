@@ -1,4 +1,4 @@
-const APP_VERSION = 'v0.1.0.3';
+const APP_VERSION = 'v0.1.1.0';
 // =============================================================
 // SELENA SPA - GLOBAL CONFIG & CONSTANTS
 // =============================================================
@@ -17,8 +17,20 @@ const DEFAULT_MENU = [
 ];
 
 const DEFAULT_CUSTOMERS = [
-  { phone_number: '0912345678', customer_name: 'Chị Mai Lan', total_visits: 8, voucher_count: 0, notes: 'Da đầu dầu, thích sấy mát' },
-  { phone_number: '0988776655', customer_name: 'Anh Nam', total_visits: 3, voucher_count: 0, notes: 'Thích bấm huyệt thái dương' }
+  { phone_number: '0912345678', customer_name: 'Chị Mai Lan', birth_month: 8, total_visits: 16, voucher_count: 1, notes: 'Da đầu nhạy cảm, thích gội nước ấm, sấy mát', created_at: '2026-08-01' },
+  { phone_number: '0987654321', customer_name: 'Anh Tuấn', birth_month: 9, total_visits: 2, voucher_count: 0, notes: 'Thích massage cổ vai gáy mạnh', created_at: '2026-08-10' },
+  { phone_number: '0988776655', customer_name: 'Anh Nam', birth_month: 5, total_visits: 3, voucher_count: 0, notes: 'Thích bấm huyệt thái dương', created_at: '2026-08-15' }
+];
+
+const DEFAULT_LOYALTY_CYCLES = [
+  { cycle_id: 'CYC_01', customer_phone: '0912345678', customer_name: 'Chị Mai Lan', start_date: '2026-06-01', end_date: '2026-07-31', visits_count: 8, status: 'EXPIRED', reward_voucher_id: '', notes: 'Hết hạn 60 ngày (đạt 8/10 ca)' },
+  { cycle_id: 'CYC_02', customer_phone: '0912345678', customer_name: 'Chị Mai Lan', start_date: '2026-08-01', end_date: '2026-09-30', visits_count: 8, status: 'ACTIVE', reward_voucher_id: '', notes: 'Đang tích chu kỳ 2 (8/10 ca)' },
+  { cycle_id: 'CYC_03', customer_phone: '0987654321', customer_name: 'Anh Tuấn', start_date: '2026-08-20', end_date: '2026-10-19', visits_count: 2, status: 'ACTIVE', reward_voucher_id: '', notes: 'Đang tích chu kỳ 1 (2/10 ca)' }
+];
+
+const DEFAULT_VOUCHERS = [
+  { voucher_id: 'VC01', customer_phone: '0912345678', customer_name: 'Chị Mai Lan', voucher_type: 'Tích 10 lần gội', discount_value: '1 ca miễn phí', expiry_date: '2026-09-30', status: 'Chưa dùng', used_receipt_id: '', notes: 'Thưởng hoàn thành chu kỳ tích 10 ca' },
+  { voucher_id: 'VC02', customer_phone: '0912345678', customer_name: 'Chị Mai Lan', voucher_type: 'Sinh nhật 20%', discount_value: '20%', expiry_date: '2026-08-31', status: 'Đã dùng', used_receipt_id: 'HD082503', notes: 'Quà sinh nhật tháng 8' }
 ];
 
 const DEFAULT_ANNOUNCEMENT = {
@@ -559,4 +571,15 @@ function renderDateStripComponent(containerId, activeDateStr, onDateClickCallbac
   attachContinuousSwiperToCalendar(containerId, onDateClickCallback);
   lucide.createIcons();
   requestAnimationFrame(() => updateStickyDateOffset(containerId));
+}
+
+function maskPhoneNumber(phone, isOwner) {
+  if (!phone) return 'Khách vãng lai';
+  let p = normalizePhone(phone);
+  if (!p) return phone;
+  if (isOwner) return p;
+  if (p.length >= 7) {
+    return p.slice(0, 3) + '***' + p.slice(-3);
+  }
+  return p;
 }
