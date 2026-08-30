@@ -1229,7 +1229,7 @@ function syncAllData(params) {
 
 const FIREBASE_RTDB_URL = 'https://selena-spa-6a852-default-rtdb.asia-southeast1.firebasedatabase.app';
 
-// Kích hoạt khi anh chỉnh sửa bất kỳ ô nào trên Google Sheet (Installable Trigger)
+// Kích hoạt khi anh chỉnh sửa bất kỳ ô nào trên Google Sheet (Installable onEdit Trigger)
 function installedOnEdit(e) {
   if (!e || !e.range) return;
   try {
@@ -1254,21 +1254,48 @@ function installedOnEdit(e) {
   }
 }
 
+// Kích hoạt khi anh thêm/xóa dòng hoặc thay đổi cấu trúc bảng (Installable onChange Trigger)
+function installedOnChange(e) {
+  try {
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const sheet = ss.getActiveSheet();
+    const sheetName = sheet ? sheet.getName() : '';
+
+    if (sheetName === 'tb_customers') {
+      menuSyncAllToFirebase();
+    } else if (sheetName === 'tb_menu') {
+      menuSyncAllToFirebase();
+    } else if (sheetName === 'tb_config') {
+      pushConfigToFirebase(sheet);
+    } else if (sheetName === 'tb_receipts') {
+      menuSyncAllToFirebase();
+    }
+  } catch (err) {
+    Logger.log('Lỗi installedOnChange push Firebase: ' + err.message);
+  }
+}
+
 // Cài đặt Trigger tự động kết nối mạng (chỉ cần chạy 1 lần)
 function installAutoSyncTrigger() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const triggers = ScriptApp.getProjectTriggers();
   for (let t of triggers) {
-    if (t.getHandlerFunction() === 'installedOnEdit') {
-      ScriptApp.deleteTrigger(t);
-    }
+    ScriptApp.deleteTrigger(t);
   }
+
+  // 1. Tạo Trigger khi sửa từng ô (onEdit)
   ScriptApp.newTrigger('installedOnEdit')
     .forSpreadsheet(ss)
     .onEdit()
     .create();
 
-  SpreadsheetApp.getUi().alert('🎉 Đã kích hoạt Tự Động Bắn Dữ Liệu sang Firebase thành công! Từ giờ mỗi khi anh sửa ô và Enter, App sẽ tự nhảy số ngay tức thì!');
+  // 2. Tạo Trigger khi thêm/xóa dòng (onChange)
+  ScriptApp.newTrigger('installedOnChange')
+    .forSpreadsheet(ss)
+    .onChange()
+    .create();
+
+  SpreadsheetApp.getUi().alert('🎉 ĐÃ KÍCH HOẠT THÀNH CÔNG!\n\nHệ thống tự động đồng bộ (onEdit & onChange) đã được cài đặt vĩnh viễn trên máy chủ Google. Từ giờ mỗi khi anh sửa ô hoặc thêm/xóa dòng, dữ liệu sẽ tự động bắn sang App ngay tức thì!');
 }
 
 // Bắn 1 khách hàng vừa sửa sang Firebase
