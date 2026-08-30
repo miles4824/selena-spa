@@ -73,10 +73,11 @@ async function showView(view) {
   }
 
   updateNavSlidingPill(view);
+  requestAnimationFrame(() => updateNavSlidingPill(view));
   lucide.createIcons();
 }
 
-// CẬP NHẬT HIỆU ỨNG VIÊN THUỐC TRƯỢT DI CHUYỂN DƯỚI ĐÁY
+// CẬP NHẬT HIỆU ỨNG VIÊN THUỐC TRƯỢT DI CHUYỂN CHÍNH XÁC 100%
 function updateNavSlidingPill(activeTab) {
   const tabs = ['home', 'add', 'history', 'income'];
   const pill = document.getElementById('nav-sliding-indicator');
@@ -86,14 +87,20 @@ function updateNavSlidingPill(activeTab) {
     const btn = document.getElementById('nav-btn-' + t);
     if (btn) {
       if (t === activeTab) {
-        btn.classList.add('active');
+        btn.classList.add('active', 'text-white');
+        btn.classList.remove('text-[#7E7272]');
       } else {
-        btn.classList.remove('active');
+        btn.classList.remove('active', 'text-white');
+        btn.classList.add('text-[#7E7272]');
       }
     }
   });
 
   if (pill && activeBtn) {
+    pill.style.width = `${activeBtn.offsetWidth}px`;
+    pill.style.height = `${activeBtn.offsetHeight}px`;
+    pill.style.top = `${activeBtn.offsetTop}px`;
+    pill.style.left = `0px`;
     pill.style.transform = `translateX(${activeBtn.offsetLeft}px)`;
     pill.classList.remove('opacity-0');
     pill.classList.add('opacity-100');

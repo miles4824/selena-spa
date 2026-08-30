@@ -34,24 +34,6 @@ h4, h5, h6 {
 }
 
 /* =============================================================
-   LUXURY TAB TRANSITION ANIMATIONS (CHUYỂN CẢNH MƯỢT MÀ)
-   ============================================================= */
-.view-enter-active {
-  animation: luxuryViewFadeSlideIn 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-@keyframes luxuryViewFadeSlideIn {
-  0% {
-    opacity: 0;
-    transform: translateY(12px) scale(0.985);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-/* =============================================================
    FLOATING BOTTOM NAV WITH SLIDING PILL (MENU CHUYỂN ĐỘNG TRƯỢT)
    ============================================================= */
 .nav-dock-container {
@@ -67,27 +49,26 @@ h4, h5, h6 {
 .nav-sliding-pill {
   position: absolute;
   top: 6px;
-  bottom: 6px;
-  width: 44px;
-  height: 44px;
+  left: 0;
   border-radius: 9999px;
   background: #E58A7B;
-  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1), width 0.2s ease, height 0.2s ease;
   box-shadow: 0 4px 14px rgba(229, 138, 123, 0.35);
   z-index: 1;
+  pointer-events: none;
 }
 
 .nav-btn {
   position: relative;
-  z-index: 2;
-  width: 44px;
-  height: 44px;
+  z-index: 10;
+  width: 48px;
+  height: 48px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 9999px;
   color: #7E7272;
-  transition: all 0.25s ease;
+  transition: color 0.2s ease;
   cursor: pointer;
 }
 
@@ -95,8 +76,10 @@ h4, h5, h6 {
   color: #E58A7B;
 }
 
-.nav-btn.active {
+.nav-btn.active,
+.nav-btn.active * {
   color: #FFFFFF !important;
+  stroke: #FFFFFF !important;
 }
 
 /* =============================================================
