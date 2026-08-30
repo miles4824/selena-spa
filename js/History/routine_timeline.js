@@ -208,15 +208,15 @@ async function openCustomerNoteModal(phone, name) {
   // 1. Tìm thông tin trong bộ nhớ (từ customers và receipts)
   const allCusts = typeof getAllAvailableCustomers === 'function' ? getAllAvailableCustomers() : getStored('customers', []);
   let cust = allCusts.find(c => {
-    const p = normalizePhone(c.phone_number || c.raw_phone);
-    return p === rawPhone || p.endsWith(rawPhone) || rawPhone.endsWith(p);
+    const p = c.phone_number || c.raw_phone;
+    return typeof isSamePhone === 'function' ? isSamePhone(p, rawPhone) : (normalizePhone(p) === rawPhone);
   });
 
   let initialMonth = (cust && cust.birth_month) ? cust.birth_month : (cust && cust.birthday ? parseBirthMonth(cust.birthday) : 0);
   let initialNotes = (cust && cust.notes) ? cust.notes : '';
 
   if (monthSelect) {
-    monthSelect.value = initialMonth ? String(initialMonth) : '';
+    monthSelect.value = (initialMonth && initialMonth >= 1 && initialMonth <= 12) ? String(initialMonth) : '';
   }
   if (noteInput) {
     noteInput.value = initialNotes;
@@ -234,8 +234,8 @@ async function openCustomerNoteModal(phone, name) {
         let liveMonth = liveCust.birth_month || parseBirthMonth(liveCust.birthday);
         let liveNotes = liveCust.notes || '';
         
-        if (monthSelect && liveMonth) {
-          monthSelect.value = String(liveMonth);
+        if (monthSelect) {
+          monthSelect.value = (liveMonth && liveMonth >= 1 && liveMonth <= 12) ? String(liveMonth) : '';
         }
         if (noteInput && liveNotes && !noteInput.value) {
           noteInput.value = liveNotes;

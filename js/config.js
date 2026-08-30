@@ -1,3 +1,12 @@
+function isSamePhone(p1, p2) {
+  if (!p1 || !p2) return false;
+  const s1 = String(p1).replace(/[^0-9]/g, '');
+  const s2 = String(p2).replace(/[^0-9]/g, '');
+  if (!s1 || !s2) return false;
+  if (s1 === s2) return true;
+  return s1.replace(/^0+/, '') === s2.replace(/^0+/, '');
+}
+
 function isUserOwner(u) {
   const user = u || currentUser;
   if (!user) return false;
@@ -41,7 +50,7 @@ function parseBirthMonth(val) {
   return 0;
 }
 
-const APP_VERSION = 'v0.1.2.5';
+const APP_VERSION = 'v0.1.2.6';
 // =============================================================
 // SELENA SPA - GLOBAL CONFIG & CONSTANTS
 // =============================================================

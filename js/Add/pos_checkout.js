@@ -418,11 +418,8 @@ function onCustomerPhoneInput(val) {
   // 2. Tìm chính xác nếu đã nhập từ 7 số trở lên
   if (normInput.length >= 7) {
     const cust = customers.find(c => {
-      const rawTarget = String(c.phone_number || c.raw_phone || '').replace(/[^0-9]/g, '');
-      const cWith0 = rawTarget.startsWith('0') ? rawTarget : ('0' + rawTarget);
-      const cNo0 = rawTarget.replace(/^0+/, '');
-      const uNo0 = normInput.replace(/^0+/, '');
-      return cWith0 === normInput || cNo0 === uNo0 || rawTarget === normInput || cWith0.endsWith(normInput);
+      const p = c.phone_number || c.raw_phone;
+      return typeof isSamePhone === 'function' ? isSamePhone(p, normInput) : (normalizePhone(p) === normInput);
     });
 
     if (cust) {
