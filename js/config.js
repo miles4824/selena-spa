@@ -1,4 +1,4 @@
-const APP_VERSION = 'v0.0.8.3';
+const APP_VERSION = 'v0.0.8.4';
 // =============================================================
 // SELENA SPA - GLOBAL CONFIG & CONSTANTS
 // =============================================================
@@ -261,10 +261,10 @@ function getWeekDaysFromMonday(baseDate = new Date()) {
   return weekDays;
 }
 
-// Render HTML cho một hàng 7 ngày (1 tuần)
+// Render HTML cho một hàng 7 ngày (1 tuần chiếm đúng 33.333333% của track 300%)
 function renderWeekRowHtml(weekDays, currentActive, isAllActive, onDateClickCallback) {
   return `
-    <div class="flex items-center justify-between w-full gap-1.5 text-center flex-shrink-0" style="width: 100%;">
+    <div class="flex items-center justify-between gap-1.5 text-center flex-shrink-0 box-border px-0.5" style="width: 33.333333%; min-width: 33.333333%; max-width: 33.333333%;">
       ${weekDays.map(item => {
         const isSelected = !isAllActive && (item.dateStr === currentActive);
         const isToday = item.isToday;
