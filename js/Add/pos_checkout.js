@@ -383,7 +383,7 @@ function onCustomerPhoneInput(val) {
       const matches = customers.filter(c => matchCustomerPhoneOrName(c, rawInput, normInput)).slice(0, 8);
 
       if (matches.length > 0) {
-        renderSuggestionsHTML(matches);
+        renderSuggestionsHTML(matches, normInput);
       } else {
         suggestionsBox.classList.add('hidden');
         
@@ -404,7 +404,7 @@ function onCustomerPhoneInput(val) {
                   curCusts.push(liveCust);
                   setStored('customers', curCusts);
                 }
-                renderSuggestionsHTML([liveCust]);
+                renderSuggestionsHTML([liveCust], normInput);
               }
             } catch(e) {}
           }, 350);
@@ -438,7 +438,7 @@ function onCustomerPhoneInput(val) {
   if (vCheck) vCheck.checked = false;
 }
 
-function renderSuggestionsHTML(matches) {
+function renderSuggestionsHTML(matches, currentInput = '') {
   const suggestionsBox = document.getElementById('pos-customer-suggestions');
   if (!suggestionsBox) return;
 
@@ -452,7 +452,7 @@ function renderSuggestionsHTML(matches) {
     ${matches.map(c => {
       let rawP = String(c.phone_number || c.raw_phone || '').replace(/[^0-9]/g, '');
       let fullP = rawP.startsWith('0') ? rawP : ('0' + rawP);
-      let displayP = typeof maskPhoneNumber === 'function' ? maskPhoneNumber(fullP, isOwner) : fullP;
+      let displayP = typeof maskPhoneNumber === 'function' ? maskPhoneNumber(fullP, isOwner, currentInput) : fullP;
       let bMonth = c.birth_month || parseBirthMonth(c.birthday);
       const visits = Number(c.cycle_visits) || 0;
       const vCount = Number(c.voucher_count) || 0;

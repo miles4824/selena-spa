@@ -7,15 +7,27 @@ function isUserOwner(u) {
   return (r === 'admin' || r === 'chủ tiệm' || r === 'chủ sáng lập' || r === 'owner' || p === '0949251144' || s === 'FOUNDER_01');
 }
 
-function maskPhoneNumber(phone, showFull = false) {
+function maskPhoneNumber(phone, showFull = false, queryInput = '') {
   if (!phone) return '';
   const clean = String(phone).replace(/[^0-9]/g, '');
   const std = clean.startsWith('0') ? clean : ('0' + clean);
   if (showFull) return std;
-  if (std.length >= 8) {
-    return std.slice(0, 3) + '***' + std.slice(-3);
-  }
-  return std;
+
+  const totalLen = std.length; // Thường là 10 số
+  const tailLen = 3; // 3 số cuối để nhận diện (144)
+  if (totalLen <= tailLen + 2) return std;
+
+  const tail = std.slice(-tailLen);
+  const q = String(queryInput || '').replace(/[^0-9]/g, '');
+  const qStd = q.startsWith('0') ? q : ('0' + q);
+
+  // Số lượng ký tự đầu lộ ra theo những gì Staff đang gõ (tối thiểu 2 số '09', tối đa không đè vào đuôi)
+  const revealHeadLen = Math.min(totalLen - tailLen, Math.max(2, qStd.length));
+  const head = std.slice(0, revealHeadLen);
+  const maskLen = Math.max(1, totalLen - revealHeadLen - tailLen);
+  const stars = '*'.repeat(maskLen);
+
+  return `${head}${stars}${tail}`;
 }
 
 function parseBirthMonth(val) {
@@ -29,7 +41,7 @@ function parseBirthMonth(val) {
   return 0;
 }
 
-const APP_VERSION = 'v0.1.2.0';
+const APP_VERSION = 'v0.1.2.1';
 // =============================================================
 // SELENA SPA - GLOBAL CONFIG & CONSTANTS
 // =============================================================
