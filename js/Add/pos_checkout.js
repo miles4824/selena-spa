@@ -284,12 +284,65 @@ function updatePOSCalculations() {
   });
 }
 
+let customerSearchDebounce = null;
+
+function getAllAvailableCustomers() {
+  const storedCusts = getStored('customers', []);
+  const custMap = new Map();
+
+  // 1. Từ danh sách customers
+  storedCusts.forEach(c => {
+    const rawP = String(c.phone_number || c.raw_phone || '').replace(/[^0-9]/g, '');
+    if (rawP) {
+      const standardP = rawP.startsWith('0') ? rawP : ('0' + rawP);
+      custMap.set(standardP, {
+        phone_number: standardP,
+        raw_phone: rawP,
+        customer_name: c.customer_name || 'Khách hàng',
+        birthday: c.birthday || '',
+        birth_month: c.birth_month || parseBirthMonth(c.birthday),
+        cycle_start_date: c.cycle_start_date || '',
+        cycle_end_date: c.cycle_end_date || '',
+        cycle_visits: Number(c.cycle_visits) || 0,
+        total_visits: Number(c.total_visits) || 0,
+        voucher_count: Number(c.voucher_count) || 0,
+        notes: c.notes || ''
+      });
+    }
+  });
+
+  // 2. Gom thêm từ danh sách receipts nếu customers chưa sync kịp
+  const receipts = getStored('receipts', []);
+  receipts.forEach(r => {
+    const rawP = String(r.customer_phone || r.raw_phone || '').replace(/[^0-9]/g, '');
+    if (rawP && !rawP.includes('*')) {
+      const standardP = rawP.startsWith('0') ? rawP : ('0' + rawP);
+      if (!custMap.has(standardP)) {
+        custMap.set(standardP, {
+          phone_number: standardP,
+          raw_phone: rawP,
+          customer_name: r.customer_name || 'Khách hàng',
+          birthday: '',
+          birth_month: 0,
+          cycle_start_date: r.date || '',
+          cycle_end_date: '',
+          cycle_visits: 1,
+          total_visits: 1,
+          voucher_count: 0,
+          notes: ''
+        });
+      }
+    }
+  });
+
+  return Array.from(custMap.values());
+}
+
 function matchCustomerPhoneOrName(c, rawInput, normInput) {
   if (!c) return false;
   const name = (c.customer_name || '').toLowerCase();
   const rawTarget = String(c.phone_number || c.raw_phone || '').replace(/[^0-9]/g, '');
   
-  // Format with leading 0 and without leading 0
   const cWith0 = rawTarget.startsWith('0') ? rawTarget : ('0' + rawTarget);
   const cNo0 = rawTarget.replace(/^0+/, '');
 
@@ -313,40 +366,40 @@ function onCustomerPhoneInput(val) {
   const normInput = String(rawInput).replace(/[^0-9]/g, '');
   const card = document.getElementById('pos-customer-card');
   const suggestionsBox = document.getElementById('pos-customer-suggestions');
-  const customers = getStored('customers', DEFAULT_CUSTOMERS);
+  const customers = getAllAvailableCustomers();
 
-  // 1. Hiển thị Dropdown Gợi ý Khách hàng khi gõ (từ 1 ký tự trở lên)
+  // 1. Hiển thị Dropdown Gợi ý Khách hàng
   if (suggestionsBox) {
     if (rawInput.length >= 1) {
       const matches = customers.filter(c => matchCustomerPhoneOrName(c, rawInput, normInput)).slice(0, 8);
 
       if (matches.length > 0) {
-        suggestionsBox.innerHTML = matches.map(c => {
-          let rawP = String(c.phone_number || c.raw_phone || '').replace(/[^0-9]/g, '');
-          let displayP = rawP.startsWith('0') ? rawP : ('0' + rawP);
-          let bMonth = c.birth_month || parseBirthMonth(c.birthday);
-          const visits = Number(c.cycle_visits) || 0;
-          const vCount = Number(c.voucher_count) || 0;
-
-          return `
-            <div onclick="selectCustomerSuggestion('${displayP}')" class="p-3 hover:bg-[#FFF5F2] cursor-pointer transition flex items-center justify-between gap-2 border-b border-[#FAF6F1] last:border-b-0">
-              <div>
-                <div class="font-bold text-xs sm:text-sm text-[#2D2424] flex items-center gap-1.5">
-                  <span>👤 ${c.customer_name}</span>
-                  ${bMonth ? `<span class="text-[10px] text-[#A39696] font-semibold">(T${bMonth})</span>` : ''}
-                  ${vCount > 0 ? `<span class="text-[9px] font-extrabold px-1.5 py-0.5 rounded-full bg-[#E8F8F5] text-[#2E7D6D]">🎁 ${vCount} Voucher</span>` : ''}
-                </div>
-                <div class="text-[11px] font-mono text-[#E58A7B] font-semibold mt-0.5">${displayP}</div>
-              </div>
-              <span class="text-[11px] font-extrabold px-2 py-0.5 rounded-full bg-[#FAF6F1] text-[#7E7272] border border-[#F0EAE1]">
-                ${visits}/10 ca
-              </span>
-            </div>
-          `;
-        }).join('');
-        suggestionsBox.classList.remove('hidden');
+        renderSuggestionsHTML(matches);
       } else {
         suggestionsBox.classList.add('hidden');
+        
+        // Live search trực tiếp từ Google Apps Script nếu cục bộ chưa có
+        if (normInput.length >= 3) {
+          clearTimeout(customerSearchDebounce);
+          customerSearchDebounce = setTimeout(async () => {
+            try {
+              const res = await callGasApi('check_customer', { phone_number: normInput });
+              if (res && res.found && res.customer) {
+                const liveCust = res.customer;
+                const curCusts = getStored('customers', []);
+                const rawP = String(liveCust.phone_number || '').replace(/[^0-9]/g, '');
+                const stdP = rawP.startsWith('0') ? rawP : ('0' + rawP);
+                liveCust.phone_number = stdP;
+                
+                if (!curCusts.some(x => String(x.phone_number).includes(rawP))) {
+                  curCusts.push(liveCust);
+                  setStored('customers', curCusts);
+                }
+                renderSuggestionsHTML([liveCust]);
+              }
+            } catch(e) {}
+          }, 350);
+        }
       }
     } else {
       suggestionsBox.classList.add('hidden');
@@ -374,6 +427,37 @@ function onCustomerPhoneInput(val) {
   useVoucher = false;
   const vCheck = document.getElementById('pos-use-voucher');
   if (vCheck) vCheck.checked = false;
+}
+
+function renderSuggestionsHTML(matches) {
+  const suggestionsBox = document.getElementById('pos-customer-suggestions');
+  if (!suggestionsBox) return;
+
+  suggestionsBox.innerHTML = matches.map(c => {
+    let rawP = String(c.phone_number || c.raw_phone || '').replace(/[^0-9]/g, '');
+    let displayP = rawP.startsWith('0') ? rawP : ('0' + rawP);
+    let bMonth = c.birth_month || parseBirthMonth(c.birthday);
+    const visits = Number(c.cycle_visits) || 0;
+    const vCount = Number(c.voucher_count) || 0;
+
+    return `
+      <div onclick="selectCustomerSuggestion('${displayP}')" class="p-3.5 hover:bg-[#FFF5F2] cursor-pointer transition flex items-center justify-between gap-2 border-b border-[#FAF6F1] last:border-b-0 bg-white">
+        <div>
+          <div class="font-bold text-xs sm:text-sm text-[#2D2424] flex items-center gap-1.5">
+            <span>👤 ${c.customer_name}</span>
+            ${bMonth ? `<span class="text-[10px] text-[#A39696] font-semibold">(T${bMonth})</span>` : ''}
+            ${vCount > 0 ? `<span class="text-[9px] font-extrabold px-1.5 py-0.5 rounded-full bg-[#E8F8F5] text-[#2E7D6D]">🎁 ${vCount} Voucher</span>` : ''}
+          </div>
+          <div class="text-[11px] font-mono text-[#E58A7B] font-semibold mt-0.5">${displayP}</div>
+        </div>
+        <span class="text-[11px] font-extrabold px-2 py-0.5 rounded-full bg-[#FAF6F1] text-[#7E7272] border border-[#F0EAE1]">
+          ${visits}/10 ca
+        </span>
+      </div>
+    `;
+  }).join('');
+
+  suggestionsBox.classList.remove('hidden');
 }
 
 function selectCustomerSuggestion(phone) {
