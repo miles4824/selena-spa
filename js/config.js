@@ -1,4 +1,4 @@
-const APP_VERSION = 'v0.1.0.0';
+const APP_VERSION = 'v0.1.0.1';
 // =============================================================
 // SELENA SPA - GLOBAL CONFIG & CONSTANTS
 // =============================================================
@@ -521,7 +521,7 @@ function renderDateStripComponent(containerId, activeDateStr, onDateClickCallbac
   const endLabel = `${currWeekDays[6].dayNum}/${currWeekDays[6].monthNum}`;
 
   container.innerHTML = `
-    <div class="bg-white rounded-[28px] border border-[#F0EAE1] shadow-[0_10px_30px_-5px_rgba(229,138,123,0.05),0_4px_12px_rgba(0,0,0,0.02)] p-3.5 space-y-2.5 touch-pan-y select-none">
+    <div class="bg-gradient-to-br from-[#FFF0EB] via-[#FFFFFF] to-[#FAF6F1] rounded-[28px] border border-[#F0EAE1] shadow-[0_10px_30px_-5px_rgba(229,138,123,0.05),0_4px_12px_rgba(0,0,0,0.02)] p-3.5 space-y-2.5 touch-pan-y select-none relative overflow-hidden">
       <!-- Header: Khoảng Ngày + Nút Chọn Ngày (Mở Popup Lịch Tháng Tuyệt Đẹp) + Tất Cả -->
       <div class="flex items-center justify-between gap-2">
         <div class="flex items-center gap-1.5 text-xs font-bold text-[#2D2424]">
