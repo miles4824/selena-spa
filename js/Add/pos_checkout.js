@@ -384,6 +384,7 @@ function startLiveSession() {
 
   const phone = document.getElementById('pos-customer-phone')?.value.trim() || '';
   const name = document.getElementById('pos-customer-name')?.value.trim() || 'Khách vãng lai';
+  const birthMonth = document.getElementById('pos-birth-month')?.value.trim() || (currentCustomer?.birth_month ? String(currentCustomer.birth_month) : '');
 
   const s1Phone = document.getElementById('pos-staff1-select')?.value || currentUser?.phone;
   const staff1 = users.find(u => normalizePhone(u.phone) === normalizePhone(s1Phone)) || currentUser;
@@ -424,6 +425,8 @@ function startLiveSession() {
     date: startDateStr,
     customer_phone: phone,
     customer_name: name,
+    birth_month: birthMonth ? Number(birthMonth) : 0,
+    birthday: birthMonth ? `Tháng ${birthMonth}` : (currentCustomer?.birthday || ''),
     initial_staff_count: allStaffs.length,
     staffs: allStaffs,
     staff_1_user_id: allStaffs[0].user_id,
@@ -1178,6 +1181,8 @@ function confirmSaveReceiptFromCheckout() {
     total_paid: grandTotal,
     customer_phone: currentLiveSession.customer_phone,
     customer_name: currentLiveSession.customer_name,
+    birth_month: currentLiveSession.birth_month || 0,
+    birthday: currentLiveSession.birthday || (currentLiveSession.birth_month ? `Tháng ${currentLiveSession.birth_month}` : ''),
     
     staff_1_user_id: s1.user_id || s1.phone || '',
     staff_1_id: s1.staff_id || 'KTV01',

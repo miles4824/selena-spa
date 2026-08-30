@@ -593,7 +593,8 @@ function createReceipt(params) {
   const paymentMethod = params.payment_method || 'Tiền mặt';
   const isVoucherUsed = (params.is_voucher_used === true || params.is_voucher_used === 'TRUE' || params.is_voucher_used === 'true');
   const usedVoucherId = params.used_voucher_id || '';
-  const birthdayVal = params.birthday || (params.birth_month ? `2000-${String(params.birth_month).padStart(2, '0')}-01` : '');
+  let bMonthNum = Number(params.birth_month) || parseBirthMonth(params.birthday);
+  const birthdayVal = params.birthday || (bMonthNum ? `Tháng ${bMonthNum}` : '');
   const customerNotes = params.notes || '';
 
   // 1. GHI VÀO TB_RECEIPTS
