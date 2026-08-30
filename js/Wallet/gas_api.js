@@ -69,24 +69,32 @@ async function refreshDataFromGoogleSheets() {
     lucide.createIcons();
   }
 
-  const result = await callGasApi('sync_all_data');
-  if (result && (result.status === 'success' || result.success === true) && result.data) {
-    if (result.data.menu && result.data.menu.length > 0) setStored('menu', result.data.menu);
-    if (result.data.users && result.data.users.length > 0) setStored('users', result.data.users);
-    if (result.data.customers) setStored('customers', result.data.customers);
-    if (result.data.receipts) setStored('receipts', result.data.receipts);
-    if (result.data.expenses) setStored('expenses', result.data.expenses);
-    if (result.data.announcement) setStored('announcement', result.data.announcement);
-    
-    initMenuUI();
-    renderQuickAccounts();
-    renderAnnouncement();
-    if (currentUser) {
-      const freshUsers = getStored('users', DEFAULT_USERS);
-      const me = freshUsers.find(u => normalizePhone(u.phone) === normalizePhone(currentUser.phone));
-      if (me) currentUser = me;
-      showView(currentTab);
+  try {
+    const result = await callGasApi('sync_all_data');
+    if (result && (result.status === 'success' || result.success === true)) {
+      const payload = result.data || result;
+      if (Array.isArray(payload.menu) && payload.menu.length > 0) setStored('menu', payload.menu);
+      if (Array.isArray(payload.users) && payload.users.length > 0) setStored('users', payload.users);
+      if (Array.isArray(payload.customers)) setStored('customers', payload.customers);
+      if (Array.isArray(payload.receipts)) setStored('receipts', payload.receipts);
+      if (Array.isArray(payload.expenses)) setStored('expenses', payload.expenses);
+      if (Array.isArray(payload.loyalty_cycles)) setStored('loyalty_cycles', payload.loyalty_cycles);
+      if (Array.isArray(payload.vouchers)) setStored('vouchers', payload.vouchers);
+      if (payload.config && payload.config.announcement) setStored('announcement', payload.config.announcement);
+      
+      if (typeof initMenuUI === 'function') initMenuUI();
+      if (typeof renderQuickAccounts === 'function') renderQuickAccounts();
+      if (typeof renderAnnouncement === 'function') renderAnnouncement();
+      
+      if (currentUser) {
+        const freshUsers = getStored('users', DEFAULT_USERS);
+        const me = freshUsers.find(u => normalizePhone(u.phone) === normalizePhone(currentUser.phone));
+        if (me) currentUser = me;
+        if (typeof showView === 'function') showView(currentTab);
+      }
     }
+  } catch(e) {
+    console.error('Lỗi khi đồng bộ từ Google Sheets:', e);
   }
 
   if (btn) {
@@ -94,3 +102,4 @@ async function refreshDataFromGoogleSheets() {
     lucide.createIcons();
   }
 }
+
