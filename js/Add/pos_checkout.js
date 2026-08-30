@@ -506,7 +506,17 @@ function applyCustomerData(cust) {
   const cPhone = rawP.startsWith('0') ? rawP : ('0' + rawP);
 
   const nameInput = document.getElementById('pos-customer-name');
-  if (nameInput) nameInput.value = cust.customer_name || '';
+  if (nameInput) {
+    nameInput.value = cust.customer_name || '';
+    // Khóa ô Tên nếu khách đã có hồ sơ tên chính thức trong hệ thống
+    if (cust.customer_name && cust.customer_name !== 'Khách hàng' && cust.customer_name !== 'Khách vãng lai') {
+      nameInput.readOnly = true;
+      nameInput.classList.add('bg-[#EFE8DF]', 'text-[#7E7272]', 'cursor-not-allowed');
+    } else {
+      nameInput.readOnly = false;
+      nameInput.classList.remove('bg-[#EFE8DF]', 'text-[#7E7272]', 'cursor-not-allowed');
+    }
+  }
   
   const nameBadge = document.getElementById('pos-cust-name-badge');
   if (nameBadge) nameBadge.innerText = cust.customer_name || 'Khách hàng';
@@ -515,6 +525,14 @@ function applyCustomerData(cust) {
   const bSelect = document.getElementById('pos-birth-month');
   if (bSelect) {
     bSelect.value = (custMonth && custMonth >= 1 && custMonth <= 12) ? String(custMonth) : '';
+    // Khóa ô Tháng sinh nếu khách đã có tháng sinh trong hệ thống
+    if (custMonth && custMonth >= 1 && custMonth <= 12) {
+      bSelect.disabled = true;
+      bSelect.classList.add('bg-[#EFE8DF]', 'text-[#7E7272]', 'cursor-not-allowed');
+    } else {
+      bSelect.disabled = false;
+      bSelect.classList.remove('bg-[#EFE8DF]', 'text-[#7E7272]', 'cursor-not-allowed');
+    }
   }
 
   // Active 60-day Loyalty Cycle (Cột D & E)
