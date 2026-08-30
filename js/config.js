@@ -1,4 +1,4 @@
-const APP_VERSION = 'v0.0.8.2';
+const APP_VERSION = 'v0.0.8.3';
 // =============================================================
 // SELENA SPA - GLOBAL CONFIG & CONSTANTS
 // =============================================================
@@ -191,8 +191,8 @@ function normalizeDateKey(val) {
 // Map lưu baseDate cho từng container lịch để chuyển tuần độc lập
 // Map lưu baseDate cho từng container lịch để chuyển tuần độc lập
 // Map lưu baseDate cho từng container lịch để chuyển tuần độc lập
+// Map lưu baseDate cho từng container lịch để chuyển tuần độc lập
 const dateStripBaseDates = {};
-const lastSlideDirection = {};
 
 function updateStickyDateOffset(containerId) {
   const container = document.getElementById(containerId);
@@ -217,7 +217,6 @@ function changeWeekOffset(containerId, offsetWeeks, onDateClickCallback) {
   const newBase = new Date(base);
   newBase.setDate(newBase.getDate() + (offsetWeeks * 7));
   dateStripBaseDates[containerId] = newBase;
-  lastSlideDirection[containerId] = offsetWeeks < 0 ? 'slide-from-left' : 'slide-from-right';
 
   const activeDate = (containerId === 'staff-date-strip-container') ? selectedStaffHistoryDate : selectedAdminHistoryDate;
   renderDateStripComponent(containerId, activeDate, onDateClickCallback);
@@ -231,122 +230,6 @@ function onCustomDatePicked(containerId, pickedDateStr, onDateClickCallback) {
   if (typeof window[onDateClickCallback] === 'function') {
     window[onDateClickCallback](normDate);
   }
-}
-
-// CƠ CHẾ NẮM KÉO BÁM THEO NGÓN TAY THỜI GIAN THỰC (REAL-TIME TOUCH DRAGGING)
-function attachInteractiveDragToCalendar(containerId, onDateClickCallback) {
-  const container = document.getElementById(containerId);
-  if (!container) return;
-
-  const daysRow = document.getElementById(`${containerId}-days-row`);
-  if (!daysRow) return;
-
-  let isDragging = false;
-  let startX = 0;
-  let startY = 0;
-  let currentDeltaX = 0;
-  let isHorizontalMove = false;
-
-  daysRow.addEventListener('touchstart', e => {
-    isDragging = true;
-    startX = e.touches[0].clientX;
-    startY = e.touches[0].clientY;
-    currentDeltaX = 0;
-    isHorizontalMove = false;
-    daysRow.style.transition = 'none';
-  }, { passive: true });
-
-  daysRow.addEventListener('touchmove', e => {
-    if (!isDragging) return;
-    const currentX = e.touches[0].clientX;
-    const currentY = e.touches[0].clientY;
-    const diffX = currentX - startX;
-    const diffY = currentY - startY;
-
-    if (!isHorizontalMove) {
-      if (Math.abs(diffX) > 6 && Math.abs(diffX) > Math.abs(diffY)) {
-        isHorizontalMove = true;
-      } else if (Math.abs(diffY) > 8) {
-        isDragging = false;
-        return;
-      }
-    }
-
-    if (isHorizontalMove) {
-      currentDeltaX = diffX;
-      daysRow.style.transform = `translateX(${diffX}px)`;
-      daysRow.style.opacity = `${Math.max(0.65, 1 - Math.abs(diffX) / 350)}`;
-    }
-  }, { passive: true });
-
-  const endDrag = () => {
-    if (!isDragging) return;
-    if (!isHorizontalMove) {
-      isDragging = false;
-      daysRow.style.transition = 'transform 0.25s ease, opacity 0.25s ease';
-      daysRow.style.transform = 'translateX(0px)';
-      daysRow.style.opacity = '1';
-      return;
-    }
-    isDragging = false;
-    isHorizontalMove = false;
-
-    const threshold = 45; // Kéo hơn 45px là xác nhận đổi tuần
-    if (currentDeltaX < -threshold) {
-      // Kéo sang trái -> Chuyển sang tuần sau
-      daysRow.style.transition = 'transform 0.2s ease-out, opacity 0.2s ease-out';
-      daysRow.style.transform = 'translateX(-100px)';
-      daysRow.style.opacity = '0';
-      setTimeout(() => {
-        changeWeekOffset(containerId, 1, onDateClickCallback);
-      }, 140);
-    } else if (currentDeltaX > threshold) {
-      // Kéo sang phải -> Chuyển về tuần trước
-      daysRow.style.transition = 'transform 0.2s ease-out, opacity 0.2s ease-out';
-      daysRow.style.transform = 'translateX(100px)';
-      daysRow.style.opacity = '0';
-      setTimeout(() => {
-        changeWeekOffset(containerId, -1, onDateClickCallback);
-      }, 140);
-    } else {
-      // Nhả tay khi chưa đủ lực -> Hút về lại vị trí cũ đàn hồi
-      daysRow.style.transition = 'transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.28s ease';
-      daysRow.style.transform = 'translateX(0px)';
-      daysRow.style.opacity = '1';
-    }
-  };
-
-  daysRow.addEventListener('touchend', endDrag, { passive: true });
-  daysRow.addEventListener('touchcancel', endDrag, { passive: true });
-
-  // Hỗ trợ cả chuột trên máy tính (Mouse Drag)
-  daysRow.addEventListener('mousedown', e => {
-    isDragging = true;
-    startX = e.clientX;
-    startY = e.clientY;
-    currentDeltaX = 0;
-    isHorizontalMove = true;
-    daysRow.style.transition = 'none';
-  });
-
-  const onMouseMove = e => {
-    if (!isDragging || !isHorizontalMove) return;
-    const diffX = e.clientX - startX;
-    currentDeltaX = diffX;
-    daysRow.style.transform = `translateX(${diffX}px)`;
-    daysRow.style.opacity = `${Math.max(0.65, 1 - Math.abs(diffX) / 350)}`;
-  };
-
-  const onMouseUp = () => {
-    if (isDragging) {
-      endDrag();
-      window.removeEventListener('mousemove', onMouseMove);
-      window.removeEventListener('mouseup', onMouseUp);
-    }
-  };
-
-  window.addEventListener('mousemove', onMouseMove);
-  window.addEventListener('mouseup', onMouseUp);
 }
 
 // Lấy danh sách 7 ngày trong tuần tính từ Thứ 2 (T2) đến Chủ Nhật (CN)
@@ -378,20 +261,182 @@ function getWeekDaysFromMonday(baseDate = new Date()) {
   return weekDays;
 }
 
-// Component Lịch Tuần Dùng Chung Toàn Diện (Hỗ Trợ Kéo Bám Ngón Tay Real-time & Chọn Ngày iOS)
+// Render HTML cho một hàng 7 ngày (1 tuần)
+function renderWeekRowHtml(weekDays, currentActive, isAllActive, onDateClickCallback) {
+  return `
+    <div class="flex items-center justify-between w-full gap-1.5 text-center flex-shrink-0" style="width: 100%;">
+      ${weekDays.map(item => {
+        const isSelected = !isAllActive && (item.dateStr === currentActive);
+        const isToday = item.isToday;
+
+        let bgClass = 'bg-[#F7F2EC] text-[#7E7272] hover:bg-[#FFF0EB] hover:text-[#E58A7B]';
+        let labelText = item.label;
+        let labelClass = 'text-[10px] text-[#A39696] uppercase font-bold';
+        let numClass = 'text-sm font-extrabold text-[#2D2424]';
+
+        if (isSelected) {
+          bgClass = 'bg-[#E58A7B] text-white ring-2 ring-[#E58A7B]/40 font-black';
+          labelClass = 'text-[10px] text-white/90 uppercase font-extrabold';
+          numClass = 'text-sm font-black text-white';
+        } else if (isToday) {
+          labelClass = 'text-[10px] text-[#E58A7B] uppercase font-extrabold';
+          numClass = 'text-sm font-extrabold text-[#E58A7B]';
+          bgClass = 'bg-[#FFF0EB] border border-[#FCDFD7] text-[#E58A7B]';
+        }
+
+        return `
+          <button type="button" onclick="${onDateClickCallback}('${item.dateStr}')" class="flex-1 py-2 px-1 rounded-2xl ${bgClass} transition-colors duration-150 active:scale-95 cursor-pointer select-none">
+            <span class="block ${labelClass}">${labelText}</span>
+            <span class="${numClass}">${item.dayNum}</span>
+          </button>
+        `;
+      }).join('')}
+    </div>
+  `;
+}
+
+// CƠ CHẾ BĂNG CHUYỀN 3 TUẦN LIÊN TỤC (3-WEEK CONTINUOUS SWIPER CAROUSEL)
+function attachContinuousSwiperToCalendar(containerId, onDateClickCallback) {
+  const viewport = document.getElementById(`${containerId}-carousel-viewport`);
+  const track = document.getElementById(`${containerId}-carousel-track`);
+  if (!viewport || !track) return;
+
+  let isDragging = false;
+  let startX = 0;
+  let startY = 0;
+  let currentDeltaX = 0;
+  let isHorizontalMove = false;
+  let viewportWidth = viewport.offsetWidth || 340;
+
+  const setTrackPosition = (offsetPx, animated = false) => {
+    if (animated) {
+      track.style.transition = 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)';
+    } else {
+      track.style.transition = 'none';
+    }
+    // Trọng tâm là tuần hiện tại ở vị trí -viewportWidth
+    track.style.transform = `translateX(${-viewportWidth + offsetPx}px)`;
+  };
+
+  // Khởi tạo vị trí ban đầu
+  setTrackPosition(0, false);
+
+  const onTouchStart = (clientX, clientY) => {
+    isDragging = true;
+    startX = clientX;
+    startY = clientY;
+    currentDeltaX = 0;
+    isHorizontalMove = false;
+    viewportWidth = viewport.offsetWidth || 340;
+    setTrackPosition(0, false);
+  };
+
+  const onTouchMove = (clientX, clientY) => {
+    if (!isDragging) return;
+    const diffX = clientX - startX;
+    const diffY = clientY - startY;
+
+    if (!isHorizontalMove) {
+      if (Math.abs(diffX) > 6 && Math.abs(diffX) > Math.abs(diffY)) {
+        isHorizontalMove = true;
+      } else if (Math.abs(diffY) > 8) {
+        isDragging = false;
+        return;
+      }
+    }
+
+    if (isHorizontalMove) {
+      currentDeltaX = diffX;
+      setTrackPosition(diffX, false);
+    }
+  };
+
+  const onTouchEnd = () => {
+    if (!isDragging) return;
+    if (!isHorizontalMove) {
+      isDragging = false;
+      setTrackPosition(0, true);
+      return;
+    }
+    isDragging = false;
+    isHorizontalMove = false;
+
+    const threshold = viewportWidth * 0.2; // Kéo qua 20% chiều rộng là xác nhận chuyển tuần
+    if (currentDeltaX < -threshold) {
+      // Vuốt sang trái -> Trượt mượt sang Tuần Sau
+      setTrackPosition(-viewportWidth, true);
+      setTimeout(() => {
+        changeWeekOffset(containerId, 1, onDateClickCallback);
+      }, 250);
+    } else if (currentDeltaX > threshold) {
+      // Vuốt sang phải -> Trượt mượt về Tuần Trước
+      setTrackPosition(viewportWidth, true);
+      setTimeout(() => {
+        changeWeekOffset(containerId, -1, onDateClickCallback);
+      }, 250);
+    } else {
+      // Trả về vị trí tuần hiện tại mượt mà (Snap back)
+      setTrackPosition(0, true);
+    }
+  };
+
+  // 1. Touch Events trên điện thoại
+  viewport.addEventListener('touchstart', e => {
+    onTouchStart(e.touches[0].clientX, e.touches[0].clientY);
+  }, { passive: true });
+
+  viewport.addEventListener('touchmove', e => {
+    onTouchMove(e.touches[0].clientX, e.touches[0].clientY);
+  }, { passive: true });
+
+  viewport.addEventListener('touchend', onTouchEnd, { passive: true });
+  viewport.addEventListener('touchcancel', onTouchEnd, { passive: true });
+
+  // 2. Mouse Drag Events trên máy tính
+  viewport.addEventListener('mousedown', e => {
+    onTouchStart(e.clientX, e.clientY);
+    isHorizontalMove = true;
+  });
+
+  const onMouseMove = e => {
+    if (!isDragging) return;
+    onTouchMove(e.clientX, e.clientY);
+  };
+
+  const onMouseUp = () => {
+    if (isDragging) {
+      onTouchEnd();
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mouseup', onMouseUp);
+    }
+  };
+
+  window.addEventListener('mousemove', onMouseMove);
+  window.addEventListener('mouseup', onMouseUp);
+}
+
+// Component Lịch Tuần Dùng Chung Toàn Diện (Băng Chuyền 3 Tuần Nối Tiếp Thấy Liền Liền)
 function renderDateStripComponent(containerId, activeDateStr, onDateClickCallback) {
   const container = document.getElementById(containerId);
   if (!container) return;
 
   const baseDate = dateStripBaseDates[containerId] || new Date();
-  const weekDays = getWeekDaysFromMonday(baseDate);
+  
+  // Tính 3 tuần: Tuần Trước, Tuần Này, Tuần Sau
+  const prevBase = new Date(baseDate);
+  prevBase.setDate(prevBase.getDate() - 7);
+  const nextBase = new Date(baseDate);
+  nextBase.setDate(nextBase.getDate() + 7);
+
+  const prevWeekDays = getWeekDaysFromMonday(prevBase);
+  const currWeekDays = getWeekDaysFromMonday(baseDate);
+  const nextWeekDays = getWeekDaysFromMonday(nextBase);
+
   const currentActive = activeDateStr || 'ALL';
   const isAllActive = currentActive === 'ALL';
 
-  const startLabel = `${weekDays[0].dayNum}/${weekDays[0].monthNum}`;
-  const endLabel = `${weekDays[6].dayNum}/${weekDays[6].monthNum}`;
-  const animClass = lastSlideDirection[containerId] || '';
-  lastSlideDirection[containerId] = null;
+  const startLabel = `${currWeekDays[0].dayNum}/${currWeekDays[0].monthNum}`;
+  const endLabel = `${currWeekDays[6].dayNum}/${currWeekDays[6].monthNum}`;
   const pickerId = `${containerId}-date-picker`;
 
   container.innerHTML = `
@@ -422,39 +467,18 @@ function renderDateStripComponent(containerId, activeDateStr, onDateClickCallbac
         </div>
       </div>
 
-      <!-- 7 Nút Ngày: T2, T3, T4, T5, T6, T7, CN (Nắm Kéo Bám Theo Ngón Tay) -->
-      <div id="${containerId}-days-row" class="flex items-center justify-between w-full gap-1.5 text-center cursor-grab active:cursor-grabbing ${animClass}">
-        ${weekDays.map(item => {
-          const isSelected = !isAllActive && (item.dateStr === currentActive);
-          const isToday = item.isToday;
-
-          let bgClass = 'bg-[#F7F2EC] text-[#7E7272] hover:bg-[#FFF0EB] hover:text-[#E58A7B]';
-          let labelText = item.label;
-          let labelClass = 'text-[10px] text-[#A39696] uppercase font-bold';
-          let numClass = 'text-sm font-extrabold text-[#2D2424]';
-
-          if (isSelected) {
-            bgClass = 'bg-[#E58A7B] text-white ring-2 ring-[#E58A7B]/40 font-black';
-            labelClass = 'text-[10px] text-white/90 uppercase font-extrabold';
-            numClass = 'text-sm font-black text-white';
-          } else if (isToday) {
-            labelClass = 'text-[10px] text-[#E58A7B] uppercase font-extrabold';
-            numClass = 'text-sm font-extrabold text-[#E58A7B]';
-            bgClass = 'bg-[#FFF0EB] border border-[#FCDFD7] text-[#E58A7B]';
-          }
-
-          return `
-            <button type="button" onclick="${onDateClickCallback}('${item.dateStr}')" class="flex-1 py-2 px-1 rounded-2xl ${bgClass} transition-all duration-200 active:scale-95 cursor-pointer select-none">
-              <span class="block ${labelClass}">${labelText}</span>
-              <span class="${numClass}">${item.dayNum}</span>
-            </button>
-          `;
-        }).join('')}
+      <!-- BĂNG CHUYỀN 3 TUẦN LIÊN TỤC (PREV - CURR - NEXT) -->
+      <div id="${containerId}-carousel-viewport" class="w-full overflow-hidden relative cursor-grab active:cursor-grabbing">
+        <div id="${containerId}-carousel-track" class="flex w-[300%] relative" style="transform: translateX(-33.333333%);">
+          ${renderWeekRowHtml(prevWeekDays, currentActive, isAllActive, onDateClickCallback)}
+          ${renderWeekRowHtml(currWeekDays, currentActive, isAllActive, onDateClickCallback)}
+          ${renderWeekRowHtml(nextWeekDays, currentActive, isAllActive, onDateClickCallback)}
+        </div>
       </div>
     </div>
   `;
 
-  attachInteractiveDragToCalendar(containerId, onDateClickCallback);
+  attachContinuousSwiperToCalendar(containerId, onDateClickCallback);
   lucide.createIcons();
   requestAnimationFrame(() => updateStickyDateOffset(containerId));
 }
