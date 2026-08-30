@@ -433,7 +433,8 @@ function updateCustomerNotes(params) {
   }
 
   const newNotes = params.notes !== undefined ? String(params.notes).trim() : null;
-  const newBirthday = params.birthday || (params.birth_month ? `2000-${String(params.birth_month).padStart(2, '0')}-01` : null);
+  let newBMonthNum = Number(params.birth_month) || parseBirthMonth(params.birthday);
+  const newBirthday = newBMonthNum ? newBMonthNum : (params.birthday ? String(params.birthday).trim() : null);
   const newName = params.customer_name ? String(params.customer_name).trim() : null;
 
   if (foundRow > 0) {
@@ -594,7 +595,7 @@ function createReceipt(params) {
   const isVoucherUsed = (params.is_voucher_used === true || params.is_voucher_used === 'TRUE' || params.is_voucher_used === 'true');
   const usedVoucherId = params.used_voucher_id || '';
   let bMonthNum = Number(params.birth_month) || parseBirthMonth(params.birthday);
-  const birthdayVal = params.birthday || (bMonthNum ? `Tháng ${bMonthNum}` : '');
+  const birthdayVal = bMonthNum ? bMonthNum : (params.birthday ? String(params.birthday).trim() : '');
   const customerNotes = params.notes || '';
 
   // 1. GHI VÀO TB_RECEIPTS

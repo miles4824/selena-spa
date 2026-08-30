@@ -277,9 +277,51 @@ function onCustomerPhoneInput(val) {
   const rawInput = val.trim();
   const normInput = normalizePhone(rawInput);
   const card = document.getElementById('pos-customer-card');
+  const suggestionsBox = document.getElementById('pos-customer-suggestions');
   const customers = getStored('customers', DEFAULT_CUSTOMERS);
-  const currentMonth = new Date().getMonth() + 1;
 
+  // 1. Hiển thị Dropdown Gợi ý Khách hàng khi gõ (từ 1 ký tự trở lên)
+  if (suggestionsBox) {
+    if (rawInput.length >= 1) {
+      const matches = customers.filter(c => {
+        const cPhone = normalizePhone(c.phone_number || c.raw_phone);
+        const cName = (c.customer_name || '').toLowerCase();
+        return cPhone.includes(normInput) || cName.includes(rawInput.toLowerCase());
+      }).slice(0, 6);
+
+      if (matches.length > 0) {
+        suggestionsBox.innerHTML = matches.map(c => {
+          const cPhone = normalizePhone(c.phone_number || c.raw_phone);
+          let bMonth = c.birth_month || parseBirthMonth(c.birthday);
+          const visits = Number(c.cycle_visits) || 0;
+          const vCount = Number(c.voucher_count) || 0;
+
+          return `
+            <div onclick="selectCustomerSuggestion('${cPhone}')" class="p-3 hover:bg-[#FFF5F2] cursor-pointer transition flex items-center justify-between gap-2">
+              <div>
+                <div class="font-bold text-xs sm:text-sm text-[#2D2424] flex items-center gap-1.5">
+                  <span>👤 ${c.customer_name}</span>
+                  ${bMonth ? `<span class="text-[10px] text-[#A39696] font-semibold">(T${bMonth})</span>` : ''}
+                  ${vCount > 0 ? `<span class="text-[9px] font-extrabold px-1.5 py-0.5 rounded-full bg-[#E8F8F5] text-[#2E7D6D]">🎁 ${vCount} Voucher</span>` : ''}
+                </div>
+                <div class="text-[11px] font-mono text-[#E58A7B] font-semibold mt-0.5">${cPhone}</div>
+              </div>
+              <span class="text-[11px] font-extrabold px-2 py-0.5 rounded-full bg-[#FAF6F1] text-[#7E7272] border border-[#F0EAE1]">
+                ${visits}/10 ca
+              </span>
+            </div>
+          `;
+        }).join('');
+        suggestionsBox.classList.remove('hidden');
+      } else {
+        suggestionsBox.classList.add('hidden');
+      }
+    } else {
+      suggestionsBox.classList.add('hidden');
+    }
+  }
+
+  // 2. Tìm chính xác nếu đã nhập từ 7 số trở lên
   if (rawInput.length >= 7) {
     const cust = customers.find(c => {
       const cNorm = normalizePhone(c.phone_number || c.raw_phone);
@@ -290,79 +332,117 @@ function onCustomerPhoneInput(val) {
     });
 
     if (cust) {
-      currentCustomer = cust;
-      card.classList.remove('hidden');
-      const cPhone = normalizePhone(cust.phone_number || cust.raw_phone);
-      
-      document.getElementById('pos-customer-name').value = cust.customer_name;
-      document.getElementById('pos-cust-name-badge').innerText = cust.customer_name;
-      document.getElementById('pos-cust-phone-badge').innerText = '(' + cPhone + ')';
-      
-      const bSelect = document.getElementById('pos-birth-month');
-      if (bSelect) {
-        if (cust.birth_month) bSelect.value = String(cust.birth_month);
-        else if (cust.birthday) {
-          let m = String(cust.birthday).match(/(\d{4})[/-](\d{1,2})[/-](\d{1,2})/);
-          if (m) bSelect.value = String(Number(m[2]));
-        }
-      }
-
-      // Check Active 60-Day Loyalty Cycle directly from cust fields (Cột D & E)
-      let visits = Number(cust.cycle_visits) || 0;
-      let expiryDate = cust.cycle_end_date ? formatDateVN(cust.cycle_end_date) : '';
-
-      document.getElementById('pos-cust-visits-badge').innerText = visits + ' / 10 Ca gội';
-      document.getElementById('pos-cust-progress-bar').style.width = Math.min(100, (visits / 10) * 100) + '%';
-      
-      const expTextEl = document.getElementById('pos-cust-cycle-expiry-text');
-      if (expTextEl) {
-        expTextEl.innerText = expiryDate ? `Hạn đến: ${expiryDate}` : 'Chu kỳ 60 ngày';
-      }
-
-      // Check Birthday Month
-      let custMonth = cust.birth_month || 0;
-      if (!custMonth && cust.birthday) {
-        let m = String(cust.birthday).match(/(\d{4})[/-](\d{1,2})[/-](\d{1,2})/);
-        if (m) custMonth = Number(m[2]);
-      }
-
-      const bBanner = document.getElementById('pos-birthday-banner');
-      if (bBanner) {
-        if (custMonth === currentMonth) {
-          bBanner.classList.remove('hidden');
-        } else {
-          bBanner.classList.add('hidden');
-        }
-      }
-
-      // Check Note
-      let noteText = cust.notes || '';
-      if (noteText.includes('GMT') || noteText.includes('00:00:00')) noteText = '';
-      if (noteText) {
-        document.getElementById('pos-cust-notes-box').classList.remove('hidden');
-        document.getElementById('pos-cust-notes-text').innerText = noteText;
-      } else {
-        document.getElementById('pos-cust-notes-box').classList.add('hidden');
-      }
-
-      // Check Vouchers
-      const vCount = Number(cust.voucher_count) || 0;
-      if (vCount > 0) {
-        document.getElementById('pos-voucher-banner').classList.remove('hidden');
-        document.getElementById('pos-voucher-text').innerText = `Khách có ${vCount} Voucher ca miễn phí!`;
-      } else {
-        document.getElementById('pos-voucher-banner').classList.add('hidden');
-      }
+      applyCustomerData(cust);
       return;
     }
   }
 
   currentCustomer = null;
-  card.classList.add('hidden');
+  if (card) card.classList.add('hidden');
   useVoucher = false;
   const vCheck = document.getElementById('pos-use-voucher');
   if (vCheck) vCheck.checked = false;
 }
+
+function selectCustomerSuggestion(phone) {
+  const customers = getStored('customers', DEFAULT_CUSTOMERS);
+  const norm = normalizePhone(phone);
+  const cust = customers.find(c => normalizePhone(c.phone_number || c.raw_phone) === norm);
+  
+  const suggestionsBox = document.getElementById('pos-customer-suggestions');
+  if (suggestionsBox) suggestionsBox.classList.add('hidden');
+
+  if (cust) {
+    const pInput = document.getElementById('pos-customer-phone');
+    if (pInput) pInput.value = normalizePhone(cust.phone_number || cust.raw_phone);
+    applyCustomerData(cust);
+  }
+}
+
+function applyCustomerData(cust) {
+  currentCustomer = cust;
+  const card = document.getElementById('pos-customer-card');
+  if (card) card.classList.remove('hidden');
+  const currentMonth = new Date().getMonth() + 1;
+  const cPhone = normalizePhone(cust.phone_number || cust.raw_phone);
+
+  const nameInput = document.getElementById('pos-customer-name');
+  if (nameInput) nameInput.value = cust.customer_name;
+  
+  const nameBadge = document.getElementById('pos-cust-name-badge');
+  if (nameBadge) nameBadge.innerText = cust.customer_name;
+
+  const phoneBadge = document.getElementById('pos-cust-phone-badge');
+  if (phoneBadge) phoneBadge.innerText = '(' + cPhone + ')';
+
+  let custMonth = cust.birth_month || parseBirthMonth(cust.birthday);
+  const bSelect = document.getElementById('pos-birth-month');
+  if (bSelect) {
+    bSelect.value = custMonth ? String(custMonth) : '';
+  }
+
+  // Active 60-day Loyalty Cycle (Cột D & E)
+  let visits = Number(cust.cycle_visits) || 0;
+  let expiryDate = cust.cycle_end_date ? formatDateVN(cust.cycle_end_date) : '';
+
+  const visitsBadge = document.getElementById('pos-cust-visits-badge');
+  if (visitsBadge) visitsBadge.innerText = visits + ' / 10 Ca gội';
+
+  const progressBar = document.getElementById('pos-cust-progress-bar');
+  if (progressBar) progressBar.style.width = Math.min(100, (visits / 10) * 100) + '%';
+
+  const expTextEl = document.getElementById('pos-cust-cycle-expiry-text');
+  if (expTextEl) {
+    expTextEl.innerText = expiryDate ? `Hạn đến: ${expiryDate}` : 'Chu kỳ 60 ngày';
+  }
+
+  // Birthday banner
+  const bBanner = document.getElementById('pos-birthday-banner');
+  if (bBanner) {
+    if (custMonth === currentMonth) {
+      bBanner.classList.remove('hidden');
+    } else {
+      bBanner.classList.add('hidden');
+    }
+  }
+
+  // Notes
+  let noteText = cust.notes || '';
+  if (noteText.includes('GMT') || noteText.includes('00:00:00')) noteText = '';
+  const notesBox = document.getElementById('pos-cust-notes-box');
+  const notesText = document.getElementById('pos-cust-notes-text');
+  if (notesBox && notesText) {
+    if (noteText) {
+      notesBox.classList.remove('hidden');
+      notesText.innerText = noteText;
+    } else {
+      notesBox.classList.add('hidden');
+    }
+  }
+
+  // Vouchers
+  const vCount = Number(cust.voucher_count) || 0;
+  const vBanner = document.getElementById('pos-voucher-banner');
+  const vText = document.getElementById('pos-voucher-text');
+  if (vBanner && vText) {
+    if (vCount > 0) {
+      vBanner.classList.remove('hidden');
+      vText.innerText = `Khách có ${vCount} Voucher ca miễn phí!`;
+    } else {
+      vBanner.classList.add('hidden');
+    }
+  }
+}
+
+// Đóng gợi ý khi bấm ra ngoài
+document.addEventListener('click', function(e) {
+  const suggestionsBox = document.getElementById('pos-customer-suggestions');
+  const phoneInput = document.getElementById('pos-customer-phone');
+  if (suggestionsBox && phoneInput && !phoneInput.contains(e.target) && !suggestionsBox.contains(e.target)) {
+    suggestionsBox.classList.add('hidden');
+  }
+});
+
 
 function applyBirthdayDiscount() {
   alert('🎂 Đã áp dụng ưu đãi giảm 20% cho khách sinh nhật trong tháng!');
@@ -426,7 +506,7 @@ function startLiveSession() {
     customer_phone: phone,
     customer_name: name,
     birth_month: birthMonth ? Number(birthMonth) : 0,
-    birthday: birthMonth ? `Tháng ${birthMonth}` : (currentCustomer?.birthday || ''),
+    birthday: birthMonth ? Number(birthMonth) : (currentCustomer?.birth_month ? Number(currentCustomer.birth_month) : (currentCustomer?.birthday || '')),
     initial_staff_count: allStaffs.length,
     staffs: allStaffs,
     staff_1_user_id: allStaffs[0].user_id,
@@ -1182,7 +1262,7 @@ function confirmSaveReceiptFromCheckout() {
     customer_phone: currentLiveSession.customer_phone,
     customer_name: currentLiveSession.customer_name,
     birth_month: currentLiveSession.birth_month || 0,
-    birthday: currentLiveSession.birthday || (currentLiveSession.birth_month ? `Tháng ${currentLiveSession.birth_month}` : ''),
+    birthday: currentLiveSession.birth_month ? Number(currentLiveSession.birth_month) : (currentLiveSession.birthday || ''),
     
     staff_1_user_id: s1.user_id || s1.phone || '',
     staff_1_id: s1.staff_id || 'KTV01',
