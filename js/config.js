@@ -1,4 +1,4 @@
-const APP_VERSION = 'v0.0.6.5';
+const APP_VERSION = 'v0.0.6.6';
 // =============================================================
 // SELENA SPA - GLOBAL CONFIG & CONSTANTS
 // =============================================================
@@ -154,6 +154,31 @@ function normalizeDateKey(val) {
 }
 
 // Lấy danh sách 7 ngày trong tuần tính từ Thứ 2 (T2) đến Chủ Nhật (CN)
+// Map lưu baseDate cho từng container lịch để chuyển tuần độc lập
+const dateStripBaseDates = {};
+
+function changeWeekOffset(containerId, offsetWeeks, onDateClickCallback) {
+  let base = dateStripBaseDates[containerId] || new Date();
+  const newBase = new Date(base);
+  newBase.setDate(newBase.getDate() + (offsetWeeks * 7));
+  dateStripBaseDates[containerId] = newBase;
+
+  // Lấy ngày hiện tại đang được chọn (nếu có)
+  const activeDate = (containerId === 'staff-date-strip-container') ? selectedStaffHistoryDate : selectedAdminHistoryDate;
+  renderDateStripComponent(containerId, activeDate, onDateClickCallback);
+}
+
+function onCustomDatePicked(containerId, pickedDateStr, onDateClickCallback) {
+  if (!pickedDateStr) return;
+  const normDate = normalizeDateKey(pickedDateStr);
+  dateStripBaseDates[containerId] = new Date(normDate + 'T12:00:00');
+  
+  if (typeof window[onDateClickCallback] === 'function') {
+    window[onDateClickCallback](normDate);
+  }
+}
+
+// Lấy danh sách 7 ngày trong tuần tính từ Thứ 2 (T2) đến Chủ Nhật (CN)
 function getWeekDaysFromMonday(baseDate = new Date()) {
   const current = new Date(baseDate);
   const day = current.getDay();
@@ -172,6 +197,7 @@ function getWeekDaysFromMonday(baseDate = new Date()) {
       label: dayLabels[i],
       dayNum: d.getDate(),
       monthNum: d.getMonth() + 1,
+      year: d.getFullYear(),
       dateStr: dateStr,
       dateObj: d,
       isToday: dateStr === normalizeDateKey(new Date())
@@ -181,12 +207,13 @@ function getWeekDaysFromMonday(baseDate = new Date()) {
   return weekDays;
 }
 
-// Component Lịch Tuần Dùng Chung Cho Mọi Trang (Admin & Staff)
+// Component Lịch Tuần Dùng Chung Toàn Diện (T2 -> CN, Điều Hướng Tuần & Chọn Lịch Nhanh)
 function renderDateStripComponent(containerId, activeDateStr, onDateClickCallback) {
   const container = document.getElementById(containerId);
   if (!container) return;
 
-  const weekDays = getWeekDaysFromMonday(new Date());
+  const baseDate = dateStripBaseDates[containerId] || new Date();
+  const weekDays = getWeekDaysFromMonday(baseDate);
   const todayStr = normalizeDateKey(new Date());
   const currentActive = activeDateStr || todayStr;
   const isAllActive = currentActive === 'ALL';
@@ -217,18 +244,41 @@ function renderDateStripComponent(containerId, activeDateStr, onDateClickCallbac
     }
   });
 
+  const startLabel = `${weekDays[0].dayNum}/${weekDays[0].monthNum}`;
+  const endLabel = `${weekDays[6].dayNum}/${weekDays[6].monthNum}`;
+
   container.innerHTML = `
-    <div class="spa-card p-3.5 space-y-2.5">
-      <div class="flex items-center justify-between px-1">
-        <div class="text-xs font-bold text-[#2D2424] flex items-center gap-1.5">
-          <i data-lucide="calendar" class="w-3.5 h-3.5 text-[#E58A7B]"></i>
-          <span>Tuần này: T2 ${weekDays[0].dayNum}/${weekDays[0].monthNum} — CN ${weekDays[6].dayNum}/${weekDays[6].monthNum}</span>
+    <div class="spa-card p-3.5 space-y-3">
+      <!-- Thanh Điều Hướng: Chuyển Tuần + Nút Chọn Ngày Lịch + Tất Cả -->
+      <div class="flex items-center justify-between gap-2 flex-wrap">
+        <div class="flex items-center gap-1.5 bg-[#FAF6F1] p-1 rounded-2xl border border-[#F0EAE1]">
+          <button type="button" onclick="changeWeekOffset('${containerId}', -1, '${onDateClickCallback}')" title="Tuần trước" class="w-7 h-7 rounded-xl bg-white hover:bg-[#FFF0EB] text-[#7E7272] hover:text-[#E58A7B] flex items-center justify-center transition cursor-pointer active:scale-90">
+            <i data-lucide="chevron-left" class="w-4 h-4"></i>
+          </button>
+          <span class="text-xs font-bold text-[#2D2424] px-1.5 font-mono">
+            ${startLabel} — ${endLabel}
+          </span>
+          <button type="button" onclick="changeWeekOffset('${containerId}', 1, '${onDateClickCallback}')" title="Tuần sau" class="w-7 h-7 rounded-xl bg-white hover:bg-[#FFF0EB] text-[#7E7272] hover:text-[#E58A7B] flex items-center justify-center transition cursor-pointer active:scale-90">
+            <i data-lucide="chevron-right" class="w-4 h-4"></i>
+          </button>
         </div>
-        <button type="button" onclick="${onDateClickCallback}('ALL')" class="text-[11px] font-extrabold px-3 py-1 rounded-xl transition cursor-pointer ${isAllActive ? 'bg-[#E58A7B] text-white font-black' : 'bg-[#FAF6F1] text-[#E58A7B] hover:bg-[#FFF0EB] border border-[#FCDFD7]'}">
-          Xem tất cả
-        </button>
+
+        <div class="flex items-center gap-1.5">
+          <!-- Chọn Ngày Lịch Bất Kỳ -->
+          <label class="relative inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-1.5 rounded-xl bg-[#FAF6F1] hover:bg-[#FFF0EB] text-[#2D2424] hover:text-[#E58A7B] border border-[#F0EAE1] cursor-pointer transition active:scale-95">
+            <i data-lucide="calendar" class="w-3.5 h-3.5 text-[#E58A7B]"></i>
+            <span>Chọn ngày</span>
+            <input type="date" value="${isAllActive ? '' : currentActive}" onchange="onCustomDatePicked('${containerId}', this.value, '${onDateClickCallback}')" class="absolute inset-0 opacity-0 w-full h-full cursor-pointer">
+          </label>
+
+          <!-- Nút Xem Tất Cả -->
+          <button type="button" onclick="${onDateClickCallback}('ALL')" class="text-[11px] font-extrabold px-3 py-1.5 rounded-xl transition cursor-pointer ${isAllActive ? 'bg-[#E58A7B] text-white font-black' : 'bg-[#FAF6F1] text-[#7E7272] hover:bg-[#FFF0EB] hover:text-[#E58A7B] border border-[#F0EAE1]'}">
+            Tất cả
+          </button>
+        </div>
       </div>
 
+      <!-- 7 Nút Ngày: T2, T3, T4, T5, T6, T7, CN (Chuẩn Xác 100%) -->
       <div class="flex items-center justify-between w-full gap-1.5 text-center">
         ${weekDays.map(item => {
           const isSelected = !isAllActive && (item.dateStr === currentActive);
@@ -236,7 +286,7 @@ function renderDateStripComponent(containerId, activeDateStr, onDateClickCallbac
           const hasTour = activeDatesSet.has(item.dateStr);
 
           let bgClass = 'bg-[#F7F2EC] text-[#7E7272] hover:bg-[#FFF0EB] hover:text-[#E58A7B]';
-          let labelText = item.label;
+          let labelText = item.label; // LUÔN GIỮ ĐÚNG T2, T3, T4, T5, T6, T7, CN
           let labelClass = 'text-[10px] text-[#A39696] uppercase font-bold';
           let numClass = 'text-sm font-extrabold text-[#2D2424]';
 
@@ -244,9 +294,7 @@ function renderDateStripComponent(containerId, activeDateStr, onDateClickCallbac
             bgClass = 'bg-[#E58A7B] text-white ring-2 ring-[#E58A7B]/40 font-black';
             labelClass = 'text-[10px] text-white/90 uppercase font-extrabold';
             numClass = 'text-sm font-black text-white';
-            if (isToday) labelText = 'Hôm nay';
           } else if (isToday) {
-            labelText = 'Hôm nay';
             labelClass = 'text-[10px] text-[#E58A7B] uppercase font-extrabold';
             numClass = 'text-sm font-extrabold text-[#E58A7B]';
             bgClass = 'bg-[#FFF0EB] border border-[#FCDFD7] text-[#E58A7B]';
