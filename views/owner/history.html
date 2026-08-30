@@ -1,7 +1,14 @@
 <main id="view-history" class="flex-1 p-4 sm:p-6 max-w-2xl w-full mx-auto space-y-3 pb-28">
   <div class="px-1 mb-2">
-    <h2 class="text-2xl font-extrabold text-[#2D2424]">Hóa đơn tiệm</h2>
-    <p class="text-xs sm:text-sm text-[#7E7272]">DS toàn bộ hóa đơn của tiệm</p>
+    <div class="flex items-center justify-between">
+    <div>
+      <h2 class="text-2xl font-extrabold text-[#2D2424]">Lịch sử Toàn Tiệm</h2>
+      <p class="text-xs sm:text-sm text-[#7E7272]">Tất cả ca gội toàn tiệm</p>
+    </div>
+    <button type="button" onclick="refreshDataFromGoogleSheets()" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white hover:bg-[#FFF0EB] text-[#E58A7B] text-xs font-extrabold border border-[#F0EAE1] shadow-xs cursor-pointer transition active:scale-95">
+      <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Đồng bộ Sheet
+    </button>
+  </div>
   </div>
 
   <!-- Reusable Date Strip Component for Admin -->

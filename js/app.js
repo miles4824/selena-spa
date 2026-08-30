@@ -1,3 +1,17 @@
+// Tự động dọn dẹp cache hóa đơn thử nghiệm cũ để lấy chuẩn 100% từ Google Sheet
+(function purgeOldTestCache() {
+  try {
+    const versionKey = 'selena_cache_cleaned_v0125';
+    if (!localStorage.getItem(versionKey)) {
+      localStorage.removeItem('selena_receipts');
+      localStorage.removeItem('selena_customers');
+      localStorage.removeItem('selena_loyalty_cycles');
+      localStorage.removeItem('selena_vouchers');
+      localStorage.setItem(versionKey, 'true');
+    }
+  } catch(e) {}
+})();
+
 // Tự động dọn dẹp dữ liệu khách hàng mẫu ảo cũ
 (function purgeMockCustomerData() {
   try {

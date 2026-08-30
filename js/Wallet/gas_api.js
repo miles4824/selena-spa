@@ -86,11 +86,12 @@ async function refreshDataFromGoogleSheets() {
       if (typeof renderQuickAccounts === 'function') renderQuickAccounts();
       if (typeof renderAnnouncement === 'function') renderAnnouncement();
       
-      if (currentUser) {
+            if (currentUser) {
         const freshUsers = getStored('users', DEFAULT_USERS);
         const me = freshUsers.find(u => normalizePhone(u.phone) === normalizePhone(currentUser.phone));
         if (me) currentUser = me;
         if (typeof showView === 'function') showView(currentTab);
+        if (typeof loadHistoryView === 'function') loadHistoryView();
       }
     }
   } catch(e) {
