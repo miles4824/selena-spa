@@ -1198,9 +1198,12 @@ function syncAllData(params) {
     const colMapCf = createHeaderMap(sheetConfig);
     const data = sheetConfig.getDataRange().getValues();
     for (let i = 1; i < data.length; i++) {
-      let k = String(getCell(data[i], colMapCf, ['config_key', 'key'])).trim();
+      let k = String(getCell(data[i], colMapCf, ['config_key', 'key'])).trim().toLowerCase();
       let v = String(getCell(data[i], colMapCf, ['config_value', 'value'])).trim();
-      if (k && v) config[k] = v;
+      if (k && v) {
+        config[k] = v;
+        config[k.toUpperCase()] = v;
+      }
     }
   }
 
