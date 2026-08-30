@@ -7,7 +7,7 @@ function loadAdminExpensesList() {
   if (!container) return;
 
   if (expenses.length === 0) {
-    container.innerHTML = `<div class="p-6 text-center text-[#7E7272] spa-card col-span-full">Chưa có chi phí nào trong tháng</div>`;
+    container.innerHTML = `<div class="p-6 text-center text-[#7E7272] bg-white rounded-[28px] border border-[#F0EAE1] shadow-[0_10px_30px_-5px_rgba(229,138,123,0.05),0_4px_12px_rgba(0,0,0,0.02)] col-span-full">Chưa có chi phí nào trong tháng</div>`;
     return;
   }
 
