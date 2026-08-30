@@ -1,3 +1,23 @@
+function isUserOwner(u) {
+  const user = u || currentUser;
+  if (!user) return false;
+  const r = String(user.role || '').toLowerCase();
+  const p = normalizePhone(user.phone);
+  const s = String(user.staff_id || '').trim();
+  return (r === 'admin' || r === 'chủ tiệm' || r === 'chủ sáng lập' || r === 'owner' || p === '0949251144' || s === 'FOUNDER_01');
+}
+
+function maskPhoneNumber(phone, showFull = false) {
+  if (!phone) return '';
+  const clean = String(phone).replace(/[^0-9]/g, '');
+  const std = clean.startsWith('0') ? clean : ('0' + clean);
+  if (showFull) return std;
+  if (std.length >= 8) {
+    return std.slice(0, 3) + '***' + std.slice(-3);
+  }
+  return std;
+}
+
 function parseBirthMonth(val) {
   if (!val) return 0;
   if (typeof val === 'number' && val >= 1 && val <= 12) return val;
@@ -9,7 +29,7 @@ function parseBirthMonth(val) {
   return 0;
 }
 
-const APP_VERSION = 'v0.1.1.9';
+const APP_VERSION = 'v0.1.2.0';
 // =============================================================
 // SELENA SPA - GLOBAL CONFIG & CONSTANTS
 // =============================================================
