@@ -1,4 +1,4 @@
-const APP_VERSION = 'v0.0.8.9';
+const APP_VERSION = 'v0.0.9.0';
 // =============================================================
 // SELENA SPA - GLOBAL CONFIG & CONSTANTS
 // =============================================================
@@ -194,6 +194,7 @@ function normalizeDateKey(val) {
 // Map lưu baseDate cho từng container lịch để chuyển tuần độc lập
 // Map lưu baseDate cho từng container lịch để chuyển tuần độc lập
 // Map lưu baseDate cho từng container lịch để chuyển tuần độc lập
+// Map lưu baseDate cho từng container lịch để chuyển tuần độc lập
 const dateStripBaseDates = {};
 
 function updateStickyDateOffset(containerId) {
@@ -222,19 +223,6 @@ function changeWeekOffset(containerId, offsetWeeks, onDateClickCallback) {
 
   const activeDate = (containerId === 'staff-date-strip-container') ? selectedStaffHistoryDate : selectedAdminHistoryDate;
   renderDateStripComponent(containerId, activeDate, onDateClickCallback);
-}
-
-function handleDatePickerClick(pickerId) {
-  const inp = document.getElementById(pickerId);
-  if (!inp) return;
-  if (typeof inp.showPicker === 'function') {
-    try {
-      inp.showPicker();
-      return;
-    } catch (e) {}
-  }
-  inp.focus();
-  inp.click();
 }
 
 function onCustomDatePicked(containerId, pickedDateStr, onDateClickCallback) {
@@ -421,7 +409,7 @@ function attachContinuousSwiperToCalendar(containerId, onDateClickCallback) {
   window.addEventListener('mouseup', onMouseUp);
 }
 
-// Component Lịch Tuần Dùng Chung Toàn Diện (Fix Chọn Ngày 100% Trình Duyệt & iPhone)
+// Component Lịch Tuần Dùng Chung Toàn Diện (Hỗ Trợ 100% Cả Safari iPhone & Desktop Browser)
 function renderDateStripComponent(containerId, activeDateStr, onDateClickCallback) {
   const container = document.getElementById(containerId);
   if (!container) return;
@@ -447,7 +435,7 @@ function renderDateStripComponent(containerId, activeDateStr, onDateClickCallbac
 
   container.innerHTML = `
     <div class="spa-card p-3.5 space-y-2.5 touch-pan-y select-none">
-      <!-- Header: Khoảng Ngày + Nút Chọn Ngày (Bật Popup Siêu Nhạy) + Tất Cả -->
+      <!-- Header: Khoảng Ngày + Nút Chọn Ngày (Native Overlay Tương Thích Tuyệt Đối) + Tất Cả -->
       <div class="flex items-center justify-between gap-2">
         <div class="flex items-center gap-1.5 text-xs font-bold text-[#2D2424]">
           <i data-lucide="calendar" class="w-3.5 h-3.5 text-[#E58A7B]"></i>
@@ -455,19 +443,18 @@ function renderDateStripComponent(containerId, activeDateStr, onDateClickCallbac
         </div>
 
         <div class="flex items-center gap-1.5">
-          <!-- Chọn Ngày Tương Thích 100% Cả Trình Duyệt Desktop & iPhone Safari -->
-          <div class="relative inline-block">
-            <button type="button" 
-                    onclick="handleDatePickerClick('${pickerId}')" 
-                    class="relative inline-flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-1.5 rounded-xl bg-[#FAF6F1] hover:bg-[#FFF0EB] text-[#2D2424] hover:text-[#E58A7B] border border-[#F0EAE1] cursor-pointer transition active:scale-95">
+          <!-- Chọn Ngày Tương Thích Hoàn Hảo 100% Cả Safari iPhone & Desktop -->
+          <div class="relative inline-flex items-center overflow-hidden rounded-xl">
+            <div class="inline-flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-1.5 bg-[#FAF6F1] text-[#2D2424] border border-[#F0EAE1] pointer-events-none rounded-xl">
               <i data-lucide="calendar" class="w-3.5 h-3.5 text-[#E58A7B]"></i>
               <span>Chọn ngày</span>
-            </button>
+            </div>
             <input type="date" 
                    id="${pickerId}" 
                    value="${isAllActive ? '' : currentActive}" 
+                   onclick="this.showPicker && this.showPicker()" 
                    onchange="onCustomDatePicked('${containerId}', this.value, '${onDateClickCallback}')" 
-                   class="absolute top-0 left-0 w-0 h-0 opacity-0 pointer-events-none">
+                   class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
           </div>
 
           <!-- Nút Xem Tất Cả -->
