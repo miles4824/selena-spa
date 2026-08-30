@@ -88,9 +88,46 @@ function loadStaffHistoryList(targetDate) {
         const myTip = isS1 ? (Number(r.staff_1_tip) || 0) : (Number(r.staff_2_tip) || 0);
         const totalEarn = myComm + myTip;
 
+        const partnerName = isS1 ? r.staff_2_name : r.staff_1_name;
+        const hasPartner = r.has_staff_2 && partnerName && partnerName.trim() !== '';
+
         const cleanTime = formatCleanTime(r.start_time || r.time);
         const durStatus = getReceiptDurationStatus(r);
         const isCash = r.payment_method === 'Tiền mặt';
+
+        let detailBoxHtml = '';
+        if (myTip > 0) {
+          detailBoxHtml = `
+            <!-- KHUNG CHI TIẾT KHI CÓ TIỀN TIP -->
+            <div class="bg-[#FAF6F1] p-2.5 rounded-2xl border border-[#F0EAE1] space-y-1 text-xs">
+              ${hasPartner ? `
+                <div class="flex items-center gap-1.5 text-[#7E7272] mb-1">
+                  <i data-lucide="users" class="w-3.5 h-3.5 text-[#E58A7B]"></i>
+                  <span>KTV hỗ trợ: <b class="text-[#2D2424]">${partnerName}</b></span>
+                </div>
+              ` : ''}
+              <div class="flex justify-between items-center text-[#7E7272]">
+                <span>Hoa hồng tour:</span>
+                <span class="text-[#2E7D6D] font-extrabold">+${myComm.toLocaleString('vi-VN')} đ</span>
+              </div>
+              <div class="flex justify-between items-center text-[#E58A7B] font-bold pt-0.5 border-t border-[#F0EAE1]">
+                <span class="flex items-center gap-1.5">
+                  <i data-lucide="gift" class="w-3.5 h-3.5 text-[#E58A7B]"></i>
+                  <span>Tiền tip nhận được:</span>
+                </span>
+                <span class="font-extrabold">+${myTip.toLocaleString('vi-VN')} đ</span>
+              </div>
+            </div>
+          `;
+        } else if (hasPartner) {
+          detailBoxHtml = `
+            <!-- KHUNG CHỈ HIỆN KTV HỖ TRỢ KHI KHÔNG CÓ TIP -->
+            <div class="bg-[#FAF6F1] px-3 py-2 rounded-2xl border border-[#F0EAE1] text-xs flex items-center gap-1.5 text-[#7E7272]">
+              <i data-lucide="users" class="w-3.5 h-3.5 text-[#E58A7B]"></i>
+              <span>KTV hỗ trợ: <b class="text-[#2D2424]">${partnerName}</b></span>
+            </div>
+          `;
+        }
 
         return `
           <div class="flex gap-3.5 items-center">
@@ -125,28 +162,7 @@ function loadStaffHistoryList(targetDate) {
                 </div>
               </div>
 
-              <!-- KHUNG CHI TIẾT THU NHẬP CỦA BẠN -->
-              <div class="bg-[#FAF6F1] p-2.5 rounded-2xl border border-[#F0EAE1] space-y-1 text-xs">
-                ${r.has_staff_2 ? `
-                  <div class="flex items-center gap-1 text-[#7E7272] mb-1">
-                    <i data-lucide="users" class="w-3.5 h-3.5 text-[#E58A7B]"></i>
-                    <span>Cùng làm: <b class="text-[#2D2424]">${r.staff_1_name} & ${r.staff_2_name}</b></span>
-                  </div>
-                ` : ''}
-                <div class="flex justify-between items-center">
-                  <span class="text-[#7E7272]">Hoa hồng tour:</span>
-                  <span class="text-[#2E7D6D] font-extrabold">+${myComm.toLocaleString('vi-VN')} đ</span>
-                </div>
-                ${myTip > 0 ? `
-                  <div class="flex justify-between items-center text-[#E58A7B] font-bold pt-0.5 border-t border-[#F0EAE1]">
-                    <span class="flex items-center gap-1">
-                      <i data-lucide="gift" class="w-3.5 h-3.5 text-[#E58A7B]"></i>
-                      <span>Tiền tip nhận được:</span>
-                    </span>
-                    <span class="font-extrabold">+${myTip.toLocaleString('vi-VN')} đ</span>
-                  </div>
-                ` : ''}
-              </div>
+              ${detailBoxHtml}
             </div>
           </div>
         `;
