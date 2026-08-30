@@ -19,19 +19,19 @@ function isUserOwner(u) {
 function maskPhoneNumber(phone, isOwner = false, queryInput = '') {
   if (!phone) return '';
   const clean = String(phone).replace(/[^0-9]/g, '');
-  const std = clean.startsWith('0') ? clean : ('0' + clean);
+  const std = clean.length === 9 && !clean.startsWith('0') ? ('0' + clean) : clean;
   if (isOwner) return std;
 
-  const totalLen = std.length; // Thường là 10 số (0949251144)
-  const tailLen = 3; // 3 số cuối nhận diện (144)
+  const totalLen = std.length; // 10 chữ số (VD: 0949251144)
+  const tailLen = 3; // 3 số cuối (144)
   if (totalLen <= tailLen + 2) return std;
 
   const tail = std.slice(-tailLen);
   const q = String(queryInput || '').replace(/[^0-9]/g, '');
-  const qStd = q.startsWith('0') ? q : ('0' + q);
+  const qStd = q.length === 9 && !q.startsWith('0') ? ('0' + q) : q;
 
-  // Số lượng ký tự đầu lộ ra theo những gì Staff đang gõ (VD: '094' -> 3, '0949' -> 4)
-  const revealHeadLen = Math.min(totalLen - tailLen, Math.max(2, qStd.length));
+  // Lấy đúng số ký tự đầu theo những gì Staff đã nhập (tối thiểu 2 số '09', tối đa 7 số)
+  const revealHeadLen = Math.min(totalLen - tailLen, Math.max(2, qStd ? qStd.length : 3));
   const head = std.slice(0, revealHeadLen);
   const maskLen = Math.max(1, totalLen - revealHeadLen - tailLen);
   const stars = '*'.repeat(maskLen);
@@ -50,7 +50,7 @@ function parseBirthMonth(val) {
   return 0;
 }
 
-const APP_VERSION = 'v0.1.3.0';
+const APP_VERSION = 'v0.1.3.1';
 // =============================================================
 // SELENA SPA - GLOBAL CONFIG & CONSTANTS
 // =============================================================

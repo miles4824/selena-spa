@@ -476,22 +476,23 @@ function renderSuggestionsHTML(matches, currentInput = '') {
 }
 
 function selectCustomerSuggestion(phone) {
-  const customers = getStored('customers', DEFAULT_CUSTOMERS);
+  const customers = getAllAvailableCustomers();
   const cleanPhone = String(phone).replace(/[^0-9]/g, '');
-  const cleanNo0 = cleanPhone.replace(/^0+/, '');
+  const isOwner = typeof isUserOwner === 'function' ? isUserOwner(currentUser) : false;
 
   const cust = customers.find(c => {
-    const rawTarget = String(c.phone_number || c.raw_phone || '').replace(/[^0-9]/g, '');
-    const cWith0 = rawTarget.startsWith('0') ? rawTarget : ('0' + rawTarget);
-    const cNo0 = rawTarget.replace(/^0+/, '');
-    return cWith0 === cleanPhone || cNo0 === cleanNo0 || rawTarget === cleanPhone;
+    const p = c.phone_number || c.raw_phone;
+    return typeof isSamePhone === 'function' ? isSamePhone(p, cleanPhone) : (normalizePhone(p) === cleanPhone);
   });
   
   const suggestionsBox = document.getElementById('pos-customer-suggestions');
   if (suggestionsBox) suggestionsBox.classList.add('hidden');
 
   const pInput = document.getElementById('pos-customer-phone');
-  if (pInput) pInput.value = phone.startsWith('0') ? phone : ('0' + phone);
+  if (pInput) {
+    const fullP = cleanPhone.startsWith('0') ? cleanPhone : ('0' + cleanPhone);
+    pInput.value = typeof maskPhoneNumber === 'function' ? maskPhoneNumber(fullP, isOwner, '094') : fullP;
+  }
 
   if (cust) {
     applyCustomerData(cust);
@@ -507,20 +508,15 @@ function applyCustomerData(cust) {
   const cPhone = rawP.startsWith('0') ? rawP : ('0' + rawP);
 
   const nameInput = document.getElementById('pos-customer-name');
-  if (nameInput) nameInput.value = cust.customer_name;
+  if (nameInput) nameInput.value = cust.customer_name || '';
   
   const nameBadge = document.getElementById('pos-cust-name-badge');
-  if (nameBadge) nameBadge.innerText = cust.customer_name;
-
-  const isOwner = typeof isUserOwner === 'function' ? isUserOwner(currentUser) : false;
-  const displayBadgePhone = typeof maskPhoneNumber === 'function' ? maskPhoneNumber(cPhone, isOwner) : cPhone;
-  const phoneBadge = document.getElementById('pos-cust-phone-badge');
-  if (phoneBadge) phoneBadge.innerText = '(' + displayBadgePhone + ')';
+  if (nameBadge) nameBadge.innerText = cust.customer_name || 'Khách hàng';
 
   let custMonth = cust.birth_month || parseBirthMonth(cust.birthday);
   const bSelect = document.getElementById('pos-birth-month');
   if (bSelect) {
-    bSelect.value = custMonth ? String(custMonth) : '';
+    bSelect.value = (custMonth && custMonth >= 1 && custMonth <= 12) ? String(custMonth) : '';
   }
 
   // Active 60-day Loyalty Cycle (Cột D & E)
@@ -548,9 +544,9 @@ function applyCustomerData(cust) {
     }
   }
 
-  // Notes
-  let noteText = cust.notes || '';
-  if (noteText.includes('GMT') || noteText.includes('00:00:00')) noteText = '';
+  // Ghi Chú Sở Thích / Lưu Ý
+  let noteText = String(cust.notes || '').trim();
+  if (noteText.includes('GMT') || noteText.includes('00:00:00') || noteText === 'undefined' || noteText === 'null') noteText = '';
   const notesBox = document.getElementById('pos-cust-notes-box');
   const notesText = document.getElementById('pos-cust-notes-text');
   if (notesBox && notesText) {
