@@ -168,6 +168,9 @@ function loadOwnerReceiptsList(targetDate) {
     html += `</div>`;
   });
 
+    container.classList.remove('history-list-anim');
+  void container.offsetWidth; // Trigger reflow
+  container.classList.add('history-list-anim');
   container.innerHTML = html;
   lucide.createIcons();
 }

@@ -104,3 +104,36 @@ h4, h5, h6 {
 .nav-btn:active {
   transform: scale(0.92);
 }
+
+/* =============================================================
+   SMOOTH CALENDAR STRIP & HISTORY LIST ANIMATIONS (HIỆU ỨNG MƯỢT MÀ)
+   ============================================================= */
+@keyframes dateStripFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.97);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.date-strip-anim {
+  animation: dateStripFadeIn 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes historyListSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.history-list-anim {
+  animation: historyListSlideIn 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}

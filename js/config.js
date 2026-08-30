@@ -1,4 +1,4 @@
-const APP_VERSION = 'v0.0.7.3';
+const APP_VERSION = 'v0.0.7.4';
 // =============================================================
 // SELENA SPA - GLOBAL CONFIG & CONSTANTS
 // =============================================================
@@ -309,7 +309,7 @@ function renderDateStripComponent(containerId, activeDateStr, onDateClickCallbac
       </div>
 
       <!-- 7 Nút Ngày: T2, T3, T4, T5, T6, T7, CN (Không Có Dấu Chấm Rối Mắt) -->
-      <div class="flex items-center justify-between w-full gap-1.5 text-center">
+      <div id="${containerId}-days-row" class="flex items-center justify-between w-full gap-1.5 text-center date-strip-anim">
         ${weekDays.map(item => {
           const isSelected = !isAllActive && (item.dateStr === currentActive);
           const isToday = item.isToday;
