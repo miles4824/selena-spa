@@ -463,7 +463,7 @@ function renderSuggestionsHTML(matches, currentInput = '') {
             <div class="text-[11px] font-mono text-[#E58A7B] font-semibold mt-0.5">${displayP}</div>
           </div>
           <span class="text-[11px] font-extrabold px-2 py-0.5 rounded-full bg-[#FAF6F1] text-[#7E7272] border border-[#F0EAE1]">
-            ${visits}/10 ca
+            ${visits}/10 lần
           </span>
         </div>
       `;
@@ -522,14 +522,14 @@ function applyCustomerData(cust) {
   let expiryDate = cust.cycle_end_date ? formatDateVN(cust.cycle_end_date) : '';
 
   const visitsBadge = document.getElementById('pos-cust-visits-badge');
-  if (visitsBadge) visitsBadge.innerText = visits + ' / 10 Ca gội';
+  if (visitsBadge) visitsBadge.innerText = visits + ' / 10 Lần gội';
 
   const progressBar = document.getElementById('pos-cust-progress-bar');
   if (progressBar) progressBar.style.width = Math.min(100, (visits / 10) * 100) + '%';
 
   const cycleStatusEl = document.getElementById('pos-cust-cycle-status-text');
   if (cycleStatusEl) {
-    cycleStatusEl.innerText = `Chu kỳ 60 ngày (${visits}/10 ca)`;
+    cycleStatusEl.innerText = `Chu kỳ 60 ngày (${visits}/10 lần)`;
   }
 
   const expTextEl = document.getElementById('pos-cust-cycle-expiry-text');
@@ -568,7 +568,7 @@ function applyCustomerData(cust) {
   if (vBanner && vText) {
     if (vCount > 0) {
       vBanner.classList.remove('hidden');
-      vText.innerText = `Khách có ${vCount} Voucher ca miễn phí!`;
+      vText.innerText = `Khách có ${vCount} Voucher lần miễn phí!`;
     } else {
       vBanner.classList.add('hidden');
     }

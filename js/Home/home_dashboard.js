@@ -50,7 +50,7 @@ function loadKTVHomeStats() {
   const toursEl = document.getElementById('home-today-tours');
   const commEl = document.getElementById('home-today-comm');
 
-  if (toursEl) toursEl.innerText = todayTours + ' ca';
+  if (toursEl) toursEl.innerText = todayTours + ' tour';
   if (commEl) {
     let totalToday = todayComm + todayTips;
     commEl.innerText = totalToday.toLocaleString('vi-VN') + ' đ';
@@ -297,7 +297,7 @@ function handleSaveGiftVoucher(e) {
   const type = document.getElementById('modal-gift-type')?.value;
   const days = Number(document.getElementById('modal-gift-days')?.value) || 60;
   const notes = document.getElementById('modal-gift-notes')?.value;
-  let discountVal = '1 ca miễn phí';
+  let discountVal = '1 lần miễn phí';
   if (type.includes('20%')) discountVal = '20%';
   if (type.includes('tiền')) discountVal = document.getElementById('modal-gift-val')?.value || '50.000 đ';
 

@@ -713,7 +713,7 @@ function createReceipt(params) {
         let colStatus = colMapCy['status'] !== undefined ? colMapCy['status'] + 1 : 7;
         let colNotes = colMapCy['notes'] !== undefined ? colMapCy['notes'] + 1 : 9;
         sheetCycles.getRange(activeCycleRow, colStatus).setValue('EXPIRED');
-        sheetCycles.getRange(activeCycleRow, colNotes).setValue(`Hết hạn 60 ngày (đạt ${activeCycleVisits}/10 ca)`);
+        sheetCycles.getRange(activeCycleRow, colNotes).setValue(`Hết hạn 60 ngày (đạt ${activeCycleVisits}/10 lần)`);
         activeCycleRow = -1; // Cần mở chu kỳ 60 ngày mới
       }
 
@@ -738,7 +738,7 @@ function createReceipt(params) {
         let colVisits = colMapCy['visits_count'] !== undefined ? colMapCy['visits_count'] + 1 : 6;
         let colNotes = colMapCy['notes'] !== undefined ? colMapCy['notes'] + 1 : 9;
         sheetCycles.getRange(activeCycleRow, colVisits).setValue(activeCycleVisits);
-        sheetCycles.getRange(activeCycleRow, colNotes).setValue(`Đang tích chu kỳ ${activeCycleIndexForCust} (${activeCycleVisits}/10 ca)`);
+        sheetCycles.getRange(activeCycleRow, colNotes).setValue(`Đang tích chu kỳ ${activeCycleIndexForCust} (${activeCycleVisits}/10 lần)`);
 
         if (activeCycleVisits >= 10) {
           // Hoàn thành chu kỳ -> Thưởng Voucher
@@ -749,7 +749,7 @@ function createReceipt(params) {
 
           sheetCycles.getRange(activeCycleRow, colStatus).setValue('REWARDED');
           sheetCycles.getRange(activeCycleRow, colVoucher).setValue(newVoucherId);
-          sheetCycles.getRange(activeCycleRow, colNotes).setValue('Hoàn thành 10 ca -> Nhận 1 ca miễn phí');
+          sheetCycles.getRange(activeCycleRow, colNotes).setValue('Hoàn thành 10 ca -> Nhận 1 lần miễn phí');
 
           // Thêm voucher mới vào tb_vouchers
           if (sheetVouchers) {
@@ -758,11 +758,11 @@ function createReceipt(params) {
               phone,
               customerName,
               'Tích 10 lần gội',
-              '1 ca miễn phí',
+              '1 lần miễn phí',
               addDaysToDate(dateStr, 60),
               'Chưa dùng',
               '',
-              'Thưởng hoàn thành chu kỳ tích 10 ca'
+              'Thưởng hoàn thành chu kỳ tích 10 lần'
             ]);
           }
         }
@@ -784,7 +784,7 @@ function createReceipt(params) {
           1,
           'ACTIVE',
           '',
-          `Đang tích chu kỳ ${newCycleNumber} (1/10 ca)`
+          `Đang tích chu kỳ ${newCycleNumber} (1/10 lần)`
         ]);
       }
     }
