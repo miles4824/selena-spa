@@ -187,6 +187,8 @@ async function loadViewTemplate(containerId, filePath) {
 
 // App Initialization
 window.addEventListener('DOMContentLoaded', async () => {
+  // Khởi động Firebase Realtime Engine
+  if (typeof initFirebaseEngine === 'function') initFirebaseEngine();
   // 1. Tải các thành phần chung
   await Promise.all([
     loadViewTemplate('container-ptr', 'views/components/pull_to_refresh.html'),

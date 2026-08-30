@@ -1430,6 +1430,9 @@ function confirmSaveReceiptFromCheckout() {
   const receipts = getStored('receipts', []);
   receipts.unshift(receipt);
   setStored('receipts', receipts);
+  if (typeof fbSaveReceipt === 'function') {
+    fbSaveReceipt(receipt, currentCustomer);
+  }
 
   if (receipt.customer_phone) {
     const customers = getStored('customers', DEFAULT_CUSTOMERS);

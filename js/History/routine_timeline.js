@@ -301,6 +301,9 @@ function handleSaveCustomerNote(e) {
   }
 
   setStored('customers', customers);
+  if (typeof fbSaveCustomerNote === 'function') {
+    fbSaveCustomerNote(rawPhone, name, bMonthNum, notes);
+  }
 
   // 2. Call Google Apps Script API
   callGasApi('update_customer_notes', {

@@ -85,6 +85,7 @@ async function refreshDataFromGoogleSheets() {
       if (typeof initMenuUI === 'function') initMenuUI();
       if (typeof renderQuickAccounts === 'function') renderQuickAccounts();
       if (typeof renderAnnouncement === 'function') renderAnnouncement();
+      if (typeof fbSyncAllFromSheets === 'function') fbSyncAllFromSheets(payload);
       
             if (currentUser) {
         const freshUsers = getStored('users', DEFAULT_USERS);
