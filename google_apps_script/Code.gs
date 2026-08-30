@@ -888,7 +888,7 @@ function updateAnnouncement(params) {
   const sheetConfig = ss.getSheetByName('tb_config');
   if (!sheetConfig) return { success: false, error: 'NO_CONFIG_SHEET' };
 
-  const text = String(params.text || params.announcement || '').trim();
+  const text = String(params.content || params.text || params.announcement || params.value || '').trim();
   const colMap = createHeaderMap(sheetConfig);
   const data = sheetConfig.getDataRange().getValues();
   let found = false;

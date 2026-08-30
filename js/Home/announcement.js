@@ -70,6 +70,9 @@ function handleSaveAnnouncement(e) {
 
   callGasApi('update_announcement', {
     content: content,
+    text: content,
+    announcement: content,
+    value: content,
     author: ann.author
   });
 
