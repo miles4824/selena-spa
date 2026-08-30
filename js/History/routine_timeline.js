@@ -66,7 +66,7 @@ function loadStaffHistoryList(targetDate) {
         <div class="sticky top-[var(--sticky-date-offset,130px)] z-20 bg-[#FAF6F1] py-1.5 -mx-1 px-1">
           <div class="relative flex items-center">
             <div class="flex-grow border-t border-[#EFE8DF]"></div>
-            <span class="flex-shrink mx-3 text-xs font-extrabold ${isTodayHeader ? 'text-[#E58A7B] bg-[#FFF0EB] border-[#FCDFD7]' : 'text-[#7E7272] bg-[#FAF6F1] border-[#F0EAE1]'} px-3.5 py-1 rounded-full border font-mono shadow-xs">
+            <span class="flex-shrink mx-3 text-xs font-extrabold ${isTodayHeader ? 'text-[#E58A7B] bg-[#FFF0EB] border-[#FCDFD7]' : 'text-[#7E7272] bg-[#FAF6F1] border-[#F0EAE1]'} px-3.5 py-1 rounded-full border font-mono ">
               ${isTodayHeader ? 'Hôm nay • ' : ''}${formattedDateVN}
             </span>
             <div class="flex-grow border-t border-[#EFE8DF]"></div>
