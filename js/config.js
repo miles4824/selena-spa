@@ -1,4 +1,4 @@
-const APP_VERSION = 'v0.0.7.5';
+const APP_VERSION = 'v0.0.7.6';
 // =============================================================
 // SELENA SPA - GLOBAL CONFIG & CONSTANTS
 // =============================================================
@@ -277,7 +277,7 @@ function renderDateStripComponent(containerId, activeDateStr, onDateClickCallbac
   const startLabel = `${weekDays[0].dayNum}/${weekDays[0].monthNum}`;
   const endLabel = `${weekDays[6].dayNum}/${weekDays[6].monthNum}`;
   const pickerId = `${containerId}-date-picker`;
-  const animClass = lastSlideDirection[containerId] || 'date-strip-anim';
+  const animClass = lastSlideDirection[containerId] || '';
   lastSlideDirection[containerId] = null;
 
   container.innerHTML = `
@@ -335,7 +335,7 @@ function renderDateStripComponent(containerId, activeDateStr, onDateClickCallbac
           }
 
           return `
-            <button type="button" onclick="${onDateClickCallback}('${item.dateStr}')" class="flex-1 py-2 px-1 rounded-2xl ${bgClass} transition active:scale-95 cursor-pointer">
+            <button type="button" onclick="${onDateClickCallback}('${item.dateStr}')" class="flex-1 py-2 px-1 rounded-2xl ${bgClass} transition-all duration-200 active:scale-95 cursor-pointer">
               <span class="block ${labelClass}">${labelText}</span>
               <span class="${numClass}">${item.dayNum}</span>
             </button>
