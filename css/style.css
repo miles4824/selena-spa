@@ -1,3 +1,10 @@
+/* =============================================================
+   SELENA SPA - LUXURY WELLNESS THEME (TAILWIND CSS 4 OPTIMIZED)
+   ============================================================= */
+:root {
+  --sticky-date-offset: 130px;
+}
+
 body {
   background-color: #FAF6F1;
   color: #2D2424;
@@ -5,149 +12,43 @@ body {
   -webkit-tap-highlight-color: transparent;
   overscroll-behavior-y: contain;
 }
+
 h1, h2, h3, .font-heading, .font-serif-luxury {
   font-family: 'Literata', serif;
   letter-spacing: -0.01em;
 }
+
 h4, h5, h6 {
   font-family: 'Plus Jakarta Sans', sans-serif;
   letter-spacing: -0.01em;
 }
+
 .spa-card {
   background: #FFFFFF;
   border-radius: 28px;
   border: 1px solid #F0EAE1;
   box-shadow: 0 10px 30px -5px rgba(229, 138, 123, 0.05), 0 4px 12px rgba(0, 0, 0, 0.02);
 }
+
 .spa-modal {
   background: #FFFFFF;
   border-radius: 32px;
   border: 1px solid #F0EAE1;
   box-shadow: 0 25px 50px -12px rgba(45, 36, 36, 0.15);
 }
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-.no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+
+/* Luxury View Transition Animation */
+.view-enter-active {
+  animation: luxuryFadeSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-/* =============================================================
-   FLOATING BOTTOM NAV WITH SLIDING PILL (MENU CHUYỂN ĐỘNG TRƯỢT)
-   ============================================================= */
-.nav-dock-container {
-  position: relative;
-  background: rgba(250, 246, 241, 0.94);
-  backdrop-filter: blur(28px);
-  -webkit-backdrop-filter: blur(28px);
-  border: 1px solid #F0EAE1;
-  border-radius: 9999px;
-  box-shadow: 0 20px 40px -10px rgba(45, 36, 36, 0.12), 0 8px 16px -4px rgba(229, 138, 123, 0.1);
-}
-
-.nav-sliding-pill {
-  position: absolute;
-  top: 6px;
-  left: 0;
-  border-radius: 9999px;
-  background: #E58A7B;
-  transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1), width 0.2s ease, height 0.2s ease;
-  box-shadow: 0 4px 14px rgba(229, 138, 123, 0.35);
-  z-index: 1;
-  pointer-events: none;
-}
-
-.nav-btn {
-  position: relative;
-  z-index: 10;
-  width: 48px;
-  height: 48px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 9999px;
-  color: #7E7272;
-  transition: color 0.2s ease;
-  cursor: pointer;
-}
-
-.nav-btn:hover {
-  color: #E58A7B;
-}
-
-.nav-btn.active,
-.nav-btn.active * {
-  color: #FFFFFF !important;
-  stroke: #FFFFFF !important;
-}
-
-/* =============================================================
-   STICKY HEADERS (GHIM CỐ ĐỊNH LỊCH & MỐC NGÀY KHI VUỐT CUỘN)
-   ============================================================= */
-:root {
-  --sticky-date-offset: 130px;
-}
-
-.sticky-date-strip {
-  position: -webkit-sticky;
-  position: sticky;
-  top: 0;
-  z-index: 30;
-  background-color: #FAF6F1;
-  padding-top: 4px;
-  padding-bottom: 6px;
-}
-
-.sticky-date-header {
-  position: -webkit-sticky;
-  position: sticky;
-  top: var(--sticky-date-offset, 130px);
-  z-index: 20;
-  background-color: #FAF6F1;
-  padding-top: 6px;
-  padding-bottom: 6px;
-}
-
-@keyframes historyListFadeIn {
+@keyframes luxuryFadeSlideIn {
   0% {
     opacity: 0;
+    transform: translateY(10px) scale(0.99);
   }
   100% {
     opacity: 1;
+    transform: translateY(0) scale(1);
   }
-}
-
-.history-list-anim {
-  animation: historyListFadeIn 0.25s ease-out forwards;
-}
-
-@keyframes slideInFromLeft {
-  0% {
-    opacity: 0;
-    transform: translateX(-40px) scale(0.95);
-  }
-  100% {
-    opacity: 1;
-    transform: translateX(0) scale(1);
-  }
-}
-
-@keyframes slideInFromRight {
-  0% {
-    opacity: 0;
-    transform: translateX(40px) scale(0.95);
-  }
-  100% {
-    opacity: 1;
-    transform: translateX(0) scale(1);
-  }
-}
-
-.slide-from-left {
-  animation: slideInFromLeft 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-.slide-from-right {
-  animation: slideInFromRight 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
