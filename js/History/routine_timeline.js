@@ -1,3 +1,37 @@
+function formatCleanTime(val) {
+  if (!val) return '12:00';
+  let s = String(val).trim();
+  let match = s.match(/(\d{1,2}):(\d{2})/);
+  if (match) return `${match[1].padStart(2, '0')}:${match[2]}`;
+  return s.slice(0, 5);
+}
+
+function formatCleanDate(val) {
+  if (!val) return '29/08';
+  let s = String(val).trim();
+  
+  let matchFull = s.match(/(\d{4})[/-](\d{1,2})[/-](\d{1,2})/);
+  if (matchFull) {
+    return `${matchFull[3].padStart(2, '0')}/${matchFull[2].padStart(2, '0')}`;
+  }
+  
+  let matchShort = s.match(/(\d{1,2})[/-](\d{1,2})/);
+  if (matchShort) {
+    return `${matchShort[1].padStart(2, '0')}/${matchShort[2].padStart(2, '0')}`;
+  }
+  
+  try {
+    let d = new Date(val);
+    if (!isNaN(d.getTime()) && d.getFullYear() > 1970) {
+      let day = d.getDate().toString().padStart(2, '0');
+      let month = (d.getMonth() + 1).toString().padStart(2, '0');
+      return `${day}/${month}`;
+    }
+  } catch(e) {}
+  
+  return '29/08';
+}
+
 // =============================================================
 // TAB 3: HISTORY - KTV DAILY ROUTINE TIMELINE (FORMAT GỌN GÀNG)
 // =============================================================
