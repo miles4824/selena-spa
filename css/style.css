@@ -34,6 +34,72 @@ h4, h5, h6 {
 }
 
 /* =============================================================
+   LUXURY TAB TRANSITION ANIMATIONS (CHUYỂN CẢNH MƯỢT MÀ)
+   ============================================================= */
+.view-enter-active {
+  animation: luxuryViewFadeSlideIn 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes luxuryViewFadeSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(12px) scale(0.985);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* =============================================================
+   FLOATING BOTTOM NAV WITH SLIDING PILL (MENU CHUYỂN ĐỘNG TRƯỢT)
+   ============================================================= */
+.nav-dock-container {
+  position: relative;
+  background: rgba(250, 246, 241, 0.94);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border: 1px solid #F0EAE1;
+  border-radius: 9999px;
+  box-shadow: 0 20px 40px -10px rgba(45, 36, 36, 0.12), 0 8px 16px -4px rgba(229, 138, 123, 0.1);
+}
+
+.nav-sliding-pill {
+  position: absolute;
+  top: 6px;
+  bottom: 6px;
+  width: 44px;
+  height: 44px;
+  border-radius: 9999px;
+  background: #E58A7B;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 14px rgba(229, 138, 123, 0.35);
+  z-index: 1;
+}
+
+.nav-btn {
+  position: relative;
+  z-index: 2;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  color: #7E7272;
+  transition: all 0.25s ease;
+  cursor: pointer;
+}
+
+.nav-btn:hover {
+  color: #E58A7B;
+}
+
+.nav-btn.active {
+  color: #FFFFFF !important;
+}
+
+/* =============================================================
    STICKY HEADERS (GHIM CỐ ĐỊNH LỊCH & MỐC NGÀY KHI VUỐT CUỘN)
    ============================================================= */
 :root {
