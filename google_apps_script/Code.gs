@@ -1436,6 +1436,7 @@ function syncAllData(params) {
     loyalty_cycles: isOwner ? loyaltyCycles : [],
     vouchers: isOwner ? vouchers : [],
     receipts: receipts,
+    payroll_logs: payrollLogs,
     expenses: isOwner ? expenses : [],
     config: config
   };

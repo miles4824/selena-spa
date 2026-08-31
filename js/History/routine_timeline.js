@@ -27,111 +27,16 @@ function loadStaffHistoryList(targetDate) {
   const staffCode = String(currentUser?.staff_id || '').trim();
   const myNameClean = (currentUser?.full_name || '').toLowerCase().replace('👑 ', '').replace('ktv ', '').trim();
 
-  // 1. ĐỌC TRỰC TIẾP TỪ SỔ LƯƠNG TB_PAYROLL_LOGS (NGUỒN DỮ LIỆU CHUẨN XÁC NHẤT)
+  // ĐỌC TRỰC TIẾP 100% TỪ SỔ LƯƠNG TB_PAYROLL_LOGS
   const payrollLogs = getStored('payroll_logs', []);
   const myLogs = payrollLogs.filter(p => {
-    return (staffPhone && normalizePhone(p.staff_phone) === staffPhone) ||
-           (staffCode && String(p.staff_id || '').trim() === staffCode) ||
-           (myNameClean && String(p.staff_name || '').toLowerCase().includes(myNameClean));
+    const pPhone = normalizePhone(p.staff_phone);
+    const pCode = String(p.staff_id || '').trim();
+    const pName = String(p.staff_name || '').toLowerCase().replace('👑 ', '').replace('ktv ', '').trim();
+    return (staffPhone && pPhone === staffPhone) ||
+           (staffCode && pCode === staffCode) ||
+           (myNameClean && (pName.includes(myNameClean) || myNameClean.includes(pName)));
   });
-
-  const receipts = getStored('receipts', []);
-
-  // 2. TỔNG HỢP DANH SÁCH TOUR (Ưu tiên tb_payroll_logs, fallback tb_receipts)
-  let itemsToRender = [];
-
-  if (myLogs.length > 0) {
-    itemsToRender = myLogs.map(p => {
-      const matchRec = receipts.find(r => r.receipt_id === p.receipt_id);
-      return {
-        receipt_id: p.receipt_id,
-        date: p.date,
-        start_time: p.start_time,
-        end_time: p.end_time,
-        duration_min: p.duration_min || 45,
-        service_name: p.service_name,
-        customer_name: p.customer_name || 'Khách vãng lai',
-        customer_phone: matchRec?.customer_phone || '',
-        raw_phone: matchRec?.raw_phone || '',
-        payment_method: p.payment_method || matchRec?.payment_method || 'Chuyển khoản',
-        myComm: Number(p.commission_amount) || 0,
-        myTip: Number(p.tip_amount) || 0,
-        totalEarn: Number(p.total_earned) || (Number(p.commission_amount || 0) + Number(p.tip_amount || 0)),
-        role_in_tour: p.role_in_tour || 'KTV Phục vụ',
-        created_at: p.created_at || p.date
-      };
-    });
-  } else {
-    // Fallback nếu tb_payroll_logs chưa được đồng bộ
-    const myAllReceipts = receipts.filter(r => {
-      const s1Phone = normalizePhone(r.staff_1_user_id || r.staff_1_phone || r.staff_phone);
-      const s1Code = String(r.staff_1_id || r.staff_id || '').trim();
-      const s2Phone = normalizePhone(r.staff_2_user_id || r.staff_2_phone);
-      const s2Code = String(r.staff_2_id || '').trim();
-      const s3Phone = normalizePhone(r.staff_3_user_id || r.staff_3_phone);
-      const s3Code = String(r.staff_3_id || '').trim();
-      const s1Name = String(r.staff_1_name || '').toLowerCase();
-      const s2Name = String(r.staff_2_name || '').toLowerCase();
-      const s3Name = String(r.staff_3_name || '').toLowerCase();
-      const sNames = String(r.staff_names || '').toLowerCase();
-
-      if (staffPhone && (s1Phone === staffPhone || s2Phone === staffPhone || s3Phone === staffPhone)) return true;
-      if (staffCode && (s1Code === staffCode || s2Code === staffCode || s3Code === staffCode)) return true;
-      if (myNameClean && (s1Name.includes(myNameClean) || s2Name.includes(myNameClean) || s3Name.includes(myNameClean) || sNames.includes(myNameClean))) return true;
-
-      if (r.staffs && Array.isArray(r.staffs) && r.staffs.length > 0) {
-        if (r.staffs.some(st => normalizePhone(st.phone) === staffPhone || (staffCode && String(st.staff_id || '').trim() === staffCode) || (myNameClean && String(st.name || '').toLowerCase().includes(myNameClean)))) {
-          return true;
-        }
-      }
-      return false;
-    });
-
-    itemsToRender = myAllReceipts.map(r => {
-      let myComm = 0;
-      let myTip = 0;
-      if (r.staffs && Array.isArray(r.staffs) && r.staffs.length > 0) {
-        const myStaffEntry = r.staffs.find(st => normalizePhone(st.phone) === staffPhone || (staffCode && String(st.staff_id || '').trim() === staffCode) || (myNameClean && String(st.name || '').toLowerCase().includes(myNameClean)));
-        if (myStaffEntry) {
-          myComm = Number(myStaffEntry.comm_vnd || myStaffEntry.comm) || 0;
-          myTip = Number(myStaffEntry.tip_vnd || myStaffEntry.tip) || 0;
-        }
-      } else {
-        const isS1 = (staffPhone && normalizePhone(r.staff_1_phone || r.staff_phone) === staffPhone) ||
-                     (staffCode && String(r.staff_1_id || r.staff_id).trim() === staffCode) ||
-                     (myNameClean && String(r.staff_1_name || '').toLowerCase().includes(myNameClean));
-        myComm = isS1 ? ((r.staff_1_comm !== undefined && r.staff_1_comm !== null && Number(r.staff_1_comm) > 0) ? Number(r.staff_1_comm) : (Number(r.commission_amount) || 0)) : (Number(r.staff_2_comm) || 0);
-        myTip = isS1 ? (Number(r.staff_1_tip) || 0) : (Number(r.staff_2_tip) || 0);
-      }
-
-      // TỰ ĐỘNG TÍNH HOA HỒNG CHUẨN XÁC NẾU CHƯA CÓ (TUYỆT ĐỐI KHÔNG BỊ 0đ)
-      if (myComm === 0 && Number(r.price) > 0) {
-        const users = typeof getSortedUsersList === 'function' ? getSortedUsersList() : (typeof DEFAULT_USERS !== 'undefined' ? DEFAULT_USERS : []);
-        const matchedU = users.find(u => (staffPhone && normalizePhone(u.phone) === staffPhone) || (staffCode && String(u.staff_id || '').trim() === staffCode) || (myNameClean && u.full_name && u.full_name.toLowerCase().includes(myNameClean)));
-        const rate = (matchedU && parsePercentage(matchedU.commission_rate) > 0) ? parsePercentage(matchedU.commission_rate) : (parsePercentage(currentUser?.commission_rate) || 10);
-        const isMulti = Boolean(r.has_staff_2 || (r.staff_names && r.staff_names.includes(',')) || (r.staffs && r.staffs.length > 1));
-        myComm = Math.round(Number(r.price) * (rate / 100) * (isMulti ? 0.5 : 1));
-      }
-
-      return {
-        receipt_id: r.receipt_id,
-        date: r.date,
-        start_time: r.start_time || r.time,
-        end_time: r.end_time || r.start_time,
-        duration_min: r.duration_min || 45,
-        service_name: r.service_name,
-        customer_name: r.customer_name || 'Khách vãng lai',
-        customer_phone: r.customer_phone || '',
-        raw_phone: r.raw_phone || '',
-        payment_method: r.payment_method || 'Chuyển khoản',
-        myComm: myComm,
-        myTip: myTip,
-        totalEarn: myComm + myTip,
-        role_in_tour: r.staff_names || r.staff_1_name || 'KTV Phục vụ',
-        created_at: r.created_at || r.date
-      };
-    });
-  }
 
   const todayKey = normalizeDateKey(new Date());
   let dateList = [];
@@ -139,7 +44,7 @@ function loadStaffHistoryList(targetDate) {
   if (selectedStaffHistoryDate === 'ALL') {
     const datesSet = new Set();
     datesSet.add(todayKey);
-    itemsToRender.forEach(item => {
+    myLogs.forEach(item => {
       const rDate = normalizeDateKey(item.date || item.created_at);
       if (rDate) datesSet.add(rDate);
     });
@@ -151,7 +56,7 @@ function loadStaffHistoryList(targetDate) {
   let html = '';
 
   dateList.forEach(dKey => {
-    const dayItems = itemsToRender.filter(item => normalizeDateKey(item.date || item.created_at) === dKey);
+    const dayItems = myLogs.filter(item => normalizeDateKey(item.date || item.created_at) === dKey);
     const formattedDateVN = formatDateVN(dKey);
     const isTodayHeader = dKey === todayKey;
 
@@ -180,23 +85,33 @@ function loadStaffHistoryList(targetDate) {
         const cleanTime = formatCleanTime(item.start_time);
         const durStatus = getReceiptDurationStatus(item);
         const isCash = item.payment_method === 'Tiền mặt';
+        const myComm = Number(item.commission_amount) || 0;
+        const myTip = Number(item.tip_amount) || 0;
+        const totalEarn = Number(item.total_earned) || (myComm + myTip);
 
         let detailBoxHtml = '';
-        if (item.myTip > 0) {
+        if (myTip > 0) {
           detailBoxHtml = `
             <!-- KHUNG CHI TIẾT KHI CÓ TIỀN TIP -->
             <div class="bg-[#FAF6F1] p-2.5 rounded-2xl border border-[#F0EAE1] space-y-1 text-xs">
               <div class="flex justify-between items-center text-[#7E7272]">
-                <span>Hoa hồng tour:</span>
-                <span class="text-[#2E7D6D] font-extrabold">+${item.myComm.toLocaleString('vi-VN')} đ</span>
+                <span>Hoa hồng tour (${item.commission_pct || '100%'}):</span>
+                <span class="text-[#2E7D6D] font-extrabold">+${myComm.toLocaleString('vi-VN')} đ</span>
               </div>
               <div class="flex justify-between items-center text-[#E58A7B] font-bold pt-0.5 border-t border-[#F0EAE1]">
                 <span class="flex items-center gap-1.5">
                   <i data-lucide="gift" class="w-3.5 h-3.5 text-[#E58A7B]"></i>
                   <span>Tiền tip nhận được:</span>
                 </span>
-                <span class="font-extrabold">+${item.myTip.toLocaleString('vi-VN')} đ</span>
+                <span class="font-extrabold">+${myTip.toLocaleString('vi-VN')} đ</span>
               </div>
+            </div>
+          `;
+        } else if (item.role_in_tour && item.role_in_tour !== 'KTV 1 (Chính)' && item.role_in_tour !== 'KTV Phục vụ') {
+          detailBoxHtml = `
+            <div class="bg-[#FAF6F1] px-3 py-2 rounded-2xl border border-[#F0EAE1] text-xs flex justify-between items-center text-[#7E7272]">
+              <span>Vai trò: <b class="text-[#2D2424]">${item.role_in_tour}</b></span>
+              <span class="text-[#2E7D6D] font-extrabold">+${myComm.toLocaleString('vi-VN')} đ (${item.commission_pct || '50%'})</span>
             </div>
           `;
         }
@@ -212,7 +127,7 @@ function loadStaffHistoryList(targetDate) {
               <div class="space-y-1">
                 <div class="flex justify-between items-center gap-2">
                   <h4 class="font-bold text-[#2D2424] text-sm truncate">${item.service_name}</h4>
-                  <span class="text-sm font-extrabold text-[#2E7D6D] whitespace-nowrap shrink-0">+${item.totalEarn.toLocaleString('vi-VN')} đ</span>
+                  <span class="text-sm font-extrabold text-[#2E7D6D] whitespace-nowrap shrink-0">+${totalEarn.toLocaleString('vi-VN')} đ</span>
                 </div>
 
                 <div class="flex items-center justify-between gap-1.5 text-[11px] text-[#7E7272] flex-wrap">
@@ -227,14 +142,7 @@ function loadStaffHistoryList(targetDate) {
                       ${item.payment_method || 'Chuyển khoản'}
                     </span>
                   </div>
-                  <div class="flex items-center gap-1.5 ml-auto">
-                    ${(item.raw_phone || item.customer_phone) ? `
-                      <button type="button" onclick="openCustomerNoteModal('${item.raw_phone || item.customer_phone}', '${(item.customer_name || 'Khách hàng').replace(/'/g, "\'")}')" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#FFF0EB] hover:bg-[#FCDFD7] text-[#E58A7B] text-[10px] font-bold border border-[#FCDFD7] transition cursor-pointer active:scale-95" title="Thêm / sửa ghi chú sở thích của khách">
-                        <i data-lucide="edit-3" class="w-3 h-3"></i> Ghi chú
-                      </button>
-                    ` : ''}
-                    <span class="text-[10px] text-[#A39696] font-mono shrink-0">${item.receipt_id}</span>
-                  </div>
+                  <span class="text-[10px] text-[#A39696] font-mono shrink-0 ml-auto">${item.receipt_id}</span>
                 </div>
               </div>
 
