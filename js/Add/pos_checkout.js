@@ -976,8 +976,18 @@ function renderSwapModalStaffUI() {
   container.innerHTML = tempSwapStaffs.map((item, idx) => {
     const isFirst = idx === 0;
     const isLocked = isFirst && !isOwner;
+    const busyMap = getBusyStaffPhonesMap();
+    const currentTourId = currentLiveSession?.session_id;
     const usedOtherPhones = tempSwapStaffs.filter((_, i) => i !== idx).map(s => normalizePhone(s.phone));
-    const selectable = users.filter(u => !usedOtherPhones.includes(normalizePhone(u.phone)));
+    // Chỉ cho phép chọn người rảnh hoặc người đang ở vị trí này
+    const selectable = users.filter(u => {
+      const uPhone = normalizePhone(u.phone);
+      if (usedOtherPhones.includes(uPhone)) return false;
+      if (uPhone === normalizePhone(item.phone)) return true;
+      const busySess = busyMap[uPhone];
+      if (busySess && busySess.session_id !== currentTourId) return false;
+      return true;
+    });
     const joinHint = item.is_midway ? `<span class="text-[10px] text-amber-600 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded-md font-semibold">Vào từ phút ${item.joined_min}</span>` : '';
 
     return `
@@ -1033,10 +1043,21 @@ function onSwapStaffSelectChange(index, newPhone) {
 
 function addStaffInSwapModal() {
   const users = getSortedUsersList();
+  const busyMap = getBusyStaffPhonesMap();
+  const currentTourId = currentLiveSession?.session_id;
   const usedPhones = tempSwapStaffs.map(s => normalizePhone(s.phone));
-  const available = users.filter(u => !usedPhones.includes(normalizePhone(u.phone)));
+  const available = users.filter(u => {
+    const uPhone = normalizePhone(u.phone);
+    if (usedPhones.includes(uPhone)) return false;
+    const busySess = busyMap[uPhone];
+    if (busySess && busySess.session_id !== currentTourId) return false;
+    return true;
+  });
 
-  if (available.length === 0) return;
+  if (available.length === 0) {
+    alert('Không còn KTV nào khác đang rảnh để thêm vào tour này!');
+    return;
+  }
 
   const elapsedSec = Math.max(1, Math.floor((Date.now() - currentLiveSession.start_timestamp) / 1000));
   const elapsedMin = Math.floor(elapsedSec / 60);
@@ -1238,6 +1259,12 @@ function saveSwapStaffSetting() {
   currentLiveSession.staff_2_pct = s2 ? s2.pct : 0;
 
   localStorage.setItem('selena_active_live_session', JSON.stringify(currentLiveSession));
+  
+  // Đồng bộ tức thì lên Firebase Realtime để Admin và tất cả thiết bị cập nhật ngay trạng thái KTV bận
+  if (typeof fbSaveLiveSession === 'function') {
+    fbSaveLiveSession(currentLiveSession);
+  }
+
   closeSwapStaffModal();
   renderLiveSessionUI();
 }
@@ -1649,8 +1676,16 @@ function openHandoverModal() {
     return;
   }
   const users = getSortedUsersList();
+  const busyMap = getBusyStaffPhonesMap();
+  const currentTourId = currentLiveSession?.session_id;
   const myPhone = currentUser ? normalizePhone(currentUser.phone) : normalizePhone(currentLiveSession.staff_1_phone);
-  const availableUsers = users.filter(u => normalizePhone(u.phone) !== myPhone);
+  const availableUsers = users.filter(u => {
+    const uPhone = normalizePhone(u.phone);
+    if (uPhone === myPhone) return false;
+    const busySess = busyMap[uPhone];
+    if (busySess && busySess.session_id !== currentTourId) return false;
+    return true;
+  });
 
   const selectEl = document.getElementById('handover-target-staff-select');
   if (selectEl) {
