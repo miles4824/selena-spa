@@ -168,6 +168,60 @@
     </div>
   </div>
 
+  
+  <!-- ============================================================= -->
+  <!-- MODAL BÀN GIAO TOUR GỘI CHO KTV KHÁC (REALTIME HANDOVER) -->
+  <!-- ============================================================= -->
+  <div id="modal-handover-tour" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs" onclick="if(event.target === this) closeHandoverModal()">
+    <div class="w-full max-w-md bg-white rounded-[32px] border border-[#F0EAE1] shadow-[0_25px_50px_-12px_rgba(45,36,36,0.15)] p-6 space-y-4 relative my-auto animate-in fade-in zoom-in-95">
+      <div class="flex justify-between items-center">
+        <h3 class="text-lg font-extrabold text-[#2D2424] flex items-center gap-2">
+          <i data-lucide="arrow-right-left" class="w-5 h-5 text-[#2E7D6D]"></i> Bàn Giao Tour Cho KTV Khác
+        </h3>
+        <button type="button" onclick="closeHandoverModal()" class="p-2 rounded-full bg-[#F7F2EC] hover:bg-[#FFF0EB] text-[#7E7272] hover:text-[#E58A7B] transition cursor-pointer">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <p class="text-xs text-[#7E7272] leading-relaxed">
+        Bạn bận việc hoặc mệt đột xuất? Bạn có thể chuyển tour này cho bạn KTV khác làm tiếp. Hệ thống sẽ tự động đồng bộ sang máy bạn ấy và chia hoa hồng công bằng.
+      </p>
+
+      <!-- 1. Chọn KTV tiếp quản -->
+      <div class="space-y-1.5">
+        <label class="block text-xs font-bold text-[#7E7272] uppercase tracking-wider">Chọn KTV Vào Thay Làm Tiếp:</label>
+        <select id="handover-target-staff-select" onchange="updateHandoverPreview()" class="w-full bg-[#F7F2EC] border border-[#EFE8DF] rounded-2xl p-3.5 text-sm text-[#2D2424] font-bold focus:outline-none focus:border-[#2E7D6D] focus:bg-white transition cursor-pointer"></select>
+      </div>
+
+      <!-- 2. Hình thức phân chia hoa hồng -->
+      <div class="space-y-2 pt-1">
+        <label class="block text-xs font-bold text-[#7E7272] uppercase tracking-wider">Hình Thức Phân Chia Hoa Hồng:</label>
+        <div class="grid grid-cols-2 gap-2">
+          <button type="button" id="btn-handover-timer" onclick="setHandoverSplitMode('timer')" class="p-3 rounded-2xl border bg-[#E8F8F5] border-[#2E7D6D] text-[#2E7D6D] font-bold text-xs flex flex-col items-center gap-1 cursor-pointer transition">
+            <span class="flex items-center gap-1 font-extrabold"><i data-lucide="clock" class="w-3.5 h-3.5"></i> Theo thời gian thực</span>
+            <span id="handover-timer-hint" class="text-[10px] font-normal text-[#7E7272]">Tính theo số phút đã làm</span>
+          </button>
+          <button type="button" id="btn-handover-equal" onclick="setHandoverSplitMode('equal')" class="p-3 rounded-2xl border bg-[#F7F2EC] border-[#EFE8DF] text-[#7E7272] font-bold text-xs flex flex-col items-center gap-1 cursor-pointer transition">
+            <span class="flex items-center gap-1 font-extrabold"><i data-lucide="handshake" class="w-3.5 h-3.5"></i> Chia đều 50 / 50</span>
+            <span id="handover-equal-hint" class="text-[10px] font-normal text-[#7E7272]">Cưa đôi hoa hồng tour</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 3. Bảng dự kiến phân bổ hoa hồng -->
+      <div class="p-3.5 rounded-2xl bg-[#FAF6F1] border border-[#F0EAE1] text-xs space-y-2">
+        <span class="font-bold text-[#7E7272] block pb-1 border-b border-[#F0EAE1]">Dự kiến phân bổ hoa hồng tour:</span>
+        <div id="handover-preview-list" class="space-y-1.5"></div>
+      </div>
+
+      <div class="pt-2">
+        <button type="button" id="btn-confirm-handover" onclick="confirmHandoverTour()" class="w-full py-3.5 rounded-full bg-gradient-to-r from-[#2E7D6D] to-[#25685B] hover:opacity-95 text-white font-extrabold text-sm shadow-md shadow-[#2E7D6D]/20 flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 transition">
+          <i data-lucide="check" class="w-4 h-4"></i> Xác Nhận Bàn Giao Tour
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- ADD EXPENSE MODAL -->
   <div id="modal-add-expense" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-md">
     <div class="w-full max-w-sm bg-white rounded-[32px] border border-[#F0EAE1] shadow-[0_25px_50px_-12px_rgba(45,36,36,0.15)] p-6 relative">

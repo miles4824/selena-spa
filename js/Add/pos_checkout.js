@@ -723,6 +723,10 @@ function renderLiveSessionUI() {
         <i data-lucide="user-plus" class="w-3.5 h-3.5"></i>
         <span>Đổi / Thêm</span>
       </button>
+      <button type="button" onclick="openHandoverModal()" title="Bàn giao tour cho bạn khác tiếp quản" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-[#E8F8F5] hover:bg-[#D2F3EB] text-xs font-bold text-[#2E7D6D] border border-[#B7EBDD] transition active:scale-95 cursor-pointer">
+        <i data-lucide="arrow-right-left" class="w-3.5 h-3.5"></i>
+        <span>Bàn Giao</span>
+      </button>
     `;
   }
 

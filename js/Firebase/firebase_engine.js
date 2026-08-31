@@ -285,3 +285,30 @@ setInterval(async () => {
     }
   } catch(e) {}
 }, 5000);
+
+
+// C. Lưu và đồng bộ Phiên Tour đang phục vụ (Live Session / Handover)
+async function fbSaveLiveSession(sessionData) {
+  if (!fbDb) return false;
+  try {
+    if (sessionData) {
+      await fbDb.ref('live_sessions/active').set(sessionData);
+    } else {
+      await fbDb.ref('live_sessions/active').remove();
+    }
+    return true;
+  } catch(e) {
+    console.error('Lỗi fbSaveLiveSession:', e);
+    return false;
+  }
+}
+
+async function fbClearLiveSession() {
+  if (!fbDb) return false;
+  try {
+    await fbDb.ref('live_sessions/active').remove();
+    return true;
+  } catch(e) {
+    return false;
+  }
+}
