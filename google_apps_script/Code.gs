@@ -1332,42 +1332,44 @@ function syncAllData(params) {
     }
   }
 
-  // 8. Payroll Logs (Chuẩn dữ liệu Lương & Nhật Ký KTV - Tự động nạp dữ liệu cũ nếu trống)
+  // 8. Payroll Logs (Chuẩn dữ liệu Lương & Nhật Ký KTV - Quét linh hoạt theo mọi tên cột)
   let sheetPayroll = ss.getSheetByName('tb_payroll_logs');
-  if (!sheetPayroll || sheetPayroll.getDataRange().getValues().length <= 1) {
-    try {
-      backfillPayrollLogs();
-      sheetPayroll = ss.getSheetByName('tb_payroll_logs');
-    } catch(e) {}
-  }
-
   let payrollLogs = [];
   if (sheetPayroll) {
     const colMapP = createHeaderMap(sheetPayroll);
     const dataP = sheetPayroll.getDataRange().getValues();
     for (let i = 1; i < dataP.length; i++) {
       let r = dataP[i];
-      let logId = String(getCell(r, colMapP, ['log_id', 'id']));
-      if (logId) {
+      let recId = String(getCell(r, colMapP, ['receipt_id', 'ma_hoa_don', 'ma_hd', 'id']));
+      let sName = String(getCell(r, colMapP, ['staff_name', 'ten_ktv', 'nhan_vien', 'ktv'])).trim();
+      let sPhone = normalizePhone(getCell(r, colMapP, ['staff_phone', 'phone', 'user_id', 'sdt_ktv', 'sdt']));
+      let sId = String(getCell(r, colMapP, ['staff_id', 'ma_ktv', 'ma_so'])).trim();
+
+      if (recId || sName || sPhone) {
+        let logId = String(getCell(r, colMapP, ['log_id', 'id', 'stt'])) || (recId ? `${recId}_S${i}` : `LOG_${i}`);
+        let commAmount = parseCurrency(getCell(r, colMapP, ['commission_amount', 'hoa_hong', 'tien_hoa_hong']));
+        let tipAmount = parseCurrency(getCell(r, colMapP, ['tip_amount', 'tip', 'tien_tip']));
+        let totalEarn = parseCurrency(getCell(r, colMapP, ['total_earned', 'tong_nhan', 'thuc_nhan'])) || (commAmount + tipAmount);
+
         payrollLogs.push({
           log_id: logId,
-          receipt_id: String(getCell(r, colMapP, ['receipt_id', 'ma_hoa_don'])),
+          receipt_id: recId,
           date: formatDateVal(getCell(r, colMapP, ['date', 'ngay'])),
           start_time: formatTimeVal(getCell(r, colMapP, ['start_time', 'gio_bat_dau', 'time'])),
           end_time: formatTimeVal(getCell(r, colMapP, ['end_time', 'gio_ket_thuc'])),
-          duration_min: Number(getCell(r, colMapP, ['duration_min', 'thoi_luong_phut'], 45)) || 45,
+          duration_min: Number(getCell(r, colMapP, ['duration_min', 'thoi_luong_phut', 'thoi_luong'], 45)) || 45,
           customer_name: String(getCell(r, colMapP, ['customer_name', 'ten_khach'])),
-          service_name: String(getCell(r, colMapP, ['service_name', 'ten_combo'])),
-          price: parseCurrency(getCell(r, colMapP, ['price', 'gia'])),
-          staff_phone: normalizePhone(getCell(r, colMapP, ['staff_phone', 'phone', 'user_id', 'sdt_ktv'])),
-          staff_id: String(getCell(r, colMapP, ['staff_id', 'ma_ktv'])).trim(),
-          staff_name: String(getCell(r, colMapP, ['staff_name', 'ten_ktv'])).trim(),
-          role_in_tour: String(getCell(r, colMapP, ['role_in_tour', 'vai_tro'])).trim(),
-          commission_pct: String(getCell(r, colMapP, ['commission_pct', 'ty_le_hoa_hong'])),
-          commission_amount: parseCurrency(getCell(r, colMapP, ['commission_amount', 'hoa_hong'])),
-          tip_amount: parseCurrency(getCell(r, colMapP, ['tip_amount', 'tip', 'tien_tip'])),
-          total_earned: parseCurrency(getCell(r, colMapP, ['total_earned', 'tong_nhan', 'thuc_nhan'])),
-          payment_method: String(getCell(r, colMapP, ['payment_method', 'phuong_thuc_tt'])),
+          service_name: String(getCell(r, colMapP, ['service_name', 'ten_combo', 'dich_vu'])),
+          price: parseCurrency(getCell(r, colMapP, ['price', 'gia', 'don_gia'])),
+          staff_phone: sPhone,
+          staff_id: sId || 'KTV01',
+          staff_name: sName,
+          role_in_tour: String(getCell(r, colMapP, ['role_in_tour', 'vai_tro'])).trim() || 'KTV Phục vụ',
+          commission_pct: String(getCell(r, colMapP, ['commission_pct', 'ty_le_hoa_hong', 'ty_le'])),
+          commission_amount: commAmount,
+          tip_amount: tipAmount,
+          total_earned: totalEarn,
+          payment_method: String(getCell(r, colMapP, ['payment_method', 'phuong_thuc_tt', 'hinh_thuc_tt'])),
           created_at: String(getCell(r, colMapP, ['created_at', 'thoi_gian_tao']))
         });
       }
