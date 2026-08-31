@@ -50,7 +50,7 @@ function parseBirthMonth(val) {
   return 0;
 }
 
-const APP_VERSION = 'v0.1.5.4';
+const APP_VERSION = 'v0.1.5.5';
 // =============================================================
 // SELENA SPA - GLOBAL CONFIG & CONSTANTS
 // =============================================================

@@ -1405,8 +1405,9 @@ function confirmSaveReceiptFromCheckout() {
 
   let comm2 = 0;
   let tip2 = 0;
+  let staff2Obj = null;
   if (s2) {
-    const staff2Obj = users.find(u => normalizePhone(u.phone) === normalizePhone(s2.phone));
+    staff2Obj = users.find(u => normalizePhone(u.phone) === normalizePhone(s2.phone));
     const rate2 = (staff2Obj && parsePercentage(staff2Obj?.commission_rate) > 0) ? parsePercentage(staff2Obj?.commission_rate) : 10;
     comm2 = Math.round(currentLiveSession.price * (rate2 / 100) * ((s2.pct || 0) / 100));
     tip2 = getStaffTipAmount(s2.phone);
