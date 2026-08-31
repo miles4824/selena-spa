@@ -151,6 +151,10 @@ function handleRequest(e) {
         result = createReceipt(params);
         break;
 
+      case 'backfill_payroll_logs':
+        result = backfillPayrollLogs();
+        break;
+
       case 'add_expense':
         result = addExpense(params);
         break;
@@ -712,6 +716,83 @@ function createReceipt(params) {
 
       sheetReceipts.appendRow(newRow);
     }
+  }
+
+  // 1B. GHI CHI TIẾT TỪNG KTV VÀO TB_PAYROLL_LOGS (HỖ TRỢ TÍNH LƯƠNG ĐA KTV VÔ HẠN)
+  let sheetPayroll = ss.getSheetByName('tb_payroll_logs');
+  if (!sheetPayroll) {
+    sheetPayroll = ss.insertSheet('tb_payroll_logs');
+    sheetPayroll.appendRow([
+      'log_id', 'receipt_id', 'date', 'start_time', 'end_time', 'duration_min',
+      'customer_name', 'service_name', 'price', 'staff_phone', 'staff_id',
+      'staff_name', 'role_in_tour', 'commission_pct', 'commission_amount',
+      'tip_amount', 'total_earned', 'payment_method', 'created_at'
+    ]);
+    sheetPayroll.getRange(1, 1, 1, 19).setFontWeight('bold').setBackground('#FFF0EB');
+  }
+
+  let payrollList = [];
+  if (params.staffs && Array.isArray(params.staffs) && params.staffs.length > 0) {
+    params.staffs.forEach((st, idx) => {
+      if (st && (st.phone || st.name)) {
+        payrollList.push({
+          phone: normalizePhone(st.phone || st.user_id),
+          staff_id: st.staff_id || (st.is_owner ? 'FOUNDER_01' : `KTV0${idx+1}`),
+          name: st.name || `KTV ${idx+1}`,
+          role: idx === 0 ? 'KTV 1 (Chính)' : `KTV ${idx+1} (Cùng làm)`,
+          pct: Number(st.pct) || Math.round(100 / params.staffs.length),
+          comm: Number(st.comm_vnd || st.comm) || 0,
+          tip: Number(st.tip_vnd || st.tip) || 0
+        });
+      }
+    });
+  } else {
+    if (s1Phone) {
+      payrollList.push({
+        phone: s1Phone, staff_id: s1Id, name: s1Name, role: 'KTV 1 (Chính)',
+        pct: Number(params.staff_1_pct) || 100, comm: s1Comm, tip: s1Tip
+      });
+    }
+    if (s2Phone && s2Phone !== '-') {
+      payrollList.push({
+        phone: s2Phone, staff_id: s2Id, name: s2Name, role: 'KTV 2 (Cùng làm)',
+        pct: Number(params.staff_2_pct) || 0, comm: s2Comm, tip: s2Tip
+      });
+    }
+    if (s3Phone && s3Phone !== '-') {
+      payrollList.push({
+        phone: s3Phone, staff_id: s3Id, name: s3Name, role: 'KTV 3 (Cùng làm)',
+        pct: Number(params.staff_3_pct) || 0, comm: s3Comm, tip: s3Tip
+      });
+    }
+  }
+
+  if (sheetPayroll && payrollList.length > 0) {
+    payrollList.forEach((pItem, pIdx) => {
+      const pLogId = receiptId + '_S' + (pIdx + 1);
+      const pTotal = pItem.comm + pItem.tip;
+      sheetPayroll.appendRow([
+        pLogId,
+        receiptId,
+        dateStr,
+        startTime,
+        endTime,
+        durationMin,
+        customerName,
+        serviceName,
+        price,
+        pItem.phone,
+        pItem.staff_id,
+        pItem.name,
+        pItem.role,
+        pItem.pct + '%',
+        pItem.comm,
+        pItem.tip,
+        pTotal,
+        paymentMethod,
+        fullTimeStr
+      ]);
+    });
   }
 
   // 2. XỬ LÝ VOUCHER & CHU KỲ TÍCH ĐIỂM
@@ -1507,4 +1588,85 @@ function menuSyncAllToFirebase() {
   }
 
   SpreadsheetApp.getUi().alert('✅ Đã bắn toàn bộ dữ liệu từ Google Sheet sang App (Firebase) siêu tốc thành công!');
+}
+
+
+// -------------------------------------------------------------
+// 10. TỰ ĐỘNG NẠP LẠI LỊCH SỬ HÓA ĐƠN VÀO TB_PAYROLL_LOGS
+// -------------------------------------------------------------
+function backfillPayrollLogs() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheetReceipts = ss.getSheetByName('tb_receipts');
+  let sheetPayroll = ss.getSheetByName('tb_payroll_logs');
+
+  if (!sheetReceipts) return { success: false, error: 'NO_RECEIPTS_SHEET' };
+
+  if (!sheetPayroll) {
+    sheetPayroll = ss.insertSheet('tb_payroll_logs');
+    sheetPayroll.appendRow([
+      'log_id', 'receipt_id', 'date', 'start_time', 'end_time', 'duration_min',
+      'customer_name', 'service_name', 'price', 'staff_phone', 'staff_id',
+      'staff_name', 'role_in_tour', 'commission_pct', 'commission_amount',
+      'tip_amount', 'total_earned', 'payment_method', 'created_at'
+    ]);
+    sheetPayroll.getRange(1, 1, 1, 19).setFontWeight('bold').setBackground('#FFF0EB');
+  }
+
+  const colMapR = createHeaderMap(sheetReceipts);
+  const dataR = sheetReceipts.getDataRange().getValues();
+  const existingLogs = sheetPayroll.getDataRange().getValues();
+  const existingLogIds = new Set(existingLogs.slice(1).map(row => String(row[0]).trim()));
+
+  let countAdded = 0;
+  for (let i = 1; i < dataR.length; i++) {
+    const row = dataR[i];
+    const rId = String(getCell(row, colMapR, ['receipt_id', 'id'])).trim();
+    if (!rId) continue;
+
+    const dateStr = getCell(row, colMapR, ['date', 'ngay']);
+    const startTime = getCell(row, colMapR, ['start_time', 'gio_bat_dau', 'time']);
+    const endTime = getCell(row, colMapR, ['end_time', 'gio_ket_thuc']);
+    const durationMin = getCell(row, colMapR, ['duration_min', 'thoi_luong_phut']);
+    const customerName = getCell(row, colMapR, ['customer_name', 'ten_khach']);
+    const serviceName = getCell(row, colMapR, ['service_name', 'ten_combo']);
+    const price = parseCurrency(getCell(row, colMapR, ['price', 'gia']));
+    const paymentMethod = getCell(row, colMapR, ['payment_method', 'phuong_thuc_tt']);
+    const createdAt = getCell(row, colMapR, ['created_at', 'thoi_gian_tao']);
+
+    // Staff 1
+    const s1Phone = normalizePhone(getCell(row, colMapR, ['staff_1_user_id', 'staff_1_phone']));
+    const s1Id = String(getCell(row, colMapR, ['staff_1_id', 'ma_ktv_1'])).trim();
+    const s1Name = String(getCell(row, colMapR, ['staff_1_name', 'ten_ktv_1'])).trim();
+    const s1Comm = parseCurrency(getCell(row, colMapR, ['staff_1_comm', 'hoa_hong_ktv_1']));
+    const s1Tip = parseCurrency(getCell(row, colMapR, ['staff_1_tip', 'tip_ktv_1']));
+
+    if (s1Phone && !existingLogIds.has(rId + '_S1')) {
+      sheetPayroll.appendRow([
+        rId + '_S1', rId, dateStr, startTime, endTime, durationMin,
+        customerName, serviceName, price, s1Phone, s1Id || 'KTV01',
+        s1Name || 'KTV 1', 'KTV 1 (Chính)', '100%', s1Comm, s1Tip, (s1Comm + s1Tip),
+        paymentMethod, createdAt
+      ]);
+      countAdded++;
+    }
+
+    // Staff 2
+    const s2Phone = normalizePhone(getCell(row, colMapR, ['staff_2_user_id', 'staff_2_phone']));
+    const s2Id = String(getCell(row, colMapR, ['staff_2_id', 'ma_ktv_2'])).trim();
+    const s2Name = String(getCell(row, colMapR, ['staff_2_name', 'ten_ktv_2'])).trim();
+    const s2Comm = parseCurrency(getCell(row, colMapR, ['staff_2_comm', 'hoa_hong_ktv_2']));
+    const s2Tip = parseCurrency(getCell(row, colMapR, ['staff_2_tip', 'tip_ktv_2']));
+
+    if (s2Phone && s2Phone !== '-' && !existingLogIds.has(rId + '_S2')) {
+      sheetPayroll.appendRow([
+        rId + '_S2', rId, dateStr, startTime, endTime, durationMin,
+        customerName, serviceName, price, s2Phone, s2Id || 'KTV02',
+        s2Name || 'KTV 2', 'KTV 2 (Cùng làm)', '50%', s2Comm, s2Tip, (s2Comm + s2Tip),
+        paymentMethod, createdAt
+      ]);
+      countAdded++;
+    }
+  }
+
+  return { success: true, added: countAdded, message: `Đã nạp bổ sung ${countAdded} dòng vào tb_payroll_logs!` };
 }
