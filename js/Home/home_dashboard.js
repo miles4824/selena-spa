@@ -3,9 +3,15 @@
 // =============================================================
 function loadKTVHomeStats() {
   const receipts = getStored('receipts', []);
+  const payrollLogs = getStored('payroll_logs', []);
   const todayStr = normalizeDateKey(new Date());
   const staffPhone = normalizePhone(currentUser?.phone);
   const staffCode = String(currentUser?.staff_id || '').trim();
+  const myNameClean = (currentUser?.full_name || '').toLowerCase().replace('👑 ', '').replace('ktv ', '').trim();
+
+  const users = typeof getSortedUsersList === 'function' ? getSortedUsersList() : (typeof DEFAULT_USERS !== 'undefined' ? DEFAULT_USERS : []);
+  const myUserObj = users.find(u => (staffPhone && normalizePhone(u.phone) === staffPhone) || (staffCode && String(u.staff_id || '').trim() === staffCode) || (myNameClean && u.full_name && u.full_name.toLowerCase().includes(myNameClean))) || currentUser;
+  const myCommRate = (myUserObj && parsePercentage(myUserObj.commission_rate) > 0) ? parsePercentage(myUserObj.commission_rate) : 10;
 
   // Update Greeting Name
   const greetingNameEl = document.getElementById('home-greeting-name');
@@ -17,35 +23,74 @@ function loadKTVHomeStats() {
   let todayComm = 0;
   let todayTips = 0;
 
-  receipts.forEach(r => {
-    const rDate = normalizeDateKey(r.date || r.created_at);
-    const s1Phone = normalizePhone(r.staff_1_phone || r.staff_phone);
-    const s1Code = String(r.staff_1_id || r.staff_id || '').trim();
-    const s2Phone = normalizePhone(r.staff_2_phone);
-    const s2Code = String(r.staff_2_id || '').trim();
-
-    let isMe = false;
-    let myComm = 0;
-    let myTip = 0;
-
-    if ((staffPhone && s1Phone === staffPhone) || (staffCode && s1Code === staffCode)) {
-      isMe = true;
-      myComm += (Number(r.staff_1_comm) !== undefined && r.staff_1_comm !== null) ? Number(r.staff_1_comm) : (Number(r.commission_amount) || 0);
-      myTip += Number(r.staff_1_tip) || 0;
-    }
-
-    if ((staffPhone && s2Phone === staffPhone) || (staffCode && s2Code === staffCode)) {
-      isMe = true;
-      myComm += Number(r.staff_2_comm) || 0;
-      myTip += Number(r.staff_2_tip) || 0;
-    }
-
-    if (rDate === todayStr && isMe) {
-      todayTours += 1;
-      todayComm += myComm;
-      todayTips += myTip;
-    }
+  // 1. ƯU TIÊN ĐỌC TỪ TB_PAYROLL_LOGS
+  const myTodayPayroll = payrollLogs.filter(p => {
+    const pDate = normalizeDateKey(p.date || p.created_at);
+    const pPhone = normalizePhone(p.staff_phone);
+    const pCode = String(p.staff_id || '').trim();
+    const pName = String(p.staff_name || '').toLowerCase().replace('👑 ', '').replace('ktv ', '').trim();
+    return pDate === todayStr && ((staffPhone && pPhone === staffPhone) || (staffCode && pCode === staffCode) || (myNameClean && (pName.includes(myNameClean) || myNameClean.includes(pName))));
   });
+
+  if (myTodayPayroll.length > 0) {
+    todayTours = myTodayPayroll.length;
+    myTodayPayroll.forEach(p => {
+      todayComm += Number(p.commission_amount) || 0;
+      todayTips += Number(p.tip_amount) || 0;
+    });
+  } else {
+    // 2. NẾU CHƯA CÓ TRONG TB_PAYROLL_LOGS -> TRÍCH XUẤT TỪ TB_RECEIPTS
+    receipts.forEach(r => {
+      const rDate = normalizeDateKey(r.date || r.created_at);
+      if (rDate !== todayStr) return;
+
+      const sNames = String(r.staff_names || '').toLowerCase();
+      const s1N = String(r.staff_1_name || '').toLowerCase();
+      const s2N = String(r.staff_2_name || '').toLowerCase();
+      const s1P = normalizePhone(r.staff_1_user_id || r.staff_1_phone || r.staff_phone);
+      const s2P = normalizePhone(r.staff_2_user_id || r.staff_2_phone);
+      const isMulti = Boolean(r.has_staff_2 || sNames.includes(',') || (s2N && s2N !== '-'));
+
+      let isMe = false;
+      let tourComm = 0;
+      let tourTip = 0;
+
+      if (r.staffs && Array.isArray(r.staffs) && r.staffs.length > 0) {
+        const entry = r.staffs.find(s => normalizePhone(s.phone) === staffPhone || (staffCode && String(s.staff_id || '').trim() === staffCode) || (myNameClean && String(s.name || '').toLowerCase().includes(myNameClean)));
+        if (entry) {
+          isMe = true;
+          tourComm = Number(entry.comm_vnd || entry.comm) || 0;
+          tourTip = Number(entry.tip_vnd || entry.tip) || 0;
+        }
+      } else {
+        if (s1P === staffPhone || (myNameClean && (s1N.includes(myNameClean) || sNames.includes(myNameClean)))) {
+          isMe = true;
+          tourComm = Number(r.staff_1_comm) || 0;
+          tourTip = Number(r.staff_1_tip) || 0;
+        } else if (s2P === staffPhone || (myNameClean && s2N.includes(myNameClean))) {
+          isMe = true;
+          tourComm = Number(r.staff_2_comm) || 0;
+          tourTip = Number(r.staff_2_tip) || 0;
+        }
+      }
+
+      if (isMe) {
+        const price = Number(r.price) || 0;
+        const totalTipOnRec = Number(r.tip_amount) || 0;
+
+        if (tourComm === 0 && price > 0) {
+          tourComm = Math.round(price * (myCommRate / 100) * (isMulti ? 0.5 : 1));
+        }
+        if (tourTip === 0 && totalTipOnRec > 0) {
+          tourTip = Math.round(totalTipOnRec * (isMulti ? 0.5 : 1));
+        }
+
+        todayTours += 1;
+        todayComm += tourComm;
+        todayTips += tourTip;
+      }
+    });
+  }
 
   const toursEl = document.getElementById('home-today-tours');
   const commEl = document.getElementById('home-today-comm');
