@@ -1673,8 +1673,12 @@ async function confirmHandoverTour() {
   };
 
   // Đồng bộ lên Firebase
-  if (typeof fbSaveLiveSession === 'function') {
-    await fbSaveLiveSession(handoverSession);
+  try {
+    if (typeof fbSaveLiveSession === 'function') {
+      await fbSaveLiveSession(handoverSession);
+    }
+  } catch (err) {
+    console.warn('⚠️ Lỗi đồng bộ Firebase live session:', err);
   }
 
   // Dọn dẹp phiên của KTV bàn giao
