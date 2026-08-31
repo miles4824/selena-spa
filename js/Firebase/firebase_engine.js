@@ -1,3 +1,22 @@
+
+// Quản lý các phiên tour đã hoàn thành hoặc đã hủy để chống vòng lặp 100%
+let dismissedSessionIds = new Set();
+try {
+  const savedDismissed = JSON.parse(localStorage.getItem('selena_dismissed_sessions') || '[]');
+  dismissedSessionIds = new Set(savedDismissed);
+} catch(e) {}
+
+function markSessionDismissed(sess) {
+  if (!sess) return;
+  const sId = String(sess.session_id || sess.start_timestamp || '');
+  if (sId) {
+    dismissedSessionIds.add(sId);
+    try {
+      localStorage.setItem('selena_dismissed_sessions', JSON.stringify(Array.from(dismissedSessionIds)));
+    } catch(e) {}
+  }
+}
+
 // =============================================================
 // SELENA SPA - FIREBASE REALTIME DATABASE ENGINE (SINGAPORE)
 // Tốc độ phản hồi: 0.03s (30 mili-giây) - Miễn phí trọn đời
@@ -100,6 +119,12 @@ function setupRealtimeListeners() {
     const myPhone = (currentUser && currentUser.phone) ? normalizePhone(currentUser.phone) : '';
     
     if (session && session.active_staff_phone) {
+      const sId = String(session.session_id || session.start_timestamp || '');
+      // Nếu session này đã bị hoàn thành/hủy trên máy này -> Bỏ qua 100%
+      if (dismissedSessionIds.has(sId)) {
+        return;
+      }
+
       if (normalizePhone(session.active_staff_phone) === myPhone) {
         currentLiveSession = session;
         localStorage.setItem('selena_active_live_session', JSON.stringify(session));
@@ -109,7 +134,7 @@ function setupRealtimeListeners() {
         if (typeof showView === 'function') {
           showView('add');
         }
-        console.log('⚡ [Firebase Realtime] Bạn vừa nhận bàn giao tour thành công:', session.service_name);
+        console.log('⚡ [Firebase Realtime] Bạn vừa nhận bàn giao tour:', session.service_name);
       } else if (currentLiveSession && currentLiveSession.start_timestamp === session.start_timestamp && myPhone !== normalizePhone(session.active_staff_phone)) {
         if (typeof liveTimerInterval !== 'undefined') clearInterval(liveTimerInterval);
         currentLiveSession = null;
@@ -320,11 +345,14 @@ setInterval(async () => {
       const s = await resSess.json();
       const myPhone = (currentUser && currentUser.phone) ? normalizePhone(currentUser.phone) : '';
       if (s && s.active_staff_phone && normalizePhone(s.active_staff_phone) === myPhone) {
-        if (!currentLiveSession || currentLiveSession.start_timestamp !== s.start_timestamp) {
-          currentLiveSession = s;
-          localStorage.setItem('selena_active_live_session', JSON.stringify(s));
-          if (typeof renderLiveSessionUI === 'function') renderLiveSessionUI();
-          if (typeof showView === 'function') showView('add');
+        const sId = String(s.session_id || s.start_timestamp || '');
+        if (!dismissedSessionIds.has(sId)) {
+          if (!currentLiveSession || currentLiveSession.start_timestamp !== s.start_timestamp) {
+            currentLiveSession = s;
+            localStorage.setItem('selena_active_live_session', JSON.stringify(s));
+            if (typeof renderLiveSessionUI === 'function') renderLiveSessionUI();
+            if (typeof showView === 'function') showView('add');
+          }
         }
       }
     }

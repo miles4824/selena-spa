@@ -767,6 +767,9 @@ function updateLiveTimerTick() {
 
 function cancelLiveSession() {
   if (confirm('Bạn có chắc muốn hủy tour đang phục vụ này không?')) {
+    if (currentLiveSession && typeof markSessionDismissed === 'function') {
+      markSessionDismissed(currentLiveSession);
+    }
     localStorage.removeItem('selena_active_live_session');
     currentLiveSession = null;
     clearInterval(liveTimerInterval);
@@ -1503,6 +1506,9 @@ function confirmSaveReceiptFromCheckout() {
   alert(successMsg);
 
   closeCheckoutModal();
+  if (currentLiveSession && typeof markSessionDismissed === 'function') {
+    markSessionDismissed(currentLiveSession);
+  }
   localStorage.removeItem('selena_active_live_session');
   currentLiveSession = null;
   extraStaffList = [];
