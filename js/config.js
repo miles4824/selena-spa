@@ -50,7 +50,7 @@ function parseBirthMonth(val) {
   return 0;
 }
 
-const APP_VERSION = 'v0.1.8.4';
+const APP_VERSION = 'v0.1.8.5';
 // =============================================================
 // SELENA SPA - GLOBAL CONFIG & CONSTANTS
 // =============================================================
@@ -160,22 +160,32 @@ function getReceiptDurationStatus(r) {
 }
 
 function formatCleanTime(val, createdAtFallback) {
-  if (!val && !createdAtFallback) return '12:00';
+  let createdTime = '';
+  if (createdAtFallback) {
+    let matchC = String(createdAtFallback).match(/(\d{1,2}):(\d{2})/);
+    if (matchC) createdTime = `${matchC[1].padStart(2, '0')}:${matchC[2]}`;
+  }
+
   if (val instanceof Date) {
     let h = val.getHours().toString().padStart(2, '0');
     let m = val.getMinutes().toString().padStart(2, '0');
     return `${h}:${m}`;
   }
+
   let s = String(val || '').trim();
   let match = s.match(/(\d{1,2}):(\d{2})/);
-  if (match) {
-    return `${match[1].padStart(2, '0')}:${match[2]}`;
+  let valTime = match ? `${match[1].padStart(2, '0')}:${match[2]}` : '';
+
+  if (createdTime && valTime) {
+    let pVal = valTime.split(':').map(Number);
+    let pCre = createdTime.split(':').map(Number);
+    let diff = (pVal[0] * 60 + pVal[1]) - (pCre[0] * 60 + pCre[1]);
+    if (diff === 17 || diff === -1423 || diff === 16 || diff === 18) {
+      return createdTime;
+    }
   }
-  if (createdAtFallback) {
-    let matchC = String(createdAtFallback).match(/(\d{1,2}):(\d{2})/);
-    if (matchC) return `${matchC[1].padStart(2, '0')}:${matchC[2]}`;
-  }
-  return '12:00';
+
+  return valTime || createdTime || '12:00';
 }
 
 function formatCleanDate(val) {
