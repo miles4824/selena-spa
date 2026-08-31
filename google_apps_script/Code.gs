@@ -446,9 +446,12 @@ function updateCustomerNotes(params) {
   const dataC = sheetCust.getDataRange().getValues();
   let foundRow = -1;
 
+  const newName = params.customer_name ? String(params.customer_name).trim() : null;
+
   for (let i = 1; i < dataC.length; i++) {
     let cPhone = getCell(dataC[i], colMapC, ['phone_number', 'phone']);
-    if (matchPhone(cPhone, phone)) {
+    let cName = String(getCell(dataC[i], colMapC, ['customer_name', 'name'])).trim().toLowerCase();
+    if (matchPhone(cPhone, phone) || (newName && newName !== 'khách hàng' && newName !== 'khách vãng lai' && cName === newName.toLowerCase())) {
       foundRow = i + 1;
       break;
     }
