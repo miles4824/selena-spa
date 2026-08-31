@@ -369,13 +369,13 @@ async function fbSaveLiveSession(sessionData) {
 async function fbClearLiveSession() {
   try {
     if (fbDb) {
-      await fbDb.ref('live_sessions/active').remove();
+      fbDb.ref('live_sessions/active').remove().catch(() => {});
     }
-    await fetch('https://selena-spa-6a852-default-rtdb.asia-southeast1.firebasedatabase.app/live_sessions/active.json', {
+  } catch(e) {}
+  try {
+    fetch('https://selena-spa-6a852-default-rtdb.asia-southeast1.firebasedatabase.app/live_sessions/active.json', {
       method: 'DELETE'
-    });
-    return true;
-  } catch(e) {
-    return false;
-  }
+    }).catch(() => {});
+  } catch(e) {}
+  return true;
 }

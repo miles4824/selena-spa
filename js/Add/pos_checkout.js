@@ -770,6 +770,9 @@ function cancelLiveSession() {
     localStorage.removeItem('selena_active_live_session');
     currentLiveSession = null;
     clearInterval(liveTimerInterval);
+    if (typeof fbClearLiveSession === 'function') {
+      fbClearLiveSession();
+    }
     renderLiveSessionUI();
   }
 }
@@ -1504,6 +1507,9 @@ function confirmSaveReceiptFromCheckout() {
   currentLiveSession = null;
   extraStaffList = [];
   clearInterval(liveTimerInterval);
+  if (typeof fbClearLiveSession === 'function') {
+    fbClearLiveSession();
+  }
   renderLiveSessionUI();
 
   document.getElementById('pos-customer-phone').value = '';
