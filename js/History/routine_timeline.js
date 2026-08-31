@@ -26,8 +26,18 @@ function loadStaffHistoryList(targetDate) {
 
   const staffPhone = normalizePhone(currentUser?.phone);
   const staffCode = String(currentUser?.staff_id || '').trim();
+  const myNameClean = (currentUser?.full_name || '').toLowerCase().replace('👑 ', '').replace('ktv ', '').trim();
 
-    // Lọc toàn bộ ca của KTV hiện tại (Kết hợp cả tb_payroll_logs VÀ toàn bộ dữ liệu lịch sử cũ 100%)
+  // Đọc từ Sổ Lương tb_payroll_logs
+  const payrollLogs = getStored('payroll_logs', []);
+  const myLogs = payrollLogs.filter(p => {
+    return (staffPhone && normalizePhone(p.staff_phone) === staffPhone) ||
+           (staffCode && String(p.staff_id || '').trim() === staffCode) ||
+           (myNameClean && String(p.staff_name || '').toLowerCase().includes(myNameClean));
+  });
+  const myLogReceiptIds = new Set(myLogs.map(p => p.receipt_id));
+
+  // Lọc toàn bộ ca của KTV hiện tại (Kết hợp cả tb_payroll_logs VÀ toàn bộ dữ liệu lịch sử cũ 100%)
   const myAllReceipts = receipts.filter(r => {
     // 1. Khớp từ Sổ Lương tb_payroll_logs
     if (r.receipt_id && myLogReceiptIds.has(r.receipt_id)) return true;
