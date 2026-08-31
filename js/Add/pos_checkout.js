@@ -869,14 +869,15 @@ function updateLiveTimerTick() {
 
 function cancelLiveSession() {
   if (confirm('Bạn có chắc muốn hủy tour đang phục vụ này không?')) {
+    const targetSessionId = currentLiveSession?.session_id;
     if (currentLiveSession && typeof markSessionDismissed === 'function') {
       markSessionDismissed(currentLiveSession);
     }
     localStorage.removeItem('selena_active_live_session');
     currentLiveSession = null;
     clearInterval(liveTimerInterval);
-    if (typeof fbClearLiveSession === 'function') {
-      fbClearLiveSession(currentLiveSession?.session_id);
+    if (typeof fbClearLiveSession === 'function' && targetSessionId) {
+      fbClearLiveSession(targetSessionId);
     }
     renderLiveSessionUI();
   }
@@ -1635,6 +1636,7 @@ function confirmSaveReceiptFromCheckout() {
 • KTV 2 (${receipt.staff_2_name}): Tour +${comm2.toLocaleString('vi-VN')} đ${tip2 > 0 ? ` + Tip +${tip2.toLocaleString('vi-VN')} đ` : ''}`;
   alert(successMsg);
 
+  const targetSessionId = currentLiveSession?.session_id;
   closeCheckoutModal();
   if (currentLiveSession && typeof markSessionDismissed === 'function') {
     markSessionDismissed(currentLiveSession);
@@ -1643,8 +1645,8 @@ function confirmSaveReceiptFromCheckout() {
   currentLiveSession = null;
   extraStaffList = [];
   clearInterval(liveTimerInterval);
-  if (typeof fbClearLiveSession === 'function') {
-    fbClearLiveSession(currentLiveSession?.session_id);
+  if (typeof fbClearLiveSession === 'function' && targetSessionId) {
+    fbClearLiveSession(targetSessionId);
   }
   renderLiveSessionUI();
 
