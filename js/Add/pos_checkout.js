@@ -1433,18 +1433,18 @@ function confirmSaveReceiptFromCheckout() {
     birth_month: currentLiveSession.birth_month || 0,
     birthday: currentLiveSession.birth_month ? Number(currentLiveSession.birth_month) : (currentLiveSession.birthday || ''),
     
-    staff_1_user_id: s1.user_id || s1.phone || '',
-    staff_1_id: s1.staff_id || 'KTV01',
+    staff_1_user_id: (staff1Obj && staff1Obj.user_id) || s1.user_id || s1.phone || '',
+    staff_1_id: (staff1Obj && staff1Obj.staff_id) || s1.staff_id || 'KTV01',
     staff_1_phone: s1.phone || '',
-    staff_1_name: s1.name || 'KTV 1',
+    staff_1_name: (staff1Obj && staff1Obj.full_name) || s1.name || 'KTV 1',
     staff_1_comm: comm1,
     staff_1_tip: tip1,
 
-    has_staff_2: Boolean(s2),
-    staff_2_user_id: s2 ? (s2.user_id || s2.phone) : '-',
-    staff_2_id: s2 ? s2.staff_id : '-',
+    has_staff_2: Boolean(s2 && s2.phone && s2.phone !== '-'),
+    staff_2_user_id: s2 ? ((staff2Obj && staff2Obj.user_id) || s2.user_id || s2.phone) : '-',
+    staff_2_id: s2 ? ((staff2Obj && staff2Obj.staff_id) || s2.staff_id || (isUserOwner(staff2Obj) ? 'FOUNDER_01' : 'KTV02')) : '-',
     staff_2_phone: s2 ? s2.phone : '-',
-    staff_2_name: s2 ? s2.name : '-',
+    staff_2_name: s2 ? ((staff2Obj && staff2Obj.full_name) || s2.name) : '-',
     staff_2_comm: comm2,
     staff_2_tip: tip2,
 
@@ -1679,8 +1679,23 @@ async function confirmHandoverTour() {
     handover_worked_min: elapsedMin,
     handover_split_mode: handoverSplitMode,
     staffs: [
-      { phone: currentLiveSession.staff_1_phone, name: currentUser?.full_name || currentLiveSession.staff_1_name, pct: p1Pct, comm: p1Comm, worked_min: elapsedMin },
-      { phone: targetUser.phone, name: targetUser.full_name, pct: p2Pct, comm: p2Comm, is_takeover: true, joined_min: elapsedMin }
+      { 
+        phone: currentLiveSession.staff_1_phone, 
+        name: currentUser?.full_name || currentLiveSession.staff_1_name, 
+        staff_id: currentLiveSession.staff_1_id || (currentUser ? currentUser.staff_id : 'KTV01'),
+        pct: p1Pct, 
+        comm: p1Comm, 
+        worked_min: elapsedMin 
+      },
+      { 
+        phone: targetUser.phone, 
+        name: targetUser.full_name, 
+        staff_id: targetUser.staff_id || (isUserOwner(targetUser) ? 'FOUNDER_01' : 'KTV02'),
+        pct: p2Pct, 
+        comm: p2Comm, 
+        is_takeover: true, 
+        joined_min: elapsedMin 
+      }
     ]
   };
 

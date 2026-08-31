@@ -600,8 +600,29 @@ function createReceipt(params) {
   const s1Tip = Number(params.staff_1_tip !== undefined ? params.staff_1_tip : tipAmount) || 0;
 
   const s2Phone = normalizePhone(params.staff_2_user_id || params.staff_2_phone);
-  const s2Id = params.staff_2_id || '-';
-  const s2Name = params.staff_2_name || '-';
+  let s2Id = params.staff_2_id || '';
+  let s2Name = params.staff_2_name || '';
+
+  // Tự động tra cứu tb_users nếu s2Id bị thiếu hoặc là dấu gạch ngang
+  if (s2Phone && (!s2Id || s2Id === '-')) {
+    const sheetUsers = ss.getSheetByName('tb_users');
+    if (sheetUsers) {
+      const colMapU = createHeaderMap(sheetUsers);
+      const dataU = sheetUsers.getDataRange().getValues();
+      for (let u = 1; u < dataU.length; u++) {
+        let uPh = normalizePhone(getCell(dataU[u], colMapU, ['phone', 'user_id', 'so_dien_thoai']));
+        if (uPh === s2Phone) {
+          s2Id = String(getCell(dataU[u], colMapU, ['staff_id', 'ma_ktv', 'user_id'])).trim();
+          if (!s2Name || s2Name === '-') {
+            s2Name = String(getCell(dataU[u], colMapU, ['full_name', 'ten_nhan_vien'])).trim();
+          }
+          break;
+        }
+      }
+    }
+  }
+  if (!s2Id) s2Id = s2Phone ? 'KTV02' : '-';
+  if (!s2Name) s2Name = s2Phone ? 'KTV 2' : '-';
   const s2Comm = Number(params.staff_2_comm) || 0;
   const s2Tip = Number(params.staff_2_tip) || 0;
 
