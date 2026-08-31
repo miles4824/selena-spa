@@ -1590,6 +1590,24 @@ function confirmSaveReceiptFromCheckout() {
     staff_2_comm: comm2,
     staff_2_tip: tip2,
 
+    has_staff_3: Boolean(s3 && s3.phone && s3.phone !== '-'),
+    staff_3_user_id: s3 ? ((staff3Obj && staff3Obj.user_id) || s3.user_id || s3.phone) : '-',
+    staff_3_id: s3 ? ((staff3Obj && staff3Obj.staff_id) || s3.staff_id || (isUserOwner(staff3Obj) ? 'FOUNDER_01' : 'KTV03')) : '-',
+    staff_3_phone: s3 ? s3.phone : '-',
+    staff_3_name: s3 ? ((staff3Obj && staff3Obj.full_name) || s3.name) : '-',
+    staff_3_comm: comm3,
+    staff_3_tip: tip3,
+
+    staff_1_pct: s1.pct !== undefined ? s1.pct : (s3 ? 34 : (s2 ? 50 : 100)),
+    staff_2_pct: s2 ? (s2.pct !== undefined ? s2.pct : (s3 ? 33 : 50)) : 0,
+    staff_3_pct: s3 ? (s3.pct !== undefined ? s3.pct : 33) : 0,
+
+    staffs: [
+      { phone: s1.phone, staff_id: (staff1Obj && staff1Obj.staff_id) || s1.staff_id || 'KTV01', name: (staff1Obj && staff1Obj.full_name) || s1.name, pct: s1.pct !== undefined ? s1.pct : (s3 ? 34 : (s2 ? 50 : 100)), comm_vnd: comm1, tip_vnd: tip1, role: 'KTV 1 (Chính)' },
+      ...(s2 ? [{ phone: s2.phone, staff_id: (staff2Obj && staff2Obj.staff_id) || s2.staff_id || 'KTV02', name: (staff2Obj && staff2Obj.full_name) || s2.name, pct: s2.pct !== undefined ? s2.pct : (s3 ? 33 : 50), comm_vnd: comm2, tip_vnd: tip2, role: 'KTV 2 (Cùng làm)' }] : []),
+      ...(s3 ? [{ phone: s3.phone, staff_id: (staff3Obj && staff3Obj.staff_id) || s3.staff_id || 'KTV03', name: (staff3Obj && staff3Obj.full_name) || s3.name, pct: s3.pct !== undefined ? s3.pct : 33, comm_vnd: comm3, tip_vnd: tip3, role: 'KTV 3 (Cùng làm)' }] : [])
+    ],
+
     staff_phone: s1.phone || '',
     staff_id: s1.staff_id || 'KTV01',
     staff_name: s1.name || 'KTV',

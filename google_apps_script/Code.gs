@@ -747,16 +747,18 @@ function createReceipt(params) {
       }
     });
   } else {
+    const nStaffs = 1 + (s2Phone && s2Phone !== '-' ? 1 : 0) + (s3Phone && s3Phone !== '-' ? 1 : 0);
+    const defPct = Math.floor(100 / nStaffs);
     if (s1Phone) {
       payrollList.push({
         phone: s1Phone, staff_id: s1Id, name: s1Name, role: 'KTV 1 (Chính)',
-        pct: Number(params.staff_1_pct) || 100, comm: s1Comm, tip: s1Tip
+        pct: params.staff_1_pct !== undefined ? Number(params.staff_1_pct) : (nStaffs === 1 ? 100 : (nStaffs === 2 ? 50 : 34)), comm: s1Comm, tip: s1Tip
       });
     }
     if (s2Phone && s2Phone !== '-') {
       payrollList.push({
         phone: s2Phone, staff_id: s2Id, name: s2Name, role: 'KTV 2 (Cùng làm)',
-        pct: Number(params.staff_2_pct) || 0, comm: s2Comm, tip: s2Tip
+        pct: params.staff_2_pct !== undefined ? Number(params.staff_2_pct) : (nStaffs === 2 ? 50 : 33), comm: s2Comm, tip: s2Tip
       });
     }
     if (s3Phone && s3Phone !== '-') {
