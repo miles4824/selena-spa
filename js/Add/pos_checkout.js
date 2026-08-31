@@ -186,28 +186,31 @@ function updatePOSStaffInfo() {
   const busyMap = getBusyStaffPhonesMap();
 
   if (s1Select) {
-    const curVal = s1Select.value;
-    s1Select.innerHTML = users.map(u => {
-      const isBusy = Boolean(busyMap[normalizePhone(u.phone)]);
-      const busySess = busyMap[normalizePhone(u.phone)];
-      const statusBadge = isBusy ? ` (🔴 Bận: ${busySess?.service_name || 'Tour'})` : ' (🟢 Rảnh)';
-      const isSelected = curVal ? (normalizePhone(u.phone) === normalizePhone(curVal)) : (currentUser && normalizePhone(u.phone) === normalizePhone(currentUser.phone));
-      return `
-        <option value="${u.phone}" ${isSelected ? 'selected' : ''} ${isBusy ? 'disabled' : ''} class="${isBusy ? 'text-gray-400 bg-gray-100 font-normal' : 'text-[#2D2424] font-semibold'}">
-          ${u.full_name}${statusBadge}
-        </option>
-      `;
-    }).join('');
+    // Lọc danh sách: Chỉ hiện những KTV đang thật sự rảnh (nếu bận thì ẩn hoàn toàn)
+    let availableUsers = users.filter(u => !busyMap[normalizePhone(u.phone)]);
+    if (!isOwner && currentUser) {
+      // Với KTV tự tạo tour cho mình thì luôn giữ tên KTV đó
+      if (!availableUsers.some(u => normalizePhone(u.phone) === normalizePhone(currentUser.phone))) {
+        availableUsers.unshift(currentUser);
+      }
+    }
 
-    // Nếu người được chọn trước đó đang bận, tự động chọn người rảnh đầu tiên
-    const selectedUser = users.find(u => normalizePhone(u.phone) === normalizePhone(s1Select.value));
-    if (selectedUser && busyMap[normalizePhone(selectedUser.phone)]) {
-      const freeUser = users.find(u => !busyMap[normalizePhone(u.phone)]);
-      if (freeUser) s1Select.value = freeUser.phone;
+    if (availableUsers.length === 0) {
+      s1Select.innerHTML = '<option value="">🔴 Tất cả KTV đều đang bận ca</option>';
+    } else {
+      const curVal = s1Select.value;
+      s1Select.innerHTML = availableUsers.map(u => {
+        const isSelected = curVal ? (normalizePhone(u.phone) === normalizePhone(curVal)) : (currentUser && normalizePhone(u.phone) === normalizePhone(currentUser.phone));
+        return `
+          <option value="${u.phone}" ${isSelected ? 'selected' : ''}>
+            ${u.full_name}
+          </option>
+        `;
+      }).join('');
     }
 
     if (isOwner) {
-      s1Select.disabled = false;
+      s1Select.disabled = availableUsers.length === 0;
       document.getElementById('pos-staff1-lock-icon')?.classList.add('hidden');
       document.getElementById('pos-staff1-role-hint')?.classList.add('hidden');
     } else {
