@@ -285,8 +285,7 @@ async function openCustomerNoteModal(phone, name) {
 
   document.getElementById('modal-note-cust-raw-phone').value = rawPhone;
   document.getElementById('modal-note-cust-name').innerText = name || 'Khách Hàng';
-  document.getElementById('modal-note-cust-phone').innerText = maskPhoneNumber(rawPhone, isOwner);
-
+  
   const monthSelect = document.getElementById('modal-note-birth-month');
   const monthContainer = document.getElementById('modal-note-birth-month-container');
   const noteInput = document.getElementById('modal-note-content');
@@ -303,9 +302,14 @@ async function openCustomerNoteModal(phone, name) {
   let initialMonth = (cust && cust.birth_month) ? cust.birth_month : (cust && cust.birthday ? parseBirthMonth(cust.birthday) : 0);
   let initialNotes = (cust && cust.notes) ? cust.notes : '';
 
+  // QUY TẮC BẢO MẬT: Khách đã có tháng sinh thì Staff BỊ ẨN Ô CHỌN THÁNG (Chỉ Chủ tiệm mới thấy & sửa được)
   if (initialMonth && initialMonth >= 1 && initialMonth <= 12) {
     if (phoneEl) phoneEl.innerText = `${maskedP} • Sinh nhật: Tháng ${initialMonth}`;
-    if (monthContainer) monthContainer.classList.add('hidden');
+    if (!isOwner) {
+      if (monthContainer) monthContainer.classList.add('hidden');
+    } else {
+      if (monthContainer) monthContainer.classList.remove('hidden');
+    }
   } else {
     if (phoneEl) phoneEl.innerText = maskedP;
     if (monthContainer) monthContainer.classList.remove('hidden');
@@ -332,7 +336,11 @@ async function openCustomerNoteModal(phone, name) {
         
         if (liveMonth && liveMonth >= 1 && liveMonth <= 12) {
           if (phoneEl) phoneEl.innerText = `${maskedP} • Sinh nhật: Tháng ${liveMonth}`;
-          if (monthContainer) monthContainer.classList.add('hidden');
+          if (!isOwner) {
+            if (monthContainer) monthContainer.classList.add('hidden');
+          } else {
+            if (monthContainer) monthContainer.classList.remove('hidden');
+          }
         } else {
           if (monthContainer) monthContainer.classList.remove('hidden');
         }
