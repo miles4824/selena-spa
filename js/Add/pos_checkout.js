@@ -1524,6 +1524,11 @@ function confirmSaveReceiptFromCheckout() {
   useVoucher = false;
   renderExtraStaffUI();
   updatePOSStaffInfo();
+
+  // Tự động chuyển ngay về tab History và làm mới danh sách lịch sử
+  if (typeof showView === 'function') {
+    showView('history');
+  }
 }
 
 
