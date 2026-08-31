@@ -692,19 +692,24 @@ function createReceipt(params) {
       assign(['tip_amount', 'tien_tip', 'tip'], tipAmount);
       assign(['total_paid', 'tong_tien', 'thanh_toan'], totalPaid);
 
-      assign(['staff_1_user_id', 'staff_1_phone', 'user_id_1', 'sdt_ktv_1'], s1Phone);
-      assign(['staff_1_id', 'staff_id', 'ma_ktv_1', 'ma_ktv'], s1Id);
-      assign(['staff_1_name', 'staff_name', 'ten_ktv_1', 'ten_ktv'], s1Name);
-      assign(['staff_1_comm', 'commission_amount', 'hoa_hong_ktv_1', 'hoa_hong'], s1Comm);
+      // Tinh gọn: Gán tên các KTV phục vụ (Thu Ngân hoặc Thu Ngân, Mai Lan)
+      const allStaffNames = params.staff_names || (payrollList && payrollList.length > 0 ? payrollList.map(p => p.name).join(', ') : s1Name);
+      assign(['staff_names', 'ktv_phuc_vu', 'nhan_vien', 'staff_name', 'ten_ktv'], allStaffNames);
+
+      // Tương thích ngược nếu bảng cũ còn các cột staff_1, staff_2
+      assign(['staff_1_user_id', 'staff_1_phone', 'user_id_1'], s1Phone);
+      assign(['staff_1_id', 'ma_ktv_1', 'staff_id'], s1Id);
+      assign(['staff_1_name', 'ten_ktv_1'], s1Name);
+      assign(['staff_1_comm', 'commission_amount', 'hoa_hong_ktv_1'], s1Comm);
       assign(['staff_1_tip', 'tip_ktv_1'], s1Tip);
 
-      assign(['staff_2_user_id', 'staff_2_phone', 'user_id_2', 'sdt_ktv_2'], s2Phone ? s2Phone : '-');
+      assign(['staff_2_user_id', 'staff_2_phone'], s2Phone ? s2Phone : '-');
       assign(['staff_2_id', 'ma_ktv_2'], s2Id ? s2Id : '-');
       assign(['staff_2_name', 'ten_ktv_2'], s2Name ? s2Name : '-');
       assign(['staff_2_comm', 'hoa_hong_ktv_2'], s2Comm);
       assign(['staff_2_tip', 'tip_ktv_2'], s2Tip);
 
-      assign(['staff_3_user_id', 'staff_3_phone', 'user_id_3', 'sdt_ktv_3'], s3Phone ? s3Phone : '-');
+      assign(['staff_3_user_id', 'staff_3_phone'], s3Phone ? s3Phone : '-');
       assign(['staff_3_id', 'ma_ktv_3'], s3Id ? s3Id : '-');
       assign(['staff_3_name', 'ten_ktv_3'], s3Name ? s3Name : '-');
       assign(['staff_3_comm', 'hoa_hong_ktv_3'], s3Comm);

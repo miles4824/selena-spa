@@ -1578,6 +1578,7 @@ function confirmSaveReceiptFromCheckout() {
     staff_1_user_id: (staff1Obj && staff1Obj.user_id) || s1.user_id || s1.phone || '',
     staff_1_id: (staff1Obj && staff1Obj.staff_id) || s1.staff_id || 'KTV01',
     staff_1_phone: s1.phone || '',
+    staff_names: currentStaffs.map(s => s.name).join(', '),
     staff_1_name: (staff1Obj && staff1Obj.full_name) || s1.name || 'KTV 1',
     staff_1_comm: comm1,
     staff_1_tip: tip1,
