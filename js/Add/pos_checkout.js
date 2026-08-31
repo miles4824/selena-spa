@@ -49,7 +49,7 @@ function updateStaffAvailabilityHeader() {
     const freeNames = freeUsers.map(u => u.full_name.replace('👑 ', '').replace('KTV ', '')).join(', ');
     subEl.innerHTML = `<span class="inline-flex items-center gap-1.5 text-xs text-[#E58A7B] font-bold"><span class="w-2 h-2 rounded-full bg-[#E58A7B]"></span> ${busyCount}/${totalStaff} KTV đang bận • Còn ${freeCount} KTV rảnh (${freeNames})</span>`;
   } else {
-    subEl.innerHTML = `<span class="inline-flex items-center gap-1.5 text-xs text-[#D97706] font-extrabold"><span class="w-2 h-2 rounded-full bg-[#D97706] animate-ping"></span> 🔴 ${totalStaff}/${totalStaff} KTV đều đang bận • Tạm hết nhân lực</span>`;
+    subEl.innerHTML = `<span class="inline-flex items-center gap-1.5 text-xs text-[#D97706] font-bold"><span class="w-2 h-2 rounded-full bg-[#D97706]"></span> ${totalStaff}/${totalStaff} KTV đều đang bận • Tạm hết nhân lực</span>`;
   }
 }
 
@@ -1527,6 +1527,7 @@ function confirmSaveReceiptFromCheckout() {
 
   const s1 = currentStaffs[0];
   const s2 = currentStaffs[1] || null;
+  const s3 = currentStaffs[2] || null;
 
   const staff1Obj = users.find(u => normalizePhone(u.phone) === normalizePhone(s1.phone));
   const rate1 = (staff1Obj && parsePercentage(staff1Obj?.commission_rate) > 0) ? parsePercentage(staff1Obj?.commission_rate) : 10;
@@ -1541,6 +1542,16 @@ function confirmSaveReceiptFromCheckout() {
     const rate2 = (staff2Obj && parsePercentage(staff2Obj?.commission_rate) > 0) ? parsePercentage(staff2Obj?.commission_rate) : 10;
     comm2 = Math.round(currentLiveSession.price * (rate2 / 100) * ((s2.pct || 0) / 100));
     tip2 = getStaffTipAmount(s2.phone);
+  }
+
+  let comm3 = 0;
+  let tip3 = 0;
+  let staff3Obj = null;
+  if (s3) {
+    staff3Obj = users.find(u => normalizePhone(u.phone) === normalizePhone(s3.phone));
+    const rate3 = (staff3Obj && parsePercentage(staff3Obj?.commission_rate) > 0) ? parsePercentage(staff3Obj?.commission_rate) : 10;
+    comm3 = Math.round(currentLiveSession.price * (rate3 / 100) * ((s3.pct || 0) / 100));
+    tip3 = getStaffTipAmount(s3.phone);
   }
 
   let totalTip = 0;
@@ -1634,6 +1645,8 @@ function confirmSaveReceiptFromCheckout() {
 • KTV 1 (${receipt.staff_1_name}): Tour +${comm1.toLocaleString('vi-VN')} đ${tip1 > 0 ? ` + Tip +${tip1.toLocaleString('vi-VN')} đ` : ''}`;
   if (receipt.has_staff_2) successMsg += `
 • KTV 2 (${receipt.staff_2_name}): Tour +${comm2.toLocaleString('vi-VN')} đ${tip2 > 0 ? ` + Tip +${tip2.toLocaleString('vi-VN')} đ` : ''}`;
+  if (receipt.has_staff_3) successMsg += `
+• KTV 3 (${receipt.staff_3_name}): Tour +${comm3.toLocaleString('vi-VN')} đ${tip3 > 0 ? ` + Tip +${tip3.toLocaleString('vi-VN')} đ` : ''}`;
   alert(successMsg);
 
   const targetSessionId = currentLiveSession?.session_id;

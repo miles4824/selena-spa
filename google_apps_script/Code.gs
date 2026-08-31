@@ -626,6 +626,32 @@ function createReceipt(params) {
   const s2Comm = Number(params.staff_2_comm) || 0;
   const s2Tip = Number(params.staff_2_tip) || 0;
 
+  const s3Phone = normalizePhone(params.staff_3_user_id || params.staff_3_phone);
+  let s3Id = params.staff_3_id || '';
+  let s3Name = params.staff_3_name || '';
+
+  if (s3Phone && (!s3Id || s3Id === '-')) {
+    const sheetUsers = ss.getSheetByName('tb_users');
+    if (sheetUsers) {
+      const colMapU = createHeaderMap(sheetUsers);
+      const dataU = sheetUsers.getDataRange().getValues();
+      for (let u = 1; u < dataU.length; u++) {
+        let uPh = normalizePhone(getCell(dataU[u], colMapU, ['phone', 'user_id', 'so_dien_thoai']));
+        if (uPh === s3Phone) {
+          s3Id = String(getCell(dataU[u], colMapU, ['staff_id', 'ma_ktv', 'user_id'])).trim();
+          if (!s3Name || s3Name === '-') {
+            s3Name = String(getCell(dataU[u], colMapU, ['full_name', 'ten_nhan_vien'])).trim();
+          }
+          break;
+        }
+      }
+    }
+  }
+  if (!s3Id) s3Id = s3Phone ? 'KTV03' : '-';
+  if (!s3Name) s3Name = s3Phone ? 'KTV 3' : '-';
+  const s3Comm = Number(params.staff_3_comm) || 0;
+  const s3Tip = Number(params.staff_3_tip) || 0;
+
   const paymentMethod = params.payment_method || 'Tiền mặt';
   const isVoucherUsed = (params.is_voucher_used === true || params.is_voucher_used === 'TRUE' || params.is_voucher_used === 'true');
   const usedVoucherId = params.used_voucher_id || '';
@@ -673,6 +699,12 @@ function createReceipt(params) {
       assign(['staff_2_name', 'ten_ktv_2'], s2Name ? s2Name : '-');
       assign(['staff_2_comm', 'hoa_hong_ktv_2'], s2Comm);
       assign(['staff_2_tip', 'tip_ktv_2'], s2Tip);
+
+      assign(['staff_3_user_id', 'staff_3_phone', 'user_id_3', 'sdt_ktv_3'], s3Phone ? s3Phone : '-');
+      assign(['staff_3_id', 'ma_ktv_3'], s3Id ? s3Id : '-');
+      assign(['staff_3_name', 'ten_ktv_3'], s3Name ? s3Name : '-');
+      assign(['staff_3_comm', 'hoa_hong_ktv_3'], s3Comm);
+      assign(['staff_3_tip', 'tip_ktv_3'], s3Tip);
 
       assign(['payment_method', 'phuong_thuc_tt'], paymentMethod);
       assign(['is_voucher_used', 'dung_voucher'], isVoucherUsed ? 'TRUE' : 'FALSE');
