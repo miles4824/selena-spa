@@ -1513,3 +1513,176 @@ function confirmSaveReceiptFromCheckout() {
   renderExtraStaffUI();
   updatePOSStaffInfo();
 }
+
+
+// =============================================================
+// TÍNH NĂNG BÀN GIAO TOUR GỘI REALTIME GIỮA KTV (HANDOVER)
+// =============================================================
+let handoverSplitMode = 'timer';
+
+function openHandoverModal() {
+  if (!currentLiveSession) {
+    alert('Không tìm thấy phiên tour đang chạy!');
+    return;
+  }
+  const users = getSortedUsersList();
+  const myPhone = currentUser ? normalizePhone(currentUser.phone) : normalizePhone(currentLiveSession.staff_1_phone);
+  const availableUsers = users.filter(u => normalizePhone(u.phone) !== myPhone);
+
+  const selectEl = document.getElementById('handover-target-staff-select');
+  if (selectEl) {
+    if (availableUsers.length === 0) {
+      selectEl.innerHTML = '<option value="">Không có KTV khác sẵn sàng</option>';
+    } else {
+      selectEl.innerHTML = availableUsers.map(u => `
+        <option value="${u.phone}">${u.full_name} (${isUserOwner(u) ? 'Chủ tiệm' : 'KTV'})</option>
+      `).join('');
+    }
+  }
+
+  handoverSplitMode = 'timer';
+  updateHandoverSplitButtons();
+  updateHandoverPreview();
+
+  const modal = document.getElementById('modal-handover-tour');
+  if (modal) modal.classList.remove('hidden');
+  if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+
+function closeHandoverModal() {
+  const modal = document.getElementById('modal-handover-tour');
+  if (modal) modal.classList.add('hidden');
+}
+
+function setHandoverSplitMode(mode) {
+  handoverSplitMode = mode;
+  updateHandoverSplitButtons();
+  updateHandoverPreview();
+}
+
+function updateHandoverSplitButtons() {
+  const btnTimer = document.getElementById('btn-handover-timer');
+  const btnEqual = document.getElementById('btn-handover-equal');
+  if (!btnTimer || !btnEqual) return;
+
+  if (handoverSplitMode === 'timer') {
+    btnTimer.className = 'p-3 rounded-2xl border bg-[#E8F8F5] border-[#2E7D6D] text-[#2E7D6D] font-bold text-xs flex flex-col items-center gap-1 cursor-pointer transition';
+    btnEqual.className = 'p-3 rounded-2xl border bg-[#F7F2EC] border-[#EFE8DF] text-[#7E7272] hover:bg-[#FFF0EB] font-bold text-xs flex flex-col items-center gap-1 cursor-pointer transition';
+  } else {
+    btnEqual.className = 'p-3 rounded-2xl border bg-[#E8F8F5] border-[#2E7D6D] text-[#2E7D6D] font-bold text-xs flex flex-col items-center gap-1 cursor-pointer transition';
+    btnTimer.className = 'p-3 rounded-2xl border bg-[#F7F2EC] border-[#EFE8DF] text-[#7E7272] hover:bg-[#FFF0EB] font-bold text-xs flex flex-col items-center gap-1 cursor-pointer transition';
+  }
+}
+
+function updateHandoverPreview() {
+  if (!currentLiveSession) return;
+  const listEl = document.getElementById('handover-preview-list');
+  if (!listEl) return;
+
+  const users = getSortedUsersList();
+  const selectEl = document.getElementById('handover-target-staff-select');
+  const targetPhone = selectEl ? selectEl.value : '';
+  const targetUser = users.find(u => normalizePhone(u.phone) === normalizePhone(targetPhone)) || { full_name: 'KTV mới' };
+
+  const elapsedSec = Math.max(1, Math.floor((Date.now() - currentLiveSession.start_timestamp) / 1000));
+  const elapsedMin = Math.floor(elapsedSec / 60);
+  const targetMin = currentLiveSession.duration_target_min || 50;
+
+  const menu = getValidatedMenu();
+  const service = menu.find(m => m.service_id === currentLiveSession.service_id) || menu[0];
+  const rate1 = parsePercentage(currentUser?.commission_rate) || 10;
+  const totalComm = Math.round(service.price * (rate1 / 100));
+
+  let p1Pct = 50;
+  let p2Pct = 50;
+
+  if (handoverSplitMode === 'timer') {
+    p1Pct = Math.min(90, Math.max(10, Math.round((elapsedMin / targetMin) * 100)));
+    p2Pct = 100 - p1Pct;
+  }
+
+  const p1Comm = Math.round(totalComm * (p1Pct / 100));
+  const p2Comm = totalComm - p1Comm;
+
+  const currentStaffName = currentUser?.full_name || currentLiveSession.staff_1_name || 'KTV hiện tại';
+
+  listEl.innerHTML = `
+    <div class="flex justify-between items-center text-[#2D2424]">
+      <span class="flex items-center gap-1">
+        <span class="w-2 h-2 rounded-full bg-[#E58A7B]"></span>
+        <b>${currentStaffName}</b> (Đã làm ${elapsedMin} phút):
+      </span>
+      <span class="font-extrabold text-[#E58A7B]">${p1Pct}% • +${p1Comm.toLocaleString('vi-VN')} đ</span>
+    </div>
+    <div class="flex justify-between items-center text-[#2D2424]">
+      <span class="flex items-center gap-1">
+        <span class="w-2 h-2 rounded-full bg-[#2E7D6D]"></span>
+        <b>${targetUser.full_name}</b> (Làm tiếp ${Math.max(0, targetMin - elapsedMin)} phút):
+      </span>
+      <span class="font-extrabold text-[#2E7D6D]">${p2Pct}% • +${p2Comm.toLocaleString('vi-VN')} đ</span>
+    </div>
+  `;
+}
+
+async function confirmHandoverTour() {
+  if (!currentLiveSession) return;
+  const users = getSortedUsersList();
+  const selectEl = document.getElementById('handover-target-staff-select');
+  const targetPhone = selectEl ? selectEl.value : '';
+  const targetUser = users.find(u => normalizePhone(u.phone) === normalizePhone(targetPhone));
+
+  if (!targetUser) {
+    alert('Vui lòng chọn KTV tiếp quản tour!');
+    return;
+  }
+
+  const elapsedSec = Math.max(1, Math.floor((Date.now() - currentLiveSession.start_timestamp) / 1000));
+  const elapsedMin = Math.floor(elapsedSec / 60);
+  const targetMin = currentLiveSession.duration_target_min || 50;
+
+  const menu = getValidatedMenu();
+  const service = menu.find(m => m.service_id === currentLiveSession.service_id) || menu[0];
+  const rate1 = parsePercentage(currentUser?.commission_rate) || 10;
+  const totalComm = Math.round(service.price * (rate1 / 100));
+
+  let p1Pct = 50;
+  let p2Pct = 50;
+  if (handoverSplitMode === 'timer') {
+    p1Pct = Math.min(90, Math.max(10, Math.round((elapsedMin / targetMin) * 100)));
+    p2Pct = 100 - p1Pct;
+  }
+
+  const p1Comm = Math.round(totalComm * (p1Pct / 100));
+  const p2Comm = totalComm - p1Comm;
+
+  const handoverSession = {
+    ...currentLiveSession,
+    active_staff_phone: normalizePhone(targetUser.phone),
+    staff_1_phone: targetUser.phone,
+    staff_1_name: targetUser.full_name,
+    staff_1_id: targetUser.staff_id || (isUserOwner(targetUser) ? 'FOUNDER_01' : 'KTV'),
+    is_handover: true,
+    handover_from_name: currentUser?.full_name || currentLiveSession.staff_1_name,
+    handover_from_phone: currentLiveSession.staff_1_phone,
+    handover_worked_min: elapsedMin,
+    handover_split_mode: handoverSplitMode,
+    staffs: [
+      { phone: currentLiveSession.staff_1_phone, name: currentUser?.full_name || currentLiveSession.staff_1_name, pct: p1Pct, comm: p1Comm, worked_min: elapsedMin },
+      { phone: targetUser.phone, name: targetUser.full_name, pct: p2Pct, comm: p2Comm, is_takeover: true, joined_min: elapsedMin }
+    ]
+  };
+
+  // Đồng bộ lên Firebase
+  if (typeof fbSaveLiveSession === 'function') {
+    await fbSaveLiveSession(handoverSession);
+  }
+
+  // Dọn dẹp phiên của KTV bàn giao
+  clearInterval(liveTimerInterval);
+  currentLiveSession = null;
+  localStorage.removeItem('selena_active_session_cache');
+  hideRunningSession();
+  closeHandoverModal();
+
+  alert(`🤝 BÀN GIAO THÀNH CÔNG!\n\nTour đã được chuyển giao cho ${targetUser.full_name} tiếp quản.\nMàn hình của bạn đã kết thúc ca này và trở về trạng thái sẵn sàng đón tour mới.`);
+}
