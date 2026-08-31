@@ -130,10 +130,15 @@ function setupRealtimeListeners() {
       });
 
       if (mySession) {
+        const isNewSession = !currentLiveSession || currentLiveSession.session_id !== mySession.session_id;
         currentLiveSession = mySession;
         localStorage.setItem('selena_active_live_session', JSON.stringify(mySession));
         if (typeof renderLiveSessionUI === 'function') {
           renderLiveSessionUI();
+        }
+        // Tự động chuyển ngay màn hình sang Tab Add để KTV thấy đồng hồ đếm giờ ngay lập tức
+        if (isNewSession && typeof showView === 'function') {
+          showView('add');
         }
         console.log('⚡ [Firebase Realtime] Đang phục vụ tour:', mySession.service_name);
       } else if (currentLiveSession && currentLiveSession.session_id) {
