@@ -168,7 +168,7 @@ function loadStaffHistoryList(targetDate) {
       `;
     } else {
       html += dayItems.map(item => {
-        const cleanTime = formatCleanTime(item.start_time);
+        const cleanTime = formatCleanTime(item.start_time, item.created_at);
         const durStatus = getReceiptDurationStatus(item);
         const isCash = item.payment_method === 'Tiền mặt';
         const myComm = Number(item.commission_amount) || 0;
