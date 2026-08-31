@@ -289,24 +289,46 @@ setInterval(async () => {
 
 // C. Lưu và đồng bộ Phiên Tour đang phục vụ (Live Session / Handover)
 async function fbSaveLiveSession(sessionData) {
-  if (!fbDb) return false;
+  if (!sessionData) {
+    return await fbClearLiveSession();
+  }
   try {
-    if (sessionData) {
-      await fbDb.ref('live_sessions/active').set(sessionData);
-    } else {
-      await fbDb.ref('live_sessions/active').remove();
+    // Khử sạch 100% mọi thuộc tính undefined để Firebase Realtime DB không báo lỗi
+    const cleanPayload = JSON.parse(JSON.stringify(sessionData));
+    if (fbDb) {
+      await fbDb.ref('live_sessions/active').set(cleanPayload);
+      return true;
     }
+    await fetch('https://selena-spa-6a852-default-rtdb.asia-southeast1.firebasedatabase.app/live_sessions/active.json', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(cleanPayload)
+    });
     return true;
   } catch(e) {
-    console.error('Lỗi fbSaveLiveSession:', e);
-    return false;
+    console.warn('⚠️ fbSaveLiveSession REST fallback:', e.message);
+    try {
+      const cleanPayload = JSON.parse(JSON.stringify(sessionData));
+      await fetch('https://selena-spa-6a852-default-rtdb.asia-southeast1.firebasedatabase.app/live_sessions/active.json', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(cleanPayload)
+      });
+      return true;
+    } catch(err2) {
+      return false;
+    }
   }
 }
 
 async function fbClearLiveSession() {
-  if (!fbDb) return false;
   try {
-    await fbDb.ref('live_sessions/active').remove();
+    if (fbDb) {
+      await fbDb.ref('live_sessions/active').remove();
+    }
+    await fetch('https://selena-spa-6a852-default-rtdb.asia-southeast1.firebasedatabase.app/live_sessions/active.json', {
+      method: 'DELETE'
+    });
     return true;
   } catch(e) {
     return false;
