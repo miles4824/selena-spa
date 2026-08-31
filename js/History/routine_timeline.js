@@ -239,10 +239,11 @@ function loadStaffHistoryList(targetDate) {
 
                 <div class="flex items-center justify-between gap-1.5 text-[11px] text-[#7E7272] flex-wrap">
                   <div class="flex items-center gap-1.5 min-w-0">
-                    <span class="inline-flex items-center gap-1 truncate text-[#2D2424] font-medium">
-                      <i data-lucide="user" class="w-3 h-3 text-[#A39696] shrink-0"></i>
-                      <span class="truncate font-semibold text-[#2D2424]">${item.customer_name || 'Khách vãng lai'}</span>
-                    </span>
+                    <button type="button" onclick="openCustomerNoteModal('${item.customer_phone || item.raw_phone || ''}', '${item.customer_name || 'Khách vãng lai'}')" class="inline-flex items-center gap-1 truncate text-[#2D2424] font-medium hover:text-[#E58A7B] cursor-pointer transition group" title="Bấm để sửa ghi chú & sở thích khách hàng">
+                      <i data-lucide="user" class="w-3 h-3 text-[#A39696] group-hover:text-[#E58A7B] shrink-0"></i>
+                      <span class="truncate font-semibold text-[#2D2424] group-hover:text-[#E58A7B] underline decoration-dotted underline-offset-2">${item.customer_name || 'Khách vãng lai'}</span>
+                      <i data-lucide="edit-3" class="w-2.5 h-2.5 text-[#E58A7B] shrink-0 ml-0.5 opacity-80 group-hover:opacity-100"></i>
+                    </button>
                     <span class="text-[#D4C5B9]">•</span>
                     <span class="inline-flex items-center gap-1 font-semibold ${isCash ? 'text-[#D35400]' : 'text-[#2E7D6D]'} shrink-0">
                       <i data-lucide="${isCash ? 'banknote' : 'qr-code'}" class="w-3 h-3"></i>
