@@ -1325,6 +1325,41 @@ function syncAllData(params) {
     }
   }
 
+  // 8. Payroll Logs (Chuẩn dữ liệu Lương & Nhật Ký KTV)
+  const sheetPayroll = ss.getSheetByName('tb_payroll_logs');
+  let payrollLogs = [];
+  if (sheetPayroll) {
+    const colMapP = createHeaderMap(sheetPayroll);
+    const dataP = sheetPayroll.getDataRange().getValues();
+    for (let i = 1; i < dataP.length; i++) {
+      let r = dataP[i];
+      let logId = String(getCell(r, colMapP, ['log_id', 'id']));
+      if (logId) {
+        payrollLogs.push({
+          log_id: logId,
+          receipt_id: String(getCell(r, colMapP, ['receipt_id', 'ma_hoa_don'])),
+          date: formatDateVal(getCell(r, colMapP, ['date', 'ngay'])),
+          start_time: formatTimeVal(getCell(r, colMapP, ['start_time', 'gio_bat_dau', 'time'])),
+          end_time: formatTimeVal(getCell(r, colMapP, ['end_time', 'gio_ket_thuc'])),
+          duration_min: Number(getCell(r, colMapP, ['duration_min', 'thoi_luong_phut'], 45)) || 45,
+          customer_name: String(getCell(r, colMapP, ['customer_name', 'ten_khach'])),
+          service_name: String(getCell(r, colMapP, ['service_name', 'ten_combo'])),
+          price: parseCurrency(getCell(r, colMapP, ['price', 'gia'])),
+          staff_phone: normalizePhone(getCell(r, colMapP, ['staff_phone', 'phone', 'user_id', 'sdt_ktv'])),
+          staff_id: String(getCell(r, colMapP, ['staff_id', 'ma_ktv'])).trim(),
+          staff_name: String(getCell(r, colMapP, ['staff_name', 'ten_ktv'])).trim(),
+          role_in_tour: String(getCell(r, colMapP, ['role_in_tour', 'vai_tro'])).trim(),
+          commission_pct: String(getCell(r, colMapP, ['commission_pct', 'ty_le_hoa_hong'])),
+          commission_amount: parseCurrency(getCell(r, colMapP, ['commission_amount', 'hoa_hong'])),
+          tip_amount: parseCurrency(getCell(r, colMapP, ['tip_amount', 'tip', 'tien_tip'])),
+          total_earned: parseCurrency(getCell(r, colMapP, ['total_earned', 'tong_nhan', 'thuc_nhan'])),
+          payment_method: String(getCell(r, colMapP, ['payment_method', 'phuong_thuc_tt'])),
+          created_at: String(getCell(r, colMapP, ['created_at', 'thoi_gian_tao']))
+        });
+      }
+    }
+  }
+
   // 7. Expenses
   const sheetExpenses = ss.getSheetByName('tb_expenses');
   let expenses = [];
