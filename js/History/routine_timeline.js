@@ -27,9 +27,13 @@ function loadStaffHistoryList(targetDate) {
   const staffCode = String(currentUser?.staff_id || '').trim();
   const myNameClean = (currentUser?.full_name || '').toLowerCase().replace('👑 ', '').replace('ktv ', '').trim();
 
-  // ĐỌC TRỰC TIẾP 100% TỪ SỔ LƯƠNG TB_PAYROLL_LOGS
+  const users = typeof getSortedUsersList === 'function' ? getSortedUsersList() : (typeof DEFAULT_USERS !== 'undefined' ? DEFAULT_USERS : []);
+  const myUserObj = users.find(u => (staffPhone && normalizePhone(u.phone) === staffPhone) || (staffCode && String(u.staff_id || '').trim() === staffCode) || (myNameClean && u.full_name && u.full_name.toLowerCase().includes(myNameClean))) || currentUser;
+  const myCommRate = (myUserObj && parsePercentage(myUserObj.commission_rate) > 0) ? parsePercentage(myUserObj.commission_rate) : 10;
+
+  // 1. ĐỌC TỪ TB_PAYROLL_LOGS NẾU CÓ
   const payrollLogs = getStored('payroll_logs', []);
-  const myLogs = payrollLogs.filter(p => {
+  let myLogs = payrollLogs.filter(p => {
     const pPhone = normalizePhone(p.staff_phone);
     const pCode = String(p.staff_id || '').trim();
     const pName = String(p.staff_name || '').toLowerCase().replace('👑 ', '').replace('ktv ', '').trim();
@@ -37,6 +41,77 @@ function loadStaffHistoryList(targetDate) {
            (staffCode && pCode === staffCode) ||
            (myNameClean && (pName.includes(myNameClean) || myNameClean.includes(pName)));
   });
+
+  // 2. NẾU TB_PAYROLL_LOGS CHƯA CÓ -> TỰ ĐỘNG TẠO TỪ TB_RECEIPTS KHÔNG ĐỂ TRẮNG MÀN HÌNH
+  if (myLogs.length === 0) {
+    const receipts = getStored('receipts', []);
+    receipts.forEach(r => {
+      let isMyTour = false;
+      let myComm = 0;
+      let myTip = 0;
+      let myRole = 'KTV 1 (Chính)';
+      let myPct = '100%';
+
+      const sNames = String(r.staff_names || '').toLowerCase();
+      const s1N = String(r.staff_1_name || '').toLowerCase();
+      const s2N = String(r.staff_2_name || '').toLowerCase();
+      const s1P = normalizePhone(r.staff_1_user_id || r.staff_1_phone || r.staff_phone);
+      const s2P = normalizePhone(r.staff_2_user_id || r.staff_2_phone);
+
+      const isMulti = Boolean(r.has_staff_2 || sNames.includes(',') || (s2N && s2N !== '-'));
+
+      if (r.staffs && Array.isArray(r.staffs) && r.staffs.length > 0) {
+        const entry = r.staffs.find(s => normalizePhone(s.phone) === staffPhone || (staffCode && String(s.staff_id || '').trim() === staffCode) || (myNameClean && String(s.name || '').toLowerCase().includes(myNameClean)));
+        if (entry) {
+          isMyTour = true;
+          myComm = Number(entry.comm_vnd || entry.comm) || 0;
+          myTip = Number(entry.tip_vnd || entry.tip) || 0;
+          myRole = entry.role || myRole;
+          myPct = entry.pct ? `${entry.pct}%` : (isMulti ? '50%' : '100%');
+        }
+      } else {
+        if (s1P === staffPhone || (myNameClean && (s1N.includes(myNameClean) || sNames.includes(myNameClean)))) {
+          isMyTour = true;
+          myComm = Number(r.staff_1_comm) || 0;
+          myTip = Number(r.staff_1_tip) || 0;
+          myRole = 'KTV 1 (Chính)';
+          myPct = isMulti ? '50%' : '100%';
+        } else if (s2P === staffPhone || (myNameClean && s2N.includes(myNameClean))) {
+          isMyTour = true;
+          myComm = Number(r.staff_2_comm) || 0;
+          myTip = Number(r.staff_2_tip) || 0;
+          myRole = 'KTV 2 (Cùng làm)';
+          myPct = '50%';
+        }
+      }
+
+      if (isMyTour) {
+        const price = Number(r.price) || 0;
+        if (myComm === 0 && price > 0) {
+          myComm = Math.round(price * (myCommRate / 100) * (isMulti ? 0.5 : 1));
+        }
+        myLogs.push({
+          log_id: r.receipt_id + '_LOG',
+          receipt_id: r.receipt_id,
+          date: r.date,
+          start_time: r.start_time || r.time || '12:00',
+          end_time: r.end_time || r.start_time,
+          duration_min: r.duration_min || 45,
+          service_name: r.service_name,
+          customer_name: r.customer_name || 'Khách vãng lai',
+          customer_phone: r.customer_phone || '',
+          price: price,
+          commission_pct: myPct,
+          commission_amount: myComm,
+          tip_amount: myTip,
+          total_earned: myComm + myTip,
+          role_in_tour: myRole,
+          payment_method: r.payment_method || 'Chuyển khoản',
+          created_at: r.created_at || r.date
+        });
+      }
+    });
+  }
 
   const todayKey = normalizeDateKey(new Date());
   let dateList = [];
