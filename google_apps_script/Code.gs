@@ -1325,8 +1325,15 @@ function syncAllData(params) {
     }
   }
 
-  // 8. Payroll Logs (Chuẩn dữ liệu Lương & Nhật Ký KTV)
-  const sheetPayroll = ss.getSheetByName('tb_payroll_logs');
+  // 8. Payroll Logs (Chuẩn dữ liệu Lương & Nhật Ký KTV - Tự động nạp dữ liệu cũ nếu trống)
+  let sheetPayroll = ss.getSheetByName('tb_payroll_logs');
+  if (!sheetPayroll || sheetPayroll.getDataRange().getValues().length <= 1) {
+    try {
+      backfillPayrollLogs();
+      sheetPayroll = ss.getSheetByName('tb_payroll_logs');
+    } catch(e) {}
+  }
+
   let payrollLogs = [];
   if (sheetPayroll) {
     const colMapP = createHeaderMap(sheetPayroll);

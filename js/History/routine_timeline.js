@@ -10,7 +10,6 @@ function onStaffDateSelect(dateStr) {
 }
 
 function loadStaffHistoryList(targetDate) {
-  const receipts = getStored('receipts', []);
   const container = document.getElementById('staff-receipts-list');
   if (!container) return;
 
@@ -28,52 +27,110 @@ function loadStaffHistoryList(targetDate) {
   const staffCode = String(currentUser?.staff_id || '').trim();
   const myNameClean = (currentUser?.full_name || '').toLowerCase().replace('👑 ', '').replace('ktv ', '').trim();
 
-  // Đọc từ Sổ Lương tb_payroll_logs
+  // 1. ĐỌC TRỰC TIẾP TỪ SỔ LƯƠNG TB_PAYROLL_LOGS (NGUỒN DỮ LIỆU CHUẨN XÁC NHẤT)
   const payrollLogs = getStored('payroll_logs', []);
   const myLogs = payrollLogs.filter(p => {
     return (staffPhone && normalizePhone(p.staff_phone) === staffPhone) ||
            (staffCode && String(p.staff_id || '').trim() === staffCode) ||
            (myNameClean && String(p.staff_name || '').toLowerCase().includes(myNameClean));
   });
-  const myLogReceiptIds = new Set(myLogs.map(p => p.receipt_id));
 
-  // Lọc toàn bộ ca của KTV hiện tại (Kết hợp cả tb_payroll_logs VÀ toàn bộ dữ liệu lịch sử cũ 100%)
-  const myAllReceipts = receipts.filter(r => {
-    // 1. Khớp từ Sổ Lương tb_payroll_logs
-    if (r.receipt_id && myLogReceiptIds.has(r.receipt_id)) return true;
+  const receipts = getStored('receipts', []);
 
-    // 2. Khớp từ dữ liệu lịch sử tb_receipts từ trước đến nay (không sót 1 tour nào)
-    const s1Phone = normalizePhone(r.staff_1_user_id || r.staff_1_phone || r.staff_phone);
-    const s1Code = String(r.staff_1_id || r.staff_id || '').trim();
-    const s2Phone = normalizePhone(r.staff_2_user_id || r.staff_2_phone);
-    const s2Code = String(r.staff_2_id || '').trim();
-    const s3Phone = normalizePhone(r.staff_3_user_id || r.staff_3_phone);
-    const s3Code = String(r.staff_3_id || '').trim();
-    const s1Name = String(r.staff_1_name || '').toLowerCase();
-    const s2Name = String(r.staff_2_name || '').toLowerCase();
-    const s3Name = String(r.staff_3_name || '').toLowerCase();
-    const sNames = String(r.staff_names || '').toLowerCase();
+  // 2. TỔNG HỢP DANH SÁCH TOUR (Ưu tiên tb_payroll_logs, fallback tb_receipts)
+  let itemsToRender = [];
 
-    if (staffPhone && (s1Phone === staffPhone || s2Phone === staffPhone || s3Phone === staffPhone)) return true;
-    if (staffCode && (s1Code === staffCode || s2Code === staffCode || s3Code === staffCode)) return true;
-    if (myNameClean && (s1Name.includes(myNameClean) || s2Name.includes(myNameClean) || s3Name.includes(myNameClean) || sNames.includes(myNameClean))) return true;
+  if (myLogs.length > 0) {
+    itemsToRender = myLogs.map(p => {
+      const matchRec = receipts.find(r => r.receipt_id === p.receipt_id);
+      return {
+        receipt_id: p.receipt_id,
+        date: p.date,
+        start_time: p.start_time,
+        end_time: p.end_time,
+        duration_min: p.duration_min || 45,
+        service_name: p.service_name,
+        customer_name: p.customer_name || 'Khách vãng lai',
+        customer_phone: matchRec?.customer_phone || '',
+        raw_phone: matchRec?.raw_phone || '',
+        payment_method: p.payment_method || matchRec?.payment_method || 'Chuyển khoản',
+        myComm: Number(p.commission_amount) || 0,
+        myTip: Number(p.tip_amount) || 0,
+        totalEarn: Number(p.total_earned) || (Number(p.commission_amount || 0) + Number(p.tip_amount || 0)),
+        role_in_tour: p.role_in_tour || 'KTV Phục vụ',
+        created_at: p.created_at || p.date
+      };
+    });
+  } else {
+    // Fallback nếu tb_payroll_logs chưa được đồng bộ
+    const myAllReceipts = receipts.filter(r => {
+      const s1Phone = normalizePhone(r.staff_1_user_id || r.staff_1_phone || r.staff_phone);
+      const s1Code = String(r.staff_1_id || r.staff_id || '').trim();
+      const s2Phone = normalizePhone(r.staff_2_user_id || r.staff_2_phone);
+      const s2Code = String(r.staff_2_id || '').trim();
+      const s3Phone = normalizePhone(r.staff_3_user_id || r.staff_3_phone);
+      const s3Code = String(r.staff_3_id || '').trim();
+      const s1Name = String(r.staff_1_name || '').toLowerCase();
+      const s2Name = String(r.staff_2_name || '').toLowerCase();
+      const s3Name = String(r.staff_3_name || '').toLowerCase();
+      const sNames = String(r.staff_names || '').toLowerCase();
 
-    if (r.staffs && Array.isArray(r.staffs) && r.staffs.length > 0) {
-      if (r.staffs.some(st => normalizePhone(st.phone) === staffPhone || (staffCode && String(st.staff_id || '').trim() === staffCode) || (myNameClean && String(st.name || '').toLowerCase().includes(myNameClean)))) {
-        return true;
+      if (staffPhone && (s1Phone === staffPhone || s2Phone === staffPhone || s3Phone === staffPhone)) return true;
+      if (staffCode && (s1Code === staffCode || s2Code === staffCode || s3Code === staffCode)) return true;
+      if (myNameClean && (s1Name.includes(myNameClean) || s2Name.includes(myNameClean) || s3Name.includes(myNameClean) || sNames.includes(myNameClean))) return true;
+
+      if (r.staffs && Array.isArray(r.staffs) && r.staffs.length > 0) {
+        if (r.staffs.some(st => normalizePhone(st.phone) === staffPhone || (staffCode && String(st.staff_id || '').trim() === staffCode) || (myNameClean && String(st.name || '').toLowerCase().includes(myNameClean)))) {
+          return true;
+        }
       }
-    }
-    return false;
-  });
+      return false;
+    });
+
+    itemsToRender = myAllReceipts.map(r => {
+      let myComm = 0;
+      let myTip = 0;
+      if (r.staffs && Array.isArray(r.staffs) && r.staffs.length > 0) {
+        const myStaffEntry = r.staffs.find(st => normalizePhone(st.phone) === staffPhone || (staffCode && String(st.staff_id || '').trim() === staffCode) || (myNameClean && String(st.name || '').toLowerCase().includes(myNameClean)));
+        if (myStaffEntry) {
+          myComm = Number(myStaffEntry.comm_vnd || myStaffEntry.comm) || 0;
+          myTip = Number(myStaffEntry.tip_vnd || myStaffEntry.tip) || 0;
+        }
+      } else {
+        const isS1 = (staffPhone && normalizePhone(r.staff_1_phone || r.staff_phone) === staffPhone) ||
+                     (staffCode && String(r.staff_1_id || r.staff_id).trim() === staffCode) ||
+                     (myNameClean && String(r.staff_1_name || '').toLowerCase().includes(myNameClean));
+        myComm = isS1 ? ((r.staff_1_comm !== undefined && r.staff_1_comm !== null) ? Number(r.staff_1_comm) : (Number(r.commission_amount) || 0)) : (Number(r.staff_2_comm) || 0);
+        myTip = isS1 ? (Number(r.staff_1_tip) || 0) : (Number(r.staff_2_tip) || 0);
+      }
+      return {
+        receipt_id: r.receipt_id,
+        date: r.date,
+        start_time: r.start_time || r.time,
+        end_time: r.end_time || r.start_time,
+        duration_min: r.duration_min || 45,
+        service_name: r.service_name,
+        customer_name: r.customer_name || 'Khách vãng lai',
+        customer_phone: r.customer_phone || '',
+        raw_phone: r.raw_phone || '',
+        payment_method: r.payment_method || 'Chuyển khoản',
+        myComm: myComm,
+        myTip: myTip,
+        totalEarn: myComm + myTip,
+        role_in_tour: r.staff_names || r.staff_1_name || 'KTV Phục vụ',
+        created_at: r.created_at || r.date
+      };
+    });
+  }
 
   const todayKey = normalizeDateKey(new Date());
   let dateList = [];
 
   if (selectedStaffHistoryDate === 'ALL') {
     const datesSet = new Set();
-    datesSet.add(todayKey); // Luôn có ngày hôm nay ở đầu
-    myAllReceipts.forEach(r => {
-      const rDate = normalizeDateKey(r.date || r.created_at);
+    datesSet.add(todayKey);
+    itemsToRender.forEach(item => {
+      const rDate = normalizeDateKey(item.date || item.created_at);
       if (rDate) datesSet.add(rDate);
     });
     dateList = Array.from(datesSet).sort().reverse();
@@ -84,7 +141,7 @@ function loadStaffHistoryList(targetDate) {
   let html = '';
 
   dateList.forEach(dKey => {
-    const dayReceipts = myAllReceipts.filter(r => normalizeDateKey(r.date || r.created_at) === dKey);
+    const dayItems = itemsToRender.filter(item => normalizeDateKey(item.date || item.created_at) === dKey);
     const formattedDateVN = formatDateVN(dKey);
     const isTodayHeader = dKey === todayKey;
 
@@ -102,57 +159,34 @@ function loadStaffHistoryList(targetDate) {
         </div>
     `;
 
-    if (dayReceipts.length === 0) {
+    if (dayItems.length === 0) {
       html += `
         <div class="py-3 text-center text-xs text-[#A39696] font-medium italic">
           Không có tour gội nào trong ngày
         </div>
       `;
     } else {
-      html += dayReceipts.map(r => {
-        const isS1 = (staffPhone && normalizePhone(r.staff_1_phone || r.staff_phone) === staffPhone) ||
-                     (staffCode && String(r.staff_1_id || r.staff_id).trim() === staffCode);
-        const myComm = isS1 ? ((r.staff_1_comm !== undefined && r.staff_1_comm !== null) ? Number(r.staff_1_comm) : (Number(r.commission_amount) || 0)) : (Number(r.staff_2_comm) || 0);
-        const myTip = isS1 ? (Number(r.staff_1_tip) || 0) : (Number(r.staff_2_tip) || 0);
-        const totalEarn = myComm + myTip;
-
-        const partnerName = isS1 ? r.staff_2_name : r.staff_1_name;
-        const hasPartner = r.has_staff_2 && partnerName && partnerName.trim() !== '';
-
-        const cleanTime = formatCleanTime(r.start_time || r.time);
-        const durStatus = getReceiptDurationStatus(r);
-        const isCash = r.payment_method === 'Tiền mặt';
+      html += dayItems.map(item => {
+        const cleanTime = formatCleanTime(item.start_time);
+        const durStatus = getReceiptDurationStatus(item);
+        const isCash = item.payment_method === 'Tiền mặt';
 
         let detailBoxHtml = '';
-        if (myTip > 0) {
+        if (item.myTip > 0) {
           detailBoxHtml = `
             <!-- KHUNG CHI TIẾT KHI CÓ TIỀN TIP -->
             <div class="bg-[#FAF6F1] p-2.5 rounded-2xl border border-[#F0EAE1] space-y-1 text-xs">
-              ${hasPartner ? `
-                <div class="flex items-center gap-1.5 text-[#7E7272] mb-1">
-                  <i data-lucide="users" class="w-3.5 h-3.5 text-[#E58A7B]"></i>
-                  <span>KTV hỗ trợ: <b class="text-[#2D2424]">${partnerName}</b></span>
-                </div>
-              ` : ''}
               <div class="flex justify-between items-center text-[#7E7272]">
                 <span>Hoa hồng tour:</span>
-                <span class="text-[#2E7D6D] font-extrabold">+${myComm.toLocaleString('vi-VN')} đ</span>
+                <span class="text-[#2E7D6D] font-extrabold">+${item.myComm.toLocaleString('vi-VN')} đ</span>
               </div>
               <div class="flex justify-between items-center text-[#E58A7B] font-bold pt-0.5 border-t border-[#F0EAE1]">
                 <span class="flex items-center gap-1.5">
                   <i data-lucide="gift" class="w-3.5 h-3.5 text-[#E58A7B]"></i>
                   <span>Tiền tip nhận được:</span>
                 </span>
-                <span class="font-extrabold">+${myTip.toLocaleString('vi-VN')} đ</span>
+                <span class="font-extrabold">+${item.myTip.toLocaleString('vi-VN')} đ</span>
               </div>
-            </div>
-          `;
-        } else if (hasPartner) {
-          detailBoxHtml = `
-            <!-- KHUNG CHỈ HIỆN KTV HỖ TRỢ KHI KHÔNG CÓ TIP -->
-            <div class="bg-[#FAF6F1] px-3 py-2 rounded-2xl border border-[#F0EAE1] text-xs flex items-center gap-1.5 text-[#7E7272]">
-              <i data-lucide="users" class="w-3.5 h-3.5 text-[#E58A7B]"></i>
-              <span>KTV hỗ trợ: <b class="text-[#2D2424]">${partnerName}</b></span>
             </div>
           `;
         }
@@ -165,34 +199,31 @@ function loadStaffHistoryList(targetDate) {
             </div>
 
             <div class="bg-white rounded-[28px] border border-[#F0EAE1] shadow-[0_10px_30px_-5px_rgba(229,138,123,0.05),0_4px_12px_rgba(0,0,0,0.02)] p-3.5 flex-1 space-y-2.5 min-w-0">
-              <!-- HEADER THẺ: 2 HÀNG RÕ RÀNG CHỐNG VỠ TRÊN MÀN HÌNH NHỎ -->
               <div class="space-y-1">
-                <!-- Hàng 1: Tên Dịch Vụ + Tổng Thu Nhập Ca -->
                 <div class="flex justify-between items-center gap-2">
-                  <h4 class="font-bold text-[#2D2424] text-sm truncate">${r.service_name}</h4>
-                  <span class="text-sm font-extrabold text-[#2E7D6D] whitespace-nowrap shrink-0">+${totalEarn.toLocaleString('vi-VN')} đ</span>
+                  <h4 class="font-bold text-[#2D2424] text-sm truncate">${item.service_name}</h4>
+                  <span class="text-sm font-extrabold text-[#2E7D6D] whitespace-nowrap shrink-0">+${item.totalEarn.toLocaleString('vi-VN')} đ</span>
                 </div>
 
-                <!-- Hàng 2: Khách Hàng (SVG User) + Thanh Toán (SVG) + Ghi Chú Nhanh + Mã Phiếu -->
                 <div class="flex items-center justify-between gap-1.5 text-[11px] text-[#7E7272] flex-wrap">
                   <div class="flex items-center gap-1.5 min-w-0">
                     <span class="inline-flex items-center gap-1 truncate text-[#2D2424] font-medium">
                       <i data-lucide="user" class="w-3 h-3 text-[#A39696] shrink-0"></i>
-                      <span class="truncate font-semibold text-[#2D2424]">${r.customer_name || 'Khách vãng lai'}</span>
+                      <span class="truncate font-semibold text-[#2D2424]">${item.customer_name || 'Khách vãng lai'}</span>
                     </span>
                     <span class="text-[#D4C5B9]">•</span>
                     <span class="inline-flex items-center gap-1 font-semibold ${isCash ? 'text-[#D35400]' : 'text-[#2E7D6D]'} shrink-0">
                       <i data-lucide="${isCash ? 'banknote' : 'qr-code'}" class="w-3 h-3"></i>
-                      ${r.payment_method || 'Chuyển khoản'}
+                      ${item.payment_method || 'Chuyển khoản'}
                     </span>
                   </div>
                   <div class="flex items-center gap-1.5 ml-auto">
-                    ${(r.raw_phone || r.customer_phone) ? `
-                      <button type="button" onclick="openCustomerNoteModal('${r.raw_phone || r.customer_phone}', '${(r.customer_name || 'Khách hàng').replace(/'/g, "\\'")}')" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#FFF0EB] hover:bg-[#FCDFD7] text-[#E58A7B] text-[10px] font-bold border border-[#FCDFD7] transition cursor-pointer active:scale-95" title="Thêm / sửa ghi chú sở thích của khách">
+                    ${(item.raw_phone || item.customer_phone) ? `
+                      <button type="button" onclick="openCustomerNoteModal('${item.raw_phone || item.customer_phone}', '${(item.customer_name || 'Khách hàng').replace(/'/g, "\'")}')" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#FFF0EB] hover:bg-[#FCDFD7] text-[#E58A7B] text-[10px] font-bold border border-[#FCDFD7] transition cursor-pointer active:scale-95" title="Thêm / sửa ghi chú sở thích của khách">
                         <i data-lucide="edit-3" class="w-3 h-3"></i> Ghi chú
                       </button>
                     ` : ''}
-                    <span class="text-[10px] text-[#A39696] font-mono shrink-0">${r.receipt_id}</span>
+                    <span class="text-[10px] text-[#A39696] font-mono shrink-0">${item.receipt_id}</span>
                   </div>
                 </div>
               </div>
@@ -207,8 +238,8 @@ function loadStaffHistoryList(targetDate) {
     html += `</div>`;
   });
 
-    container.classList.remove('history-list-anim');
-  void container.offsetWidth; // Trigger reflow
+  container.classList.remove('history-list-anim');
+  void container.offsetWidth;
   container.classList.add('history-list-anim');
   container.innerHTML = html;
   lucide.createIcons();
