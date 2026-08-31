@@ -1526,24 +1526,12 @@ function confirmSaveReceiptFromCheckout() {
   renderExtraStaffUI();
   updatePOSStaffInfo();
 
-  // Tự động chuyển ngay về tab History và làm mới danh sách lịch sử
+  // Tự động chuyển ngay về tab History và làm mới toàn bộ dữ liệu
   if (typeof showView === 'function') {
     showView('history');
   }
-  if (typeof loadHistoryView === 'function') {
-    loadHistoryView();
-  }
-  if (typeof loadAdminReceiptsList === 'function') {
-    loadAdminReceiptsList();
-  }
-  if (typeof loadStaffHistoryList === 'function') {
-    loadStaffHistoryList();
-  }
-  if (typeof loadAdminHomeStats === 'function') {
-    loadAdminHomeStats();
-  }
-  if (typeof loadKTVHomeStats === 'function') {
-    loadKTVHomeStats();
+  if (typeof refreshAllActiveViews === 'function') {
+    refreshAllActiveViews();
   }
 }
 

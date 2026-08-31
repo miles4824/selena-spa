@@ -50,7 +50,7 @@ function parseBirthMonth(val) {
   return 0;
 }
 
-const APP_VERSION = 'v0.1.5.7';
+const APP_VERSION = 'v0.1.5.8';
 // =============================================================
 // SELENA SPA - GLOBAL CONFIG & CONSTANTS
 // =============================================================
@@ -645,4 +645,27 @@ function getReceiptSortTimestamp(r) {
   let dt = new Date(isoStr);
   let timeVal = dt.getTime();
   return isNaN(timeVal) ? 0 : timeVal;
+}
+
+
+// Hàm làm mới toàn diện mọi giao diện cho cả Admin và KTV ngay lập tức
+function refreshAllActiveViews() {
+  try {
+    const isOwner = currentUser ? isUserOwner(currentUser) : false;
+    if (isOwner) {
+      if (typeof loadAdminDashboard === 'function') loadAdminDashboard();
+      if (typeof loadAdminReceiptsList === 'function') loadAdminReceiptsList();
+      if (typeof loadAdminExpensesList === 'function') loadAdminExpensesList();
+      if (typeof loadAdminUsersList === 'function') loadAdminUsersList();
+      if (typeof loadAdminCustomersList === 'function') loadAdminCustomersList();
+    } else {
+      if (typeof loadKTVHomeStats === 'function') loadKTVHomeStats();
+      if (typeof loadStaffHistoryList === 'function') loadStaffHistoryList();
+      if (typeof loadStaffPayrollStats === 'function') loadStaffPayrollStats();
+    }
+    if (typeof renderAnnouncement === 'function') renderAnnouncement();
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+  } catch(e) {
+    console.warn('Lỗi refreshAllActiveViews:', e);
+  }
 }

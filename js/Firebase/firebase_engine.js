@@ -74,22 +74,8 @@ function setupRealtimeListeners() {
       const list = Object.values(data);
       list.sort((a, b) => (typeof getReceiptSortTimestamp === 'function' ? (getReceiptSortTimestamp(b) - getReceiptSortTimestamp(a)) : ((b.created_at || '').localeCompare(a.created_at || ''))));
       setStored('receipts', list);
-      
-      // Tự động làm mới Lịch sử & Thống kê doanh thu cho cả Admin & Staff ngay tức khắc
-      if (typeof loadHistoryView === 'function') {
-        loadHistoryView();
-      }
-      if (typeof loadAdminReceiptsList === 'function') {
-        loadAdminReceiptsList();
-      }
-      if (typeof loadStaffHistoryList === 'function') {
-        loadStaffHistoryList();
-      }
-      if (typeof loadAdminHomeStats === 'function') {
-        loadAdminHomeStats();
-      }
-      if (typeof loadKTVHomeStats === 'function') {
-        loadKTVHomeStats();
+      if (typeof refreshAllActiveViews === 'function') {
+        refreshAllActiveViews();
       }
     }
   });
@@ -402,9 +388,9 @@ setInterval(async () => {
         const oldRecs = getStored('receipts', []);
         if (list.length !== oldRecs.length || (list[0] && oldRecs[0] && list[0].receipt_id !== oldRecs[0].receipt_id)) {
           setStored('receipts', list);
-          if (typeof loadHistoryView === 'function') loadHistoryView();
-          if (typeof loadAdminHomeStats === 'function') loadAdminHomeStats();
-          if (typeof loadKTVHomeStats === 'function') loadKTVHomeStats();
+          if (typeof refreshAllActiveViews === 'function') {
+            refreshAllActiveViews();
+          }
         }
       }
     }

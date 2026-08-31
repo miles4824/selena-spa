@@ -224,3 +224,13 @@ window.addEventListener('DOMContentLoaded', async () => {
   refreshDataFromGoogleSheets();
   lucide.createIcons();
 });
+
+
+// Lắng nghe sự kiện đồng bộ siêu tốc giữa các tab trên cùng thiết bị (0.001s)
+window.addEventListener('storage', (e) => {
+  if (e.key === 'selena_receipts' || e.key === 'receipts' || e.key === 'selena_customers') {
+    if (typeof refreshAllActiveViews === 'function') {
+      refreshAllActiveViews();
+    }
+  }
+});
