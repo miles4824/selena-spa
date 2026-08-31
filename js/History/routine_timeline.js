@@ -102,14 +102,17 @@ function loadStaffHistoryList(targetDate) {
                      (myNameClean && String(r.staff_1_name || '').toLowerCase().includes(myNameClean));
         myComm = isS1 ? ((r.staff_1_comm !== undefined && r.staff_1_comm !== null && Number(r.staff_1_comm) > 0) ? Number(r.staff_1_comm) : (Number(r.commission_amount) || 0)) : (Number(r.staff_2_comm) || 0);
         myTip = isS1 ? (Number(r.staff_1_tip) || 0) : (Number(r.staff_2_tip) || 0);
-
-        // Nếu hoa hồng = 0 do chưa tính, tự động tính theo % của KTV
-        if (myComm === 0 && Number(r.price) > 0) {
-          const rate = (currentUser && Number(currentUser.commission_rate) > 0) ? Number(currentUser.commission_rate) : 10;
-          const isMulti = Boolean(r.has_staff_2 || (r.staff_names && r.staff_names.includes(',')));
-          myComm = Math.round(Number(r.price) * (rate / 100) * (isMulti ? 0.5 : 1));
-        }
       }
+
+      // TỰ ĐỘNG TÍNH HOA HỒNG CHUẨN XÁC NẾU CHƯA CÓ (TUYỆT ĐỐI KHÔNG BỊ 0đ)
+      if (myComm === 0 && Number(r.price) > 0) {
+        const users = typeof getSortedUsersList === 'function' ? getSortedUsersList() : (typeof DEFAULT_USERS !== 'undefined' ? DEFAULT_USERS : []);
+        const matchedU = users.find(u => (staffPhone && normalizePhone(u.phone) === staffPhone) || (staffCode && String(u.staff_id || '').trim() === staffCode) || (myNameClean && u.full_name && u.full_name.toLowerCase().includes(myNameClean)));
+        const rate = (matchedU && parsePercentage(matchedU.commission_rate) > 0) ? parsePercentage(matchedU.commission_rate) : (parsePercentage(currentUser?.commission_rate) || 10);
+        const isMulti = Boolean(r.has_staff_2 || (r.staff_names && r.staff_names.includes(',')) || (r.staffs && r.staffs.length > 1));
+        myComm = Math.round(Number(r.price) * (rate / 100) * (isMulti ? 0.5 : 1));
+      }
+
       return {
         receipt_id: r.receipt_id,
         date: r.date,
