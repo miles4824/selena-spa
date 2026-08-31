@@ -239,7 +239,7 @@ function loadStaffHistoryList(targetDate) {
 
                 <div class="flex items-center justify-between gap-1.5 text-[11px] text-[#7E7272] flex-wrap">
                   <div class="flex items-center gap-1.5 min-w-0">
-                    <button type="button" onclick="openCustomerNoteModal('${item.customer_phone || item.raw_phone || ''}', '${item.customer_name || 'Khách vãng lai'}')" class="inline-flex items-center gap-1 truncate text-[#2D2424] font-medium hover:text-[#E58A7B] cursor-pointer transition group" title="Bấm để sửa ghi chú & sở thích khách hàng">
+                    <button type="button" onclick="openStaffCustomerNoteModal('${item.customer_phone || item.raw_phone || ''}', '${item.customer_name || 'Khách vãng lai'}')" class="inline-flex items-center gap-1 truncate text-[#2D2424] font-medium hover:text-[#E58A7B] cursor-pointer transition group" title="Bấm để sửa ghi chú & sở thích khách hàng">
                       <i data-lucide="user" class="w-3 h-3 text-[#A39696] group-hover:text-[#E58A7B] shrink-0"></i>
                       <span class="truncate font-semibold text-[#2D2424] group-hover:text-[#E58A7B] underline decoration-dotted underline-offset-2">${item.customer_name || 'Khách vãng lai'}</span>
                       <i data-lucide="edit-3" class="w-2.5 h-2.5 text-[#E58A7B] shrink-0 ml-0.5 opacity-80 group-hover:opacity-100"></i>
@@ -274,23 +274,23 @@ function loadStaffHistoryList(targetDate) {
 
 // =============================================================
 // =============================================================
-// MODAL GHI CHÚ KHÁCH HÀNG (DÀNH CHO KTV & CHỦ TIỆM SAU CA)
+// COMPONENT: MODAL GHI CHÚ SỞ THÍCH KHÁCH HÀNG (DÀNH RIÊNG CHO KTV)
+// Quy tắc: Khách ĐÃ CÓ tháng sinh -> ẨN Ô CHỌN THÁNG VĨNH VIỄN
 // =============================================================
-async function openCustomerNoteModal(phone, name) {
-  const modal = document.getElementById('modal-customer-note');
+async function openStaffCustomerNoteModal(phone, name) {
+  const modal = document.getElementById('modal-staff-customer-note');
   if (!modal) return;
 
   const rawPhone = normalizePhone(phone);
-  const isOwner = typeof isUserOwner === 'function' ? isUserOwner(currentUser) : false;
 
-  document.getElementById('modal-note-cust-raw-phone').value = rawPhone;
-  document.getElementById('modal-note-cust-name').innerText = name || 'Khách Hàng';
+  document.getElementById('modal-staff-note-raw-phone').value = rawPhone;
+  document.getElementById('modal-staff-note-name').innerText = name || 'Khách Hàng';
   
-  const monthSelect = document.getElementById('modal-note-birth-month');
-  const monthContainer = document.getElementById('modal-note-birth-month-container');
-  const noteInput = document.getElementById('modal-note-content');
-  const phoneEl = document.getElementById('modal-note-cust-phone');
-  const maskedP = maskPhoneNumber(rawPhone, isOwner);
+  const monthSelect = document.getElementById('modal-staff-note-birth-month');
+  const monthContainer = document.getElementById('modal-staff-note-birth-month-container');
+  const noteInput = document.getElementById('modal-staff-note-content');
+  const phoneEl = document.getElementById('modal-staff-note-phone');
+  const maskedP = maskPhoneNumber(rawPhone, false);
 
   // 1. Tìm thông tin trong bộ nhớ (từ customers và receipts)
   const allCusts = typeof getAllAvailableCustomers === 'function' ? getAllAvailableCustomers() : getStored('customers', []);
@@ -302,14 +302,10 @@ async function openCustomerNoteModal(phone, name) {
   let initialMonth = (cust && cust.birth_month) ? cust.birth_month : (cust && cust.birthday ? parseBirthMonth(cust.birthday) : 0);
   let initialNotes = (cust && cust.notes) ? cust.notes : '';
 
-  // QUY TẮC BẢO MẬT: Khách đã có tháng sinh thì Staff BỊ ẨN Ô CHỌN THÁNG (Chỉ Chủ tiệm mới thấy & sửa được)
+  // QUY TẮC: Khách đã có tháng sinh -> ẨN Ô CHỌN THÁNG ĐỐI VỚI KTV
   if (initialMonth && initialMonth >= 1 && initialMonth <= 12) {
     if (phoneEl) phoneEl.innerText = `${maskedP} • Sinh nhật: Tháng ${initialMonth}`;
-    if (!isOwner) {
-      if (monthContainer) monthContainer.classList.add('hidden');
-    } else {
-      if (monthContainer) monthContainer.classList.remove('hidden');
-    }
+    if (monthContainer) monthContainer.classList.add('hidden');
   } else {
     if (phoneEl) phoneEl.innerText = maskedP;
     if (monthContainer) monthContainer.classList.remove('hidden');
@@ -336,11 +332,7 @@ async function openCustomerNoteModal(phone, name) {
         
         if (liveMonth && liveMonth >= 1 && liveMonth <= 12) {
           if (phoneEl) phoneEl.innerText = `${maskedP} • Sinh nhật: Tháng ${liveMonth}`;
-          if (!isOwner) {
-            if (monthContainer) monthContainer.classList.add('hidden');
-          } else {
-            if (monthContainer) monthContainer.classList.remove('hidden');
-          }
+          if (monthContainer) monthContainer.classList.add('hidden');
         } else {
           if (monthContainer) monthContainer.classList.remove('hidden');
         }
@@ -366,16 +358,16 @@ async function openCustomerNoteModal(phone, name) {
   }
 }
 
-function closeCustomerNoteModal() {
-  document.getElementById('modal-customer-note')?.classList.add('hidden');
+function closeStaffCustomerNoteModal() {
+  document.getElementById('modal-staff-customer-note')?.classList.add('hidden');
 }
 
-function handleSaveCustomerNote(e) {
+function handleSaveStaffCustomerNote(e) {
   e.preventDefault();
-  const rawPhone = document.getElementById('modal-note-cust-raw-phone')?.value;
-  const name = document.getElementById('modal-note-cust-name')?.innerText;
-  const birthMonth = document.getElementById('modal-note-birth-month')?.value;
-  const notes = document.getElementById('modal-note-content')?.value.trim();
+  const rawPhone = document.getElementById('modal-staff-note-raw-phone')?.value;
+  const name = document.getElementById('modal-staff-note-name')?.innerText;
+  const birthMonth = document.getElementById('modal-staff-note-birth-month')?.value;
+  const notes = document.getElementById('modal-staff-note-content')?.value.trim();
 
   if (!rawPhone) {
     alert('Không tìm thấy số điện thoại khách!');
@@ -390,8 +382,10 @@ function handleSaveCustomerNote(e) {
   customers.forEach(c => {
     if (normalizePhone(c.phone_number || c.raw_phone) === rawPhone) {
       c.notes = notes;
-      c.birth_month = bMonthNum;
-      c.birthday = bMonthNum ? bMonthNum : '';
+      if (bMonthNum > 0 && (!c.birth_month || Number(c.birth_month) === 0)) {
+        c.birth_month = bMonthNum;
+        c.birthday = bMonthNum;
+      }
       found = true;
     }
   });
@@ -426,6 +420,6 @@ function handleSaveCustomerNote(e) {
     notes: notes
   });
 
-  closeCustomerNoteModal();
-  alert('✅ Đã lưu ghi chú và tháng sinh khách hàng thành công!');
+  closeStaffCustomerNoteModal();
+  alert('✅ Đã lưu ghi chú sở thích khách hàng thành công!');
 }
