@@ -31,7 +31,7 @@ function loadStaffHistoryList(targetDate) {
   const myUserObj = users.find(u => (staffPhone && normalizePhone(u.phone) === staffPhone) || (staffCode && String(u.staff_id || '').trim() === staffCode) || (myNameClean && u.full_name && u.full_name.toLowerCase().includes(myNameClean))) || currentUser;
   const myCommRate = (myUserObj && parsePercentage(myUserObj.commission_rate) > 0) ? parsePercentage(myUserObj.commission_rate) : 10;
 
-  // 1. ĐỌC TỪ TB_PAYROLL_LOGS NẾU CÓ
+  // 1. ĐỌC TỪ TB_PAYROLL_LOGS NẾU CÓ DỮ LIỆU
   const payrollLogs = getStored('payroll_logs', []);
   let myLogs = payrollLogs.filter(p => {
     const pPhone = normalizePhone(p.staff_phone);
@@ -42,7 +42,7 @@ function loadStaffHistoryList(targetDate) {
            (myNameClean && (pName.includes(myNameClean) || myNameClean.includes(pName)));
   });
 
-  // 2. NẾU TB_PAYROLL_LOGS CHƯA CÓ -> TỰ ĐỘNG TẠO TỪ TB_RECEIPTS KHÔNG ĐỂ TRẮNG MÀN HÌNH
+  // 2. NẾU TB_PAYROLL_LOGS CHƯA CÓ -> TRÍCH XUẤT ĐẦY ĐỦ TỪ TB_RECEIPTS
   if (myLogs.length === 0) {
     const receipts = getStored('receipts', []);
     receipts.forEach(r => {
@@ -59,6 +59,8 @@ function loadStaffHistoryList(targetDate) {
       const s2P = normalizePhone(r.staff_2_user_id || r.staff_2_phone);
 
       const isMulti = Boolean(r.has_staff_2 || sNames.includes(',') || (s2N && s2N !== '-'));
+      const isS1 = (s1P && s1P === staffPhone) || (myNameClean && (s1N.includes(myNameClean) || (!s2N.includes(myNameClean) && sNames.includes(myNameClean))));
+      const isS2 = (s2P && s2P === staffPhone) || (myNameClean && s2N.includes(myNameClean));
 
       if (r.staffs && Array.isArray(r.staffs) && r.staffs.length > 0) {
         const entry = r.staffs.find(s => normalizePhone(s.phone) === staffPhone || (staffCode && String(s.staff_id || '').trim() === staffCode) || (myNameClean && String(s.name || '').toLowerCase().includes(myNameClean)));
@@ -70,13 +72,13 @@ function loadStaffHistoryList(targetDate) {
           myPct = entry.pct ? `${entry.pct}%` : (isMulti ? '50%' : '100%');
         }
       } else {
-        if (s1P === staffPhone || (myNameClean && (s1N.includes(myNameClean) || sNames.includes(myNameClean)))) {
+        if (isS1) {
           isMyTour = true;
           myComm = Number(r.staff_1_comm) || 0;
           myTip = Number(r.staff_1_tip) || 0;
           myRole = 'KTV 1 (Chính)';
           myPct = isMulti ? '50%' : '100%';
-        } else if (s2P === staffPhone || (myNameClean && s2N.includes(myNameClean))) {
+        } else if (isS2) {
           isMyTour = true;
           myComm = Number(r.staff_2_comm) || 0;
           myTip = Number(r.staff_2_tip) || 0;
@@ -87,9 +89,18 @@ function loadStaffHistoryList(targetDate) {
 
       if (isMyTour) {
         const price = Number(r.price) || 0;
+        const totalTipOnReceipt = Number(r.tip_amount) || 0;
+
+        // Tính lại hoa hồng nếu bị 0
         if (myComm === 0 && price > 0) {
           myComm = Math.round(price * (myCommRate / 100) * (isMulti ? 0.5 : 1));
         }
+
+        // Tính lại tiền tip nếu bị 0 nhưng hóa đơn có tip
+        if (myTip === 0 && totalTipOnReceipt > 0) {
+          myTip = Math.round(totalTipOnReceipt * (isMulti ? 0.5 : 1));
+        }
+
         myLogs.push({
           log_id: r.receipt_id + '_LOG',
           receipt_id: r.receipt_id,
