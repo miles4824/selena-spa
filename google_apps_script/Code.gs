@@ -1,3 +1,10 @@
+function parseCurrency(val) {
+  if (!val) return 0;
+  if (typeof val === 'number') return isNaN(val) ? 0 : val;
+  let s = String(val).replace(/[^0-9]/g, '');
+  return s ? (parseInt(s, 10) || 0) : 0;
+}
+
 function formatTimeVal(val) {
   if (!val) return '12:00';
   if (val instanceof Date) {
