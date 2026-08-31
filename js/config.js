@@ -50,7 +50,7 @@ function parseBirthMonth(val) {
   return 0;
 }
 
-const APP_VERSION = 'v0.1.5.9';
+const APP_VERSION = 'v0.1.6.0';
 // =============================================================
 // SELENA SPA - GLOBAL CONFIG & CONSTANTS
 // =============================================================
@@ -669,3 +669,64 @@ function refreshAllActiveViews() {
     console.warn('Lỗi refreshAllActiveViews:', e);
   }
 }
+
+
+// =============================================================
+// THÔNG BÁO TOAST SANG TRỌNG (THAY THẾ HOÀN TOÀN POPUP ALERT THÔ CỦA TRÌNH DUYỆT)
+// =============================================================
+function showToast(message, type = 'success') {
+  try {
+    let toastContainer = document.getElementById('selena-toast-container');
+    if (!toastContainer) {
+      toastContainer = document.createElement('div');
+      toastContainer.id = 'selena-toast-container';
+      toastContainer.className = 'fixed top-5 left-1/2 -translate-x-1/2 z-[99999] flex flex-col gap-2.5 pointer-events-none w-[92%] max-w-sm';
+      document.body.appendChild(toastContainer);
+    }
+
+    const toast = document.createElement('div');
+    const isSuccess = type === 'success' || !type;
+    const isWarn = type === 'warn' || type === 'warning';
+    const bgClass = isSuccess ? 'bg-[#2E7D6D] text-white shadow-[#2E7D6D]/30' : (isWarn ? 'bg-[#D97706] text-white shadow-[#D97706]/30' : 'bg-[#2D2424] text-white shadow-black/30');
+    const icon = isSuccess ? 'check-circle-2' : (isWarn ? 'alert-triangle' : 'info');
+
+    toast.className = `${bgClass} shadow-xl rounded-2xl p-3.5 flex items-start gap-2.5 pointer-events-auto transition-all duration-300 transform -translate-y-5 opacity-0 border border-white/15 backdrop-blur-lg text-xs`;
+    
+    // Tách dòng thông báo đẹp mắt
+    const cleanLines = String(message).split('\n').filter(Boolean);
+    const contentHtml = cleanLines.map((line, idx) => {
+      if (idx === 0) {
+        return `<div class="font-extrabold text-sm text-white leading-snug">${line}</div>`;
+      }
+      return `<div class="text-[11px] text-white/90 mt-0.5 leading-relaxed">${line}</div>`;
+    }).join('');
+
+    toast.innerHTML = `
+      <div class="p-1 rounded-xl bg-white/20 shrink-0 mt-0.5 flex items-center justify-center">
+        <i data-lucide="${icon}" class="w-4 h-4 text-white"></i>
+      </div>
+      <div class="flex-1 min-w-0">${contentHtml}</div>
+      <button type="button" class="text-white/70 hover:text-white shrink-0 ml-1 p-0.5 text-sm cursor-pointer" onclick="this.parentElement.remove()">✕</button>
+    `;
+
+    toastContainer.appendChild(toast);
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+
+    requestAnimationFrame(() => {
+      toast.classList.remove('-translate-y-5', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+    });
+
+    setTimeout(() => {
+      toast.classList.add('-translate-y-5', 'opacity-0');
+      setTimeout(() => toast.remove(), 300);
+    }, 3800);
+  } catch(e) {
+    console.log('Toast log:', message);
+  }
+}
+
+// Thay thế hoàn toàn alert mặc định của trình duyệt để không bao giờ hiện popup khó chịu
+window.alert = function(msg) {
+  showToast(msg, 'success');
+};
