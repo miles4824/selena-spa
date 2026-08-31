@@ -1462,7 +1462,7 @@ function confirmSaveReceiptFromCheckout() {
     payment_method: checkoutPaymentMethod,
     is_voucher_used: currentLiveSession.use_voucher,
     date: currentLiveSession.date,
-    created_at: currentLiveSession.date + ' ' + currentLiveSession.start_time
+    created_at: currentLiveSession.date.replace(/-/g, '/') + ' - ' + currentLiveSession.start_time
   };
 
   const receipts = getStored('receipts', []);
@@ -1532,6 +1532,18 @@ function confirmSaveReceiptFromCheckout() {
   }
   if (typeof loadHistoryView === 'function') {
     loadHistoryView();
+  }
+  if (typeof loadAdminReceiptsList === 'function') {
+    loadAdminReceiptsList();
+  }
+  if (typeof loadStaffHistoryList === 'function') {
+    loadStaffHistoryList();
+  }
+  if (typeof loadAdminHomeStats === 'function') {
+    loadAdminHomeStats();
+  }
+  if (typeof loadKTVHomeStats === 'function') {
+    loadKTVHomeStats();
   }
 }
 

@@ -72,7 +72,7 @@ function setupRealtimeListeners() {
     const data = snapshot.val();
     if (data) {
       const list = Object.values(data);
-      list.sort((a, b) => (b.created_at || '').localeCompare(a.created_at || ''));
+      list.sort((a, b) => (typeof getReceiptSortTimestamp === 'function' ? (getReceiptSortTimestamp(b) - getReceiptSortTimestamp(a)) : ((b.created_at || '').localeCompare(a.created_at || ''))));
       setStored('receipts', list);
       
       // Tự động làm mới Lịch sử & Thống kê doanh thu cho cả Admin & Staff ngay tức khắc
@@ -398,7 +398,7 @@ setInterval(async () => {
       const recData = await resRec.json();
       if (recData) {
         const list = Object.values(recData);
-        list.sort((a, b) => (b.created_at || '').localeCompare(a.created_at || ''));
+        list.sort((a, b) => (typeof getReceiptSortTimestamp === 'function' ? (getReceiptSortTimestamp(b) - getReceiptSortTimestamp(a)) : ((b.created_at || '').localeCompare(a.created_at || ''))));
         const oldRecs = getStored('receipts', []);
         if (list.length !== oldRecs.length || (list[0] && oldRecs[0] && list[0].receipt_id !== oldRecs[0].receipt_id)) {
           setStored('receipts', list);

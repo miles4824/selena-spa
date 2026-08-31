@@ -50,7 +50,7 @@ function parseBirthMonth(val) {
   return 0;
 }
 
-const APP_VERSION = 'v0.1.5.6';
+const APP_VERSION = 'v0.1.5.7';
 // =============================================================
 // SELENA SPA - GLOBAL CONFIG & CONSTANTS
 // =============================================================
@@ -615,3 +615,34 @@ function renderDateStripComponent(containerId, activeDateStr, onDateClickCallbac
 }
 
 
+
+
+// Hàm sắp xếp hóa đơn chuẩn xác 100% theo thời gian thực (hỗ trợ mọi định dạng ngày giờ)
+function getReceiptSortTimestamp(r) {
+  if (!r) return 0;
+  if (r.timestamp && !isNaN(Number(r.timestamp))) return Number(r.timestamp);
+  
+  let dStr = (r.date || '').replace(/\//g, '-');
+  let tStr = (r.start_time || r.time || '00:00');
+  
+  if (r.created_at) {
+    let clean = String(r.created_at).replace(/\//g, '-').replace(' - ', ' ').trim();
+    let parts = clean.split(' ');
+    if (parts[0]) dStr = parts[0];
+    if (parts[1]) tStr = parts[1];
+  }
+  
+  if (dStr.includes('-')) {
+    let dParts = dStr.split('-');
+    if (dParts[0].length === 2 && dParts[2]?.length === 4) {
+      // Format DD-MM-YYYY -> YYYY-MM-DD
+      dStr = `${dParts[2]}-${dParts[1]}-${dParts[0]}`;
+    }
+  }
+  
+  let timeOnly = tStr.split(':').slice(0, 2).join(':');
+  let isoStr = `${dStr}T${timeOnly.length === 5 ? timeOnly : '00:00'}:00`;
+  let dt = new Date(isoStr);
+  let timeVal = dt.getTime();
+  return isNaN(timeVal) ? 0 : timeVal;
+}
