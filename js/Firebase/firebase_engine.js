@@ -94,6 +94,36 @@ function setupRealtimeListeners() {
     }
   });
 
+  // Lắng nghe Phiên Tour đang chạy (Bàn giao ca Realtime)
+  fbDb.ref('live_sessions/active').on('value', snapshot => {
+    const session = snapshot.val();
+    const myPhone = (currentUser && currentUser.phone) ? normalizePhone(currentUser.phone) : '';
+    
+    if (session && session.active_staff_phone) {
+      if (normalizePhone(session.active_staff_phone) === myPhone) {
+        currentLiveSession = session;
+        localStorage.setItem('selena_active_live_session', JSON.stringify(session));
+        if (typeof renderLiveSessionUI === 'function') {
+          renderLiveSessionUI();
+        }
+        if (typeof showView === 'function') {
+          showView('add');
+        }
+        console.log('⚡ [Firebase Realtime] Bạn vừa nhận bàn giao tour thành công:', session.service_name);
+      } else if (currentLiveSession && currentLiveSession.start_timestamp === session.start_timestamp && myPhone !== normalizePhone(session.active_staff_phone)) {
+        if (typeof liveTimerInterval !== 'undefined') clearInterval(liveTimerInterval);
+        currentLiveSession = null;
+        localStorage.removeItem('selena_active_live_session');
+        if (typeof renderLiveSessionUI === 'function') renderLiveSessionUI();
+      }
+    } else if (!session && currentLiveSession) {
+      if (typeof liveTimerInterval !== 'undefined') clearInterval(liveTimerInterval);
+      currentLiveSession = null;
+      localStorage.removeItem('selena_active_live_session');
+      if (typeof renderLiveSessionUI === 'function') renderLiveSessionUI();
+    }
+  });
+
   // Lắng nghe Menu dịch vụ
   fbDb.ref('menu').on('value', snapshot => {
     const data = snapshot.val();
@@ -280,6 +310,21 @@ setInterval(async () => {
           if (elAdmin) elAdmin.innerText = cleanStr;
           if (typeof renderAnnouncement === 'function') renderAnnouncement();
           console.log('⚡ [Auto-Sync Heartbeat] Đã tự động cập nhật thông báo:', cleanStr);
+        }
+      }
+    }
+
+    // Heartbeat cho Live Sessions
+    const resSess = await fetch('https://selena-spa-6a852-default-rtdb.asia-southeast1.firebasedatabase.app/live_sessions/active.json');
+    if (resSess.ok) {
+      const s = await resSess.json();
+      const myPhone = (currentUser && currentUser.phone) ? normalizePhone(currentUser.phone) : '';
+      if (s && s.active_staff_phone && normalizePhone(s.active_staff_phone) === myPhone) {
+        if (!currentLiveSession || currentLiveSession.start_timestamp !== s.start_timestamp) {
+          currentLiveSession = s;
+          localStorage.setItem('selena_active_live_session', JSON.stringify(s));
+          if (typeof renderLiveSessionUI === 'function') renderLiveSessionUI();
+          if (typeof showView === 'function') showView('add');
         }
       }
     }
