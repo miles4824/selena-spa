@@ -151,12 +151,14 @@ function setupRealtimeListeners() {
           showView('add');
         }
         console.log('⚡ [Firebase Realtime] Đang phục vụ tour:', mySession.service_name);
-      } else if (currentLiveSession && currentLiveSession.session_id) {
-        if (!sessionsObj[currentLiveSession.session_id]) {
+      } else {
+        // Nếu KTV / Admin không còn nằm trong bất kỳ tour nào đang chạy (Ví dụ: vừa bị xóa ra khỏi ca, hoặc ca đã kết thúc)
+        if (currentLiveSession) {
           if (typeof liveTimerInterval !== 'undefined') clearInterval(liveTimerInterval);
           currentLiveSession = null;
           localStorage.removeItem('selena_active_live_session');
           if (typeof renderLiveSessionUI === 'function') renderLiveSessionUI();
+          console.log('⚡ [Firebase Realtime] Đã thoát khỏi ca tour (không còn trong danh sách KTV)');
         }
       }
     } else if (currentLiveSession) {
@@ -378,21 +380,39 @@ setInterval(async () => {
       }
     }
 
-    // Heartbeat cho Live Sessions
-    const resSess = await fetch('https://selena-spa-6a852-default-rtdb.asia-southeast1.firebasedatabase.app/live_sessions/active.json');
+    // Heartbeat cho Live Sessions (Đa Tour & Phân Luồng Tức Thì)
+    const resSess = await fetch('https://selena-spa-6a852-default-rtdb.asia-southeast1.firebasedatabase.app/live_sessions.json');
     if (resSess.ok) {
-      const s = await resSess.json();
+      const sessionsObj = await resSess.json();
       const myPhone = (currentUser && currentUser.phone) ? normalizePhone(currentUser.phone) : '';
-      if (s && s.active_staff_phone && normalizePhone(s.active_staff_phone) === myPhone) {
-        const sId = String(s.session_id || s.start_timestamp || '');
-        if (!dismissedSessionIds.has(sId)) {
-          if (!currentLiveSession || currentLiveSession.start_timestamp !== s.start_timestamp) {
-            currentLiveSession = s;
-            localStorage.setItem('selena_active_live_session', JSON.stringify(s));
+      if (sessionsObj && typeof sessionsObj === 'object') {
+        const allSessions = Object.values(sessionsObj).filter(Boolean);
+        const mySession = allSessions.find(s => {
+          const sId = String(s.session_id || s.start_timestamp || '');
+          if (dismissedSessionIds.has(sId)) return false;
+          if (s.active_staff_phone && normalizePhone(s.active_staff_phone) === myPhone) return true;
+          if (s.staffs && Array.isArray(s.staffs) && s.staffs.some(st => normalizePhone(st.phone) === myPhone)) return true;
+          return false;
+        });
+
+        if (mySession) {
+          if (!currentLiveSession || currentLiveSession.session_id !== mySession.session_id) {
+            currentLiveSession = mySession;
+            localStorage.setItem('selena_active_live_session', JSON.stringify(mySession));
             if (typeof renderLiveSessionUI === 'function') renderLiveSessionUI();
             if (typeof showView === 'function') showView('add');
           }
+        } else if (currentLiveSession) {
+          if (typeof liveTimerInterval !== 'undefined') clearInterval(liveTimerInterval);
+          currentLiveSession = null;
+          localStorage.removeItem('selena_active_live_session');
+          if (typeof renderLiveSessionUI === 'function') renderLiveSessionUI();
         }
+      } else if (currentLiveSession) {
+        if (typeof liveTimerInterval !== 'undefined') clearInterval(liveTimerInterval);
+        currentLiveSession = null;
+        localStorage.removeItem('selena_active_live_session');
+        if (typeof renderLiveSessionUI === 'function') renderLiveSessionUI();
       }
     }
 
