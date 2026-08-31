@@ -1,3 +1,46 @@
+
+// =============================================================
+// TRẠNG THÁI NHÂN LỰC THỜI GIAN THỰC & DROPDOWN THÔNG MINH
+// =============================================================
+function getBusyStaffPhonesMap() {
+  const busyMap = {};
+  const activeSessions = getStored('live_sessions_cache', []);
+  activeSessions.forEach(sess => {
+    if (sess.active_staff_phone) {
+      busyMap[normalizePhone(sess.active_staff_phone)] = sess;
+    }
+    if (sess.staffs && Array.isArray(sess.staffs)) {
+      sess.staffs.forEach(st => {
+        if (st.phone) {
+          busyMap[normalizePhone(st.phone)] = sess;
+        }
+      });
+    }
+  });
+  return busyMap;
+}
+
+function updateStaffAvailabilityHeader() {
+  const subEl = document.getElementById('pos-header-subtitle');
+  if (!subEl) return;
+
+  const users = getSortedUsersList();
+  const busyMap = getBusyStaffPhonesMap();
+  const totalStaff = users.length;
+  const busyCount = Object.keys(busyMap).filter(p => users.some(u => normalizePhone(u.phone) === p)).length;
+  const freeCount = Math.max(0, totalStaff - busyCount);
+  const freeUsers = users.filter(u => !busyMap[normalizePhone(u.phone)]);
+
+  if (busyCount === 0) {
+    subEl.innerHTML = `<span class="inline-flex items-center gap-1.5 text-xs text-[#2E7D6D] font-bold"><span class="w-2 h-2 rounded-full bg-[#2E7D6D] animate-pulse"></span> Sẵn sàng đón khách • Tất cả ${totalStaff} KTV đang rảnh</span>`;
+  } else if (freeCount > 0) {
+    const freeNames = freeUsers.map(u => u.full_name.replace('👑 ', '').replace('KTV ', '')).join(', ');
+    subEl.innerHTML = `<span class="inline-flex items-center gap-1.5 text-xs text-[#E58A7B] font-bold"><span class="w-2 h-2 rounded-full bg-[#E58A7B]"></span> ${busyCount}/${totalStaff} KTV đang bận • Còn ${freeCount} KTV rảnh (${freeNames})</span>`;
+  } else {
+    subEl.innerHTML = `<span class="inline-flex items-center gap-1.5 text-xs text-[#D97706] font-extrabold"><span class="w-2 h-2 rounded-full bg-[#D97706] animate-ping"></span> 🔴 ${totalStaff}/${totalStaff} KTV đều đang bận • Tạm hết nhân lực</span>`;
+  }
+}
+
 function parseBirthMonth(val) {
   if (!val) return 0;
   if (typeof val === 'number' && val >= 1 && val <= 12) return val;
@@ -128,13 +171,28 @@ function updatePOSStaffInfo() {
   const users = getSortedUsersList();
   const s1Select = document.getElementById('pos-staff1-select');
   const isOwner = currentUser && isUserOwner(currentUser);
+  const busyMap = getBusyStaffPhonesMap();
 
   if (s1Select) {
-    s1Select.innerHTML = users.map(u => `
-      <option value="${u.phone}" ${currentUser && normalizePhone(u.phone) === normalizePhone(currentUser.phone) ? 'selected' : ''}>
-        ${u.full_name}
-      </option>
-    `).join('');
+    const curVal = s1Select.value;
+    s1Select.innerHTML = users.map(u => {
+      const isBusy = Boolean(busyMap[normalizePhone(u.phone)]);
+      const busySess = busyMap[normalizePhone(u.phone)];
+      const statusBadge = isBusy ? ` (🔴 Bận: ${busySess?.service_name || 'Tour'})` : ' (🟢 Rảnh)';
+      const isSelected = curVal ? (normalizePhone(u.phone) === normalizePhone(curVal)) : (currentUser && normalizePhone(u.phone) === normalizePhone(currentUser.phone));
+      return `
+        <option value="${u.phone}" ${isSelected ? 'selected' : ''} ${isBusy ? 'disabled' : ''} class="${isBusy ? 'text-gray-400 bg-gray-100 font-normal' : 'text-[#2D2424] font-semibold'}">
+          ${u.full_name}${statusBadge}
+        </option>
+      `;
+    }).join('');
+
+    // Nếu người được chọn trước đó đang bận, tự động chọn người rảnh đầu tiên
+    const selectedUser = users.find(u => normalizePhone(u.phone) === normalizePhone(s1Select.value));
+    if (selectedUser && busyMap[normalizePhone(selectedUser.phone)]) {
+      const freeUser = users.find(u => !busyMap[normalizePhone(u.phone)]);
+      if (freeUser) s1Select.value = freeUser.phone;
+    }
 
     if (isOwner) {
       s1Select.disabled = false;
@@ -148,6 +206,7 @@ function updatePOSStaffInfo() {
     }
   }
 
+  updateStaffAvailabilityHeader();
   renderExtraStaffUI();
   updatePOSCalculations();
 }
@@ -161,11 +220,12 @@ function addExtraStaff() {
   const users = getSortedUsersList();
   const s1Phone = document.getElementById('pos-staff1-select')?.value || currentUser?.phone;
 
+  const busyMap = getBusyStaffPhonesMap();
   const usedPhones = [normalizePhone(s1Phone), ...extraStaffList.map(s => normalizePhone(s.phone))];
-  const available = users.filter(u => !usedPhones.includes(normalizePhone(u.phone)));
+  const available = users.filter(u => !usedPhones.includes(normalizePhone(u.phone)) && !busyMap[normalizePhone(u.phone)]);
 
   if (available.length === 0) {
-    alert('Đã thêm toàn bộ nhân viên và quản lý hiện có trong tiệm!');
+    alert('Không còn KTV nào khác đang rảnh để thêm vào tour!');
     return;
   }
 

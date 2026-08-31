@@ -118,6 +118,17 @@ function setupRealtimeListeners() {
     const sessionsObj = snapshot.val();
     const myPhone = (currentUser && currentUser.phone) ? normalizePhone(currentUser.phone) : '';
     
+    // Lưu cache toàn bộ tour đang chạy toàn tiệm
+    const allActive = sessionsObj ? Object.values(sessionsObj).filter(Boolean) : [];
+    setStored('live_sessions_cache', allActive);
+    
+    if (typeof updateStaffAvailabilityHeader === 'function') {
+      updateStaffAvailabilityHeader();
+    }
+    if (typeof updatePOSStaffInfo === 'function') {
+      updatePOSStaffInfo();
+    }
+
     if (sessionsObj) {
       const allSessions = Object.values(sessionsObj).filter(Boolean);
       // Tìm tour mà KTV hiện tại đang tham gia làm
@@ -136,13 +147,11 @@ function setupRealtimeListeners() {
         if (typeof renderLiveSessionUI === 'function') {
           renderLiveSessionUI();
         }
-        // Tự động chuyển ngay màn hình sang Tab Add để KTV thấy đồng hồ đếm giờ ngay lập tức
         if (isNewSession && typeof showView === 'function') {
           showView('add');
         }
         console.log('⚡ [Firebase Realtime] Đang phục vụ tour:', mySession.service_name);
       } else if (currentLiveSession && currentLiveSession.session_id) {
-        // Nếu tour của mình đã bị kết thúc/hủy trên máy chủ
         if (!sessionsObj[currentLiveSession.session_id]) {
           if (typeof liveTimerInterval !== 'undefined') clearInterval(liveTimerInterval);
           currentLiveSession = null;
