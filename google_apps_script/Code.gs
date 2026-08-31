@@ -8,14 +8,11 @@ function parseCurrency(val) {
 function formatTimeVal(val) {
   if (!val) return '12:00';
   if (val instanceof Date) {
-    return Utilities.formatDate(val, 'GMT+7', 'HH:mm');
+    let h = val.getHours().toString().padStart(2, '0');
+    let m = val.getMinutes().toString().padStart(2, '0');
+    return `${h}:${m}`;
   }
   let s = String(val).trim();
-  if (s.includes('GMT') || s.includes('1899')) {
-    try {
-      return Utilities.formatDate(new Date(val), 'GMT+7', 'HH:mm');
-    } catch(e) {}
-  }
   let match = s.match(/(\d{1,2}):(\d{2})/);
   if (match) return `${match[1].padStart(2, '0')}:${match[2]}`;
   return s;

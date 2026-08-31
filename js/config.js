@@ -50,7 +50,7 @@ function parseBirthMonth(val) {
   return 0;
 }
 
-const APP_VERSION = 'v0.1.8.3';
+const APP_VERSION = 'v0.1.8.4';
 // =============================================================
 // SELENA SPA - GLOBAL CONFIG & CONSTANTS
 // =============================================================
@@ -160,6 +160,12 @@ function getReceiptDurationStatus(r) {
 }
 
 function formatCleanTime(val, createdAtFallback) {
+  if (!val && !createdAtFallback) return '12:00';
+  if (val instanceof Date) {
+    let h = val.getHours().toString().padStart(2, '0');
+    let m = val.getMinutes().toString().padStart(2, '0');
+    return `${h}:${m}`;
+  }
   let s = String(val || '').trim();
   let match = s.match(/(\d{1,2}):(\d{2})/);
   if (match) {
