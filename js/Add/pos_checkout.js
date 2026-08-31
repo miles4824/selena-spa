@@ -1680,8 +1680,8 @@ async function confirmHandoverTour() {
   // Dọn dẹp phiên của KTV bàn giao
   clearInterval(liveTimerInterval);
   currentLiveSession = null;
-  localStorage.removeItem('selena_active_session_cache');
-  hideRunningSession();
+  localStorage.removeItem('selena_active_live_session');
+  renderLiveSessionUI();
   closeHandoverModal();
 
   alert(`🤝 BÀN GIAO THÀNH CÔNG!\n\nTour đã được chuyển giao cho ${targetUser.full_name} tiếp quản.\nMàn hình của bạn đã kết thúc ca này và trở về trạng thái sẵn sàng đón tour mới.`);
