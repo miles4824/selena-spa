@@ -71,107 +71,112 @@ function loadOwnerReceiptsList(targetDate) {
         </div>
       `;
     } else {
-      html += dayReceipts.map(r => {
-        const cleanTime = formatCleanTime(r.start_time || r.time);
-        const durStatus = getReceiptDurationStatus(r);
-        const isCash = r.payment_method === 'Tiền mặt';
-        const totalPaid = Number(r.total_paid) || ((Number(r.price) || 0) + (Number(r.tip_amount) || 0));
+          html += dayReceipts.map(r => {
+      const cleanTime = formatCleanTime(r.start_time || r.time);
+      const durStatus = getReceiptDurationStatus(r);
+      const isCash = r.payment_method === 'Tiền mặt';
+      const totalPaid = Number(r.total_paid) || ((Number(r.price) || 0) + (Number(r.tip_amount) || 0));
 
-        const staff1Name = r.staff_1_name || 'KTV 1';
-        const staff1Comm = Number(r.staff_1_comm || r.commission_amount || 0);
-        const staff1Tip = Number(r.staff_1_tip) || 0;
+      const payrollLogs = getStored('payroll_logs', []);
+      const logsForThisReceipt = payrollLogs.filter(p => p.receipt_id === r.receipt_id);
 
-        const staff2Name = r.staff_2_name;
-        const staff2Comm = Number(r.staff_2_comm || 0);
-        const staff2Tip = Number(r.staff_2_tip) || 0;
+      let staffListHtml = '';
 
-        const totalTip = Number(r.tip_amount) || (staff1Tip + staff2Tip);
+      if (logsForThisReceipt.length > 0) {
+        staffListHtml = logsForThisReceipt.map(p => `
+          <div class="space-y-0.5 pl-2">
+            <div class="flex justify-between items-center">
+              <span class="text-[#2D2424] font-medium">• ${p.staff_name} <span class="text-[10px] text-[#A39696]">(${p.role_in_tour || 'KTV'})</span>:</span>
+              <span class="text-[#2E7D6D] font-extrabold">+${(Number(p.commission_amount) || 0).toLocaleString('vi-VN')} đ</span>
+            </div>
+            ${Number(p.tip_amount || 0) > 0 ? `
+              <div class="flex justify-between items-center pl-3 text-[#7E7272]">
+                <span class="text-[11px] font-medium">Tip:</span>
+                <span class="text-[#E58A7B] font-extrabold text-[11px]">+${Number(p.tip_amount).toLocaleString('vi-VN')} đ</span>
+              </div>
+            ` : ''}
+          </div>
+        `).join('');
+      } else {
+        // Fallback đọc từ staff_names hoặc các cột cũ
+        let staffNamesArr = [];
+        if (r.staff_names && String(r.staff_names).trim() !== '') {
+          staffNamesArr = String(r.staff_names).split(',').map(s => s.trim()).filter(Boolean);
+        } else {
+          if (r.staff_1_name && r.staff_1_name !== '-') staffNamesArr.push(r.staff_1_name);
+          if (r.staff_2_name && r.staff_2_name !== '-') staffNamesArr.push(r.staff_2_name);
+          if (r.staff_3_name && r.staff_3_name !== '-') staffNamesArr.push(r.staff_3_name);
+        }
 
-        return `
-          <div class="flex gap-3.5 items-center">
-            <div class="text-right w-12 shrink-0 py-1">
-              <span class="text-xs font-extrabold text-[#2D2424] block font-mono leading-tight">${cleanTime}</span>
-              <span class="text-[10px] ${durStatus.colorClass} font-extrabold block leading-tight mt-0.5" title="${durStatus.title}">${durStatus.label}</span>
+        if (staffNamesArr.length === 0) staffNamesArr.push('KTV Phục vụ');
+
+        const price = Number(r.price) || 0;
+        const tipTotal = Number(r.tip_amount) || 0;
+        const defCommPerStaff = Math.round((price * 0.1) / staffNamesArr.length);
+        const defTipPerStaff = Math.round(tipTotal / staffNamesArr.length);
+
+        staffListHtml = staffNamesArr.map((sName, sIdx) => {
+          let sComm = sIdx === 0 ? (Number(r.staff_1_comm) || defCommPerStaff) : (sIdx === 1 ? (Number(r.staff_2_comm) || defCommPerStaff) : defCommPerStaff);
+          let sTip = sIdx === 0 ? (Number(r.staff_1_tip) || defTipPerStaff) : (sIdx === 1 ? (Number(r.staff_2_tip) || defTipPerStaff) : defTipPerStaff);
+          return `
+            <div class="space-y-0.5 pl-2">
+              <div class="flex justify-between items-center">
+                <span class="text-[#2D2424] font-medium">• ${sName}:</span>
+                <span class="text-[#2E7D6D] font-extrabold">+${sComm.toLocaleString('vi-VN')} đ</span>
+              </div>
+              ${sTip > 0 ? `
+                <div class="flex justify-between items-center pl-3 text-[#7E7272]">
+                  <span class="text-[11px] font-medium">Tip:</span>
+                  <span class="text-[#E58A7B] font-extrabold text-[11px]">+${sTip.toLocaleString('vi-VN')} đ</span>
+                </div>
+              ` : ''}
+            </div>
+          `;
+        }).join('');
+      }
+
+      return `
+        <div class="flex gap-3.5 items-center">
+          <div class="text-right w-12 shrink-0 py-1">
+            <span class="text-xs font-extrabold text-[#2D2424] block font-mono leading-tight">${cleanTime}</span>
+            <span class="text-[10px] ${durStatus.colorClass} font-extrabold block leading-tight mt-0.5" title="${durStatus.title}">${durStatus.label}</span>
+          </div>
+
+          <div class="bg-white rounded-[28px] border border-[#F0EAE1] shadow-[0_10px_30px_-5px_rgba(229,138,123,0.05),0_4px_12px_rgba(0,0,0,0.02)] p-3.5 flex-1 space-y-2.5 min-w-0">
+            <div class="space-y-1">
+              <div class="flex justify-between items-center gap-2">
+                <h4 class="font-bold text-[#2D2424] text-sm truncate">${r.service_name}</h4>
+                <span class="text-sm font-extrabold text-[#E58A7B] whitespace-nowrap shrink-0">${totalPaid.toLocaleString('vi-VN')} đ</span>
+              </div>
+
+              <div class="flex items-center justify-between gap-1 text-[11px] text-[#7E7272] flex-wrap">
+                <div class="flex items-center gap-1.5 min-w-0">
+                  <span class="inline-flex items-center gap-1 truncate text-[#2D2424] font-medium">
+                    <i data-lucide="user" class="w-3 h-3 text-[#A39696] shrink-0"></i>
+                    <span class="truncate">${r.customer_name || 'Khách vãng lai'}</span>
+                  </span>
+                  <span class="text-[#D4C5B9]">•</span>
+                  <span class="inline-flex items-center gap-1 font-semibold ${isCash ? 'text-[#D35400]' : 'text-[#2E7D6D]'} shrink-0">
+                    <i data-lucide="${isCash ? 'banknote' : 'qr-code'}" class="w-3 h-3"></i>
+                    ${r.payment_method || 'Chuyển khoản'}
+                  </span>
+                </div>
+                <span class="text-[10px] text-[#A39696] font-mono shrink-0 ml-auto">${r.receipt_id}</span>
+              </div>
             </div>
 
-            <div class="bg-white rounded-[28px] border border-[#F0EAE1] shadow-[0_10px_30px_-5px_rgba(229,138,123,0.05),0_4px_12px_rgba(0,0,0,0.02)] p-3.5 flex-1 space-y-2.5 min-w-0">
-              <!-- HEADER THẺ: 2 HÀNG RÕ RÀNG CHỐNG VỠ TRÊN MÀN HÌNH NHỎ -->
-              <div class="space-y-1">
-                <!-- Hàng 1: Tên Dịch Vụ + Tổng Doanh Thu Ca -->
-                <div class="flex justify-between items-center gap-2">
-                  <h4 class="font-bold text-[#2D2424] text-sm truncate">${r.service_name}</h4>
-                  <span class="text-sm font-extrabold text-[#E58A7B] whitespace-nowrap shrink-0">${totalPaid.toLocaleString('vi-VN')} đ</span>
-                </div>
-
-                <!-- Hàng 2: Khách Hàng (SVG User) + Thanh Toán (SVG) + Mã Phiếu -->
-                <div class="flex items-center justify-between gap-1 text-[11px] text-[#7E7272] flex-wrap">
-                  <div class="flex items-center gap-1.5 min-w-0">
-                    <span class="inline-flex items-center gap-1 truncate text-[#2D2424] font-medium">
-                      <i data-lucide="user" class="w-3 h-3 text-[#A39696] shrink-0"></i>
-                      <span class="truncate">${r.customer_name || 'Khách vãng lai'}</span>
-                    </span>
-                    <span class="text-[#D4C5B9]">•</span>
-                    <span class="inline-flex items-center gap-1 font-semibold ${isCash ? 'text-[#D35400]' : 'text-[#2E7D6D]'} shrink-0">
-                      <i data-lucide="${isCash ? 'banknote' : 'qr-code'}" class="w-3 h-3"></i>
-                      ${r.payment_method || 'Chuyển khoản'}
-                    </span>
-                  </div>
-                  <span class="text-[10px] text-[#A39696] font-mono shrink-0 ml-auto">${r.receipt_id}</span>
-                </div>
+            <!-- KHUNG KỸ THUẬT VIÊN HIỂN THỊ ĐỦ TẤT CẢ KTV -->
+            <div class="bg-[#FAF6F1] p-2.5 rounded-2xl border border-[#F0EAE1] space-y-1.5 text-xs">
+              <div class="font-bold text-[#7E7272] flex items-center gap-1.5 mb-1">
+                <i data-lucide="users" class="w-3.5 h-3.5 text-[#E58A7B]"></i>
+                <span>Kỹ thuật viên:</span>
               </div>
-
-              <!-- KHUNG KỸ THUẬT VIÊN XUỐNG DÒNG RÕ RÀNG & TỔNG TIP DƯỚI CÙNG -->
-              <div class="bg-[#FAF6F1] p-2.5 rounded-2xl border border-[#F0EAE1] space-y-1.5 text-xs">
-                <div class="font-bold text-[#7E7272] flex items-center gap-1.5 mb-1">
-                  <i data-lucide="users" class="w-3.5 h-3.5 text-[#E58A7B]"></i>
-                  <span>Kỹ thuật viên:</span>
-                </div>
-
-                <!-- KTV 1 -->
-                <div class="space-y-0.5 pl-2">
-                  <div class="flex justify-between items-center">
-                    <span class="text-[#2D2424] font-medium">• ${staff1Name}:</span>
-                    <span class="text-[#2E7D6D] font-extrabold">+${staff1Comm.toLocaleString('vi-VN')} đ</span>
-                  </div>
-                  ${staff1Tip > 0 ? `
-                    <div class="flex justify-between items-center pl-3 text-[#7E7272]">
-                      <span class="text-[11px] font-medium">Tip:</span>
-                      <span class="text-[#E58A7B] font-extrabold text-[11px]">+${staff1Tip.toLocaleString('vi-VN')} đ</span>
-                    </div>
-                  ` : ''}
-                </div>
-
-                <!-- KTV 2 (Nếu có) -->
-                ${r.has_staff_2 && staff2Name ? `
-                  <div class="space-y-0.5 pl-2 pt-0.5">
-                    <div class="flex justify-between items-center">
-                      <span class="text-[#2D2424] font-medium">• ${staff2Name}:</span>
-                      <span class="text-[#2E7D6D] font-extrabold">+${staff2Comm.toLocaleString('vi-VN')} đ</span>
-                    </div>
-                    ${staff2Tip > 0 ? `
-                      <div class="flex justify-between items-center pl-3 text-[#7E7272]">
-                        <span class="text-[11px] font-medium">Tip:</span>
-                        <span class="text-[#E58A7B] font-extrabold text-[11px]">+${staff2Tip.toLocaleString('vi-VN')} đ</span>
-                      </div>
-                    ` : ''}
-                  </div>
-                ` : ''}
-
-                <!-- Đường Gạch Phân Cách & Tổng Tip -->
-                ${totalTip > 0 ? `
-                  <div class="pt-1.5 border-t border-[#F0EAE1] flex justify-between items-center pl-1 font-bold text-[#E58A7B]">
-                    <span class="flex items-center gap-1 text-[11px]">
-                      <i data-lucide="gift" class="w-3.5 h-3.5 text-[#E58A7B]"></i>
-                      <span>Tổng tip:</span>
-                    </span>
-                    <span class="font-extrabold text-xs">+${totalTip.toLocaleString('vi-VN')} đ</span>
-                  </div>
-                ` : ''}
-              </div>
+              ${staffListHtml}
             </div>
           </div>
-        `;
-      }).join('');
+        </div>
+      `;
+    }).join('');
     }
 
     html += `</div>`;
