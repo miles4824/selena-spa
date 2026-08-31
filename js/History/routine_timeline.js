@@ -175,29 +175,50 @@ function loadStaffHistoryList(targetDate) {
         const myTip = Number(item.tip_amount) || 0;
         const totalEarn = Number(item.total_earned) || (myComm + myTip);
 
+        // Tìm KTV cùng làm (Partner) từ dữ liệu tour
+        const receiptsList = getStored('receipts', []);
+        const rawReceipt = receiptsList.find(r => r.receipt_id === item.receipt_id);
+        const allPayroll = getStored('payroll_logs', []);
+        const otherLogs = allPayroll.filter(p => p.receipt_id === item.receipt_id && normalizePhone(p.staff_phone) !== staffPhone && !String(p.staff_name || '').toLowerCase().includes(myNameClean));
+
+        let partnerNames = [];
+        if (otherLogs.length > 0) {
+          partnerNames = otherLogs.map(p => p.staff_name);
+        } else if (rawReceipt) {
+          if (rawReceipt.staff_names) {
+            partnerNames = String(rawReceipt.staff_names).split(',').map(s => s.trim()).filter(s => s && !s.toLowerCase().includes(myNameClean));
+          } else {
+            const s1Name = String(rawReceipt.staff_1_name || '').trim();
+            const s2Name = String(rawReceipt.staff_2_name || '').trim();
+            if (s1Name && s1Name !== '-' && !s1Name.toLowerCase().includes(myNameClean)) partnerNames.push(s1Name);
+            if (s2Name && s2Name !== '-' && !s2Name.toLowerCase().includes(myNameClean)) partnerNames.push(s2Name);
+          }
+        }
+        const partnerNameStr = partnerNames.join(', ');
+
         let detailBoxHtml = '';
-        if (myTip > 0) {
+        if (partnerNameStr || myTip > 0) {
           detailBoxHtml = `
-            <!-- KHUNG CHI TIẾT KHI CÓ TIỀN TIP -->
             <div class="bg-[#FAF6F1] p-2.5 rounded-2xl border border-[#F0EAE1] space-y-1 text-xs">
+              ${partnerNameStr ? `
+                <div class="flex items-center gap-1.5 text-[#7E7272] mb-1">
+                  <i data-lucide="users" class="w-3.5 h-3.5 text-[#E58A7B]"></i>
+                  <span>KTV cùng làm: <b class="text-[#2D2424]">${partnerNameStr}</b></span>
+                </div>
+              ` : ''}
               <div class="flex justify-between items-center text-[#7E7272]">
-                <span>Hoa hồng tour (${item.commission_pct || '100%'}):</span>
+                <span>Hoa hồng tour (${item.commission_pct || (partnerNameStr ? '50%' : '100%')}):</span>
                 <span class="text-[#2E7D6D] font-extrabold">+${myComm.toLocaleString('vi-VN')} đ</span>
               </div>
-              <div class="flex justify-between items-center text-[#E58A7B] font-bold pt-0.5 border-t border-[#F0EAE1]">
-                <span class="flex items-center gap-1.5">
-                  <i data-lucide="gift" class="w-3.5 h-3.5 text-[#E58A7B]"></i>
-                  <span>Tiền tip nhận được:</span>
-                </span>
-                <span class="font-extrabold">+${myTip.toLocaleString('vi-VN')} đ</span>
-              </div>
-            </div>
-          `;
-        } else if (item.role_in_tour && item.role_in_tour !== 'KTV 1 (Chính)' && item.role_in_tour !== 'KTV Phục vụ') {
-          detailBoxHtml = `
-            <div class="bg-[#FAF6F1] px-3 py-2 rounded-2xl border border-[#F0EAE1] text-xs flex justify-between items-center text-[#7E7272]">
-              <span>Vai trò: <b class="text-[#2D2424]">${item.role_in_tour}</b></span>
-              <span class="text-[#2E7D6D] font-extrabold">+${myComm.toLocaleString('vi-VN')} đ (${item.commission_pct || '50%'})</span>
+              ${myTip > 0 ? `
+                <div class="flex justify-between items-center text-[#E58A7B] font-bold pt-0.5 border-t border-[#F0EAE1]">
+                  <span class="flex items-center gap-1.5">
+                    <i data-lucide="gift" class="w-3.5 h-3.5 text-[#E58A7B]"></i>
+                    <span>Tiền tip nhận được:</span>
+                  </span>
+                  <span class="font-extrabold">+${myTip.toLocaleString('vi-VN')} đ</span>
+                </div>
+              ` : ''}
             </div>
           `;
         }
