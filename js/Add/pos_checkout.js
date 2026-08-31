@@ -682,9 +682,36 @@ function startLiveSession() {
     use_voucher: useVoucher
   };
 
-  localStorage.setItem('selena_active_live_session', JSON.stringify(currentLiveSession));
-  renderLiveSessionUI();
-  confetti({ particleCount: 50, spread: 60, origin: { y: 0.85 } });
+  // Luôn bắn phiên tour lên Firebase Realtime
+  if (typeof fbSaveLiveSession === 'function') {
+    fbSaveLiveSession(currentLiveSession);
+  }
+
+  const myPhone = (currentUser && currentUser.phone) ? normalizePhone(currentUser.phone) : '';
+  const isCreatorParticipating = allStaffs.some(s => normalizePhone(s.phone) === myPhone);
+
+  if (isCreatorParticipating) {
+    // Nếu người tạo có trực tiếp tham gia làm tour -> Mở đồng hồ đếm giờ trên máy này
+    localStorage.setItem('selena_active_live_session', JSON.stringify(currentLiveSession));
+    renderLiveSessionUI();
+    confetti({ particleCount: 50, spread: 60, origin: { y: 0.85 } });
+  } else {
+    // Nếu Admin phân công cho KTV khác -> Màn hình Admin giữ form trống để tiếp tục đón khách mới
+    const assignedNames = allStaffs.map(s => s.name).join(' & ');
+    alert(`✅ ĐÃ PHÂN CÔNG TOUR THÀNH CÔNG!\n\n• Dịch vụ: ${service.service_name}\n• Khách hàng: ${name}\n• KTV phục vụ: ${assignedNames}\n\nTour đã được gửi đến điện thoại của KTV để bắt đầu phục vụ.`);
+    
+    currentLiveSession = null;
+    localStorage.removeItem('selena_active_live_session');
+    extraStaffList = [];
+    document.getElementById('pos-customer-phone').value = '';
+    document.getElementById('pos-customer-name').value = '';
+    document.getElementById('pos-customer-card').classList.add('hidden');
+    useVoucher = false;
+    renderExtraStaffUI();
+    updatePOSStaffInfo();
+    renderLiveSessionUI();
+    confetti({ particleCount: 40, spread: 50, origin: { y: 0.85 } });
+  }
 }
 
 function renderLiveSessionUI() {
@@ -774,7 +801,7 @@ function cancelLiveSession() {
     currentLiveSession = null;
     clearInterval(liveTimerInterval);
     if (typeof fbClearLiveSession === 'function') {
-      fbClearLiveSession();
+      fbClearLiveSession(currentLiveSession?.session_id);
     }
     renderLiveSessionUI();
   }
@@ -1515,7 +1542,7 @@ function confirmSaveReceiptFromCheckout() {
   extraStaffList = [];
   clearInterval(liveTimerInterval);
   if (typeof fbClearLiveSession === 'function') {
-    fbClearLiveSession();
+    fbClearLiveSession(currentLiveSession?.session_id);
   }
   renderLiveSessionUI();
 
