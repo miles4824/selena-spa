@@ -1257,9 +1257,14 @@ function syncAllData(params) {
         let tip = Number(getCell(r, colMapR, ['tip_amount', 'tip'], 0)) || 0;
         let totalPaid = Number(getCell(r, colMapR, ['total_paid', 'tong_tien'], price + tip)) || (price + tip);
 
+        let staffNames = String(getCell(r, colMapR, ['staff_names', 'ktv_phuc_vu', 'nhan_vien', 'ten_ktv']));
         let s1Phone = getCell(r, colMapR, ['staff_1_user_id', 'staff_1_phone', 'user_id_1']);
         let s1Id = String(getCell(r, colMapR, ['staff_1_id', 'staff_id', 'ma_ktv_1']));
         let s1Name = String(getCell(r, colMapR, ['staff_1_name', 'staff_name', 'ten_ktv_1']));
+        if (!s1Name && staffNames) {
+          s1Name = staffNames.split(',')[0].trim();
+        }
+
         let s1Comm = Number(getCell(r, colMapR, ['staff_1_comm', 'hoa_hong_ktv_1', 'commission_amount'], 0)) || 0;
         let s1Tip = Number(getCell(r, colMapR, ['staff_1_tip', 'tip_ktv_1'], tip)) || 0;
 
@@ -1268,6 +1273,19 @@ function syncAllData(params) {
         let s2Name = String(getCell(r, colMapR, ['staff_2_name', 'ten_ktv_2'], '-'));
         let s2Comm = Number(getCell(r, colMapR, ['staff_2_comm', 'hoa_hong_ktv_2'], 0)) || 0;
         let s2Tip = Number(getCell(r, colMapR, ['staff_2_tip', 'tip_ktv_2'], 0)) || 0;
+
+        let parsedStaffs = [];
+        if (staffNames) {
+          const parts = staffNames.split(',').map(s => s.trim()).filter(Boolean);
+          parts.forEach((pName, pIdx) => {
+            parsedStaffs.push({
+              name: pName,
+              phone: '',
+              staff_id: `KTV0${pIdx+1}`,
+              role: pIdx === 0 ? 'KTV 1 (Chính)' : `KTV ${pIdx+1} (Cùng làm)`
+            });
+          });
+        }
 
         let payMethod = String(getCell(r, colMapR, ['payment_method', 'phuong_thuc_tt'], 'Tiền mặt'));
         let isVoucher = String(getCell(r, colMapR, ['is_voucher_used', 'dung_voucher'], 'FALSE')).toUpperCase() === 'TRUE';
@@ -1287,6 +1305,8 @@ function syncAllData(params) {
           price: price,
           tip_amount: tip,
           total_paid: totalPaid,
+          staff_names: staffNames || s1Name,
+          staffs: parsedStaffs,
           staff_1_user_id: normalizePhone(s1Phone),
           staff_1_id: s1Id,
           staff_1_name: s1Name,

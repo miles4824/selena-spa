@@ -27,15 +27,32 @@ function loadStaffHistoryList(targetDate) {
   const staffPhone = normalizePhone(currentUser?.phone);
   const staffCode = String(currentUser?.staff_id || '').trim();
 
-  // Lọc toàn bộ ca của KTV hiện tại
+  // Lọc toàn bộ ca của KTV hiện tại (Hỗ trợ cả staff_names, staffs mảng và cột cũ)
+  const myNameClean = (targetStaff?.full_name || currentUser?.full_name || '').toLowerCase().replace('👑 ', '').replace('ktv ', '').trim();
+
   const myAllReceipts = receipts.filter(r => {
+    const sNames = String(r.staff_names || '').toLowerCase();
+    if (myNameClean && sNames.includes(myNameClean)) return true;
+
+    if (r.staffs && Array.isArray(r.staffs) && r.staffs.length > 0) {
+      if (r.staffs.some(st => normalizePhone(st.phone) === staffPhone || (staffCode && String(st.staff_id || '').trim() === staffCode) || (myNameClean && String(st.name || '').toLowerCase().includes(myNameClean)))) {
+        return true;
+      }
+    }
+
     const s1Phone = normalizePhone(r.staff_1_user_id || r.staff_1_phone || r.staff_phone);
     const s1Code = String(r.staff_1_id || r.staff_id || '').trim();
     const s2Phone = normalizePhone(r.staff_2_user_id || r.staff_2_phone);
     const s2Code = String(r.staff_2_id || '').trim();
+    const s3Phone = normalizePhone(r.staff_3_user_id || r.staff_3_phone);
+    const s3Code = String(r.staff_3_id || '').trim();
+    const s1Name = String(r.staff_1_name || '').toLowerCase();
+    const s2Name = String(r.staff_2_name || '').toLowerCase();
+    const s3Name = String(r.staff_3_name || '').toLowerCase();
 
-    return (staffPhone && (s1Phone === staffPhone || s2Phone === staffPhone)) || 
-           (staffCode && (s1Code === staffCode || s2Code === staffCode));
+    return (staffPhone && (s1Phone === staffPhone || s2Phone === staffPhone || s3Phone === staffPhone)) || 
+           (staffCode && (s1Code === staffCode || s2Code === staffCode || s3Code === staffCode)) ||
+           (myNameClean && (s1Name.includes(myNameClean) || s2Name.includes(myNameClean) || s3Name.includes(myNameClean)));
   });
 
   const todayKey = normalizeDateKey(new Date());
