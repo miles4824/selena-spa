@@ -5,7 +5,19 @@
 function getBusyStaffPhonesMap() {
   const busyMap = {};
   const activeSessions = getStored('live_sessions_cache', []);
+  const now = Date.now();
+  
   activeSessions.forEach(sess => {
+    if (!sess) return;
+    const sId = String(sess.session_id || sess.start_timestamp || '');
+    if (dismissedSessionIds.has(sId)) return;
+    
+    // Tự động loại bỏ phiên cũ quá 2 tiếng (tránh kẹt phiên thử nghiệm)
+    const sessTime = Number(sess.start_timestamp || 0);
+    if (sessTime > 0 && (now - sessTime) > 2 * 3600 * 1000) {
+      return;
+    }
+
     if (sess.active_staff_phone) {
       busyMap[normalizePhone(sess.active_staff_phone)] = sess;
     }
