@@ -50,7 +50,7 @@ function parseBirthMonth(val) {
   return 0;
 }
 
-const APP_VERSION = 'v0.1.8.8';
+const APP_VERSION = 'v0.1.8.9';
 // =============================================================
 // SELENA SPA - GLOBAL CONFIG & CONSTANTS
 // =============================================================
@@ -369,7 +369,7 @@ function renderMonthPickerGrid() {
 
     if (isFuture) {
       html += `
-        <button type="button" disabled class="h-8 w-8 mx-auto flex items-center justify-center rounded-xl text-xs text-[#D4C5B9] opacity-35 cursor-not-allowed pointer-events-none">
+        <button type="button" disabled class="h-8 w-8 mx-auto flex items-center justify-center rounded-xl text-xs text-[#B8ACA2] bg-[#F6F1EA]/60 cursor-not-allowed pointer-events-none font-semibold">
           ${d}
         </button>
       `;
@@ -455,9 +455,9 @@ function renderWeekRowHtml(weekDays, currentActive, isAllActive, onDateClickCall
 
         if (isFuture) {
           return `
-            <button type="button" disabled class="flex-1 py-2 px-0.5 rounded-2xl bg-[#F9F6F0] text-[#D4C5B9] opacity-35 cursor-not-allowed pointer-events-none select-none">
-              <span class="block text-[10px] text-[#D4C5B9] uppercase font-medium">${labelText}</span>
-              <span class="text-sm font-medium text-[#D4C5B9]">${item.dayNum}</span>
+            <button type="button" disabled class="flex-1 py-2 px-0.5 rounded-2xl bg-[#F6F1EA] border border-[#EFE8DE] cursor-not-allowed pointer-events-none select-none">
+              <span class="block text-[10px] text-[#B8ACA2] uppercase font-bold">${labelText}</span>
+              <span class="text-sm font-extrabold text-[#B8ACA2]">${item.dayNum}</span>
             </button>
           `;
         }
