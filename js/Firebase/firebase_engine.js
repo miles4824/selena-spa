@@ -67,15 +67,29 @@ function initFirebaseEngine() {
 function setupRealtimeListeners() {
   if (!fbDb) return;
 
-  // Lắng nghe Hóa đơn (tb_receipts)
+  // Lắng nghe Hóa đơn (tb_receipts) Realtime
   fbDb.ref('receipts').on('value', snapshot => {
     const data = snapshot.val();
     if (data) {
       const list = Object.values(data);
       list.sort((a, b) => (b.created_at || '').localeCompare(a.created_at || ''));
       setStored('receipts', list);
-      if (typeof loadHistoryView === 'function' && currentTab === 'history') {
+      
+      // Tự động làm mới Lịch sử & Thống kê doanh thu cho cả Admin & Staff ngay tức khắc
+      if (typeof loadHistoryView === 'function') {
         loadHistoryView();
+      }
+      if (typeof loadAdminReceiptsList === 'function') {
+        loadAdminReceiptsList();
+      }
+      if (typeof loadStaffHistoryList === 'function') {
+        loadStaffHistoryList();
+      }
+      if (typeof loadAdminHomeStats === 'function') {
+        loadAdminHomeStats();
+      }
+      if (typeof loadKTVHomeStats === 'function') {
+        loadKTVHomeStats();
       }
     }
   });
@@ -165,9 +179,9 @@ function setupRealtimeListeners() {
 
 // A. Ghi hóa đơn ca gội mới
 async function fbSaveReceipt(receipt, customerInfo = null, cycleInfo = null, voucherInfo = null) {
-  if (!fbDb || !receipt || !receipt.receipt_id) return false;
+  if (!receipt || !receipt.receipt_id) return false;
+  let updates = {};
   try {
-    const updates = {};
     const rId = receipt.receipt_id;
     updates[`receipts/${rId}`] = receipt;
 
@@ -184,12 +198,33 @@ async function fbSaveReceipt(receipt, customerInfo = null, cycleInfo = null, vou
       updates[`vouchers/${voucherInfo.voucher_id}`] = voucherInfo;
     }
 
-    await fbDb.ref().update(updates);
+    const cleanUpdates = JSON.parse(JSON.stringify(updates));
+
+    if (fbDb) {
+      await fbDb.ref().update(cleanUpdates);
+    } else {
+      await fetch(`https://selena-spa-6a852-default-rtdb.asia-southeast1.firebasedatabase.app/.json`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(cleanUpdates)
+      });
+    }
     console.log(`⚡ [Firebase] Đã lưu hóa đơn ${rId} trong 0.03s!`);
     return true;
   } catch (e) {
-    console.error('Lỗi fbSaveReceipt:', e);
-    return false;
+    console.warn('⚠️ Lỗi fbSaveReceipt qua SDK, chuyển sang REST fallback:', e.message);
+    try {
+      const cleanUpdates = JSON.parse(JSON.stringify(updates));
+      await fetch(`https://selena-spa-6a852-default-rtdb.asia-southeast1.firebasedatabase.app/.json`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(cleanUpdates)
+      });
+      return true;
+    } catch(err2) {
+      console.error('Lỗi REST fbSaveReceipt:', err2);
+      return false;
+    }
   }
 }
 
@@ -353,6 +388,23 @@ setInterval(async () => {
             if (typeof renderLiveSessionUI === 'function') renderLiveSessionUI();
             if (typeof showView === 'function') showView('add');
           }
+        }
+      }
+    }
+
+    // Heartbeat cho Hóa đơn (tb_receipts)
+    const resRec = await fetch('https://selena-spa-6a852-default-rtdb.asia-southeast1.firebasedatabase.app/receipts.json');
+    if (resRec.ok) {
+      const recData = await resRec.json();
+      if (recData) {
+        const list = Object.values(recData);
+        list.sort((a, b) => (b.created_at || '').localeCompare(a.created_at || ''));
+        const oldRecs = getStored('receipts', []);
+        if (list.length !== oldRecs.length || (list[0] && oldRecs[0] && list[0].receipt_id !== oldRecs[0].receipt_id)) {
+          setStored('receipts', list);
+          if (typeof loadHistoryView === 'function') loadHistoryView();
+          if (typeof loadAdminHomeStats === 'function') loadAdminHomeStats();
+          if (typeof loadKTVHomeStats === 'function') loadKTVHomeStats();
         }
       }
     }

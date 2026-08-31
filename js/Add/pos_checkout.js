@@ -1530,6 +1530,9 @@ function confirmSaveReceiptFromCheckout() {
   if (typeof showView === 'function') {
     showView('history');
   }
+  if (typeof loadHistoryView === 'function') {
+    loadHistoryView();
+  }
 }
 
 
