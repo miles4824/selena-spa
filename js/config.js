@@ -50,7 +50,7 @@ function parseBirthMonth(val) {
   return 0;
 }
 
-const APP_VERSION = 'v0.1.8.6';
+const APP_VERSION = 'v0.1.8.7';
 // =============================================================
 // SELENA SPA - GLOBAL CONFIG & CONSTANTS
 // =============================================================
@@ -365,6 +365,16 @@ function renderMonthPickerGrid() {
     const dStr = `${currentPickerYear}-${String(currentPickerMonth + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
     const isToday = dStr === todayStr;
     const isSelected = activeDate !== 'ALL' && dStr === activeDate;
+    const isFuture = dStr > todayStr;
+
+    if (isFuture) {
+      html += `
+        <button type="button" disabled class="h-8 w-8 mx-auto flex items-center justify-center rounded-xl text-xs text-[#D4C5B9] opacity-35 cursor-not-allowed pointer-events-none">
+          ${d}
+        </button>
+      `;
+      continue;
+    }
 
     let btnClass = 'bg-[#FAF6F1] text-[#2D2424] hover:bg-[#FFF0EB] hover:text-[#E58A7B]';
     if (isSelected) {
@@ -430,16 +440,27 @@ function getWeekDaysFromMonday(baseDate = new Date()) {
 
 // Render HTML cho một hàng 7 ngày (1 tuần chiếm đúng 33.333333% của track 300%)
 function renderWeekRowHtml(weekDays, currentActive, isAllActive, onDateClickCallback) {
+  const todayStr = normalizeDateKey(new Date());
   return `
     <div class="flex items-center justify-between gap-1 text-center flex-shrink-0 box-border" style="width: 33.333333%; min-width: 33.333333%; max-width: 33.333333%;">
       ${weekDays.map(item => {
         const isSelected = !isAllActive && (item.dateStr === currentActive);
         const isToday = item.isToday;
+        const isFuture = item.dateStr > todayStr;
 
         let bgClass = 'bg-[#F7F2EC] text-[#7E7272] hover:bg-[#FFF0EB] hover:text-[#E58A7B]';
         let labelText = item.label;
         let labelClass = 'text-[10px] text-[#A39696] uppercase font-bold';
         let numClass = 'text-sm font-extrabold text-[#2D2424]';
+
+        if (isFuture) {
+          return `
+            <button type="button" disabled class="flex-1 py-2 px-0.5 rounded-2xl bg-[#F9F6F0] text-[#D4C5B9] opacity-35 cursor-not-allowed pointer-events-none select-none">
+              <span class="block text-[10px] text-[#D4C5B9] uppercase font-medium">${labelText}</span>
+              <span class="text-sm font-medium text-[#D4C5B9]">${item.dayNum}</span>
+            </button>
+          `;
+        }
 
         if (isSelected) {
           bgClass = 'bg-[#E58A7B] text-white ring-2 ring-[#E58A7B]/40 font-black';
