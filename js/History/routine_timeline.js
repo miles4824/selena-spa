@@ -27,19 +27,12 @@ function loadStaffHistoryList(targetDate) {
   const staffPhone = normalizePhone(currentUser?.phone);
   const staffCode = String(currentUser?.staff_id || '').trim();
 
-  // Lọc toàn bộ ca của KTV hiện tại (Hỗ trợ cả staff_names, staffs mảng và cột cũ)
-  const myNameClean = (targetStaff?.full_name || currentUser?.full_name || '').toLowerCase().replace('👑 ', '').replace('ktv ', '').trim();
-
+    // Lọc toàn bộ ca của KTV hiện tại (Kết hợp cả tb_payroll_logs VÀ toàn bộ dữ liệu lịch sử cũ 100%)
   const myAllReceipts = receipts.filter(r => {
-    const sNames = String(r.staff_names || '').toLowerCase();
-    if (myNameClean && sNames.includes(myNameClean)) return true;
+    // 1. Khớp từ Sổ Lương tb_payroll_logs
+    if (r.receipt_id && myLogReceiptIds.has(r.receipt_id)) return true;
 
-    if (r.staffs && Array.isArray(r.staffs) && r.staffs.length > 0) {
-      if (r.staffs.some(st => normalizePhone(st.phone) === staffPhone || (staffCode && String(st.staff_id || '').trim() === staffCode) || (myNameClean && String(st.name || '').toLowerCase().includes(myNameClean)))) {
-        return true;
-      }
-    }
-
+    // 2. Khớp từ dữ liệu lịch sử tb_receipts từ trước đến nay (không sót 1 tour nào)
     const s1Phone = normalizePhone(r.staff_1_user_id || r.staff_1_phone || r.staff_phone);
     const s1Code = String(r.staff_1_id || r.staff_id || '').trim();
     const s2Phone = normalizePhone(r.staff_2_user_id || r.staff_2_phone);
@@ -49,10 +42,18 @@ function loadStaffHistoryList(targetDate) {
     const s1Name = String(r.staff_1_name || '').toLowerCase();
     const s2Name = String(r.staff_2_name || '').toLowerCase();
     const s3Name = String(r.staff_3_name || '').toLowerCase();
+    const sNames = String(r.staff_names || '').toLowerCase();
 
-    return (staffPhone && (s1Phone === staffPhone || s2Phone === staffPhone || s3Phone === staffPhone)) || 
-           (staffCode && (s1Code === staffCode || s2Code === staffCode || s3Code === staffCode)) ||
-           (myNameClean && (s1Name.includes(myNameClean) || s2Name.includes(myNameClean) || s3Name.includes(myNameClean)));
+    if (staffPhone && (s1Phone === staffPhone || s2Phone === staffPhone || s3Phone === staffPhone)) return true;
+    if (staffCode && (s1Code === staffCode || s2Code === staffCode || s3Code === staffCode)) return true;
+    if (myNameClean && (s1Name.includes(myNameClean) || s2Name.includes(myNameClean) || s3Name.includes(myNameClean) || sNames.includes(myNameClean))) return true;
+
+    if (r.staffs && Array.isArray(r.staffs) && r.staffs.length > 0) {
+      if (r.staffs.some(st => normalizePhone(st.phone) === staffPhone || (staffCode && String(st.staff_id || '').trim() === staffCode) || (myNameClean && String(st.name || '').toLowerCase().includes(myNameClean)))) {
+        return true;
+      }
+    }
+    return false;
   });
 
   const todayKey = normalizeDateKey(new Date());
