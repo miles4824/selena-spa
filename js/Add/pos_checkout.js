@@ -2390,18 +2390,20 @@ function saveModalEditLiveServices() {
     firebasePut('active_sessions/' + currentLiveSession.session_id, currentLiveSession);
   }
 
-  // Cập nhật giao diện màn hình Live Tour
-  const nameEl = document.getElementById('live-session-service-name');
-  if (nameEl) nameEl.innerText = serviceDisplayName;
-
-  const targetDurEl = document.getElementById('live-target-time-text');
-  if (targetDurEl) targetDurEl.innerText = `${totalDuration} phút`;
-
-  // Cập nhật Live Timer ngay lập tức
-  if (typeof updateLiveTimer === 'function') {
-    updateLiveTimer();
+  // Cập nhật toàn bộ giao diện màn hình Live Tour
+  if (typeof renderLiveSessionUI === 'function') {
+    renderLiveSessionUI();
+  } else {
+    const nameEl = document.getElementById('live-service-name');
+    if (nameEl) nameEl.innerText = serviceDisplayName;
+    const targetDurEl = document.getElementById('live-target-time-text');
+    if (targetDurEl) targetDurEl.innerText = `${totalDuration} phút`;
   }
 
   closeModalEditLiveServices();
-  alert('🎉 Đã cập nhật gói dịch vụ cho ca phục vụ thành công!');
+  if (typeof showToast === 'function') {
+    showToast('🎉 Đã cập nhật gói dịch vụ thành công!', 'success');
+  } else {
+    alert('🎉 Đã cập nhật gói dịch vụ cho ca phục vụ thành công!');
+  }
 }
