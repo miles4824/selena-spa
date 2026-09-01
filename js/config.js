@@ -51,7 +51,7 @@ function parseBirthMonth(val) {
   return 0;
 }
 
-const APP_VERSION = 'v0.0.2.0';
+const APP_VERSION = 'v0.0.2.1';
 // =============================================================
 // SELENA SPA - GLOBAL CONFIG & CONSTANTS
 // =============================================================
@@ -62,16 +62,12 @@ const DEFAULT_USERS = [
 ];
 
 const DEFAULT_MENU = [
-  { service_id: 'CB01', service_name: 'Combo 1 (Gội Dưỡng Sinh Cơ Bản)', category: 'combo', price: 64000, duration_min: 45, commission_ktv_fixed: 6400, commission_ktv_commission: 12800, cosmetics_cost: 3000 },
-  { service_id: 'CB02', service_name: 'Combo 2 (Gội Chuyên Sâu)', category: 'combo', price: 99000, duration_min: 60, commission_ktv_fixed: 9900, commission_ktv_commission: 19800, cosmetics_cost: 5000 },
-  { service_id: 'CB03', service_name: 'Combo 3 (Gội Dưỡng Sinh Hoàng Gia)', category: 'combo', price: 149000, duration_min: 75, commission_ktv_fixed: 14900, commission_ktv_commission: 29800, cosmetics_cost: 8000 },
-  { service_id: 'CB04', service_name: 'Combo 4 (Gội + Massage Trị Liệu)', category: 'combo', price: 199000, duration_min: 90, commission_ktv_fixed: 19900, commission_ktv_commission: 39800, cosmetics_cost: 10000 },
-  { service_id: 'CB05', service_name: 'Combo 5 (Gội Thư Giãn Toàn Diện)', category: 'combo', price: 249000, duration_min: 105, commission_ktv_fixed: 24900, commission_ktv_commission: 49800, cosmetics_cost: 12000 },
-  { service_id: 'DV01', service_name: 'Massage Cổ Vai Gáy Chuyên Sâu', category: 'service', price: 50000, duration_min: 20, commission_ktv_fixed: 5000, commission_ktv_commission: 10000, cosmetics_cost: 0 },
-  { service_id: 'DV02', service_name: 'Tẩy Tế Bào Chết Da Đầu Thảo Dược', category: 'service', price: 40000, duration_min: 15, commission_ktv_fixed: 4000, commission_ktv_commission: 8000, cosmetics_cost: 3000 },
-  { service_id: 'DV03', service_name: 'Đắp Mặt Nạ Thảo Mộc / Collagen', category: 'service', price: 30000, duration_min: 10, commission_ktv_fixed: 3000, commission_ktv_commission: 6000, cosmetics_cost: 5000 },
-  { service_id: 'DV04', service_name: 'Xông Hơi Tinh Dầu Trị Liệu', category: 'service', price: 35000, duration_min: 15, commission_ktv_fixed: 3500, commission_ktv_commission: 7000, cosmetics_cost: 2000 },
-  { service_id: 'DV05', service_name: 'Massage Nâng Cơ Mặt Ngọc Thạch', category: 'service', price: 60000, duration_min: 20, commission_ktv_fixed: 6000, commission_ktv_commission: 12000, cosmetics_cost: 4000 }
+  { service_id: 'CB_BE', service_name: 'Combo Bé', price: 45000, duration_min: 30, cosmetics_cost: 4500, commission_type: 'fixed', commission_value: 4500, is_active: true },
+  { service_id: 'CB_01', service_name: 'Combo 1', price: 64000, duration_min: 50, cosmetics_cost: 6400, commission_type: 'fixed', commission_value: 6400, is_active: true },
+  { service_id: 'CB_02', service_name: 'Combo 2', price: 109000, duration_min: 75, cosmetics_cost: 10000, commission_type: 'fixed', commission_value: 11000, is_active: true },
+  { service_id: 'CB_03', service_name: 'Combo 3', price: 139000, duration_min: 85, cosmetics_cost: 14000, commission_type: 'fixed', commission_value: 14000, is_active: true },
+  { service_id: 'CB_04', service_name: 'Combo 4', price: 179000, duration_min: 95, cosmetics_cost: 18000, commission_type: 'fixed', commission_value: 18000, is_active: true },
+  { service_id: 'CB_05', service_name: 'Combo 5', price: 219000, duration_min: 110, cosmetics_cost: 22000, commission_type: 'fixed', commission_value: 22000, is_active: true }
 ];
 
 const DEFAULT_ADDONS = [

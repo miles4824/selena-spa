@@ -1127,34 +1127,30 @@ function syncAllData(params) {
 
   const isOwner = isOwnerCheck(clientRole, clientPhone, clientStaffId);
 
-  // 1. Menu (Tự động khởi tạo và nạp đầy đủ 10 dịch vụ nếu Sheet tb_menu còn trống)
+    // 1. Menu (Đọc chuẩn 8 cột theo đúng cấu trúc dữ liệu thực tế của tiệm)
   let sheetMenu = ss.getSheetByName('tb_menu');
   if (!sheetMenu) {
     sheetMenu = ss.insertSheet('tb_menu');
-    sheetMenu.appendRow(['service_id', 'service_name', 'category', 'price', 'duration_min', 'cosmetics_cost', 'commission_value', 'description']);
+    sheetMenu.appendRow(['service_id', 'service_name', 'price', 'duration_min', 'cosmetics_cost', 'commission_type', 'commission_value', 'is_active']);
     sheetMenu.getRange(1, 1, 1, 8).setFontWeight('bold').setBackground('#FFF0EB');
   }
 
   const defaultMenuItems = [
-    ['CB01', 'Combo 1 (Gội Dưỡng Sinh Cơ Bản)', 'combo', 64000, 45, 3000, 6400, 'Gội dưỡng sinh, massage mặt nhẹ'],
-    ['CB02', 'Combo 2 (Gội Chuyên Sâu)', 'combo', 99000, 60, 5000, 9900, 'Gội chuyên sâu, đắp mặt nạ'],
-    ['CB03', 'Combo 3 (Gội Dưỡng Sinh Hoàng Gia)', 'combo', 149000, 75, 8000, 14900, 'Gội hoàng gia, massage vai gáy'],
-    ['CB04', 'Combo 4 (Gội + Massage Trị Liệu)', 'combo', 199000, 90, 10000, 19900, 'Trị liệu cổ vai gáy chuyên sâu'],
-    ['CB05', 'Combo 5 (Gội Thư Giãn Toàn Diện)', 'combo', 249000, 105, 12000, 24900, 'Toàn diện cao cấp'],
-    ['DV01', 'Massage Cổ Vai Gáy Chuyên Sâu', 'service', 50000, 20, 0, 5000, 'Dịch vụ làm thêm / lẻ'],
-    ['DV02', 'Tẩy Tế Bào Chết Da Đầu Thảo Dược', 'service', 40000, 15, 3000, 4000, 'Dịch vụ làm thêm / lẻ'],
-    ['DV03', 'Đắp Mặt Nạ Thảo Mộc / Collagen', 'service', 30000, 10, 5000, 3000, 'Dịch vụ làm thêm / lẻ'],
-    ['DV04', 'Xông Hơi Tinh Dầu Trị Liệu', 'service', 35000, 15, 2000, 3500, 'Dịch vụ làm thêm / lẻ'],
-    ['DV05', 'Massage Nâng Cơ Mặt Ngọc Thạch', 'service', 60000, 20, 4000, 6000, 'Dịch vụ làm thêm / lẻ']
+    ['CB_BE', 'Combo Bé', '45.000 đ', 30, '4.500 đ', 'fixed', '4.500 đ', 'TRUE'],
+    ['CB_01', 'Combo 1', '64.000 đ', 50, '6.400 đ', 'fixed', '6.400 đ', 'TRUE'],
+    ['CB_02', 'Combo 2', '109.000 đ', 75, '10.000 đ', 'fixed', '11.000 đ', 'TRUE'],
+    ['CB_03', 'Combo 3', '139.000 đ', 85, '14.000 đ', 'fixed', '14.000 đ', 'TRUE'],
+    ['CB_04', 'Combo 4', '179.000 đ', 95, '18.000 đ', 'fixed', '18.000 đ', 'TRUE'],
+    ['CB_05', 'Combo 5', '219.000 đ', 110, '22.000 đ', 'fixed', '22.000 đ', 'TRUE']
   ];
 
   let menu = [];
   const colMapM = createHeaderMap(sheetMenu);
   let dataM = sheetMenu.getDataRange().getValues();
 
-  // Nếu sheet chỉ có dòng tiêu đề -> Điền tự động 10 món
+  // Nếu sheet chỉ có dòng tiêu đề -> Tự động nạp 6 combo chuẩn của tiệm
   if (dataM.length <= 1) {
-    defaultMenuItems.forEach(item => sheetMenu.appendRow(item));
+    defaultMenuItems.forEach(function(item) { sheetMenu.appendRow(item); });
     dataM = sheetMenu.getDataRange().getValues();
   }
 
@@ -1163,20 +1159,32 @@ function syncAllData(params) {
     let id = String(getCell(r, colMapM, ['service_id', 'combo_id', 'id'])).trim();
     let name = String(getCell(r, colMapM, ['service_name', 'ten_combo', 'name'])).trim();
     if (id && name) {
-      let cat = String(getCell(r, colMapM, ['category', 'loai', 'phan_loai'], id.startsWith('CB') ? 'combo' : 'service')).trim().toLowerCase();
-      let price = Number(getCell(r, colMapM, ['price', 'gia'], 0)) || 0;
-      let duration = Number(getCell(r, colMapM, ['duration_min', 'thoi_gian'], 30)) || 30;
-      let cosmetics = Number(getCell(r, colMapM, ['cosmetics_cost', 'my_pham'], 0)) || 0;
-      let commVal = Number(getCell(r, colMapM, ['commission_value', 'hoa_hong'], price * 0.1)) || (price * 0.1);
+      let activeVal = getCell(r, colMapM, ['is_active', 'active', 'trang_thai'], true);
+      let isActive = !(activeVal === false || String(activeVal).toLowerCase() === 'false');
+      if (!isActive) continue;
+
+      let rawPrice = String(getCell(r, colMapM, ['price', 'gia'], 0));
+      let price = Number(rawPrice.replace(/[^0-9]/g, '')) || 0;
+
+      let rawDur = String(getCell(r, colMapM, ['duration_min', 'thoi_gian'], 45));
+      let duration = Number(rawDur.replace(/[^0-9]/g, '')) || 45;
+
+      let rawCosmetics = String(getCell(r, colMapM, ['cosmetics_cost', 'my_pham'], 0));
+      let cosmetics = Number(rawCosmetics.replace(/[^0-9]/g, '')) || 0;
+
+      let commType = String(getCell(r, colMapM, ['commission_type', 'loai_hoa_hong'], 'fixed')).trim();
+      let rawCommVal = String(getCell(r, colMapM, ['commission_value', 'hoa_hong'], price * 0.1));
+      let commVal = Number(rawCommVal.replace(/[^0-9]/g, '')) || (price * 0.1);
 
       menu.push({
         service_id: id,
         service_name: name,
-        category: cat,
         price: price,
         duration_min: duration,
         cosmetics_cost: cosmetics,
-        commission_value: commVal
+        commission_type: commType,
+        commission_value: commVal,
+        is_active: true
       });
     }
   }
