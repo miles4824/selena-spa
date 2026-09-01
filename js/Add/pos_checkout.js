@@ -48,12 +48,12 @@ function updateStaffAvailabilityHeader() {
   const freeUsers = users.filter(u => !busyMap[normalizePhone(u.phone)]);
 
   if (busyCount === 0) {
-    subEl.innerHTML = `<span class="inline-flex items-center gap-1.5 text-xs text-[#2E7D6D] font-bold"><span class="w-2 h-2 rounded-full bg-[#2E7D6D] animate-pulse"></span> Sẵn sàng đón khách • Tất cả ${totalStaff} KTV đang rảnh</span>`;
+    subEl.innerHTML = `<span class="inline-flex items-center gap-1.5 text-xs text-[#2E7D6D] font-bold"><span class="w-2 h-2 rounded-full bg-[#2E7D6D] animate-pulse"></span> Sẵn sàng đón khách • Tất cả ${totalStaff} nhân sự đang rảnh</span>`;
   } else if (freeCount > 0) {
     const freeNames = freeUsers.map(u => u.full_name.replace('👑 ', '').replace('KTV ', '')).join(', ');
-    subEl.innerHTML = `<span class="inline-flex items-center gap-1.5 text-xs text-[#E58A7B] font-bold"><span class="w-2 h-2 rounded-full bg-[#E58A7B]"></span> ${busyCount}/${totalStaff} KTV đang bận • Còn ${freeCount} KTV rảnh (${freeNames})</span>`;
+    subEl.innerHTML = `<span class="inline-flex items-center gap-1.5 text-xs text-[#E58A7B] font-bold"><span class="w-2 h-2 rounded-full bg-[#E58A7B]"></span> ${busyCount}/${totalStaff} nhân sự đang bận • Còn ${freeCount} người rảnh (${freeNames})</span>`;
   } else {
-    subEl.innerHTML = `<span class="inline-flex items-center gap-1.5 text-xs text-[#D97706] font-bold"><span class="w-2 h-2 rounded-full bg-[#D97706]"></span> ${totalStaff}/${totalStaff} KTV đều đang bận • Tạm hết nhân lực</span>`;
+    subEl.innerHTML = `<span class="inline-flex items-center gap-1.5 text-xs text-[#D97706] font-bold"><span class="w-2 h-2 rounded-full bg-[#D97706]"></span> ${totalStaff}/${totalStaff} nhân sự đều đang bận • Tạm hết nhân lực</span>`;
   }
 }
 
@@ -429,7 +429,7 @@ function updatePOSStaffInfo() {
   // Cập nhật thẻ hiển thị trạng thái KTV trên tiêu đề
   const statusEl = document.getElementById('pos-header-subtitle');
   if (statusEl) {
-    const allStaffs = users.filter(u => !isUserOwner(u));
+    const allStaffs = users;
     const busyCount = allStaffs.filter(u => busyMap[normalizePhone(u.phone)]).length;
     const freeStaffs = allStaffs.filter(u => !busyMap[normalizePhone(u.phone)]);
     if (allStaffs.length > 0) {
@@ -470,7 +470,7 @@ function addExtraStaff() {
     ...extraStaffList.map(s => normalizePhone(s.phone))
   ]);
 
-  const availableStaffs = users.filter(u => !isUserOwner(u) && !busyMap[normalizePhone(u.phone)] && !chosenPhones.has(normalizePhone(u.phone)));
+  const availableStaffs = users.filter(u => !busyMap[normalizePhone(u.phone)] && !chosenPhones.has(normalizePhone(u.phone)));
 
   if (availableStaffs.length === 0) {
     alert('Không còn Kỹ Thuật Viên nào khác đang rảnh để thêm vào ca này!');
@@ -519,7 +519,7 @@ function renderExtraStaffUI() {
     return;
   }
 
-  const users = getSortedUsersList().filter(u => !isUserOwner(u));
+  const users = getSortedUsersList();
   const s1Phone = document.getElementById('pos-staff1-select')?.value || (currentUser?.phone);
   const totalPrice = selectedCartItems.reduce((sum, item) => sum + (Number(item.price) || 0), 0);
   const totalStaffCount = 1 + extraStaffList.length;
