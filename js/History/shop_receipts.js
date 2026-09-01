@@ -249,7 +249,10 @@ async function openOwnerCustomerEditorModal(phone, name, receiptId) {
   let curVisits = (cust && cust.cycle_visits) ? Number(cust.cycle_visits) : 1;
   let curVouchers = (cust && cust.voucher_count) ? Number(cust.voucher_count) : 0;
 
-  if (monthSelect) monthSelect.value = (curMonth && curMonth >= 1 && curMonth <= 12) ? String(curMonth) : '';
+  if (monthSelect) {
+    monthSelect.value = (curMonth && curMonth >= 1 && curMonth <= 12) ? String(curMonth) : '';
+    monthSelect.style.color = monthSelect.value ? '#2D2424' : '#A39696';
+  }
   if (noteInput) noteInput.value = curNotes;
   if (cycleVisitsEl) cycleVisitsEl.innerText = `${curVisits} / 10 lần`;
   if (voucherCountEl) voucherCountEl.innerText = `${curVouchers} voucher`;

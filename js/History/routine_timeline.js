@@ -350,7 +350,7 @@ async function openStaffCustomerNoteModal(phone, name, receiptId) {
 
     if (guestMonthContainer) guestMonthContainer.classList.remove('hidden');
     if (guestMonthFixed) guestMonthFixed.classList.add('hidden');
-    if (guestMonthSelect) guestMonthSelect.value = '';
+    if (guestMonthSelect) { guestMonthSelect.value = ''; guestMonthSelect.style.color = '#A39696'; }
     if (noteContent) noteContent.value = '';
   } else {
     // 🟢 KỊCH BẢN 1: KHÁCH QUEN ĐÃ CÓ SĐT -> ẨN KHUNG GOM, HIỆN MỤC THÁNG CHO KHÁCH QUEN
@@ -371,7 +371,7 @@ async function openStaffCustomerNoteModal(phone, name, receiptId) {
       // CHƯA CÓ THÁNG SINH -> MỞ DROPDOWN CHO KTV LƯU LẦN ĐẦU
       if (regMonthContainer) regMonthContainer.classList.remove('hidden');
       if (regMonthFixed) regMonthFixed.classList.add('hidden');
-      if (regMonthSelect) regMonthSelect.value = '';
+      if (regMonthSelect) { regMonthSelect.value = ''; regMonthSelect.style.color = '#A39696'; }
     }
 
     if (noteContent) {
