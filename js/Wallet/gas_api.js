@@ -80,7 +80,7 @@ async function refreshDataFromGoogleSheets() {
       if (Array.isArray(payload.expenses)) setStored('expenses', payload.expenses);
       if (Array.isArray(payload.loyalty_cycles)) setStored('loyalty_cycles', payload.loyalty_cycles);
       if (Array.isArray(payload.vouchers)) setStored('vouchers', payload.vouchers);
-      if (payload.config && payload.config.announcement) setStored('announcement', payload.config.announcement);
+      if (payload.config) { if (payload.config.announcement) setStored('announcement', payload.config.announcement); setStored('ui_config', payload.config); if (typeof applyDynamicUIConfig === 'function') applyDynamicUIConfig(payload.config); }
       
       if (typeof initMenuUI === 'function') initMenuUI();
       if (typeof renderQuickAccounts === 'function') renderQuickAccounts();

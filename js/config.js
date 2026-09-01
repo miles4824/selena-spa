@@ -51,7 +51,7 @@ function parseBirthMonth(val) {
   return 0;
 }
 
-const APP_VERSION = 'v0.0.0.9';
+const APP_VERSION = 'v0.0.1.0';
 // =============================================================
 // SELENA SPA - GLOBAL CONFIG & CONSTANTS
 // =============================================================
@@ -773,3 +773,68 @@ function showToast(message, type = 'success') {
 window.alert = function(msg) {
   showToast(msg, 'success');
 };
+
+// =============================================================
+// DYNAMIC UI CONFIGURATION (ĐỒNG BỘ ĐỘNG TỪ GOOGLE SHEETS TB_CONFIG)
+// =============================================================
+const DEFAULT_UI_CONFIG = {
+  ph_phone: '0799625591',
+  ph_customer_name: 'VD: Chị Ngân Ngân',
+  ph_notes: 'Ghi chú chi tiết sở thích hoặc lưu ý về khách...',
+  opt_birth_month: '-- Tháng --',
+  ph_login_phone: '0949251144',
+  ph_login_password: '••••••',
+  ph_admin_cust_search: '🔍 Tìm kiếm theo tên hoặc số điện thoại...',
+  ph_add_exp_amount: 'Ví dụ: 350000',
+  ph_add_exp_note: 'Ghi chú chi tiết...',
+  ph_announcement: 'Nhập thông báo gửi đến toàn thể kỹ thuật viên...',
+  ph_gift_voucher_note: 'VD: Khách VIP, Quà tri ân...'
+};
+
+function applyDynamicUIConfig(customConfig) {
+  const cfg = { ...DEFAULT_UI_CONFIG, ...(customConfig || getStored('ui_config', {})) };
+
+  // 1. Placeholder Số Điện Thoại
+  ['pos-customer-phone', 'modal-staff-note-guest-phone', 'modal-owner-edit-phone'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el && cfg.ph_phone) el.placeholder = cfg.ph_phone;
+  });
+
+  // 2. Placeholder Tên Khách Hàng
+  ['pos-customer-name', 'modal-staff-note-guest-name', 'modal-owner-edit-name'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el && cfg.ph_customer_name) el.placeholder = cfg.ph_customer_name;
+  });
+
+  // 3. Placeholder Ghi Chú
+  ['modal-staff-note-content', 'modal-owner-edit-notes'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el && cfg.ph_notes) el.placeholder = cfg.ph_notes;
+  });
+
+  // 4. Default Text Dropdown Sinh Nhật
+  ['pos-birth-month', 'modal-staff-note-guest-birth-month', 'modal-staff-note-regular-birth-month', 'modal-owner-edit-birth-month'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el && el.options && el.options[0] && cfg.opt_birth_month) {
+      el.options[0].text = cfg.opt_birth_month;
+    }
+  });
+
+  // 5. Login
+  const logPhone = document.getElementById('login-phone');
+  if (logPhone && cfg.ph_login_phone) logPhone.placeholder = cfg.ph_login_phone;
+  const logPwd = document.getElementById('login-password');
+  if (logPwd && cfg.ph_login_password) logPwd.placeholder = cfg.ph_login_password;
+
+  // 6. Admin Search & Expenses
+  const admSearch = document.getElementById('admin-customer-search-input');
+  if (admSearch && cfg.ph_admin_cust_search) admSearch.placeholder = cfg.ph_admin_cust_search;
+  const expAmt = document.getElementById('input-exp-amount');
+  if (expAmt && cfg.ph_add_exp_amount) expAmt.placeholder = cfg.ph_add_exp_amount;
+  const expNote = document.getElementById('input-exp-note');
+  if (expNote && cfg.ph_add_exp_note) expNote.placeholder = cfg.ph_add_exp_note;
+  const annContent = document.getElementById('input-announcement-content');
+  if (annContent && cfg.ph_announcement) annContent.placeholder = cfg.ph_announcement;
+  const giftNote = document.getElementById('modal-gift-notes');
+  if (giftNote && cfg.ph_gift_voucher_note) giftNote.placeholder = cfg.ph_gift_voucher_note;
+}
