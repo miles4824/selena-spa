@@ -17,10 +17,12 @@
   - **Component xử lý giao diện JS**: Tạo file riêng độc lập trong `js/Components/` hoặc `js/Screens/`.
   - **Nghiệp vụ tính toán & Toán học lõi**: Tạo file riêng độc lập trong `js/Core/`.
 
-### 3. Luôn Cập Nhật Lại Kiến Trúc & Database Sau Khi Hoàn Thành:
+### 3. Luôn Cập Nhật Lại Kiến Trúc, Database & Backend Code.gs Sau Khi Hoàn Thành:
 - Sau khi hoàn thành bất kỳ tính năng mới hoặc thay đổi cấu trúc nào:
   - Nếu có thay đổi cấu trúc file/module: **Cập nhật lại `selena_spa_master_architecture.md` và `PROJECT_RULES.md`**.
-  - Nếu có chỉnh sửa, thêm bớt bảng, thêm bớt cột trong Google Sheets hoặc Firebase: **BẮT BUỘC phải cập nhật lại `selena_spa_database_architecture.md` ngay lập tức** để ghi nhận rõ ràng cột mới dùng ở đâu, hàm nào đọc/ghi.
+  - Nếu có thay đổi Database (thêm bớt bảng, thêm bớt cột, đổi tên cột trên Google Sheets):
+    1. **BẮT BUỘC cập nhật đồng thời file `google_apps_script/Code.gs`** để bổ sung hàm đọc/ghi tương ứng và tạo Bản Triển Khai Mới (New Deployment) trên Apps Script.
+    2. **BẮT BUỘC cập nhật lại tài liệu `selena_spa_database_architecture.md` ngay lập tức** để lưu trữ nhật ký cột mới dùng ở đâu, hàm nào phụ trách.
 
 ---
 
@@ -108,3 +110,13 @@
   1. `index.html` (Query string `?v=v0.0.0.x` của tất cả các file script/css).
   2. `js/config.js` (`const APP_VERSION = 'v0.0.0.x';`).
   3. `views/login.html` (Dòng chữ hiển thị phiên bản ở chân trang đăng nhập).
+
+---
+
+## ⚙️ 12. NGUYÊN TẮC ĐỒNG BỘ BACKEND CODE.GS VỚI DATABASE GOOGLE SHEETS
+- **Đồng bộ song hành 100%**: Mọi sự thay đổi trên Google Sheets (thêm cột, xóa cột, đổi tên cột, thêm tab bảng mới) **BẮT BUỘC phải cập nhật đồng thời trong `google_apps_script/Code.gs`**.
+- **Quy trình 4 bước bắt buộc khi thay đổi Database**:
+  1. Thêm / sửa cột trên Google Sheets.
+  2. Cập nhật hàm đọc (`syncAllData`, `checkCustomer`...) và hàm ghi (`createReceipt`, `updateCustomerNotes`, `addExpense`...) trong `Code.gs`.
+  3. Sao chép code mới vào **Apps Script** của Google Sheet và bấm **Triển khai mới (New Deployment)**.
+  4. Cập nhật tài liệu [`selena_spa_database_architecture.md`](selena_spa_database_architecture.md).
