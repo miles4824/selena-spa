@@ -77,5 +77,5 @@ ightarrow$ Thêm 1 dòng (Mã audit, Mã hóa đơn, Thời gian, Mã KTV, Tên 
 
 ## 6. Lịch Sử Thay Đổi & Lưu Vết (Audit Log)
 - `2026-09-01` (`v0.0.0.1`):
-- `2026-09-01` (`v0.0.0.7`): Khắc phục hiển thị SĐT 10 số thật cho Chủ Tiệm, hiển thị ô chọn tháng cho khách chưa có tháng sinh và chuẩn hóa SVG Lucide. Bóc tách thành component độc lập và thực thi quy tắc ẩn vĩnh viễn ô chọn tháng khi khách đã có sinh nhật.
-- `2026-09-01` (`v0.0.0.7`): Hoàn thiện kịch bản 2A (trùng số lấy lại tên cũ) và 2B (số mới bật popup xác nhận) cho KTV, đồng thời ghi nhận nhật ký đối soát vào bảng `tb_customer_audits`.
+- `2026-09-01` (`v0.0.0.8`): Khắc phục hiển thị SĐT 10 số thật cho Chủ Tiệm, hiển thị ô chọn tháng cho khách chưa có tháng sinh và chuẩn hóa SVG Lucide. Bóc tách thành component độc lập và thực thi quy tắc ẩn vĩnh viễn ô chọn tháng khi khách đã có sinh nhật.
+- `2026-09-01` (`v0.0.0.8`): Hoàn thiện kịch bản 2A (trùng số lấy lại tên cũ) và 2B (số mới bật popup xác nhận) cho KTV, đồng thời ghi nhận nhật ký đối soát vào bảng `tb_customer_audits`.

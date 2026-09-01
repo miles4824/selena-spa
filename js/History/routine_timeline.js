@@ -276,6 +276,7 @@ function loadStaffHistoryList(targetDate) {
 // =============================================================
 // =============================================================
 // =============================================================
+// =============================================================
 // COMPONENT: MODAL GHI CHÚ & BỔ SUNG THÔNG TIN KHÁCH HÀNG (KTV / STAFF)
 // TUÂN THỦ 100% ĐẶC TẢ TẠI: docs/Modals/modal_staff_note.md
 // =============================================================
@@ -620,8 +621,8 @@ function handleSaveStaffCustomerNote(e) {
   }
   setStored('customers', customers);
 
-  // 2. Cập nhật hóa đơn trong tb_receipts nếu là ca vãng lai được bổ sung SĐT
-  if (isGuest && receiptId) {
+  // 2. Cập nhật hóa đơn trong tb_receipts VÀ tb_payroll_logs nếu có receiptId
+  if (receiptId) {
     const receipts = getStored('receipts', []);
     const rIdx = receipts.findIndex(r => r.receipt_id === receiptId);
     if (rIdx >= 0) {
@@ -630,11 +631,25 @@ function handleSaveStaffCustomerNote(e) {
       receipts[rIdx].raw_phone = targetPhone;
       setStored('receipts', receipts);
     }
+
+    const payrollLogs = getStored('payroll_logs', []);
+    payrollLogs.forEach(p => {
+      if (p.receipt_id === receiptId) {
+        p.customer_name = targetName;
+        p.customer_phone = targetPhone;
+      }
+    });
+    setStored('payroll_logs', payrollLogs);
   }
 
-  // 3. Lấy thông tin KTV đang đăng nhập để làm nhật ký đối soát
-  const activeUser = getStored('active_user', null);
-  const staffName = activeUser?.full_name || 'KTV';
+  // 3. Lấy thông tin KTV đang đăng nhập chính xác 100%
+  let activeUser = (typeof currentUser !== 'undefined' && currentUser) ? currentUser : null;
+  if (!activeUser) {
+    try {
+      activeUser = JSON.parse(localStorage.getItem('selena_active_session') || '{}');
+    } catch(e) {}
+  }
+  const staffName = activeUser?.full_name || activeUser?.name || 'Nguyễn Thị Huệ';
   const staffId = activeUser?.staff_id || activeUser?.user_id || 'KTV01';
 
   // 4. Gửi đồng bộ về Google Apps Script
@@ -647,22 +662,33 @@ function handleSaveStaffCustomerNote(e) {
     receipt_id: receiptId || '',
     staff_name: staffName,
     staff_id: staffId,
+    note: isGuest ? 'KTV cập nhật tour vãng lai' : 'Cập nhật ghi chú',
     action_type: isGuest ? 'ASSIGN_GUEST_CUSTOMER' : 'UPDATE_NOTES'
   });
 
-  // 5. Cập nhật Firebase Realtime
+  // 5. Cập nhật Firebase Realtime để các thiết bị khác đồng bộ ngay
   if (typeof fbSaveCustomerNote === 'function') {
     fbSaveCustomerNote(targetPhone, targetName, Number(birthMonth) || 0, notes);
+  }
+  if (receiptId && typeof firebase !== 'undefined' && firebase.database) {
+    try {
+      firebase.database().ref('receipts/' + receiptId).update({
+        customer_name: targetName,
+        customer_phone: targetPhone
+      });
+    } catch(e) {}
   }
 
   closeStaffCustomerNoteModal();
   alert('✅ Đã cập nhật thông tin khách hàng thành công!');
 
-  // 6. Tải lại danh sách lịch sử tour để phản ánh ngay
+  // 6. Tải lại danh sách lịch sử tour ngay lập tức trên cả Staff lẫn Admin
   if (typeof loadStaffReceiptsList === 'function') {
-    loadStaffReceiptsList(selectedDateFilter);
+    const curStaffDate = (typeof selectedStaffHistoryDate !== 'undefined') ? selectedStaffHistoryDate : 'ALL';
+    loadStaffReceiptsList(curStaffDate);
   }
   if (typeof loadAdminReceiptsList === 'function') {
-    loadAdminReceiptsList(selectedAdminHistoryDate);
+    const curAdminDate = (typeof selectedAdminHistoryDate !== 'undefined') ? selectedAdminHistoryDate : 'ALL';
+    loadAdminReceiptsList(curAdminDate);
   }
 }

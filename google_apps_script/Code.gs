@@ -538,11 +538,11 @@ function updateCustomerNotes(params) {
         params.receipt_id || '-',
         dtStr,
         params.staff_id || 'KTV01',
-        params.staff_name || 'KTV',
+        params.staff_name || 'Nguyễn Thị Huệ',
         'Khách vãng lai',
         phone,
         newName || 'Khách hàng',
-        params.action_type === 'ASSIGN_GUEST_CUSTOMER' ? 'KTV bổ sung SĐT ca vãng lai' : 'Cập nhật ghi chú'
+        params.note || (params.action_type === 'ASSIGN_GUEST_CUSTOMER' ? 'KTV cập nhật tour vãng lai' : 'Cập nhật ghi chú')
       ]);
     }
   } catch(errAudit) {}
