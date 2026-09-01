@@ -211,3 +211,18 @@ c:\Users\Miles\Downloads\Selena\
 | **9. Sửa giao diện & logic Modal KTV ghi chú** | `views/components/modals/modal_staff_note.html` & `js/Components/Modals/modal_staff_note.js` |
 | **10. Sửa giao diện & logic Modal Chủ quản trị khách** | `views/components/modals/modal_owner_customer.html` & `js/Components/Modals/modal_owner_customer.js` |
 | **11. Sửa giao diện & logic Modal Thanh toán 2 pha** | `views/components/modals/modal_checkout.html` & `js/Components/Modals/modal_checkout.js` |
+
+
+
+---
+
+## 📝 12. NGUYÊN TẮC LUÔN CẬP NHẬT TÀI LIỆU ĐẶC TẢ (.MD) TRƯỚC KHI CODE (DOCS-FIRST WORKFLOW)
+- **Quy trình bắt buộc (Docs-First Rule)**: Khi chuẩn bị làm bất kỳ tính năng, thay đổi giao diện, thêm kịch bản nghiệp vụ hay sửa lỗi cho module nào, AI Assistant **BẮT BUỘC phải mở và cập nhật đầy đủ 100% kịch bản nghiệp vụ vào file `.md` tương ứng trong thư mục `docs/` TRƯỚC KHI bắt tay vào viết code**.
+- **Cấm viết code chay**: Tuyệt đối không được viết code trực tiếp trên HTML/JS nếu chưa cập nhật tài liệu đặc tả `.md` của module đó.
+- **Nội dung chuẩn 6 phần bắt buộc trong file `.md`**:
+  1. **Mục đích & Bối cảnh thực tế tại tiệm**.
+  2. **Danh sách file cấu thành** (Khung HTML, Mã JS, Core Services).
+  3. **Quy tắc giao diện & Toàn bộ kịch bản nghiệp vụ chi tiết** (UI Scenarios, Edge cases, quyền hạn Staff vs Admin).
+  4. **Luồng xử lý logic & Quản lý state** (State variables, công thức tính tiền/giờ với LaTeX).
+  5. **Ánh xạ cơ sở dữ liệu chi tiết** (Cột nào trong `tb_menu`, `tb_receipts`, `tb_customers`, `tb_payroll_logs`, `tb_config`...).
+  6. **Lịch sử thay đổi & Lưu vết (Audit Log)**: Ghi rõ ngày tháng và phiên bản hệ thống (Ví dụ: `- 2026-09-01 (v0.0.1.7): ...`).
