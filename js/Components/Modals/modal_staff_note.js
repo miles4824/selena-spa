@@ -15,10 +15,17 @@ async function openStaffCustomerNoteModal(phone, name, receiptId) {
   document.getElementById('modal-staff-note-is-guest').value = isGuest ? '1' : '0';
 
   const guestInputs = document.getElementById('modal-staff-note-guest-inputs');
-  const monthContainer = document.getElementById('modal-staff-note-birth-month-container');
-  const monthFixed = document.getElementById('modal-staff-note-birth-month-fixed');
-  const monthFixedText = document.getElementById('modal-staff-note-birth-month-fixed-text');
-  const monthSelect = document.getElementById('modal-staff-note-birth-month');
+  const regularMonthSection = document.getElementById('modal-staff-note-regular-month-section');
+  const regMonthContainer = document.getElementById('modal-staff-note-regular-month-container');
+  const regMonthFixed = document.getElementById('modal-staff-note-regular-month-fixed');
+  const regMonthFixedText = document.getElementById('modal-staff-note-regular-month-fixed-text');
+  const regMonthSelect = document.getElementById('modal-staff-note-regular-birth-month');
+
+  const guestMonthContainer = document.getElementById('modal-staff-note-guest-month-container');
+  const guestMonthFixed = document.getElementById('modal-staff-note-guest-month-fixed');
+  const guestMonthFixedText = document.getElementById('modal-staff-note-guest-month-fixed-text');
+  const guestMonthSelect = document.getElementById('modal-staff-note-guest-birth-month');
+
   const noteContent = document.getElementById('modal-staff-note-content');
   const guestNameInput = document.getElementById('modal-staff-note-guest-name');
   const guestPhoneInput = document.getElementById('modal-staff-note-guest-phone');
@@ -41,11 +48,13 @@ async function openStaffCustomerNoteModal(phone, name, receiptId) {
   let bMonth = (foundCust && foundCust.birth_month) ? Number(foundCust.birth_month) : (foundCust && foundCust.birthday ? parseBirthMonth(foundCust.birthday) : 0);
 
   if (isGuest) {
-    // 🟠 KỊCH BẢN 2: KHÁCH VÃNG LAI
+    // 🟠 KỊCH BẢN 2: KHÁCH VÃNG LAI -> HIỆN KHUNG GOM VÀNG CAM
     document.getElementById('modal-staff-note-name').innerText = 'Bổ Sung Thông Tin Khách';
     document.getElementById('modal-staff-note-phone').innerText = 'Tour ca chưa có số điện thoại';
     
     if (guestInputs) guestInputs.classList.remove('hidden');
+    if (regularMonthSection) regularMonthSection.classList.add('hidden');
+
     if (guestNameInput) {
       guestNameInput.value = (name && name !== 'Khách vãng lai') ? name : '';
       guestNameInput.readOnly = false;
@@ -61,30 +70,30 @@ async function openStaffCustomerNoteModal(phone, name, receiptId) {
     }
     if (phoneHint) phoneHint.classList.add('hidden');
 
-    // Khách vãng lai -> Luôn mở ô chọn tháng
-    if (monthContainer) monthContainer.classList.remove('hidden');
-    if (monthFixed) monthFixed.classList.add('hidden');
-    if (monthSelect) monthSelect.value = '';
+    if (guestMonthContainer) guestMonthContainer.classList.remove('hidden');
+    if (guestMonthFixed) guestMonthFixed.classList.add('hidden');
+    if (guestMonthSelect) guestMonthSelect.value = '';
     if (noteContent) noteContent.value = '';
   } else {
-    // 🟢 KỊCH BẢN 1: KHÁCH QUEN ĐÃ CÓ SĐT
+    // 🟢 KỊCH BẢN 1: KHÁCH QUEN ĐÃ CÓ SĐT -> ẨN KHUNG GOM, HIỆN MỤC THÁNG CHO KHÁCH QUEN
     const displayPhone = rawPhone ? maskPhoneNumber(rawPhone, false) : '094*144';
     document.getElementById('modal-staff-note-name').innerText = name || foundCust?.customer_name || 'Khách Hàng';
     document.getElementById('modal-staff-note-phone').innerText = displayPhone;
     
     if (guestInputs) guestInputs.classList.add('hidden');
+    if (regularMonthSection) regularMonthSection.classList.remove('hidden');
 
     if (bMonth && bMonth >= 1 && bMonth <= 12) {
       // ĐÃ CÓ THÁNG SINH -> ẨN DROPDOWN VĨNH VIỄN, HIỆN DÒNG CỐ ĐỊNH
-      if (monthContainer) monthContainer.classList.add('hidden');
-      if (monthFixed) monthFixed.classList.remove('hidden');
-      if (monthFixedText) monthFixedText.innerText = `Sinh nhật: Tháng ${bMonth}`;
-      if (monthSelect) monthSelect.value = String(bMonth);
+      if (regMonthContainer) regMonthContainer.classList.add('hidden');
+      if (regMonthFixed) regMonthFixed.classList.remove('hidden');
+      if (regMonthFixedText) regMonthFixedText.innerText = `Sinh nhật: Tháng ${bMonth}`;
+      if (regMonthSelect) regMonthSelect.value = String(bMonth);
     } else {
       // CHƯA CÓ THÁNG SINH -> MỞ DROPDOWN CHO KTV LƯU LẦN ĐẦU
-      if (monthContainer) monthContainer.classList.remove('hidden');
-      if (monthFixed) monthFixed.classList.add('hidden');
-      if (monthSelect) monthSelect.value = '';
+      if (regMonthContainer) regMonthContainer.classList.remove('hidden');
+      if (regMonthFixed) regMonthFixed.classList.add('hidden');
+      if (regMonthSelect) regMonthSelect.value = '';
     }
 
     if (noteContent) {
@@ -173,19 +182,19 @@ function onStaffGuestPhoneInput(val) {
         guestNameInput.classList.add('bg-gray-100', 'text-gray-500');
       }
       let bMonth = foundCust.birth_month || parseBirthMonth(foundCust.birthday);
-      const monthContainer = document.getElementById('modal-staff-note-birth-month-container');
-      const monthFixed = document.getElementById('modal-staff-note-birth-month-fixed');
-      const monthFixedText = document.getElementById('modal-staff-note-birth-month-fixed-text');
-      const monthSelect = document.getElementById('modal-staff-note-birth-month');
+      const guestMonthContainer = document.getElementById('modal-staff-note-guest-month-container');
+      const guestMonthFixed = document.getElementById('modal-staff-note-guest-month-fixed');
+      const guestMonthFixedText = document.getElementById('modal-staff-note-guest-month-fixed-text');
+      const guestMonthSelect = document.getElementById('modal-staff-note-guest-birth-month');
 
       if (bMonth && bMonth >= 1 && bMonth <= 12) {
-        if (monthContainer) monthContainer.classList.add('hidden');
-        if (monthFixed) monthFixed.classList.remove('hidden');
-        if (monthFixedText) monthFixedText.innerText = `Sinh nhật: Tháng ${bMonth}`;
-        if (monthSelect) monthSelect.value = String(bMonth);
+        if (guestMonthContainer) guestMonthContainer.classList.add('hidden');
+        if (guestMonthFixed) guestMonthFixed.classList.remove('hidden');
+        if (guestMonthFixedText) guestMonthFixedText.innerText = `Sinh nhật: Tháng ${bMonth}`;
+        if (guestMonthSelect) guestMonthSelect.value = String(bMonth);
       } else {
-        if (monthContainer) monthContainer.classList.remove('hidden');
-        if (monthFixed) monthFixed.classList.add('hidden');
+        if (guestMonthContainer) guestMonthContainer.classList.remove('hidden');
+        if (guestMonthFixed) guestMonthFixed.classList.add('hidden');
       }
       return;
     }
@@ -217,13 +226,12 @@ function selectStaffGuestSuggestion(fullPhone, name, birthMonth) {
   const suggestionsBox = document.getElementById('modal-staff-note-suggestions');
   const lookupBadge = document.getElementById('modal-staff-note-lookup-badge');
   const phoneHint = document.getElementById('modal-staff-note-phone-hint');
-  const monthContainer = document.getElementById('modal-staff-note-birth-month-container');
-  const monthFixed = document.getElementById('modal-staff-note-birth-month-fixed');
-  const monthFixedText = document.getElementById('modal-staff-note-birth-month-fixed-text');
-  const monthSelect = document.getElementById('modal-staff-note-birth-month');
+  const guestMonthContainer = document.getElementById('modal-staff-note-guest-month-container');
+  const guestMonthFixed = document.getElementById('modal-staff-note-guest-month-fixed');
+  const guestMonthFixedText = document.getElementById('modal-staff-note-guest-month-fixed-text');
+  const guestMonthSelect = document.getElementById('modal-staff-note-guest-birth-month');
 
   if (guestPhoneInput) {
-    // Lưu số thật vào dataset, hiển thị số che cho Staff
     guestPhoneInput.value = maskPhoneNumber(fullPhone, false);
     guestPhoneInput.dataset.rawPhone = fullPhone;
   }
@@ -245,13 +253,13 @@ function selectStaffGuestSuggestion(fullPhone, name, birthMonth) {
   }
 
   if (birthMonth && birthMonth >= 1 && birthMonth <= 12) {
-    if (monthContainer) monthContainer.classList.add('hidden');
-    if (monthFixed) monthFixed.classList.remove('hidden');
-    if (monthFixedText) monthFixedText.innerText = `Sinh nhật: Tháng ${birthMonth}`;
-    if (monthSelect) monthSelect.value = String(birthMonth);
+    if (guestMonthContainer) guestMonthContainer.classList.add('hidden');
+    if (guestMonthFixed) guestMonthFixed.classList.remove('hidden');
+    if (guestMonthFixedText) guestMonthFixedText.innerText = `Sinh nhật: Tháng ${birthMonth}`;
+    if (guestMonthSelect) guestMonthSelect.value = String(birthMonth);
   } else {
-    if (monthContainer) monthContainer.classList.remove('hidden');
-    if (monthFixed) monthFixed.classList.add('hidden');
+    if (guestMonthContainer) guestMonthContainer.classList.remove('hidden');
+    if (guestMonthFixed) guestMonthFixed.classList.add('hidden');
   }
 }
 
@@ -268,7 +276,11 @@ function handleSaveStaffCustomerNote(e) {
   const guestName = document.getElementById('modal-staff-note-guest-name')?.value?.trim();
   const guestPhoneInput = document.getElementById('modal-staff-note-guest-phone');
   const inputPhoneVal = guestPhoneInput?.dataset?.rawPhone || guestPhoneInput?.value?.trim();
-  const birthMonth = document.getElementById('modal-staff-note-birth-month')?.value;
+  
+  const birthMonth = isGuest ? 
+    document.getElementById('modal-staff-note-guest-birth-month')?.value : 
+    document.getElementById('modal-staff-note-regular-birth-month')?.value;
+
   const notes = document.getElementById('modal-staff-note-content')?.value.trim();
 
   let targetPhone = rawPhone;

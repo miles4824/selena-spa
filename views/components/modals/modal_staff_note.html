@@ -21,14 +21,14 @@
       <input type="hidden" id="modal-staff-note-receipt-id">
       <input type="hidden" id="modal-staff-note-is-guest" value="0">
       
-      <!-- CỤM KHUNG BỔ SUNG THÔNG TIN KHÁCH (CHỈ HIỆN KHI LÀ KHÁCH VÃNG LAI) -->
+      <!-- CỤM KHUNG GOM CHUNG: BỔ SUNG THÔNG TIN KHÁCH (CHỈ HIỆN KHI LÀ KHÁCH VÃNG LAI) -->
       <div id="modal-staff-note-guest-inputs" class="hidden space-y-3 bg-[#FAF6F1] p-3.5 rounded-2xl border border-[#FCDFD7]">
         <div class="text-xs font-bold text-[#E58A7B] flex items-center justify-between">
           <span class="flex items-center gap-1.5"><i data-lucide="user-plus" class="w-4 h-4 text-[#E58A7B]"></i> Bổ Sung Thông Tin Khách:</span>
           <span id="modal-staff-note-lookup-badge" class="text-[10px] px-2 py-0.5 rounded-full bg-white font-semibold text-[#7E7272] border border-[#F0EAE1]">Nhập SĐT để dò tìm</span>
         </div>
 
-        <!-- SỐ ĐIỆN THOẠI & DROPDOWN GỢI Ý CHUẨN POS -->
+        <!-- 1. SỐ ĐIỆN THOẠI & DROPDOWN GỢI Ý CHUẨN POS -->
         <div class="relative">
           <label class="block text-xs font-bold text-[#2D2424] mb-1 flex items-center gap-1.5">
             <i data-lucide="phone" class="w-3.5 h-3.5 text-[#E58A7B]"></i> Số Điện Thoại:
@@ -42,23 +42,20 @@
           <p id="modal-staff-note-phone-hint" class="text-[11px] text-[#A39696] mt-1 italic hidden"></p>
         </div>
 
-        <!-- TÊN KHÁCH HÀNG -->
+        <!-- 2. TÊN KHÁCH HÀNG -->
         <div>
           <label class="block text-xs font-bold text-[#2D2424] mb-1 flex items-center gap-1.5">
             <i data-lucide="user" class="w-3.5 h-3.5 text-[#E58A7B]"></i> Tên Khách Hàng:
           </label>
           <input type="text" id="modal-staff-note-guest-name" placeholder="VD: Chị Mai Lan" class="w-full bg-white border border-[#EFE8DF] rounded-xl p-2.5 text-xs sm:text-sm text-[#2D2424] font-medium focus:outline-none focus:border-[#E58A7B] transition">
         </div>
-      </div>
 
-      <!-- MỤC THÁNG SINH NHẬT (ÁP DỤNG CHO CẢ KHÁCH QUEN LẪN KHÁCH VÃNG LAI) -->
-      <div id="modal-staff-note-birth-month-section" class="space-y-1">
-        <!-- 1. Ô CHỌN THÁNG (KHI CHƯA CÓ THÁNG SINH) -->
-        <div id="modal-staff-note-birth-month-container">
+        <!-- 3. THÁNG SINH NHẬT NẰM TRONG KHUNG GOM NÀY DƯỚI TÊN -->
+        <div id="modal-staff-note-guest-month-container">
           <label class="block text-xs font-bold text-[#2D2424] mb-1 flex items-center gap-1.5">
             <i data-lucide="cake" class="w-3.5 h-3.5 text-[#E58A7B]"></i> Tháng Sinh Nhật Khách Hàng (Tùy chọn):
           </label>
-          <select id="modal-staff-note-birth-month" class="w-full bg-[#F7F2EC] border border-[#EFE8DF] rounded-2xl p-3 text-xs sm:text-sm text-[#2D2424] font-bold focus:outline-none focus:border-[#E58A7B] focus:bg-white transition cursor-pointer">
+          <select id="modal-staff-note-guest-birth-month" class="w-full bg-white border border-[#EFE8DF] rounded-xl p-2.5 text-xs sm:text-sm text-[#2D2424] font-bold focus:outline-none focus:border-[#E58A7B] transition cursor-pointer">
             <option value="">-- Chọn tháng sinh (để tiệm tặng voucher 20%) --</option>
             <option value="1">Tháng 1</option>
             <option value="2">Tháng 2</option>
@@ -75,10 +72,40 @@
           </select>
         </div>
 
-        <!-- 2. THÔNG BÁO NẾU ĐÃ CÓ THÁNG SINH (KHÓA CỐ ĐỊNH CHO KTV) -->
-        <div id="modal-staff-note-birth-month-fixed" class="hidden text-xs font-bold text-[#2E7D6D] bg-[#E8F8F5] p-3 rounded-2xl border border-[#B7EBDD] flex items-center gap-2">
+        <div id="modal-staff-note-guest-month-fixed" class="hidden text-xs font-bold text-[#2E7D6D] bg-[#E8F8F5] p-2.5 rounded-xl border border-[#B7EBDD] flex items-center gap-1.5">
           <i data-lucide="cake" class="w-4 h-4 text-[#2E7D6D]"></i>
-          <span id="modal-staff-note-birth-month-fixed-text">Sinh nhật: Tháng --</span>
+          <span id="modal-staff-note-guest-month-fixed-text">Sinh nhật: Tháng --</span>
+        </div>
+      </div>
+
+      <!-- MỤC THÁNG SINH NHẬT DÀNH CHO KHÁCH QUEN (KHI GUEST INPUTS ĐANG ẨN) -->
+      <div id="modal-staff-note-regular-month-section" class="space-y-1">
+        <!-- 1. Ô CHỌN THÁNG CHO KHÁCH QUEN CHƯA CÓ THÁNG SINH -->
+        <div id="modal-staff-note-regular-month-container">
+          <label class="block text-xs font-bold text-[#2D2424] mb-1 flex items-center gap-1.5">
+            <i data-lucide="cake" class="w-3.5 h-3.5 text-[#E58A7B]"></i> Tháng Sinh Nhật Khách Hàng (Tùy chọn):
+          </label>
+          <select id="modal-staff-note-regular-birth-month" class="w-full bg-[#F7F2EC] border border-[#EFE8DF] rounded-2xl p-3 text-xs sm:text-sm text-[#2D2424] font-bold focus:outline-none focus:border-[#E58A7B] focus:bg-white transition cursor-pointer">
+            <option value="">-- Chọn tháng sinh (để tiệm tặng voucher 20%) --</option>
+            <option value="1">Tháng 1</option>
+            <option value="2">Tháng 2</option>
+            <option value="3">Tháng 3</option>
+            <option value="4">Tháng 4</option>
+            <option value="5">Tháng 5</option>
+            <option value="6">Tháng 6</option>
+            <option value="7">Tháng 7</option>
+            <option value="8">Tháng 8</option>
+            <option value="9">Tháng 9</option>
+            <option value="10">Tháng 10</option>
+            <option value="11">Tháng 11</option>
+            <option value="12">Tháng 12</option>
+          </select>
+        </div>
+
+        <!-- 2. THÔNG BÁO CHO KHÁCH QUEN ĐÃ CÓ THÁNG SINH (KHÓA CỐ ĐỊNH) -->
+        <div id="modal-staff-note-regular-month-fixed" class="hidden text-xs font-bold text-[#2E7D6D] bg-[#E8F8F5] p-3 rounded-2xl border border-[#B7EBDD] flex items-center gap-2">
+          <i data-lucide="cake" class="w-4 h-4 text-[#2E7D6D]"></i>
+          <span id="modal-staff-note-regular-month-fixed-text">Sinh nhật: Tháng --</span>
         </div>
       </div>
 
