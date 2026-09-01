@@ -16,6 +16,11 @@ ightarrow$ Đỏ khi quá giờ.
 - Nếu quá giờ định mức $
 ightarrow$ Chuyển sang đếm cộng dồn với dấu `+` (Ví dụ: `+02:15`).
 
+
+### 3.3. Tính Năng Đổi & Bổ Sung Dịch Vụ Giữa Ca (Mid-Tour Service Swap):
+- Cạnh tiêu đề tour có nút **`[ ✏️ Đổi / Thêm ]`** mở `modal_edit_live_services`.
+- Khi dịch vụ thay đổi: Live Timer lập tức cập nhật lại `duration_target_min` và tính lại thanh tiến trình phần trăm mà không cần reset thời gian bắt đầu ca.
+
 ## 4. Luồng Xử Lý Logic & Hành Vi Hệ Thống (Business Logic)
 1. Bắt đầu ca $
 ightarrow$ Lưu `start_time` và cập nhật Firebase node `active_sessions/`.
@@ -26,4 +31,5 @@ ightarrow$ Lưu `start_time` và cập nhật Firebase node `active_sessions/`.
 - **Ghi vào `tb_receipts`**: Cột C (`start_time`), Cột D (`end_time`), Cột E (`duration_min`).
 
 ## 6. Lịch Sử Thay Đổi & Lưu Vết (Audit Log)
-- `2026-09-01` (`v0.0.0.1`): Bóc tách thành component độc lập.
+- `2026-09-01` (`v0.0.0.1`):
+- `2026-09-01` (`v0.0.3.9`): Bổ sung tính năng đổi & thêm dịch vụ giữa ca kết nối với modal_edit_live_services. Bóc tách thành component độc lập.
