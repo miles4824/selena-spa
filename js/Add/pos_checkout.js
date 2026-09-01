@@ -348,8 +348,8 @@ function renderCartUI() {
           ${isCombo ? '💆' : '✨'}
         </div>
         <!-- Cụm 2 dòng text: Tên ở trên, Giá & Phút ở dưới -->
-        <div class="min-w-0 flex-1">
-          <div class="font-black text-xs text-[#2D2424] leading-snug truncate">
+        <div class="min-w-0 flex-1 py-0.5">
+          <div class="font-black text-[11px] text-[#2D2424] leading-snug truncate">
             ${item.service_name}
           </div>
           <div class="text-[11px] font-mono text-[#7E7272] mt-0.5 flex items-center gap-1.5 leading-tight">
