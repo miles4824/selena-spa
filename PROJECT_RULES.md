@@ -144,3 +144,23 @@ ightarrow$ Nhảy tiếp thành: **`v1.0.0.0`** (Bản phát hành chính thức
   4. **Luồng xử lý logic & Quản lý state** (State variables, công thức tính tiền/giờ với LaTeX).
   5. **Ánh xạ cơ sở dữ liệu chi tiết** (Cột nào trong `tb_menu`, `tb_receipts`, `tb_customers`, `tb_payroll_logs`, `tb_config`...).
   6. **Lịch sử thay đổi & Lưu vết (Audit Log)**: Ghi rõ ngày tháng và phiên bản hệ thống (Ví dụ: `- 2026-09-01 (v0.0.1.7): ...`).
+
+---
+
+## 📋 13. NGUYÊN TẮC XUẤT VÀ GỬI DỮ LIỆU DATABASE CHO GOOGLE SHEETS (SHEETS COPY-PASTE STANDARD)
+Mỗi khi người dùng yêu cầu gửi mã dữ liệu / dữ liệu mẫu / bảng database để dán vào Google Sheets, AI Assistant **BẮT BUỘC tuân thủ 100% các tiêu chuẩn kỹ thuật sau**:
+
+1. **Định Dạng Chuẩn Tab (Tab-Separated Values - TSV) Dạng Khối Mã (` ```text `)**:
+   - Dữ liệu giữa các cột **BẮT BUỘC phân tách bằng ký tự Tab (`\t`)**, mỗi bản ghi trên 1 dòng.
+   - Đặt trong khối mã text để người dùng bấm copy toàn bộ khối, chọn ô **A1** trên Google Sheet và ấn **Ctrl + V (Dán)** là dữ liệu tự động dàn đều vào từng cột, từng hàng chuẩn xác $100\%$.
+   - **Tuyệt đối không dùng bảng Markdown có dấu gạch đứng (`|`)** khi gửi dữ liệu để paste vào Sheets (vì sẽ bị dính ký tự `|` vào dữ liệu ô tính).
+
+2. **Quy Tắc Tiền Tệ & Con Số (Pure Integer Number Rule)**:
+   - Mọi giá trị tiền tệ (giá dịch vụ, tiền hoa hồng, tiền tip, chi phí mỹ phẩm, lương...), số phút, số lượng **BẮT BUỘC PHẢI LÀ SỐ NGUYÊN THUẦN TÚY (Ví dụ: `45000`, `64000`, `109000`)**.
+   - **TUYỆT ĐỐI CẤM**:
+     - ❌ Không thêm chữ `"đ"`, `"VNĐ"`, `"$"`.
+     - ❌ Không thêm dấu chấm `.` hoặc dấu phẩy `,` phân cách hàng nghìn (để Google Sheets có thể dùng các hàm tính toán `SUM`, `AVERAGE` bình thường).
+
+3. **Quy Tắc Kiểu Dữ Liệu Logic (Boolean) & Header**:
+   - Dòng 1 luôn là Header đúng chuẩn tên cột tiếng Anh viết thường hoặc snake_case (`service_id`, `service_name`, `price`...).
+   - Các cột trạng thái logic phải ghi chữ in hoa chuẩn: **`TRUE`** hoặc **`FALSE`**.
