@@ -42,8 +42,10 @@
    - Khi một món (Combo hoặc Dịch vụ lẻ) đã nằm trong danh sách **ĐÃ CHỌN**, món đó sẽ **TỰ ĐỘNG ẨN HOÀN TOÀN KHỎI DROPDOWN** để tránh chọn trùng lặp.
    - Khi KTV bấm nút **`[✕]`** để xóa món ra khỏi giỏ, món đó sẽ **TỰ ĐỘNG HIỆN LẠI TRONG DROPDOWN**.
 2. **Quy tắc Nút Bấm Nhanh (Quick Combo Buttons - Toggle 1 Chạm)**:
-   - Chạm vào `[ Combo 1 ]` $ightarrow$ Thêm ngay Combo 1 vào danh sách ĐÃ CHỌN (và ẩn Combo 1 trong dropdown).
-   - Chạm lại vào `[ Combo 1 ]` một lần nữa $ightarrow$ Tự động hủy chọn / xóa Combo 1 khỏi danh sách (và hiện lại trong dropdown).
+   - Chạm vào `[ Combo 1 ]` $
+ightarrow$ Thêm ngay Combo 1 vào danh sách ĐÃ CHỌN (và ẩn Combo 1 trong dropdown).
+   - Chạm lại vào `[ Combo 1 ]` một lần nữa $
+ightarrow$ Tự động hủy chọn / xóa Combo 1 khỏi danh sách (và hiện lại trong dropdown).
 3. **Quy tắc Phân Nhóm Dropdown (Optgroup)**:
    - Nhóm 1: `💆 Combo Gội Chính` (Combo 1 - 5).
    - Nhóm 2: `✨ Dịch Vụ Lẻ / Làm Thêm` (Massage vai gáy, Tẩy da chết, Đắp mặt nạ, Xông hơi, Nâng cơ mặt...).
@@ -84,4 +86,4 @@ $$	ext{Tổng Phút Định Mức} = \sum_{i \in 	ext{selectedCartItems}} 	ext{D
 ## 6. Lịch Sử Thay Đổi & Lưu Vết (Audit Log)
 - `2026-09-01` (`v0.0.0.1`): Khởi tạo component chọn combo.
 - `2026-09-01` (`v0.0.1.6`): Bổ sung nút dịch vụ làm thêm.
-- `2026-09-01` (`v0.0.1.8`): Cải tiến kiến trúc giỏ dịch vụ toàn diện (Dropdown + Nút bấm nhanh 1 chạm, tự động ẩn món đã chọn khỏi dropdown, hỗ trợ 100% dịch vụ lẻ không cần combo, đồng bộ động từ tb_menu).
+- `2026-09-01` (`v0.0.1.9`): Cải tiến kiến trúc giỏ dịch vụ toàn diện (Dropdown + Nút bấm nhanh 1 chạm, tự động ẩn món đã chọn khỏi dropdown, hỗ trợ 100% dịch vụ lẻ không cần combo, đồng bộ động từ tb_menu).
