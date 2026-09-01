@@ -163,6 +163,26 @@
 
 ---
 
+
+---
+
+### 🛡️ BẢNG 10: `tb_customer_audits` (Sổ Nhật Ký Đối Soát Gán & Sửa Khách Của KTV)
+*Mục đích: Lưu vết toàn bộ lịch sử khi KTV bổ sung hoặc sửa thông tin khách hàng từ ca vãng lai để Chủ tiệm đối soát chống gian lận.*
+
+| Cột | Tên Cột Trên Sheet | Kiểu Dữ Liệu | Ví Dụ Mẫu | Nơi Frontend Đọc / Ghi | Hàm Backend GAS |
+| :---: | :--- | :---: | :--- | :--- | :--- |
+| **A** | `audit_id` | Chuỗi | `AUD260901144500` | Sinh tự động khi KTV lưu thông tin | `updateCustomerNotes` |
+| **B** | `receipt_id` | Chuỗi | `HD260901143000` | Mã hóa đơn được bổ sung SĐT | `updateCustomerNotes` |
+| **C** | `date_time` | Dấu TG | `2026/09/01 - 14:45` | Thời điểm KTV thực hiện thao tác | `updateCustomerNotes` |
+| **D** | `staff_id` | Chuỗi | `KTV01` | Mã định danh KTV thực hiện | `updateCustomerNotes` |
+| **E** | `staff_name` | Chuỗi | `Nguyễn Thị Huệ` | Tên KTV đang đăng nhập | `updateCustomerNotes` |
+| **F** | `old_customer` | Chuỗi | `Khách vãng lai` | Tên khách cũ trước khi sửa | `updateCustomerNotes` |
+| **G** | `new_phone` | SĐT 10 số | `0949251144` | Số điện thoại mới được gán | `updateCustomerNotes` |
+| **H** | `new_customer_name`| Chuỗi | `Chị Mai Lan` | Tên khách mới được gán | `updateCustomerNotes` |
+| **I** | `note` | Chuỗi | `KTV bổ sung SĐT ca vãng lai` | Ghi chú loại thao tác đối soát | `updateCustomerNotes` |
+
+---
+
 ## 🔒 3. NGUYÊN TẮC BẢO MẬT & MỞ RỘNG DATABASE (DATABASE RULES)
 1. **Khóa khớp số điện thoại**: Luôn chạy qua `phone_normalizer.js` để chuẩn hóa SĐT 10 số trước khi tìm kiếm hoặc lưu vào Google Sheets, tuyệt đối không dùng số bị cắt ngắn (như `94144`).
 2. **Khử lệch 17 phút múi giờ**: Bắt buộc đọc giờ phút bằng hàm `val.getHours():val.getMinutes()` trong `Code.gs` và định dạng qua `time_cleaner.js` trên Web để triệt tiêu lệch 17 phút.

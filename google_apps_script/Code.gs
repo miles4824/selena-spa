@@ -490,6 +490,35 @@ function updateCustomerNotes(params) {
     ]);
   }
 
+    // Ghi nhật ký đối soát vào bảng tb_customer_audits nếu có KTV thao tác
+  try {
+    let sheetAudit = ss.getSheetByName('tb_customer_audits');
+    if (!sheetAudit) {
+      sheetAudit = ss.insertSheet('tb_customer_audits');
+      sheetAudit.appendRow([
+        'audit_id', 'receipt_id', 'date_time', 'staff_id', 'staff_name',
+        'old_customer', 'new_phone', 'new_customer_name', 'note'
+      ]);
+      sheetAudit.getRange(1, 1, 1, 9).setFontWeight('bold').setBackground('#FFF0EB');
+    }
+    if (params.receipt_id || params.staff_name || params.action_type === 'ASSIGN_GUEST_CUSTOMER') {
+      const now = new Date();
+      const auditId = 'AUD' + Utilities.formatDate(now, 'GMT+7', 'yyMMddHHmmss');
+      const dtStr = Utilities.formatDate(now, 'GMT+7', 'yyyy/MM/dd - HH:mm');
+      sheetAudit.appendRow([
+        auditId,
+        params.receipt_id || '-',
+        dtStr,
+        params.staff_id || 'KTV01',
+        params.staff_name || 'KTV',
+        'Khách vãng lai',
+        phone,
+        newName || 'Khách hàng',
+        params.action_type === 'ASSIGN_GUEST_CUSTOMER' ? 'KTV bổ sung SĐT ca vãng lai' : 'Cập nhật ghi chú'
+      ]);
+    }
+  } catch(errAudit) {}
+
   return { success: true, message: 'Đã cập nhật thông tin khách hàng thành công!' };
 }
 
