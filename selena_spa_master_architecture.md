@@ -5,21 +5,22 @@
 
 ## ⭐️ 0. NGUYÊN TẮC BẮT BUỘC TRƯỚC VÀ SAU KHI CODE (SOP TOÀN DỰ ÁN)
 
-### 1. Luôn Đọc Kiến Trúc Dự Án Trước Khi Bắt Đầu:
-- Trước khi thực hiện bất kỳ yêu cầu, sửa lỗi hay nâng cấp tính năng nào, **BẮT BUỘC phải đọc kỹ `PROJECT_RULES.md` và `selena_spa_master_architecture.md`** để nắm rõ vị trí các file và luồng dữ liệu.
+### 1. Luôn Đọc Kiến Trúc Dự Án & Database Trước Khi Bắt Đầu:
+- Trước khi thực hiện bất kỳ yêu cầu, sửa lỗi hay nâng cấp tính năng nào, **BẮT BUỘC phải đọc kỹ 3 tài liệu**:
+  1. [`PROJECT_RULES.md`](PROJECT_RULES.md) (Bộ quy tắc vận hành & bảo mật).
+  2. [`selena_spa_master_architecture.md`](selena_spa_master_architecture.md) (Bản thiết kế cấu trúc 1-1 HTML và JS).
+  3. [`selena_spa_database_architecture.md`](selena_spa_database_architecture.md) (Bản hướng dẫn kiến trúc 9 bảng Google Sheets & luồng dữ liệu).
 
 ### 2. Tạo Tính Năng Mới Phải Tuân Thủ Tuyệt Đối Kiến Trúc Chuẩn:
 - Khi tạo bất kỳ tính năng hoặc màn hình mới nào, **luôn dựa trên kiến trúc chuẩn để tạo ra module mới tương tự** nhằm đảm bảo tính đồng bộ 100%:
-  - **Khung HTML tĩnh**: Tạo file riêng độc lập trong `views/` (chuyên trách 1 màn hình/khối).
+  - **Khung HTML tĩnh**: Tạo file riêng độc lập trong `views/`.
   - **Component xử lý giao diện JS**: Tạo file riêng độc lập trong `js/Components/` hoặc `js/Screens/`.
   - **Nghiệp vụ tính toán & Toán học lõi**: Tạo file riêng độc lập trong `js/Core/`.
 
-### 3. Luôn Cập Nhật Lại Kiến Trúc Sau Khi Hoàn Thành:
-- Sau khi hoàn thành bất kỳ tính năng mới hoặc thay đổi cấu trúc nào, **BẮT BUỘC phải cập nhật lại tài liệu `selena_spa_master_architecture.md` và `PROJECT_RULES.md`** để toàn bộ dự án luôn đồng bộ, minh bạch và chính xác tuyệt đối.
-
-### 4. Quy Tắc Đánh Số Phiên Bản Tuần Tự (+1 Đơn Vị):
-- Mỗi lần cập nhật code, phiên bản **BẮT BUỘC chỉ được tăng thêm 1 đơn vị ở số cuối cùng** (`v0.0.0.1` -> `v0.0.0.2` -> `v0.0.0.3`...).
-- Tuyệt đối không được nhảy cóc số phiên bản.
+### 3. Luôn Cập Nhật Lại Kiến Trúc & Database Sau Khi Hoàn Thành:
+- Sau khi hoàn thành bất kỳ tính năng mới hoặc thay đổi cấu trúc nào:
+  - Nếu có thay đổi cấu trúc file/module: **Cập nhật lại `selena_spa_master_architecture.md` và `PROJECT_RULES.md`**.
+  - Nếu có chỉnh sửa, thêm bớt bảng, thêm bớt cột trong Google Sheets hoặc Firebase: **BẮT BUỘC phải cập nhật lại `selena_spa_database_architecture.md` ngay lập tức** để ghi nhận rõ ràng cột mới dùng ở đâu, hàm nào đọc/ghi.
 
 ---
 
