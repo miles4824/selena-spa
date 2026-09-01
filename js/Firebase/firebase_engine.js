@@ -131,12 +131,16 @@ function setupRealtimeListeners() {
 
     if (sessionsObj) {
       const allSessions = Object.values(sessionsObj).filter(Boolean);
-      // Tìm tour mà KTV hiện tại đang tham gia làm
+      // Tìm tour mà KTV hiện tại đang tham gia làm (Kiểm tra phone chặt chẽ, chống rỗng)
       const mySession = allSessions.find(s => {
         const sId = String(s.session_id || s.start_timestamp || '');
         if (dismissedSessionIds.has(sId)) return false;
+        if (!myPhone) return false;
         if (s.active_staff_phone && normalizePhone(s.active_staff_phone) === myPhone) return true;
-        if (s.staffs && Array.isArray(s.staffs) && s.staffs.some(st => normalizePhone(st.phone) === myPhone)) return true;
+        if (s.staff_1_phone && normalizePhone(s.staff_1_phone) === myPhone) return true;
+        if (s.staffs && Array.isArray(s.staffs)) {
+          return s.staffs.some(st => st.phone && normalizePhone(st.phone) === myPhone);
+        }
         return false;
       });
 

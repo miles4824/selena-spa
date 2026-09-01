@@ -390,31 +390,34 @@ function renderCartUI() {
 function updatePOSStaffInfo() {
   const users = getSortedUsersList();
   const s1Select = document.getElementById('pos-staff1-select');
+  const lockIcon = document.getElementById('pos-staff1-lock-icon');
+  const roleHint = document.getElementById('pos-staff1-role-hint');
   const isOwner = currentUser && isUserOwner(currentUser);
   const busyMap = (typeof getBusyStaffPhonesMap === 'function') ? getBusyStaffPhonesMap() : {};
 
   if (s1Select) {
-    // Lọc danh sách: Chỉ hiện những KTV đang thật sự rảnh (nếu bận thì ẩn hoàn toàn)
-    let availableUsers = users.filter(u => !busyMap[normalizePhone(u.phone)]);
-    if (!isOwner && currentUser) {
-      // Với KTV tự tạo tour cho mình thì luôn giữ tên KTV đó
-      if (!availableUsers.some(u => normalizePhone(u.phone) === normalizePhone(currentUser.phone))) {
-        availableUsers.unshift(currentUser);
-      }
-    }
+    if (isOwner) {
+      // 👑 Chủ tiệm / Admin: Toàn quyền chọn bất kỳ ai làm KTV 1
+      s1Select.disabled = false;
+      if (lockIcon) lockIcon.classList.add('hidden');
+      if (roleHint) roleHint.classList.add('hidden');
 
-    if (availableUsers.length === 0) {
-      s1Select.innerHTML = '<option value="">🔴 Tất cả KTV đều đang bận ca</option>';
-    } else {
-      const curVal = s1Select.value;
-      s1Select.innerHTML = availableUsers.map(u => {
-        const isSelected = curVal ? (normalizePhone(u.phone) === normalizePhone(curVal)) : (currentUser && normalizePhone(u.phone) === normalizePhone(currentUser.phone));
-        return `
-          <option value="${u.phone}" ${isSelected ? 'selected' : ''}>
-            ${u.full_name}
-          </option>
-        `;
-      }).join('');
+      const availableUsers = users.filter(u => !busyMap[normalizePhone(u.phone)]);
+      if (availableUsers.length === 0) {
+        s1Select.innerHTML = '<option value="">🔴 Tất cả KTV đều đang bận ca</option>';
+      } else {
+        const curVal = s1Select.value;
+        s1Select.innerHTML = availableUsers.map(u => {
+          const isSelected = curVal ? (normalizePhone(u.phone) === normalizePhone(curVal)) : false;
+          return `<option value="${u.phone}" ${isSelected ? 'selected' : ''}>${u.full_name}</option>`;
+        }).join('');
+      }
+    } else if (currentUser) {
+      // 👩‍🦰 KTV: Khóa cố định ô KTV 1 vào tài khoản của KTV này
+      s1Select.disabled = true;
+      if (lockIcon) lockIcon.classList.remove('hidden');
+      if (roleHint) roleHint.classList.remove('hidden');
+      s1Select.innerHTML = `<option value="${currentUser.phone}" selected>${currentUser.full_name}</option>`;
     }
   }
 
@@ -432,6 +435,121 @@ function updatePOSStaffInfo() {
       }
     }
   }
+
+  updateStaff1CommissionPreview();
+  renderExtraStaffUI();
+}
+
+function onStaff1SelectChange() {
+  updateStaff1CommissionPreview();
+  renderExtraStaffUI();
+}
+
+function updateStaff1CommissionPreview() {
+  const commEl = document.getElementById('pos-staff1-comm-preview');
+  if (!commEl) return;
+  const totalPrice = selectedCartItems.reduce((sum, item) => sum + (Number(item.price) || 0), 0);
+  const totalStaffCount = 1 + (extraStaffList ? extraStaffList.length : 0);
+  const staff1Pct = Math.round(100 / totalStaffCount);
+  const commValue = Math.round((totalPrice * 0.1) * (staff1Pct / 100));
+  commEl.innerText = `+${commValue.toLocaleString('vi-VN')} đ (${staff1Pct}%)`;
+}
+
+function addExtraStaff() {
+  const users = getSortedUsersList();
+  const s1Phone = document.getElementById('pos-staff1-select')?.value || (currentUser?.phone);
+  const busyMap = (typeof getBusyStaffPhonesMap === 'function') ? getBusyStaffPhonesMap() : {};
+  
+  const chosenPhones = new Set([
+    normalizePhone(s1Phone),
+    ...extraStaffList.map(s => normalizePhone(s.phone))
+  ]);
+
+  const availableStaffs = users.filter(u => !isUserOwner(u) && !busyMap[normalizePhone(u.phone)] && !chosenPhones.has(normalizePhone(u.phone)));
+
+  if (availableStaffs.length === 0) {
+    alert('Không còn Kỹ Thuật Viên nào khác đang rảnh để thêm vào ca này!');
+    return;
+  }
+
+  const newStaff = availableStaffs[0];
+  extraStaffList.push({
+    phone: newStaff.phone,
+    full_name: newStaff.full_name,
+    staff_id: newStaff.staff_id || `KTV0${extraStaffList.length + 2}`,
+    user_id: newStaff.user_id || newStaff.phone
+  });
+
+  renderExtraStaffUI();
+  updateStaff1CommissionPreview();
+}
+
+function removeExtraStaff(idx) {
+  extraStaffList.splice(idx, 1);
+  renderExtraStaffUI();
+  updateStaff1CommissionPreview();
+}
+
+function onExtraStaffChange(idx, newPhone) {
+  const users = getSortedUsersList();
+  const target = users.find(u => normalizePhone(u.phone) === normalizePhone(newPhone));
+  if (target && extraStaffList[idx]) {
+    extraStaffList[idx] = {
+      phone: target.phone,
+      full_name: target.full_name,
+      staff_id: target.staff_id || `KTV0${idx + 2}`,
+      user_id: target.user_id || target.phone
+    };
+  }
+  renderExtraStaffUI();
+  updateStaff1CommissionPreview();
+}
+
+function renderExtraStaffUI() {
+  const container = document.getElementById('pos-extra-staff-container');
+  if (!container) return;
+
+  if (extraStaffList.length === 0) {
+    container.innerHTML = '';
+    return;
+  }
+
+  const users = getSortedUsersList().filter(u => !isUserOwner(u));
+  const s1Phone = document.getElementById('pos-staff1-select')?.value || (currentUser?.phone);
+  const totalPrice = selectedCartItems.reduce((sum, item) => sum + (Number(item.price) || 0), 0);
+  const totalStaffCount = 1 + extraStaffList.length;
+  const eachPct = Math.round(100 / totalStaffCount);
+  const eachComm = Math.round((totalPrice * 0.1) * (eachPct / 100));
+
+  container.innerHTML = extraStaffList.map((s, idx) => {
+    const ktvNum = idx + 2;
+    return `
+      <div class="p-3.5 rounded-2xl bg-[#FFF5F2]/80 border border-[#F5DCD5] space-y-2 animate-in fade-in zoom-in-95">
+        <div class="flex justify-between items-center">
+          <span class="text-xs font-bold text-[#E58A7B] flex items-center gap-1.5">
+            <i data-lucide="user-check" class="w-3.5 h-3.5"></i>
+            <span class="font-extrabold text-[#2D2424]">KTV ${ktvNum} (Phụ):</span>
+          </span>
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-extrabold text-[#2E7D6D] bg-[#E8F8F5] px-2.5 py-0.5 rounded-full border border-[#B7EBDD]">
+              +${eachComm.toLocaleString('vi-VN')} đ (${eachPct}%)
+            </span>
+            <button type="button" onclick="removeExtraStaff(${idx})" class="p-1 text-[#A39696] hover:text-rose-600 hover:bg-rose-100 rounded-full transition cursor-pointer" title="Xóa KTV này">
+              <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+        <select onchange="onExtraStaffChange(${idx}, this.value)" class="w-full bg-white border border-[#EFE8DF] rounded-xl p-3 text-[#2D2424] font-bold text-sm focus:outline-none focus:border-[#E58A7B] cursor-pointer">
+          ${users.map(u => {
+            const isSelected = normalizePhone(u.phone) === normalizePhone(s.phone);
+            return `<option value="${u.phone}" ${isSelected ? 'selected' : ''}>${u.full_name}</option>`;
+          }).join('')}
+        </select>
+      </div>
+    `;
+  }).join('');
+
+  if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
 }
 
 function updatePOSCalculations() {
@@ -671,8 +789,8 @@ function applyCustomerData(cust) {
     nameInput.value = cust.customer_name || '';
     // Khóa hoàn toàn ô Tên nếu khách đã có hồ sơ tên chính thức trong hệ thống
     if (cust.customer_name && cust.customer_name !== 'Khách hàng' && cust.customer_name !== 'Khách vãng lai') {
-      nameInput.disabled = true;
-      nameInput.classList.add('bg-[#EFE8DF]', 'text-[#7E7272]', 'cursor-not-allowed', 'opacity-85', 'pointer-events-none', 'select-none');
+      nameInput.disabled = false;
+      
     } else {
       nameInput.disabled = false;
       nameInput.classList.remove('bg-[#EFE8DF]', 'text-[#7E7272]', 'cursor-not-allowed', 'opacity-85', 'pointer-events-none', 'select-none');

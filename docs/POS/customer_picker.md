@@ -30,4 +30,5 @@ ightarrow$ Ca này miễn phí 100% (KTV vẫn nhận đủ 10% hoa hồng theo 
 - **Hàm Backend GAS phụ trách**: `checkCustomer(phone)` trong `Code.gs`.
 
 ## 6. Lịch Sử Thay Đổi & Lưu Vết (Audit Log)
-- `2026-09-01` (`v0.0.0.1`): Bóc tách thành component độc lập.
+- `2026-09-01` (`v0.0.0.1`):
+- `2026-09-01` (`v0.0.4.4`): Mở khóa toàn diện ô Tên Khách Hàng cho phép nhập/chỉnh sửa tên trực tiếp khi tạo tour. Bóc tách thành component độc lập.
