@@ -1,4 +1,4 @@
-# 📌 ĐẶC TẢ CHI TIẾT: CÔNG THỨC PHÂN CHIA HOA HỒNG 2 KTV (SPLIT COMMISSION)
+# 📌 ĐẶC TẢ SẢN PHẨM & KỸ THUẬT: CÔNG THỨC PHÂN CHIA HOA HỒNG 2 KTV (SPLIT COMMISSION)
 
 ## 1. Mục Đích & Bối Cảnh Thực Tế Tại Tiệm
 - Phân chia công bằng hoa hồng của ca gội khi có 2 hoặc nhiều KTV cùng phục vụ (hoặc đổi ca giữa chừng).

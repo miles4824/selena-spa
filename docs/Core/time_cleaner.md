@@ -1,7 +1,7 @@
-# 📌 ĐẶC TẢ CHI TIẾT: BỘ LÀM SẠCH THỜI GIAN (TIME CLEANER)
+# 📌 ĐẶC TẢ SẢN PHẨM & KỸ THUẬT: BỘ LÀM SẠCH THỜI GIAN (TIME CLEANER)
 
 ## 1. Mục Đích & Bối Cảnh Thực Tế Tại Tiệm
-- Triệt tiêu $100\%$ độ lệch 17 phút lịch sử do lỗi múi giờ `GMT+07:06:40` của Google Sheets (năm 1899), đảm bảo giờ hiển thị trên Web luôn đúng từng phút với đồng hồ thực tế.
+- Triệt tiêu 100% độ lệch 17 phút lịch sử do lỗi múi giờ GMT+07:06:40 của Google Sheets (năm 1899), đảm bảo giờ hiển thị trên Web luôn đúng từng phút với đồng hồ thực tế.
 
 ## 2. Danh Sách File Cấu Thành
 - **File JS Xử lý**: `js/Core/DateTime/time_cleaner.js`

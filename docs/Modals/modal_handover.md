@@ -1,21 +1,22 @@
-# 📌 ĐẶC TẢ CHI TIẾT: MODAL BÀN GIAO TOUR GỘI (REALTIME HANDOVER)
+# 📌 ĐẶC TẢ SẢN PHẨM & KỸ THUẬT: MODAL BÀN GIAO TOUR GỘI REALTIME
 
 ## 1. Mục Đích & Bối Cảnh Thực Tế Tại Tiệm
-- KTV đang làm ca nhưng bận việc hoặc mệt đột xuất $ightarrow$ Bàn giao tour cho KTV khác vào làm tiếp. Hệ thống tự động chuyển ca sang máy bạn ấy trong 0.03 giây và tự chia hoa hồng.
+- KTV đang làm ca nhưng phải ra về sớm, có khách hẹn trước hoặc mệt đột xuất $ightarrow$ Bàn giao toàn bộ ca đang gội cho KTV khác tiếp quản. Ca gội lập tức nhảy sang điện thoại của bạn KTV mới trong 0.03 giây.
 
 ## 2. Danh Sách File Cấu Thành (HTML & JS)
 - **File Khung HTML**: `views/components/modals/modal_handover.html`
-- **File JS Xử lý**: `js/Components/Modals/modal_handover.js` & `js/Add/pos_checkout.js`
+- **File JS Xử lý giao diện**: `js/Components/Modals/modal_handover.js`
 - **Đồng bộ Realtime**: `js/Cloud/firebase_engine.js`
 
-## 3. Quy Tắc Giao Diện & Phân Quyền Chi Tiết (UI & Permissions)
-- Chọn KTV tiếp quản từ danh sách nhân sự đang rảnh.
+## 3. Quy Tắc Giao Diện & Kịch Bản Phân Quyền Chi Tiết (UI Scenarios & Permissions)
+- Dropdown chọn KTV tiếp quản từ danh sách nhân sự đang rảnh.
 - Chọn hình thức chia tiền: Theo số phút đã làm hoặc Chia đều 50/50.
-- Hiển thị bảng tóm tắt dự kiến phân bổ hoa hồng trước khi bấm xác nhận.
+- Hiển thị bản tóm tắt số tiền mỗi người nhận trước khi bấm bàn giao.
 
-## 4. Luồng Xử Lý Logic & Công Thức Toán Học (Business Logic)
-1. KTV 1 bấm bàn giao $ightarrow$ Firebase cập nhật node `active_sessions/` với KTV 2 là người tiếp quản.
-2. Màn hình của KTV 1 đóng lại, màn hình của KTV 2 lập tức mở đồng hồ đếm giờ ca gội tiếp tục chạy.
+## 4. Luồng Xử Lý Logic & Hành Vi Hệ Thống (Business Logic)
+1. KTV 1 bấm *"Bàn Giao Ca"* $ightarrow$ Firebase cập nhật node `active_sessions/{tourId}` gán KTV 2 làm người phụ trách chính.
+2. Màn hình máy KTV 1 tự động đóng đồng hồ về trạng thái rảnh.
+3. Màn hình máy KTV 2 lập tức mở đồng hồ đếm ngược đang chạy tiếp tục.
 
 ## 5. Ánh Xạ Cơ Sở Dữ Liệu Chi Tiết (Database Mapping)
 - **Firebase Realtime**: `active_sessions/{tourId}`

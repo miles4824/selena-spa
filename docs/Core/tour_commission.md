@@ -1,4 +1,4 @@
-# 📌 ĐẶC TẢ CHI TIẾT: CÔNG THỨC HOA HỒNG TOUR (TOUR COMMISSION)
+# 📌 ĐẶC TẢ SẢN PHẨM & KỸ THUẬT: CÔNG THỨC HOA HỒNG TOUR (TOUR COMMISSION)
 
 ## 1. Mục Đích & Bối Cảnh Thực Tế Tại Tiệm
 - Tính toán chính xác số tiền hoa hồng KTV được nhận sau mỗi ca gội đầu dựa theo hợp đồng lao động của từng nhân sự.

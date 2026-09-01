@@ -1,4 +1,4 @@
-# 📌 ĐẶC TẢ CHI TIẾT: THEO DÕI CHU KỲ 60 NGÀY (LOYALTY CYCLE TRACKER)
+# 📌 ĐẶC TẢ SẢN PHẨM & KỸ THUẬT: THEO DÕI CHU KỲ 60 NGÀY (LOYALTY CYCLE TRACKER)
 
 ## 1. Mục Đích & Bối Cảnh Thực Tế Tại Tiệm
 - Quản lý chương trình tri ân khách hàng thân thiết: Khách đi đủ 10 lần trong vòng 60 ngày sẽ được tự động tặng 1 lần gội miễn phí 100%.

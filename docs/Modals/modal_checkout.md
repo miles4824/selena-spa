@@ -1,36 +1,43 @@
-# 📌 ĐẶC TẢ CHI TIẾT: MODAL THANH TOÁN 2 PHA (CHECKOUT)
+# 📌 ĐẶC TẢ SẢN PHẨM & KỸ THUẬT: MODAL THANH TOÁN 2 PHA KÍN ĐÁO (CHECKOUT)
 
-## 1. Mục Đích & Bối Cảnh Thực Tế Tại Tiệm
-- Giải quyết bài toán thanh toán tinh tế và kín đáo: Khách hàng quét mã QR thanh toán đúng giá dịch vụ mà không thấy bất kỳ chữ "Tips" nào. Sau khi khách thanh toán xong, KTV mới mở bước riêng tư để nhập tiền Tips.
+## 1. Mục Đích & Bối Cảnh Nghiệp Vụ Thực Tế
+- Giải quyết bài toán thanh toán tinh tế và chuyên nghiệp: Khách hàng quét mã QR thanh toán đúng số tiền dịch vụ mà không thấy bất kỳ chữ "Tips" nào. Sau khi khách thanh toán xong, KTV mới mở bước riêng tư để nhập tiền Tips được khách cho riêng.
 
 ## 2. Danh Sách File Cấu Thành (HTML & JS)
 - **File Khung HTML**: `views/components/modals/modal_checkout.html`
-- **File JS Xử lý**: `js/Components/Modals/modal_checkout.js` & `js/Add/pos_checkout.js`
+- **File JS Xử lý giao diện**: `js/Components/Modals/modal_checkout.js` & `js/Add/pos_checkout.js`
+- **Tài Nguyên Hình Ảnh**: `images/qr_bank.jpg` (Mã QR VietQR VIB tài khoản `799625591 - TRẦN THU NGÂN`).
 
-## 3. Quy Tắc Giao Diện & Phân Quyền Chi Tiết (UI & Permissions)
-- 🟢 **PHA 1 (Màn hình đưa cho khách xem)**:
-  - Hiển thị tên dịch vụ, thời gian làm ca, tên khách hàng.
-  - Chọn hình thức thanh toán: **Quét Mã QR** hoặc **Tiền Mặt**.
-  - Hiển thị ảnh mã QR ngân hàng VIB (`799625591 - TRẦN THU NGÂN`).
-  - **TUYỆT ĐỐI GIẤU HOÀN TOÀN CHỮ VÀ Ô NHẬP TIỀN TIPS**.
-  - Nút bấm: *"Khách Đã Thanh Toán Xong • Tiếp Tục"*.
-- 🔒 **PHA 2 (Màn hình nội bộ KTV)**:
-  - Chỉ hiển thị khi KTV bấm tiếp tục.
-  - Hiển thị từng ô nhập Tiền Tips riêng biệt cho từng KTV phục vụ tour này (KTV chính, KTV phụ 1, KTV phụ 2).
-  - Tự động cộng tổng tiền thu và hoa hồng dự kiến.
-  - Nút bấm: *"Hoàn Tất & Lưu Hóa Đơn"*.
+## 3. Quy Tắc Giao Diện & Kịch Bản Phân Quyền Chi Tiết (UI Scenarios & Permissions)
 
-## 4. Luồng Xử Lý Logic & Công Thức Toán Học (Business Logic)
-1. Tổng tiền ca = `Giá combo + Tiền dịch vụ thêm + Tiền sản phẩm`.
+### 🟢 KỊCH BẢN 1: PHA 1 - ĐƯA MÀN HÌNH CHO KHÁCH XEM (PUBLIC STEP)
+- **Mục tiêu**: Khách xem rõ hóa đơn và quét mã QR hoặc đưa tiền mặt.
+- **Hiển thị**: Tên combo, dịch vụ thêm, tổng tiền dịch vụ, tên khách hàng.
+- **Phương thức thanh toán**: Nút chọn `Quét Mã QR (VIB)` hoặc `Tiền Mặt`.
+- **Hiển thị mã QR**: Ảnh QR động chứa đúng số tiền ca gội.
+- **QUY TẮC VÀNG BẢO MẬT**: **TUYỆT ĐỐI GIẤU 100% TOÀN BỘ CHỮ VÀ Ô NHẬP TIỀN TIPS**.
+- **Nút hành động**: *"Khách Đã Thanh Toán Xong • Tiếp Tục"*.
+
+### 🔒 KỊCH BẢN 2: PHA 2 - NHẬP TIỀN TIPS NỘI BỘ KTV (PRIVATE STEP)
+- **Mục tiêu**: KTV ghi nhận tiền tip khách cho riêng từng người.
+- **Giao diện**:
+  - Chỉ xuất hiện khi KTV bấm tiếp tục từ Pha 1.
+  - Hiển thị từng ô nhập Tiền Tip riêng biệt cho từng KTV có mặt trong ca (KTV chính, KTV phụ 1, KTV phụ 2).
+  - Tự động cộng tổng tiền thu thực tế và tính hoa hồng dự kiến.
+- **Nút hành động**: *"Hoàn Tất & Lưu Hóa Đơn"*.
+
+## 4. Luồng Xử Lý Logic & Hành Vi Hệ Thống (Business Logic)
+1. Tổng tiền ca = `Giá combo + Tiền dịch vụ phụ + Tiền mỹ phẩm bán kèm`.
 2. Tổng thanh toán = `Tổng tiền ca + Tổng tiền Tips`.
 3. Hoa hồng KTV = Tính theo tỷ lệ hợp đồng (10% hoặc 20%) và tỷ lệ phân chia (theo phút hoặc 50-50). Tiền tip thuộc $100\%$ về KTV.
+4. Bấm Hoàn tất $ightarrow$ Sinh mã hóa đơn `HD + yymmddhhmmss` $ightarrow$ Cập nhật `tb_receipts`, `tb_payroll_logs`, xóa ca đang chạy trên Firebase và bắn pháo hoa confetti.
 
 ## 5. Ánh Xạ Cơ Sở Dữ Liệu Chi Tiết (Database Mapping)
 - **Bảng Google Sheets**: `tb_receipts` & `tb_payroll_logs`
 - **Cột Đọc / Ghi**:
-  - `tb_receipts` $ightarrow$ Cột J (`price`), Cột K (`tip_amount`), Cột L (`total_paid`), Cột N (`payment_method`).
+  - `tb_receipts` $ightarrow$ Cột J (`price`), Cột K (`tip_amount`), Cột L (`total_paid`), Cột N (`payment_method`), Cột O (`is_voucher_used`).
   - `tb_payroll_logs` $ightarrow$ Cột O (`commission_amount`), Cột P (`tip_amount`), Cột Q (`total_earned`).
 - **Hàm Backend GAS phụ trách**: `createReceipt(params)` trong `Code.gs`.
 
 ## 6. Lịch Sử Thay Đổi & Lưu Vết (Audit Log)
-- `2026-09-01` (`v0.0.0.1`): Tách riêng thành component độc lập và chuẩn hóa luồng 2 pha.
+- `2026-09-01` (`v0.0.0.1`): Bóc tách thành component độc lập và chuẩn hóa luồng 2 pha.

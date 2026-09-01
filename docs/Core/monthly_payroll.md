@@ -1,4 +1,4 @@
-# 📌 ĐẶC TẢ CHI TIẾT: CÔNG THỨC TÍNH LƯƠNG THÁNG (MONTHLY PAYROLL)
+# 📌 ĐẶC TẢ SẢN PHẨM & KỸ THUẬT: CÔNG THỨC TÍNH LƯƠNG THÁNG (MONTHLY PAYROLL)
 
 ## 1. Mục Đích & Bối Cảnh Thực Tế Tại Tiệm
 - Tính tổng thu nhập và bảng lương tháng cho từng KTV theo đúng chu kỳ từ ngày 1 đến ngày 30 hàng tháng.

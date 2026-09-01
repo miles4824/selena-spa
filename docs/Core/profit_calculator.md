@@ -1,4 +1,4 @@
-# 📌 ĐẶC TẢ CHI TIẾT: CÔNG THỨC TÍNH LỢI NHUẬN RÒNG (PROFIT CALCULATOR)
+# 📌 ĐẶC TẢ SẢN PHẨM & KỸ THUẬT: CÔNG THỨC TÍNH LỢI NHUẬN RÒNG (PROFIT CALCULATOR)
 
 ## 1. Mục Đích & Bối Cảnh Thực Tế Tại Tiệm
 - Giúp Chủ Tiệm nắm bắt bức tranh tài chính chuẩn xác: Tiệm kiếm được bao nhiêu, chi trả lương bao nhiêu, chi phí phát sinh bao nhiêu và thực lãi mang về túi là bao nhiêu.

@@ -1,4 +1,4 @@
-# 📌 ĐẶC TẢ CHI TIẾT: BỘ XỬ LÝ VOUCHER (VOUCHER ENGINE)
+# 📌 ĐẶC TẢ SẢN PHẨM & KỸ THUẬT: BỘ XỬ LÝ VOUCHER (VOUCHER ENGINE)
 
 ## 1. Mục Đích & Bối Cảnh Thực Tế Tại Tiệm
 - Kiểm tra tính hợp lệ của voucher (còn hạn dùng không, đã dùng chưa) và thực hiện trừ voucher khi thanh toán.
