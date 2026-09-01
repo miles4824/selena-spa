@@ -51,7 +51,7 @@ function parseBirthMonth(val) {
   return 0;
 }
 
-const APP_VERSION = 'v0.0.2.3';
+const APP_VERSION = 'v0.0.2.4';
 // =============================================================
 // SELENA SPA - GLOBAL CONFIG & CONSTANTS
 // =============================================================
@@ -794,6 +794,8 @@ const DEFAULT_UI_CONFIG = {
   ph_customer_name: 'VD: Chị Ngân Ngân',
   ph_notes: 'Ghi chú chi tiết sở thích hoặc lưu ý về khách...',
   opt_birth_month: '-- Tháng --',
+  opt_select_service: '-- Chọn thêm dịch vụ / sản phẩm --',
+  opt_select_service_all_selected: '-- Tất cả dịch vụ đã được chọn --',
   ph_login_phone: '0949251144',
   ph_login_password: '••••••',
   ph_admin_cust_search: '🔍 Tìm kiếm theo tên hoặc số điện thoại...',
@@ -831,6 +833,12 @@ function applyDynamicUIConfig(customConfig) {
       el.options[0].text = cfg.opt_birth_month;
     }
   });
+
+  // 4b. Default Text Dropdown Chọn Dịch Vụ POS
+  const sDropdown = document.getElementById('pos-service-dropdown');
+  if (sDropdown && sDropdown.options && sDropdown.options[0] && cfg.opt_select_service && !sDropdown.disabled) {
+    sDropdown.options[0].text = cfg.opt_select_service;
+  }
 
   // 5. Login
   const logPhone = document.getElementById('login-phone');

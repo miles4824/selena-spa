@@ -28,9 +28,17 @@
 ### 3.2. Quy Tắc Tương Tác:
 - Mặc định khi mở tab Tạo Ca: Tự động chọn **Combo 1** (`64.000đ` • `50 phút`).
 - Hàng nút bấm nhanh hiển thị đủ các nút: `[ Combo Bé ]` `[ Combo 1 ]` `[ Combo 2 ]` `[ Combo 3 ]` `[ Combo 4 ]` `[ Combo 5 ]`.
-- Bấm vào nút $ightarrow$ Thêm vào giỏ hàng và ẩn khỏi Dropdown. Bấm lại lần nữa $ightarrow$ Hủy chọn (Toggle).
+- Bấm vào nút $
+ightarrow$ Thêm vào giỏ hàng và ẩn khỏi Dropdown. Bấm lại lần nữa $
+ightarrow$ Hủy chọn (Toggle).
 
 ---
+
+
+### 3.3. Quản Lý Nhãn Động Qua Google Sheets (`tb_config`):
+- **`opt_select_service`**: `-- Chọn thêm dịch vụ / sản phẩm --` (Chữ mặc định của dropdown chọn dịch vụ khi còn món để chọn).
+- **`opt_select_service_all_selected`**: `-- Tất cả dịch vụ đã được chọn --` (Chữ hiển thị khi giỏ đã chọn toàn bộ các món trong menu).
+- Cả 2 nhãn này được kết nối động trực tiếp với bảng `tb_config`, cho phép Chủ Tiệm thay đổi câu chữ bất cứ lúc nào từ Google Sheets mà không cần sửa code.
 
 ## 4. Ánh Xạ Cơ Sở Dữ Liệu Chi Tiết (Database Mapping)
 - **Bảng Google Sheets**: `tb_menu`
@@ -47,4 +55,5 @@
 
 ## 5. Lịch Sử Thay Đổi & Lưu Vết (Audit Log)
 - `2026-09-01` (`v0.0.0.1`): Khởi tạo component chọn combo.
-- `2026-09-01` (`v0.0.2.1`): Cập nhật chính xác 100% danh mục Menu của tiệm (Combo Bé 45k 30p, Combo 1 64k 50p, Combo 2 109k 75p, Combo 3 139k 85p, Combo 4 179k 95p, Combo 5 219k 110p) và cấu trúc 8 cột bảng `tb_menu`.
+- `2026-09-01` (`v0.0.2.1`):
+- `2026-09-01` (`v0.0.2.4`): Bổ sung cấu hình động nhãn dropdown `opt_select_service` vào bảng `tb_config`. Cập nhật chính xác 100% danh mục Menu của tiệm (Combo Bé 45k 30p, Combo 1 64k 50p, Combo 2 109k 75p, Combo 3 139k 85p, Combo 4 179k 95p, Combo 5 219k 110p) và cấu trúc 8 cột bảng `tb_menu`.

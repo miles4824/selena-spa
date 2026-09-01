@@ -138,10 +138,22 @@ function renderMenuDropdown() {
   }
 
   dropdown.disabled = false;
+  const uiConfig = (typeof DEFAULT_UI_CONFIG !== 'undefined' ? DEFAULT_UI_CONFIG : {});
+  const customConfig = (typeof getStored === 'function' ? getStored('ui_config', {}) : {});
+  const optSelectText = customConfig.opt_select_service || uiConfig.opt_select_service || '-- Chọn thêm dịch vụ / sản phẩm --';
+  const optAllSelectedText = customConfig.opt_select_service_all_selected || uiConfig.opt_select_service_all_selected || '-- Tất cả dịch vụ đã được chọn --';
+
+  if (availableItems.length === 0) {
+    dropdown.innerHTML = `<option value="">${optAllSelectedText}</option>`;
+    dropdown.disabled = true;
+    return;
+  }
+
+  dropdown.disabled = false;
   const combos = availableItems.filter(m => String(m.category || '').toLowerCase() === 'combo' || String(m.service_name || '').toLowerCase().includes('combo'));
   const services = availableItems.filter(m => !combos.includes(m));
 
-  let html = '<option value="">-- Chọn thêm dịch vụ / sản phẩm --</option>';
+  let html = `<option value="">${optSelectText}</option>`;
 
   if (combos.length > 0) {
     html += `<optgroup label="💆 Combo Gội Chính">`;

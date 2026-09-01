@@ -1509,6 +1509,8 @@ function syncAllData(params) {
     ['ph_customer_name', 'VD: Chị Ngân Ngân', 'Placeholder ô nhập tên khách hàng'],
     ['ph_notes', 'Ghi chú chi tiết sở thích hoặc lưu ý về khách...', 'Placeholder ô ghi chú sở thích'],
     ['opt_birth_month', '-- Tháng --', 'Chữ mặc định của dropdown tháng sinh'],
+    ['opt_select_service', '-- Chọn thêm dịch vụ / sản phẩm --', 'Chữ mặc định của dropdown chọn dịch vụ POS'],
+    ['opt_select_service_all_selected', '-- Tất cả dịch vụ đã được chọn --', 'Chữ hiển thị khi đã chọn hết dịch vụ'],
     ['ph_login_phone', '0949251144', 'Placeholder SĐT màn hình đăng nhập'],
     ['ph_login_password', '••••••', 'Placeholder Mật khẩu màn hình đăng nhập'],
     ['ph_admin_cust_search', '🔍 Tìm kiếm theo tên hoặc số điện thoại...', 'Placeholder ô tìm kiếm khách hàng'],
@@ -1531,7 +1533,9 @@ function syncAllData(params) {
     ph_phone: '0799625591',
     ph_customer_name: 'VD: Chị Ngân Ngân',
     ph_notes: 'Ghi chú chi tiết sở thích hoặc lưu ý về khách...',
-    opt_birth_month: '-- Tháng --'
+    opt_birth_month: '-- Tháng --',
+    opt_select_service: '-- Chọn thêm dịch vụ / sản phẩm --',
+    opt_select_service_all_selected: '-- Tất cả dịch vụ đã được chọn --'
   };
 
   const colMapCf = createHeaderMap(sheetConfig);
