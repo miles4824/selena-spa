@@ -100,264 +100,210 @@ function findComboByNumber(menu, num) {
   }) || null;
 }
 
+
+// =============================================================
+// QUẢN LÝ DỊCH VỤ & GIỎ HÀNG POS (DYNAMIC MENU TỪ TB_MENU)
+// =============================================================
 function initMenuUI() {
   const menu = getValidatedMenu();
-  const select = document.getElementById('pos-service-select');
-  if (!select) return;
-
-  select.innerHTML = menu.map(m => `
-    <option value="${m.service_id}">${m.service_name} — ${Number(m.price).toLocaleString('vi-VN')} đ (${m.duration_min}p)</option>
-  `).join('');
-
-  // Mặc định luôn tìm và chọn Combo 1
-  const combo1 = findComboByNumber(menu, 1);
-  if (!selectedComboId || !menu.some(m => m.service_id === selectedComboId)) {
-    selectedComboId = combo1 ? combo1.service_id : (menu[0] ? menu[0].service_id : 'CB01');
-  }
-
-  // Nếu hiện tại đang trỏ vào Combo Bé, tự động chuyển về Combo 1
-  if (combo1 && selectedComboId !== combo1.service_id) {
-    const curSelected = menu.find(m => m.service_id === selectedComboId);
-    if (!curSelected || (curSelected.service_name || '').toLowerCase().includes('bé') || (curSelected.service_name || '').toLowerCase().includes('be')) {
-      selectedComboId = combo1.service_id;
+  
+  // Khởi tạo mặc định Combo 1 nếu giỏ hàng đang trống
+  if (!selectedCartItems || selectedCartItems.length === 0) {
+    const combo1 = findComboByNumber(menu, 1) || menu[0];
+    if (combo1) {
+      selectedCartItems = [{ ...combo1 }];
     }
   }
 
-  select.value = selectedComboId;
-
+  renderMenuDropdown();
   renderQuickComboButtons();
-  updatePOSCalculations();
+  renderCartUI();
   restoreLiveSessionIfExists();
 }
 
-function renderQuickComboButtons() {
-  const quickContainer = document.getElementById('pos-quick-combos');
-  if (!quickContainer) return;
+function renderMenuDropdown() {
+  const dropdown = document.getElementById('pos-service-dropdown');
+  if (!dropdown) return;
 
   const menu = getValidatedMenu();
-  const select = document.getElementById('pos-service-select');
-  const curSelectedId = select ? select.value : selectedComboId;
+  const selectedIds = new Set(selectedCartItems.map(item => item.service_id));
 
+  // Lọc ra các món CHƯA được chọn (Món đã chọn sẽ tự động ẩn khỏi dropdown)
+  const availableItems = menu.filter(m => !selectedIds.has(m.service_id));
+
+  if (availableItems.length === 0) {
+    dropdown.innerHTML = '<option value="">-- Tất cả dịch vụ đã được chọn --</option>';
+    dropdown.disabled = true;
+    return;
+  }
+
+  dropdown.disabled = false;
+  const combos = availableItems.filter(m => String(m.category || '').toLowerCase() === 'combo' || String(m.service_name || '').toLowerCase().includes('combo'));
+  const services = availableItems.filter(m => !combos.includes(m));
+
+  let html = '<option value="">-- Chọn thêm dịch vụ / sản phẩm --</option>';
+
+  if (combos.length > 0) {
+    html += `<optgroup label="💆 Combo Gội Chính">`;
+    html += combos.map(m => `
+      <option value="${m.service_id}">${m.service_name} — ${Number(m.price).toLocaleString('vi-VN')} đ (${m.duration_min}p)</option>
+    `).join('');
+    html += `</optgroup>`;
+  }
+
+  if (services.length > 0) {
+    html += `<optgroup label="✨ Dịch Vụ Lẻ / Làm Thêm">`;
+    html += services.map(m => `
+      <option value="${m.service_id}">${m.service_name} — ${Number(m.price).toLocaleString('vi-VN')} đ (${m.duration_min}p)</option>
+    `).join('');
+    html += `</optgroup>`;
+  }
+
+  dropdown.innerHTML = html;
+}
+
+function renderQuickComboButtons() {
+  const container = document.getElementById('pos-quick-combos');
+  if (!container) return;
+
+  const menu = getValidatedMenu();
+  const selectedIds = new Set(selectedCartItems.map(item => item.service_id));
   const quickNumbers = [1, 2, 3, 4, 5];
 
-  quickContainer.innerHTML = quickNumbers.map(num => {
+  container.innerHTML = quickNumbers.map(num => {
     const item = findComboByNumber(menu, num);
     if (!item) {
       return `
-        <button type="button" class="px-4 py-2.5 rounded-2xl text-xs font-extrabold border bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed opacity-60">
+        <button type="button" class="px-3.5 py-2 rounded-2xl text-xs font-extrabold border bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed opacity-60">
           Combo ${num}
         </button>
       `;
     }
 
-    const isSelected = item.service_id === curSelectedId;
+    const isSelected = selectedIds.has(item.service_id);
     return `
-      <button type="button" onclick="selectQuickCombo('${item.service_id}')" class="px-4 py-2.5 rounded-2xl text-xs font-extrabold border transition active:scale-95 cursor-pointer ${isSelected ? 'bg-[#FFF0EB] text-[#E58A7B] border-[#E58A7B] ring-2 ring-[#E58A7B]/50 font-black' : 'bg-[#FAF6F1] text-[#7E7272] border-[#EFE8DF] hover:bg-[#FFF0EB] hover:text-[#E58A7B]'}">
-        Combo ${num}
+      <button type="button" onclick="toggleQuickCombo('${item.service_id}')" class="px-3.5 py-2 rounded-2xl text-xs font-extrabold border transition active:scale-95 cursor-pointer ${isSelected ? 'bg-[#FFF0EB] text-[#E58A7B] border-[#E58A7B] ring-2 ring-[#E58A7B]/50 font-black shadow-xs' : 'bg-white text-[#7E7272] border-[#EFE8DF] hover:bg-[#FAF6F1] hover:text-[#E58A7B]'}">
+        ${isSelected ? '✓ ' : ''}Combo ${num}
       </button>
     `;
   }).join('');
 }
 
-function selectQuickCombo(serviceId) {
-  if (!serviceId) return;
-  selectedComboId = serviceId;
-  const select = document.getElementById('pos-service-select');
-  if (select) {
-    select.value = serviceId;
+function toggleQuickCombo(serviceId) {
+  const menu = getValidatedMenu();
+  const item = menu.find(m => m.service_id === serviceId);
+  if (!item) return;
+
+  const existsIndex = selectedCartItems.findIndex(i => i.service_id === serviceId);
+  if (existsIndex >= 0) {
+    // Đã có -> Hủy chọn (Toggle)
+    selectedCartItems.splice(existsIndex, 1);
+  } else {
+    // Chưa có -> Thêm vào giỏ
+    selectedCartItems.push({ ...item });
   }
+
+  renderMenuDropdown();
   renderQuickComboButtons();
+  renderCartUI();
   updatePOSCalculations();
 }
 
-function onSelectServiceChange() {
-  const select = document.getElementById('pos-service-select');
-  if (select) {
-    selectedComboId = select.value;
-  }
-  renderQuickComboButtons();
-  updatePOSCalculations();
-}
-
-function updatePOSStaffInfo() {
-  const users = getSortedUsersList();
-  const s1Select = document.getElementById('pos-staff1-select');
-  const isOwner = currentUser && isUserOwner(currentUser);
-  const busyMap = getBusyStaffPhonesMap();
-
-  if (s1Select) {
-    // Lọc danh sách: Chỉ hiện những KTV đang thật sự rảnh (nếu bận thì ẩn hoàn toàn)
-    let availableUsers = users.filter(u => !busyMap[normalizePhone(u.phone)]);
-    if (!isOwner && currentUser) {
-      // Với KTV tự tạo tour cho mình thì luôn giữ tên KTV đó
-      if (!availableUsers.some(u => normalizePhone(u.phone) === normalizePhone(currentUser.phone))) {
-        availableUsers.unshift(currentUser);
-      }
-    }
-
-    if (availableUsers.length === 0) {
-      s1Select.innerHTML = '<option value="">🔴 Tất cả KTV đều đang bận ca</option>';
-    } else {
-      const curVal = s1Select.value;
-      s1Select.innerHTML = availableUsers.map(u => {
-        const isSelected = curVal ? (normalizePhone(u.phone) === normalizePhone(curVal)) : (currentUser && normalizePhone(u.phone) === normalizePhone(currentUser.phone));
-        return `
-          <option value="${u.phone}" ${isSelected ? 'selected' : ''}>
-            ${u.full_name}
-          </option>
-        `;
-      }).join('');
-    }
-
-    if (isOwner) {
-      s1Select.disabled = availableUsers.length === 0;
-      document.getElementById('pos-staff1-lock-icon')?.classList.add('hidden');
-      document.getElementById('pos-staff1-role-hint')?.classList.add('hidden');
-    } else {
-      s1Select.disabled = true;
-      if (currentUser) s1Select.value = currentUser.phone;
-      document.getElementById('pos-staff1-lock-icon')?.classList.remove('hidden');
-      document.getElementById('pos-staff1-role-hint')?.classList.remove('hidden');
-    }
-  }
-
-  updateStaffAvailabilityHeader();
-  renderExtraStaffUI();
-  updatePOSCalculations();
-}
-
-function onStaff1SelectChange() {
-  renderExtraStaffUI();
-  updatePOSCalculations();
-}
-
-function addExtraStaff() {
-  const users = getSortedUsersList();
-  const s1Phone = document.getElementById('pos-staff1-select')?.value || currentUser?.phone;
-
-  const busyMap = getBusyStaffPhonesMap();
-  const usedPhones = [normalizePhone(s1Phone), ...extraStaffList.map(s => normalizePhone(s.phone))];
-  const available = users.filter(u => !usedPhones.includes(normalizePhone(u.phone)) && !busyMap[normalizePhone(u.phone)]);
-
-  if (available.length === 0) {
-    alert('Không còn KTV nào khác đang rảnh để thêm vào tour!');
+function addSelectedServiceFromDropdown() {
+  const dropdown = document.getElementById('pos-service-dropdown');
+  const serviceId = dropdown ? dropdown.value : '';
+  if (!serviceId) {
+    alert('Vui lòng chọn một dịch vụ từ danh sách để thêm!');
     return;
   }
 
-  const nextStaff = available[0];
-  extraStaffList.push({
-    phone: nextStaff.phone,
-    staff_id: nextStaff.staff_id || (isUserOwner(nextStaff) ? 'FOUNDER_01' : 'KTV'),
-    full_name: nextStaff.full_name,
-    user_id: nextStaff.user_id || nextStaff.phone
-  });
+  const menu = getValidatedMenu();
+  const item = menu.find(m => m.service_id === serviceId);
+  if (!item) return;
 
-  renderExtraStaffUI();
+  if (!selectedCartItems.some(i => i.service_id === serviceId)) {
+    selectedCartItems.push({ ...item });
+  }
+
+  renderMenuDropdown();
+  renderQuickComboButtons();
+  renderCartUI();
   updatePOSCalculations();
 }
 
-function removeExtraStaff(index) {
-  const cardEl = document.getElementById(`extra-staff-card-${index}`);
-  if (cardEl) {
-    cardEl.style.transition = 'all 0.25s ease';
-    cardEl.style.transform = 'scale(0.85)';
-    cardEl.style.opacity = '0';
-  }
-
-  setTimeout(() => {
-    extraStaffList.splice(index, 1);
-    renderExtraStaffUI();
-    updatePOSCalculations();
-  }, 200);
-}
-
-function onExtraStaffSelectChange(index, newPhone) {
-  const users = getSortedUsersList();
-  const staff = users.find(u => normalizePhone(u.phone) === normalizePhone(newPhone));
-  if (staff) {
-    extraStaffList[index] = {
-      phone: staff.phone,
-      staff_id: staff.staff_id || 'KTV',
-      full_name: staff.full_name,
-      user_id: staff.user_id || staff.phone
-    };
-  }
-  renderExtraStaffUI();
+function removeCartItem(serviceId) {
+  selectedCartItems = selectedCartItems.filter(i => i.service_id !== serviceId);
+  renderMenuDropdown();
+  renderQuickComboButtons();
+  renderCartUI();
   updatePOSCalculations();
 }
 
-function renderExtraStaffUI() {
-  const container = document.getElementById('pos-extra-staff-container');
-  const addBtn = document.getElementById('btn-add-staff-card');
-  if (!container) return;
+function renderCartUI() {
+  const listContainer = document.getElementById('pos-cart-items-list');
+  const countBadge = document.getElementById('pos-cart-count-badge');
+  const totalPriceEl = document.getElementById('pos-cart-total-price');
+  const totalDurationEl = document.getElementById('pos-cart-total-duration');
+  if (!listContainer) return;
 
-  const users = getSortedUsersList();
-  const s1Phone = document.getElementById('pos-staff1-select')?.value || currentUser?.phone;
+  if (selectedCartItems.length === 0) {
+    listContainer.innerHTML = `
+      <div class="p-3 text-center text-xs text-[#A39696] italic bg-white rounded-2xl border border-dashed border-[#EFE8DF]">
+        Chưa có dịch vụ nào được chọn. Vui lòng chọn ít nhất 1 dịch vụ!
+      </div>
+    `;
+    if (countBadge) countBadge.innerText = '0 dịch vụ';
+    if (totalPriceEl) totalPriceEl.innerText = '0 đ';
+    if (totalDurationEl) totalDurationEl.innerText = '0 phút';
+    return;
+  }
 
-  container.innerHTML = extraStaffList.map((item, idx) => {
-    const ktvNum = idx + 2;
-    const otherUsedPhones = [normalizePhone(s1Phone), ...extraStaffList.filter((_, i) => i !== idx).map(s => normalizePhone(s.phone))];
-    const selectable = users.filter(u => !otherUsedPhones.includes(normalizePhone(u.phone)));
+  if (countBadge) countBadge.innerText = `${selectedCartItems.length} dịch vụ`;
+
+  let totalPrice = 0;
+  let totalDuration = 0;
+
+  listContainer.innerHTML = selectedCartItems.map(item => {
+    const price = Number(item.price) || 0;
+    const dur = Number(item.duration_min) || 0;
+    totalPrice += price;
+    totalDuration += dur;
+
+    const isCombo = String(item.category || '').toLowerCase() === 'combo' || String(item.service_name || '').toLowerCase().includes('combo');
 
     return `
-      <div id="extra-staff-card-${idx}" class="relative p-3.5 rounded-2xl bg-[#FFF5F2] border border-[#FCDFD7] space-y-2 transition-all">
-        <!-- 🔴 NÚT DẤU TRỪ ĐỎ ⊖ Ở GÓC TRÊN BÊN PHẢI -->
-        <button type="button" onclick="removeExtraStaff(${idx})" title="Xóa người này" class="absolute -top-2.5 -right-2.5 w-7 h-7 rounded-full bg-white border-2 border-rose-400 text-rose-500 hover:bg-rose-500 hover:text-white flex items-center justify-center shadow-md active:scale-75 transition-all cursor-pointer z-10">
-          <i data-lucide="minus" class="w-4 h-4 stroke-[3]"></i>
-        </button>
-
-        <div class="flex justify-between items-center pr-5">
-          <span class="text-xs font-bold text-[#E58A7B] flex items-center gap-1">
-            <i data-lucide="user-check" class="w-3.5 h-3.5 text-[#E58A7B]"></i>
-            <span class="font-extrabold">Người cùng làm ${ktvNum}:</span>
-          </span>
-          <span id="pos-staff${ktvNum}-comm-preview" class="text-xs font-extrabold text-[#2E7D6D] bg-[#E8F8F5] px-2.5 py-0.5 rounded-full">+3.200 đ</span>
+      <div class="p-2.5 rounded-2xl bg-white border border-[#EFE8DF] flex items-center justify-between gap-2 shadow-2xs animate-in fade-in">
+        <div class="min-w-0">
+          <div class="text-xs font-bold text-[#2D2424] truncate flex items-center gap-1.5">
+            <span>${isCombo ? '💆' : '✨'} ${item.service_name}</span>
+          </div>
+          <div class="text-[11px] font-mono text-[#7E7272] mt-0.5">
+            <span class="text-[#E58A7B] font-bold">${price.toLocaleString('vi-VN')} đ</span> • ${dur} phút
+          </div>
         </div>
-
-        <select onchange="onExtraStaffSelectChange(${idx}, this.value)" class="w-full bg-white border border-[#FCDFD7] rounded-xl p-3 text-[#2D2424] font-bold text-sm focus:outline-none focus:border-[#E58A7B] cursor-pointer">
-          ${selectable.map(u => `
-            <option value="${u.phone}" ${normalizePhone(u.phone) === normalizePhone(item.phone) ? 'selected' : ''}>${u.full_name}</option>
-          `).join('')}
-        </select>
+        <button type="button" onclick="removeCartItem('${item.service_id}')" class="p-1.5 text-[#A39696] hover:text-red-600 hover:bg-red-50 rounded-xl transition cursor-pointer shrink-0" title="Xóa dịch vụ này">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
       </div>
     `;
   }).join('');
 
-  const totalUsed = 1 + extraStaffList.length;
-  if (addBtn) {
-    if (totalUsed >= users.length) {
-      addBtn.classList.add('hidden');
-    } else {
-      addBtn.classList.remove('hidden');
-    }
-  }
+  if (totalPriceEl) totalPriceEl.innerText = `${totalPrice.toLocaleString('vi-VN')} đ`;
+  if (totalDurationEl) totalDurationEl.innerText = `${totalDuration} phút`;
 
-  lucide.createIcons();
+  if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
 }
 
 function updatePOSCalculations() {
-  const menu = getValidatedMenu();
-  const users = getSortedUsersList();
-  const service = menu.find(m => m.service_id === selectedComboId) || findComboByNumber(menu, 1) || menu[0];
-  if (!service) return;
+  const totalPrice = selectedCartItems.reduce((sum, item) => sum + (Number(item.price) || 0), 0);
+  const totalDuration = selectedCartItems.reduce((sum, item) => sum + (Number(item.duration_min) || 0), 0);
 
-  const s1Phone = document.getElementById('pos-staff1-select')?.value || currentUser?.phone;
-  const staff1 = users.find(u => normalizePhone(u.phone) === normalizePhone(s1Phone)) || currentUser;
-  const rate1 = parsePercentage(staff1?.commission_rate) || 10;
-
-  const totalStaffCount = 1 + extraStaffList.length;
-  const baseTourComm = Math.round(service.price * (rate1 / 100));
-  const splitTourComm = Math.round(baseTourComm / totalStaffCount);
-
-  const p1El = document.getElementById('pos-staff1-comm-preview');
-  if (p1El) p1El.innerText = `+${splitTourComm.toLocaleString('vi-VN')} đ`;
-
-  extraStaffList.forEach((_, idx) => {
-    const ktvNum = idx + 2;
-    const pEl = document.getElementById(`pos-staff${ktvNum}-comm-preview`);
-    if (pEl) pEl.innerText = `+${splitTourComm.toLocaleString('vi-VN')} đ`;
-  });
+  const totalPriceEl = document.getElementById('pos-cart-total-price');
+  const totalDurationEl = document.getElementById('pos-cart-total-duration');
+  if (totalPriceEl) totalPriceEl.innerText = `${totalPrice.toLocaleString('vi-VN')} đ`;
+  if (totalDurationEl) totalDurationEl.innerText = `${totalDuration} phút`;
 }
+
 
 let customerSearchDebounce = null;
 
@@ -682,9 +628,16 @@ function onVoucherToggle(checked) {
 // =============================================================
 
 function startLiveSession() {
-  const menu = getValidatedMenu();
+  if (!selectedCartItems || selectedCartItems.length === 0) {
+    alert('Vui lòng chọn ít nhất một dịch vụ trước khi bắt đầu tour gội!');
+    return;
+  }
+
   const users = getSortedUsersList();
-  const service = menu.find(m => m.service_id === selectedComboId) || findComboByNumber(menu, 1) || menu[0];
+  const totalPrice = selectedCartItems.reduce((sum, item) => sum + (Number(item.price) || 0), 0);
+  const totalDuration = selectedCartItems.reduce((sum, item) => sum + (Number(item.duration_min) || 0), 0);
+  const serviceDisplayName = selectedCartItems.map(i => i.service_name).join(' + ');
+  const primaryServiceId = selectedCartItems[0].service_id;
 
   let phone = document.getElementById('pos-customer-phone')?.value.trim() || '';
   if (currentCustomer && (phone.includes('*') || phone === currentCustomer.phone_number || phone === currentCustomer.raw_phone)) {
@@ -728,29 +681,15 @@ function startLiveSession() {
     }))
   ];
 
-  const addonsList = (typeof getSelectedAddonsData === 'function') ? getSelectedAddonsData() : [];
-  const addonTotalPrice = addonsList.reduce((sum, a) => sum + (Number(a.price) || 0), 0);
-  const addonTotalDuration = addonsList.reduce((sum, a) => sum + (Number(a.duration_min) || 0), 0);
-  const basePrice = service ? (Number(service.price) || 0) : 64000;
-  const baseDuration = service ? (Number(service.duration_min) || 45) : 45;
 
-  const finalTotalPrice = basePrice + addonTotalPrice;
-  const finalTotalDuration = baseDuration + addonTotalDuration;
-
-  let serviceDisplayName = service.service_name;
-  if (addonsList.length > 0) {
-    const addonNames = addonsList.map(a => a.name).join(' + ');
-    serviceDisplayName += ` (+ ${addonNames})`;
-  }
 
   currentLiveSession = {
     session_id: 'SS' + Date.now(),
-    service_id: service.service_id,
+    service_id: primaryServiceId,
     service_name: serviceDisplayName,
-    base_service_name: service.service_name,
-    addons: addonsList,
-    price: finalTotalPrice,
-    duration_target_min: finalTotalDuration,
+    selected_items: selectedCartItems,
+    price: totalPrice,
+    duration_target_min: totalDuration || 45,
     start_timestamp: Date.now(),
     start_time: startTimeStr,
     date: startDateStr,

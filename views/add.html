@@ -68,43 +68,54 @@
   <!-- ============================================================= -->
   <div id="pos-form-box" class="bg-white rounded-[28px] border border-[#F0EAE1] shadow-[0_10px_30px_-5px_rgba(229,138,123,0.05),0_4px_12px_rgba(0,0,0,0.02)] p-5 sm:p-7 space-y-6">
     
-    <!-- 1. CHỌN DỊCH VỤ & DỊCH VỤ LÀM THÊM (ADD-ONS) -->
-    <div class="space-y-3">
-      <div class="flex justify-between items-center">
-        <label class="block text-sm font-bold text-[#2D2424] uppercase tracking-wider flex items-center gap-2">
-          <i data-lucide="sparkles" class="w-4 h-4 text-[#E58A7B]"></i> 1. Chọn Combo Dịch Vụ
-        </label>
-        <span id="pos-summary-pill" class="text-xs font-bold text-[#2E7D6D] bg-[#E8F8F5] px-3 py-1 rounded-full border border-[#B7EBDD] font-mono">
-          64.000 đ • 45p
-        </span>
+    <!-- 1. CHỌN DỊCH VỤ & SẢN PHẨM -->
+    <div class="space-y-3.5">
+      <label class="block text-sm font-bold text-[#2D2424] uppercase tracking-wider flex items-center gap-2">
+        <i data-lucide="sparkles" class="w-4 h-4 text-[#E58A7B]"></i> 1. Chọn Dịch Vụ & Sản Phẩm
+      </label>
+
+      <!-- HÀNG 1: DROPDOWN CHỌN MÓN + NÚT THÊM -->
+      <div class="flex gap-2">
+        <div class="relative flex-1 min-w-0">
+          <select id="pos-service-dropdown" class="w-full bg-[#F7F2EC] border border-[#EFE8DF] rounded-2xl p-3 text-xs sm:text-sm text-[#2D2424] font-bold focus:outline-none focus:border-[#E58A7B] focus:bg-white transition cursor-pointer"></select>
+        </div>
+        <button type="button" onclick="addSelectedServiceFromDropdown()" class="px-4 py-3 bg-[#E58A7B] hover:bg-[#D9796A] text-white font-bold text-xs sm:text-sm rounded-2xl flex items-center gap-1.5 shrink-0 transition active:scale-95 cursor-pointer shadow-sm shadow-[#E58A7B]/20">
+          <i data-lucide="plus-circle" class="w-4 h-4"></i>
+          <span>Thêm</span>
+        </button>
       </div>
 
-      <!-- Dropdown Chọn Combo -->
-      <select id="pos-service-select" onchange="onSelectServiceChange()" class="w-full bg-[#F7F2EC] border border-[#EFE8DF] rounded-2xl p-3.5 text-[#2D2424] font-bold text-sm sm:text-base focus:outline-none focus:border-[#E58A7B] focus:bg-white transition cursor-pointer"></select>
-      
-      <!-- Hàng Pills Nút Bấm Nhanh Combo 1 - 5 -->
-      <div id="pos-quick-combos" class="flex flex-wrap gap-2"></div>
+      <!-- HÀNG 2: CHỌN NHANH COMBO -->
+      <div class="space-y-1.5">
+        <div class="text-[11px] font-bold text-[#7E7272] flex items-center gap-1">
+          <span>⚡ Chọn nhanh Combo:</span>
+        </div>
+        <div id="pos-quick-combos" class="flex flex-wrap gap-2"></div>
+      </div>
 
-      <!-- CỤM DỊCH VỤ LÀM THÊM (ADD-ON SERVICES) -->
-      <div class="pt-1.5 space-y-2.5">
-        <div class="flex items-center justify-between">
-          <button type="button" onclick="toggleAddonPickerModal()" class="w-full py-2.5 px-4 rounded-2xl border-2 border-dashed border-[#E58A7B]/40 hover:border-[#E58A7B] bg-[#FFF5F2]/50 hover:bg-[#FFF0EB] text-[#E58A7B] font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition cursor-pointer active:scale-98">
-            <i data-lucide="plus-circle" class="w-4 h-4"></i>
-            <span>Thêm Dịch Vụ Làm Thêm / Cộng Phút</span>
-          </button>
+      <!-- HÀNG 3: KHUNG DỊCH VỤ ĐÃ CHỌN & TỔNG CỘNG -->
+      <div id="pos-cart-box" class="p-3.5 rounded-3xl bg-[#FAF6F1] border border-[#F0EAE1] space-y-3">
+        <div class="flex justify-between items-center pb-2 border-b border-[#EFE8DF]">
+          <span class="text-xs font-extrabold text-[#7E7272] uppercase tracking-wider flex items-center gap-1.5">
+            <i data-lucide="clipboard-list" class="w-3.5 h-3.5 text-[#2E7D6D]"></i> Dịch Vụ Đã Chọn:
+          </span>
+          <span id="pos-cart-count-badge" class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-[#E8F8F5] text-[#2E7D6D] border border-[#B7EBDD]">
+            1 dịch vụ
+          </span>
         </div>
 
-        <!-- Popover / Danh sách chọn nhanh dịch vụ phụ -->
-        <div id="pos-addon-selector-box" class="hidden p-3.5 rounded-2xl bg-[#FAF6F1] border border-[#F0EAE1] space-y-2">
-          <div class="text-xs font-extrabold text-[#7E7272] uppercase tracking-wider flex justify-between items-center pb-1 border-b border-[#EFE8DF]">
-            <span>✨ Chọn dịch vụ làm thêm</span>
-            <button type="button" onclick="toggleAddonPickerModal()" class="text-[#A39696] hover:text-[#E58A7B] text-xs">Đóng ✕</button>
-          </div>
-          <div id="pos-addon-options-list" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
-        </div>
+        <!-- Danh sách các món trong giỏ -->
+        <div id="pos-cart-items-list" class="space-y-2"></div>
 
-        <!-- Thẻ Chip Các Dịch Vụ Phụ Đã Chọn -->
-        <div id="pos-selected-addons-chips" class="flex flex-wrap gap-2 empty:hidden"></div>
+        <!-- Dòng Tổng Cộng -->
+        <div class="pt-2 border-t border-[#EFE8DF] flex justify-between items-center text-xs sm:text-sm font-extrabold">
+          <span class="text-[#2D2424] flex items-center gap-1">
+            <i data-lucide="coins" class="w-4 h-4 text-[#E58A7B]"></i> Tổng: <b id="pos-cart-total-price" class="text-[#E58A7B] text-base font-black font-mono ml-1">64.000 đ</b>
+          </span>
+          <span class="text-[#2E7D6D] flex items-center gap-1">
+            <i data-lucide="clock" class="w-4 h-4"></i> <span id="pos-cart-total-duration">45 phút</span>
+          </span>
+        </div>
       </div>
     </div>
 
