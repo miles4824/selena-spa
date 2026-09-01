@@ -17,13 +17,14 @@ async function openOwnerCustomerEditorModal(phone, name, receiptId) {
   }
 
   // 2. Tìm theo receiptId
-  if (!truePhone && receiptId) {
-    const r = receipts.find(x => x.receipt_id === receiptId);
-    if (r) {
-      if (r.raw_phone && !String(r.raw_phone).includes('*')) {
-        truePhone = normalizePhone(r.raw_phone);
-      } else if (r.customer_phone && !String(r.customer_phone).includes('*')) {
-        truePhone = normalizePhone(r.customer_phone);
+  let targetReceipt = null;
+  if (receiptId) {
+    targetReceipt = receipts.find(x => x.receipt_id === receiptId);
+    if (targetReceipt) {
+      if (!truePhone && targetReceipt.raw_phone && !String(targetReceipt.raw_phone).includes('*')) {
+        truePhone = normalizePhone(targetReceipt.raw_phone);
+      } else if (!truePhone && targetReceipt.customer_phone && !String(targetReceipt.customer_phone).includes('*')) {
+        truePhone = normalizePhone(targetReceipt.customer_phone);
       }
     }
   }
@@ -41,8 +42,12 @@ async function openOwnerCustomerEditorModal(phone, name, receiptId) {
     cust = allCusts.find(c => isSamePhone(c.phone_number || c.raw_phone, truePhone));
   }
 
+  const currentDisplayName = (targetReceipt && targetReceipt.customer_name && targetReceipt.customer_name !== 'Khách vãng lai') ? 
+                             targetReceipt.customer_name : (name || cust?.customer_name || 'Khách Hàng');
+
   document.getElementById('modal-owner-edit-raw-phone').value = truePhone || '';
-  document.getElementById('modal-owner-edit-name').value = name || cust?.customer_name || 'Khách Hàng';
+  document.getElementById('modal-owner-edit-receipt-id').value = receiptId || '';
+  document.getElementById('modal-owner-edit-name').value = (currentDisplayName !== 'Khách Hàng' && currentDisplayName !== 'Khách vãng lai') ? currentDisplayName : (name || '');
   document.getElementById('modal-owner-edit-phone').value = truePhone || '';
 
   const monthSelect = document.getElementById('modal-owner-edit-birth-month');
@@ -89,6 +94,7 @@ function closeOwnerCustomerEditorModal() {
 function handleSaveOwnerCustomerEditor(e) {
   e.preventDefault();
   const rawPhone = document.getElementById('modal-owner-edit-raw-phone')?.value;
+  const receiptId = document.getElementById('modal-owner-edit-receipt-id')?.value;
   const newName = document.getElementById('modal-owner-edit-name')?.value.trim();
   const newPhone = normalizePhone(document.getElementById('modal-owner-edit-phone')?.value);
   const birthMonth = document.getElementById('modal-owner-edit-birth-month')?.value;
@@ -100,14 +106,15 @@ function handleSaveOwnerCustomerEditor(e) {
   }
 
   const targetPhone = newPhone || rawPhone;
+  const targetName = newName || 'Khách hàng';
   const bMonthNum = Number(birthMonth) || 0;
 
-  // 1. Cập nhật local storage
+  // 1. Cập nhật local storage cho tb_customers
   const customers = getStored('customers', DEFAULT_CUSTOMERS);
   let found = false;
   customers.forEach(c => {
-    if (isSamePhone(c.phone_number || c.raw_phone, rawPhone) || isSamePhone(c.phone_number || c.raw_phone, targetPhone)) {
-      c.customer_name = newName || c.customer_name;
+    if ((rawPhone && isSamePhone(c.phone_number || c.raw_phone, rawPhone)) || isSamePhone(c.phone_number || c.raw_phone, targetPhone)) {
+      c.customer_name = targetName;
       c.phone_number = targetPhone;
       c.raw_phone = targetPhone;
       c.birth_month = bMonthNum;
@@ -121,7 +128,7 @@ function handleSaveOwnerCustomerEditor(e) {
     customers.push({
       phone_number: targetPhone,
       raw_phone: targetPhone,
-      customer_name: newName || 'Khách hàng',
+      customer_name: targetName,
       birth_month: bMonthNum,
       birthday: bMonthNum ? bMonthNum : '',
       cycle_start_date: normalizeDateKey(new Date()),
@@ -131,27 +138,64 @@ function handleSaveOwnerCustomerEditor(e) {
       notes: notes
     });
   }
-
   setStored('customers', customers);
 
-  // 2. Bắn sang Firebase & Google Sheets
+  // 2. Cập nhật tb_receipts VÀ tb_payroll_logs trong LocalStorage nếu có receiptId
+  if (receiptId) {
+    const receipts = getStored('receipts', []);
+    const rIdx = receipts.findIndex(r => r.receipt_id === receiptId);
+    if (rIdx >= 0) {
+      receipts[rIdx].customer_phone = targetPhone;
+      receipts[rIdx].customer_name = targetName;
+      receipts[rIdx].raw_phone = targetPhone;
+      setStored('receipts', receipts);
+    }
+
+    const payrollLogs = getStored('payroll_logs', []);
+    payrollLogs.forEach(p => {
+      if (p.receipt_id === receiptId) {
+        p.customer_name = targetName;
+        p.customer_phone = targetPhone;
+      }
+    });
+    setStored('payroll_logs', payrollLogs);
+
+    // Cập nhật Firebase Realtime
+    if (typeof firebase !== 'undefined' && firebase.database) {
+      try {
+        firebase.database().ref('receipts/' + receiptId).update({
+          customer_name: targetName,
+          customer_phone: targetPhone
+        });
+      } catch(e) {}
+    }
+  }
+
+  // 3. Bắn sang Firebase & Google Sheets
   if (typeof fbSaveCustomerNote === 'function') {
-    fbSaveCustomerNote(targetPhone, newName, bMonthNum, notes);
+    fbSaveCustomerNote(targetPhone, targetName, bMonthNum, notes);
   }
 
   callGasApi('update_customer_notes', {
     phone_number: targetPhone,
     customer_phone: targetPhone,
-    customer_name: newName,
+    customer_name: targetName,
     birth_month: bMonthNum,
     birthday: bMonthNum ? bMonthNum : '',
-    notes: notes
+    notes: notes,
+    receipt_id: receiptId || ''
   });
 
   closeOwnerCustomerEditorModal();
   alert('👑 Đã cập nhật hồ sơ khách hàng thành công!');
   
+  // 4. Render lại tức thì trên cả 2 màn hình
   if (typeof loadAdminReceiptsList === 'function') {
-    loadAdminReceiptsList(selectedAdminHistoryDate);
+    const curAdminDate = (typeof selectedAdminHistoryDate !== 'undefined') ? selectedAdminHistoryDate : 'ALL';
+    loadAdminReceiptsList(curAdminDate);
+  }
+  if (typeof loadStaffReceiptsList === 'function') {
+    const curStaffDate = (typeof selectedStaffHistoryDate !== 'undefined') ? selectedStaffHistoryDate : 'ALL';
+    loadStaffReceiptsList(curStaffDate);
   }
 }

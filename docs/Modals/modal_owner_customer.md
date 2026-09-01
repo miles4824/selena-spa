@@ -49,4 +49,5 @@ ightarrow$ Cột F (`customer_phone`), Cột G (`customer_name`).
 
 ## 6. Lịch Sử Thay Đổi & Lưu Vết (Audit Log)
 - `2026-09-01` (`v0.0.0.1`):
-- `2026-09-01` (`v0.0.0.6`): Khắc phục hiển thị SĐT 10 số thật cho Chủ Tiệm, hiển thị ô chọn tháng cho khách chưa có tháng sinh và chuẩn hóa SVG Lucide. Đổi tiêu đề modal thành "Thông Tin Khách Hàng" và gắn nút mở trực tiếp trên từng thẻ hóa đơn Lịch sử của Chủ tiệm.
+- `2026-09-01` (`v0.0.0.6`):
+- `2026-09-01` (`v0.0.0.9`): Tối ưu layout [SĐT] ở trên, [Tên] + [Sinh nhật] ở dưới dạng grid 2 cột, cho phép Admin chỉnh sửa nhiều lần liên tục. Khắc phục hiển thị SĐT 10 số thật cho Chủ Tiệm, hiển thị ô chọn tháng cho khách chưa có tháng sinh và chuẩn hóa SVG Lucide. Đổi tiêu đề modal thành "Thông Tin Khách Hàng" và gắn nút mở trực tiếp trên từng thẻ hóa đơn Lịch sử của Chủ tiệm.
