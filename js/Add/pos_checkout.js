@@ -2394,7 +2394,7 @@ function saveModalEditLiveServices() {
   const nameEl = document.getElementById('live-session-service-name');
   if (nameEl) nameEl.innerText = serviceDisplayName;
 
-  const targetDurEl = document.getElementById('live-session-target-duration');
+  const targetDurEl = document.getElementById('live-target-time-text');
   if (targetDurEl) targetDurEl.innerText = `${totalDuration} phút`;
 
   // Cập nhật Live Timer ngay lập tức

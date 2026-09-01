@@ -75,4 +75,5 @@
 ---
 
 ## 6. Lịch Sử Thay Đổi & Lưu Vết (Audit Log)
-- `2026-09-01` (`v0.0.3.9`): Khởi tạo tài liệu đặc tả nghiệp vụ Modal Đổi & Thêm Dịch Vụ Khi Đang Chạy Tour.
+- `2026-09-01` (`v0.0.3.9`):
+- `2026-09-01` (`v0.0.4.1`): Gắn nút `[ ✏️ Đổi Dịch Vụ ]` trực tiếp trên thẻ tiêu đề của `live-session-card`. Khởi tạo tài liệu đặc tả nghiệp vụ Modal Đổi & Thêm Dịch Vụ Khi Đang Chạy Tour.
