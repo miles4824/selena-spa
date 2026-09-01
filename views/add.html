@@ -69,7 +69,7 @@
   <div id="pos-form-box" class="bg-white rounded-[28px] border border-[#F0EAE1] shadow-[0_10px_30px_-5px_rgba(229,138,123,0.05),0_4px_12px_rgba(0,0,0,0.02)] p-5 sm:p-7 space-y-6">
     
     <!-- 1. CHỌN DỊCH VỤ & SẢN PHẨM -->
-    <div class="space-y-4">
+    <div class="space-y-3.5">
       <div class="flex items-center justify-between">
         <label class="text-sm font-black text-[#2D2424] uppercase tracking-wider flex items-center gap-2">
           <i data-lucide="sparkles" class="w-4 h-4 text-[#E58A7B]"></i> 1. Chọn Dịch Vụ & Sản Phẩm
@@ -82,50 +82,51 @@
           <i data-lucide="zap" class="w-3.5 h-3.5 text-[#E58A7B]"></i>
           <span>Chọn nhanh Combo:</span>
         </div>
-        <div id="pos-quick-combos" class="flex flex-wrap gap-2.5"></div>
+        <div id="pos-quick-combos" class="flex flex-wrap gap-2"></div>
       </div>
 
       <!-- ĐƯỜNG DASH NGĂN CÁCH THOÁNG ĐÃNG -->
-      <div class="border-t border-dashed border-[#E8E1D7] my-3.5"></div>
+      <div class="border-t border-dashed border-[#E8E1D7] my-3"></div>
 
-      <!-- KHUNG HỘP CHỌN DỊCH VỤ & GIỎ HÀNG TÍCH HỢP (MULTI-SELECT TAG BOX) -->
-      <div class="p-4 rounded-3xl bg-[#FAF6F1] border border-[#EFE8DF] space-y-3.5 shadow-2xs">
-        <div class="flex justify-between items-center">
-          <span class="text-xs font-black text-[#2D2424] uppercase tracking-wider flex items-center gap-1.5">
-            <i data-lucide="clipboard-list" class="w-4 h-4 text-[#2E7D6D]"></i> Dịch Vụ Đã Chọn:
+      <!-- KHU VỰC DỊCH VỤ ĐÃ CHỌN MỞ RỘNG (KHÔNG ĐÓNG KHUNG NẶNG NỀ) -->
+      <div class="space-y-3">
+        <div class="flex justify-between items-center px-0.5">
+          <span class="text-xs font-black text-[#7E7272] uppercase tracking-wider flex items-center gap-1.5">
+            <i data-lucide="clipboard-list" class="w-3.5 h-3.5 text-[#2E7D6D]"></i> Dịch Vụ Đã Chọn:
           </span>
           <span id="pos-cart-count-badge" class="text-[10px] font-black px-2.5 py-0.5 rounded-full bg-[#E8F8F5] text-[#2E7D6D] border border-[#B7EBDD]">
             1 dịch vụ
           </span>
         </div>
 
-        <!-- KHU VỰC MULTI-TAGS CONTAINER KÈM DROPDOWN TRIGGER -->
+        <!-- HỘP MULTI-TAGS CONTAINER KÈM DROPDOWN TRIGGER -->
         <div class="relative">
-          <div id="pos-tag-container" class="min-h-[52px] p-2.5 bg-white border border-[#E8E1D7] rounded-2xl flex flex-wrap gap-2 items-center cursor-pointer transition focus-within:border-[#E58A7B] focus-within:ring-2 focus-within:ring-[#E58A7B]/20 shadow-2xs" onclick="toggleCustomDropdownPopover(event)">
+          <div id="pos-tag-container" class="min-h-[50px] p-2.5 bg-white border border-[#E8E1D7] hover:border-[#E58A7B]/60 rounded-2xl flex flex-wrap gap-2 items-center cursor-pointer transition-all focus-within:border-[#E58A7B] focus-within:ring-2 focus-within:ring-[#E58A7B]/20 shadow-2xs" onclick="toggleCustomDropdownPopover(event)">
             <!-- Danh sách Chips dịch vụ đã chọn -->
             <div id="pos-cart-chips-list" class="flex flex-wrap gap-2"></div>
             
             <!-- Nút trigger mở menu thả xuống -->
-            <div class="flex-1 min-w-[140px] flex items-center justify-between text-xs font-bold text-[#A39696] hover:text-[#E58A7B] py-1 px-1">
+            <div class="flex-1 min-w-[150px] flex items-center justify-between text-xs font-bold text-[#A39696] hover:text-[#E58A7B] py-1 px-1">
               <span id="pos-dropdown-placeholder-text">-- Chọn thêm dịch vụ / sản phẩm --</span>
               <i id="pos-dropdown-chevron" data-lucide="chevron-down" class="w-4 h-4 text-[#A39696] transition-transform duration-200"></i>
             </div>
           </div>
 
           <!-- POPOVER MENU THẢ XUỐNG SANG TRỌNG -->
-          <div id="pos-custom-dropdown-popover" class="hidden absolute left-0 right-0 top-full mt-1.5 bg-white border border-[#EFE8DF] rounded-2xl shadow-xl z-50 overflow-hidden max-h-64 overflow-y-auto animate-in fade-in zoom-in-95">
+          <div id="pos-custom-dropdown-popover" class="hidden absolute left-0 right-0 top-full mt-2 bg-white border border-[#EFE8DF] rounded-2xl shadow-2xl ring-1 ring-black/5 z-50 overflow-hidden max-h-64 overflow-y-auto animate-in fade-in zoom-in-95">
             <div id="pos-custom-dropdown-items" class="p-2 space-y-1"></div>
           </div>
         </div>
 
-        <!-- DÒNG TỔNG CỘNG ĐÓNG KHUNG NỔI BẬT TRONG BOX -->
-        <div class="p-3 rounded-2xl bg-white border border-[#EFE8DF] flex justify-between items-center text-xs sm:text-sm font-extrabold shadow-2xs">
-          <div class="flex items-baseline gap-1.5 text-[#2D2424]">
-            <i data-lucide="coins" class="w-4 h-4 text-[#E58A7B] self-center"></i>
-            <span>Tổng:</span>
-            <b id="pos-cart-total-price" class="text-[#E58A7B] text-lg sm:text-xl font-black font-mono ml-0.5">64.000 đ</b>
+        <!-- THANH TỔNG CỘNG TỐI GIẢN & SẮC NÉT -->
+        <div class="flex items-center justify-between pt-1 px-1">
+          <div class="flex items-baseline gap-2">
+            <span class="text-xs font-black text-[#7E7272] uppercase tracking-wider flex items-center gap-1">
+              <i data-lucide="coins" class="w-3.5 h-3.5 text-[#E58A7B]"></i> Tổng:
+            </span>
+            <b id="pos-cart-total-price" class="text-[#E58A7B] text-xl font-black font-mono tracking-tight">64.000 đ</b>
           </div>
-          <div class="flex items-center gap-1.5 bg-[#F7F2EC] px-3 py-1.5 rounded-xl border border-[#EFE8DF] text-xs font-black text-[#2E7D6D]">
+          <div class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#E8F8F5] border border-[#B7EBDD] text-xs font-black text-[#2E7D6D] shadow-2xs">
             <i data-lucide="clock" class="w-3.5 h-3.5"></i>
             <span id="pos-cart-total-duration">50 phút</span>
           </div>

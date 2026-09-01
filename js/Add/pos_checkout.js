@@ -342,11 +342,11 @@ function renderCartUI() {
     const isCombo = String(item.service_id || '').startsWith('CB') || String(item.service_name || '').toLowerCase().includes('combo');
 
     return `
-      <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#FFF0EB] border border-[#E58A7B]/40 text-[#2D2424] text-xs font-bold shadow-2xs animate-in zoom-in-95">
-        <span>${isCombo ? '💆' : '✨'}</span>
+      <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-[#FFF0EB] to-[#FFF6F3] border border-[#E58A7B]/30 text-[#2D2424] text-xs font-bold shadow-2xs hover:shadow-xs transition animate-in zoom-in-95">
+        <span class="text-xs">${isCombo ? '💆' : '✨'}</span>
         <span class="font-extrabold text-[#2D2424]">${item.service_name}</span>
-        <span class="text-[10px] font-mono text-[#E58A7B] font-black">(${price.toLocaleString('vi-VN')} đ • ${dur}p)</span>
-        <button type="button" onclick="removeCartItem('${item.service_id}', event)" class="pos-chip-remove-btn ml-1 p-0.5 text-[#A39696] hover:text-rose-600 hover:bg-rose-100 rounded-full transition cursor-pointer" title="Xóa dịch vụ">
+        <span class="text-[11px] font-mono text-[#E58A7B] font-black">(${price.toLocaleString('vi-VN')} đ • ${dur}p)</span>
+        <button type="button" onclick="removeCartItem('${item.service_id}', event)" class="pos-chip-remove-btn ml-0.5 p-0.5 text-[#A39696] hover:text-rose-600 hover:bg-rose-100 rounded-full transition cursor-pointer" title="Xóa dịch vụ">
           <i data-lucide="x" class="w-3.5 h-3.5"></i>
         </button>
       </div>
@@ -358,8 +358,6 @@ function renderCartUI() {
 
   if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
 }
-
-
 
 function updatePOSStaffInfo() {
   const users = getSortedUsersList();
