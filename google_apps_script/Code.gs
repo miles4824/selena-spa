@@ -1462,27 +1462,67 @@ function syncAllData(params) {
     }
   }
 
-  // 8. Config
-  const sheetConfig = ss.getSheetByName('tb_config');
+  // 8. Config (Tự động khởi tạo và điền đầy đủ nếu Sheet tb_config còn trống)
+  let sheetConfig = ss.getSheetByName('tb_config');
+  if (!sheetConfig) {
+    sheetConfig = ss.insertSheet('tb_config');
+    sheetConfig.appendRow(['config_key', 'config_value', 'description']);
+    sheetConfig.getRange(1, 1, 1, 3).setFontWeight('bold').setBackground('#FFF0EB');
+  }
+
+  const defaultKeys = [
+    ['ph_phone', '0799625591', 'Placeholder ô nhập số điện thoại'],
+    ['ph_customer_name', 'VD: Chị Ngân Ngân', 'Placeholder ô nhập tên khách hàng'],
+    ['ph_notes', 'Ghi chú chi tiết sở thích hoặc lưu ý về khách...', 'Placeholder ô ghi chú sở thích'],
+    ['opt_birth_month', '-- Tháng --', 'Chữ mặc định của dropdown tháng sinh'],
+    ['ph_login_phone', '0949251144', 'Placeholder SĐT màn hình đăng nhập'],
+    ['ph_login_password', '••••••', 'Placeholder Mật khẩu màn hình đăng nhập'],
+    ['ph_admin_cust_search', '🔍 Tìm kiếm theo tên hoặc số điện thoại...', 'Placeholder ô tìm kiếm khách hàng'],
+    ['ph_add_exp_amount', 'Ví dụ: 350000', 'Placeholder ô số tiền thêm chi phí'],
+    ['ph_add_exp_note', 'Ghi chú chi tiết...', 'Placeholder ô ghi chú thêm chi phí'],
+    ['ph_announcement', 'Nhập thông báo gửi đến toàn thể kỹ thuật viên...', 'Placeholder ô soạn thông báo'],
+    ['ph_gift_voucher_note', 'VD: Khách VIP, Quà tri ân...', 'Placeholder ô ghi chú tặng voucher'],
+    ['announcement', 'Chào mừng bạn đến với Selena Spa!', 'Thông báo nội bộ từ chủ tiệm'],
+    ['bank_name', 'MBBank', 'Tên ngân hàng nhận thanh toán VietQR'],
+    ['bank_account_no', '0912345678', 'Số tài khoản ngân hàng VietQR'],
+    ['bank_account_name', 'SELENA SPA', 'Tên chủ tài khoản VietQR']
+  ];
+
   let config = {
     announcement: 'Chào mừng bạn đến với Selena Spa!',
     allowed_wifi_ip: '*',
     bank_name: 'MBBank',
     bank_account_no: '0912345678',
-    bank_account_name: 'SELENA SPA'
+    bank_account_name: 'SELENA SPA',
+    ph_phone: '0799625591',
+    ph_customer_name: 'VD: Chị Ngân Ngân',
+    ph_notes: 'Ghi chú chi tiết sở thích hoặc lưu ý về khách...',
+    opt_birth_month: '-- Tháng --'
   };
-  if (sheetConfig) {
-    const colMapCf = createHeaderMap(sheetConfig);
-    const data = sheetConfig.getDataRange().getValues();
-    for (let i = 1; i < data.length; i++) {
-      let k = String(getCell(data[i], colMapCf, ['config_key', 'key'])).trim().toLowerCase();
-      let v = String(getCell(data[i], colMapCf, ['config_value', 'value'])).trim();
-      if (k && v) {
+
+  const colMapCf = createHeaderMap(sheetConfig);
+  const data = sheetConfig.getDataRange().getValues();
+  const existingKeys = new Set();
+
+  for (let i = 1; i < data.length; i++) {
+    let k = String(getCell(data[i], colMapCf, ['config_key', 'key'])).trim().toLowerCase();
+    let v = String(getCell(data[i], colMapCf, ['config_value', 'value'])).trim();
+    if (k) {
+      existingKeys.add(k);
+      if (v) {
         config[k] = v;
         config[k.toUpperCase()] = v;
       }
     }
   }
+
+  // Tự động bổ sung các dòng cấu hình còn thiếu lên Google Sheet
+  defaultKeys.forEach(item => {
+    if (!existingKeys.has(item[0].toLowerCase())) {
+      sheetConfig.appendRow(item);
+      config[item[0]] = item[1];
+    }
+  });
 
   return {
     success: true,
