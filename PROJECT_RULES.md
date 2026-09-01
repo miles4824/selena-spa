@@ -5,24 +5,25 @@
 
 ## ⭐️ 0. NGUYÊN TẮC BẮT BUỘC TRƯỚC VÀ SAU KHI CODE (SOP TOÀN DỰ ÁN)
 
-### 1. Luôn Đọc Kiến Trúc Dự Án & Database Trước Khi Bắt Đầu:
-- Trước khi thực hiện bất kỳ yêu cầu, sửa lỗi hay nâng cấp tính năng nào, **BẮT BUỘC phải đọc kỹ 3 tài liệu**:
+### 1. Luôn Đọc Kiến Trúc, Database & Hồ Sơ Đặc Tả Component Trước Khi Bắt Đầu:
+- Trước khi thực hiện bất kỳ yêu cầu, sửa lỗi hay nâng cấp tính năng nào, **BẮT BUỘC phải đọc kỹ 4 tài liệu nền tảng**:
   1. [`PROJECT_RULES.md`](PROJECT_RULES.md) (Bộ quy tắc vận hành & bảo mật).
   2. [`selena_spa_master_architecture.md`](selena_spa_master_architecture.md) (Bản thiết kế cấu trúc 1-1 HTML và JS).
   3. [`selena_spa_database_architecture.md`](selena_spa_database_architecture.md) (Bản hướng dẫn kiến trúc 9 bảng Google Sheets & luồng dữ liệu).
+  4. **File `.md` tương ứng trong thư mục `docs/`** (Đọc kỹ 6 phần đặc tả của component sắp chỉnh sửa, đặc biệt là Mục 3 Phân Quyền Staff/Owner và Mục 5 Ánh Xạ Database).
 
-### 2. Tạo Tính Năng Mới Phải Tuân Thủ Tuyệt Đối Kiến Trúc Chuẩn:
+### 2. Tạo Tính Năng / Component Mới Phải Tuân Thủ Tuyệt Đối Kiến Trúc Chuẩn & Tạo Docs 1-1:
 - Khi tạo bất kỳ tính năng hoặc màn hình mới nào, **luôn dựa trên kiến trúc chuẩn để tạo ra module mới tương tự** nhằm đảm bảo tính đồng bộ 100%:
   - **Khung HTML tĩnh**: Tạo file riêng độc lập trong `views/`.
   - **Component xử lý giao diện JS**: Tạo file riêng độc lập trong `js/Components/` hoặc `js/Screens/`.
   - **Nghiệp vụ tính toán & Toán học lõi**: Tạo file riêng độc lập trong `js/Core/`.
+  - **Hồ sơ đặc tả kỹ thuật**: BẮT BUỘC tạo 1 file `.md` mới tương ứng trong `docs/` theo đúng khung 6 phần chuẩn mực.
 
-### 3. Luôn Cập Nhật Lại Kiến Trúc, Database & Backend Code.gs Sau Khi Hoàn Thành:
+### 3. Luôn Cập Nhật Lại Kiến Trúc, Database & Mục 6 (Audit Log) Sau Khi Hoàn Thành:
 - Sau khi hoàn thành bất kỳ tính năng mới hoặc thay đổi cấu trúc nào:
+  - Cập nhật phiên bản (+1) và ghi nội dung đã sửa vào **Mục 6 (Lịch Sử Thay Đổi & Lưu Vết)** của file `.md` tương ứng trong `docs/`.
   - Nếu có thay đổi cấu trúc file/module: **Cập nhật lại `selena_spa_master_architecture.md` và `PROJECT_RULES.md`**.
-  - Nếu có thay đổi Database (thêm bớt bảng, thêm bớt cột, đổi tên cột trên Google Sheets):
-    1. **BẮT BUỘC cập nhật đồng thời file `google_apps_script/Code.gs`** để bổ sung hàm đọc/ghi tương ứng và tạo Bản Triển Khai Mới (New Deployment) trên Apps Script.
-    2. **BẮT BUỘC cập nhật lại tài liệu `selena_spa_database_architecture.md` ngay lập tức** để lưu trữ nhật ký cột mới dùng ở đâu, hàm nào phụ trách.
+  - Nếu có thay đổi Database: Tuân thủ nghiêm ngặt **Quy tắc 4 bước** trong [`selena_spa_database_architecture.md`](selena_spa_database_architecture.md) (Cập nhật Sheet $ightarrow$ Cập nhật `Code.gs` $ightarrow$ Triển khai New Deployment $ightarrow$ Cập nhật tài liệu Database).
 
 ---
 
