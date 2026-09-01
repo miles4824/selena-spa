@@ -264,6 +264,14 @@ function renderQuickComboButtons() {
   }).join('');
 }
 
+function isComboItem(item) {
+  if (!item) return false;
+  const id = String(item.service_id || '');
+  const name = String(item.service_name || '').toLowerCase();
+  const cat = String(item.category || '').toLowerCase();
+  return id.startsWith('CB') || cat === 'combo' || name.includes('combo');
+}
+
 function toggleQuickCombo(serviceId) {
   const menu = getValidatedMenu();
   const item = menu.find(m => m.service_id === serviceId);
@@ -271,11 +279,12 @@ function toggleQuickCombo(serviceId) {
 
   const existsIndex = selectedCartItems.findIndex(i => i.service_id === serviceId);
   if (existsIndex >= 0) {
-    // Đã có -> Hủy chọn (Toggle)
+    // Đã chọn đúng combo này -> Bấm lại để hủy chọn (Toggle)
     selectedCartItems.splice(existsIndex, 1);
   } else {
-    // Chưa có -> Thêm vào giỏ
-    selectedCartItems.push({ ...item });
+    // Chưa chọn combo này -> Xóa combo cũ (nếu có) và thay bằng combo mới
+    selectedCartItems = selectedCartItems.filter(i => !isComboItem(i));
+    selectedCartItems.unshift({ ...item });
   }
 
   renderMenuDropdown();
@@ -289,8 +298,15 @@ function addCartItemFromDropdown(serviceId) {
   const item = menu.find(m => m.service_id === serviceId);
   if (!item) return;
 
-  if (!selectedCartItems.some(i => i.service_id === serviceId)) {
-    selectedCartItems.push({ ...item });
+  if (isComboItem(item)) {
+    // Nếu là combo -> Xóa combo cũ và thay thế bằng combo mới
+    selectedCartItems = selectedCartItems.filter(i => !isComboItem(i));
+    selectedCartItems.unshift({ ...item });
+  } else {
+    // Nếu là dịch vụ lẻ -> Thêm vào giỏ (cho phép chọn nhiều)
+    if (!selectedCartItems.some(i => i.service_id === serviceId)) {
+      selectedCartItems.push({ ...item });
+    }
   }
 
   closeCustomDropdownPopover();

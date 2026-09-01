@@ -23,4 +23,5 @@
 - `2026-09-01` (`v0.0.3.4`):
 - `2026-09-01` (`v0.0.3.5`):
 - `2026-09-01` (`v0.0.3.6`):
-- `2026-09-01` (`v0.0.3.7`): Cập nhật chính xác `py-0.5` cho thẻ chip `inline-flex` và duy trì `text-[11px]` cho dòng giá tiền. Tinh chỉnh chi tiết CSS `py-3 mt-1` cho thanh trigger, `text-[11px]` và `py-0.5` cho thẻ chip dịch vụ. Nâng cấp thẻ Chip dịch vụ 2 dòng với icon căn giữa và thanh trigger thêm dịch vụ tách biệt thoáng đãng. Đồng bộ toàn bộ danh mục thực đơn đầy đủ của tiệm (Combo, Thêm, Massage, Waxing, Nặn Mụn & Peel, Detox, Cấy Dưỡng).
+- `2026-09-01` (`v0.0.3.7`):
+- `2026-09-01` (`v0.0.3.8`): Áp dụng quy tắc Single Combo (chỉ chọn tối đa 1 Combo, tự động thay thế khi chọn Combo mới). Cập nhật chính xác `py-0.5` cho thẻ chip `inline-flex` và duy trì `text-[11px]` cho dòng giá tiền. Tinh chỉnh chi tiết CSS `py-3 mt-1` cho thanh trigger, `text-[11px]` và `py-0.5` cho thẻ chip dịch vụ. Nâng cấp thẻ Chip dịch vụ 2 dòng với icon căn giữa và thanh trigger thêm dịch vụ tách biệt thoáng đãng. Đồng bộ toàn bộ danh mục thực đơn đầy đủ của tiệm (Combo, Thêm, Massage, Waxing, Nặn Mụn & Peel, Detox, Cấy Dưỡng).
