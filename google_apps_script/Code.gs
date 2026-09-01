@@ -460,7 +460,6 @@ function updateCustomerNotes(params) {
   const newNotes = params.notes !== undefined ? String(params.notes).trim() : null;
   let newBMonthNum = Number(params.birth_month) || parseBirthMonth(params.birthday);
   const newBirthday = newBMonthNum ? newBMonthNum : (params.birthday ? String(params.birthday).trim() : null);
-  const newName = params.customer_name ? String(params.customer_name).trim() : null;
 
   if (foundRow > 0) {
     if (newNotes !== null) {
@@ -474,6 +473,14 @@ function updateCustomerNotes(params) {
     if (newName && newName !== 'Khách hàng') {
       let colName = colMapC['customer_name'] !== undefined ? colMapC['customer_name'] + 1 : 2;
       sheetCust.getRange(foundRow, colName).setValue(newName);
+    }
+    if (params.action_type === 'ASSIGN_GUEST_CUSTOMER') {
+      let colCycle = colMapC['cycle_visits'] !== undefined ? colMapC['cycle_visits'] + 1 : 5;
+      let colTotal = colMapC['total_visits'] !== undefined ? colMapC['total_visits'] + 1 : 6;
+      let curCycle = Number(sheetCust.getRange(foundRow, colCycle).getValue()) || 0;
+      let curTotal = Number(sheetCust.getRange(foundRow, colTotal).getValue()) || 0;
+      sheetCust.getRange(foundRow, colCycle).setValue(curCycle + 1);
+      sheetCust.getRange(foundRow, colTotal).setValue(curTotal + 1);
     }
   } else {
     const todayStr = Utilities.formatDate(new Date(), 'GMT+7', 'yyyy-MM-dd');
@@ -490,7 +497,28 @@ function updateCustomerNotes(params) {
     ]);
   }
 
-    // Ghi nhật ký đối soát vào bảng tb_customer_audits nếu có KTV thao tác
+  // 1. Cập nhật tại chỗ hóa đơn trong tb_receipts nếu có mã receipt_id
+  if (params.receipt_id) {
+    try {
+      const sheetReceipts = ss.getSheetByName('tb_receipts');
+      if (sheetReceipts) {
+        const colMapR = createHeaderMap(sheetReceipts);
+        const dataR = sheetReceipts.getDataRange().getValues();
+        for (let r = 1; r < dataR.length; r++) {
+          let rId = String(getCell(dataR[r], colMapR, ['receipt_id', 'ma_hoa_don'])).trim();
+          if (rId === String(params.receipt_id).trim()) {
+            let colP = colMapR['customer_phone'] !== undefined ? colMapR['customer_phone'] + 1 : 6;
+            let colN = colMapR['customer_name'] !== undefined ? colMapR['customer_name'] + 1 : 7;
+            sheetReceipts.getRange(r + 1, colP).setValue(phone);
+            if (newName) sheetReceipts.getRange(r + 1, colN).setValue(newName);
+            break;
+          }
+        }
+      }
+    } catch(errR) {}
+  }
+
+  // 2. Ghi nhật ký đối soát vào bảng tb_customer_audits nếu có KTV thao tác
   try {
     let sheetAudit = ss.getSheetByName('tb_customer_audits');
     if (!sheetAudit) {
