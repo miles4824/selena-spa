@@ -101,8 +101,9 @@ function findComboByNumber(menu, num) {
 }
 
 
+
 // =============================================================
-// QUẢN LÝ DỊCH VỤ & GIỎ HÀNG POS (DYNAMIC MENU TỪ TB_MENU)
+// QUẢN LÝ DỊCH VỤ & MULTI-TAG COMBOBOX POS (DYNAMIC TỪ TB_MENU)
 // =============================================================
 function initMenuUI() {
   const menu = getValidatedMenu();
@@ -119,25 +120,56 @@ function initMenuUI() {
   renderQuickComboButtons();
   renderCartUI();
   restoreLiveSessionIfExists();
+  setupGlobalClickOutsideDropdown();
+}
+
+function setupGlobalClickOutsideDropdown() {
+  document.removeEventListener('click', handleOutsideClickDropdown);
+  document.addEventListener('click', handleOutsideClickDropdown);
+}
+
+function handleOutsideClickDropdown(e) {
+  const popover = document.getElementById('pos-custom-dropdown-popover');
+  const container = document.getElementById('pos-tag-container');
+  if (!popover || popover.classList.contains('hidden')) return;
+
+  if (!popover.contains(e.target) && !container.contains(e.target)) {
+    closeCustomDropdownPopover();
+  }
+}
+
+function toggleCustomDropdownPopover(e) {
+  if (e) {
+    // Nếu bấm vào nút xóa chip thì không mở popover
+    if (e.target.closest('.pos-chip-remove-btn')) return;
+  }
+  const popover = document.getElementById('pos-custom-dropdown-popover');
+  const chevron = document.getElementById('pos-dropdown-chevron');
+  if (!popover) return;
+
+  const isHidden = popover.classList.contains('hidden');
+  if (isHidden) {
+    renderMenuDropdown();
+    popover.classList.remove('hidden');
+    if (chevron) chevron.classList.add('rotate-180');
+  } else {
+    closeCustomDropdownPopover();
+  }
+}
+
+function closeCustomDropdownPopover() {
+  const popover = document.getElementById('pos-custom-dropdown-popover');
+  const chevron = document.getElementById('pos-dropdown-chevron');
+  if (popover) popover.classList.add('hidden');
+  if (chevron) chevron.classList.remove('rotate-180');
 }
 
 function renderMenuDropdown() {
-  const dropdown = document.getElementById('pos-service-dropdown');
-  if (!dropdown) return;
-
+  const itemsContainer = document.getElementById('pos-custom-dropdown-items');
+  const placeholderEl = document.getElementById('pos-dropdown-placeholder-text');
   const menu = getValidatedMenu();
   const selectedIds = new Set(selectedCartItems.map(item => item.service_id));
 
-  // Lọc ra các món CHƯA được chọn (Món đã chọn sẽ tự động ẩn khỏi dropdown)
-  const availableItems = menu.filter(m => !selectedIds.has(m.service_id));
-
-  if (availableItems.length === 0) {
-    dropdown.innerHTML = '<option value="">-- Tất cả dịch vụ đã được chọn --</option>';
-    dropdown.disabled = true;
-    return;
-  }
-
-  dropdown.disabled = false;
   const uiConfig = (typeof DEFAULT_UI_CONFIG !== 'undefined' ? DEFAULT_UI_CONFIG : {});
   const customConfig = (typeof getStored === 'function' ? getStored('ui_config', {}) : {});
   const optSelectText = customConfig.opt_select_service || uiConfig.opt_select_service || '-- Chọn thêm dịch vụ / sản phẩm --';
@@ -145,35 +177,67 @@ function renderMenuDropdown() {
   const optgroupCombosText = customConfig.optgroup_combos || uiConfig.optgroup_combos || '💆 Combo Gội Chính';
   const optgroupAddonsText = customConfig.optgroup_addons || uiConfig.optgroup_addons || '✨ Dịch Vụ Lẻ / Làm Thêm';
 
+  // Lọc ra các món CHƯA được chọn (Món đã chọn sẽ tự động ẩn khỏi dropdown)
+  const availableItems = menu.filter(m => !selectedIds.has(m.service_id));
+
+  if (placeholderEl) {
+    placeholderEl.innerText = (availableItems.length === 0) ? optAllSelectedText : optSelectText;
+  }
+
+  if (!itemsContainer) return;
+
   if (availableItems.length === 0) {
-    dropdown.innerHTML = `<option value="">${optAllSelectedText}</option>`;
-    dropdown.disabled = true;
+    itemsContainer.innerHTML = `
+      <div class="p-3 text-center text-xs text-[#A39696] italic">
+        ${optAllSelectedText}
+      </div>
+    `;
     return;
   }
 
-  dropdown.disabled = false;
-  const combos = availableItems.filter(m => String(m.category || '').toLowerCase() === 'combo' || String(m.service_name || '').toLowerCase().includes('combo'));
+  const combos = availableItems.filter(m => String(m.service_id).startsWith('CB') || String(m.service_name || '').toLowerCase().includes('combo'));
   const services = availableItems.filter(m => !combos.includes(m));
 
-  let html = `<option value="">${optSelectText}</option>`;
+  let html = '';
 
   if (combos.length > 0) {
-    html += `<optgroup label="${optgroupCombosText}">`;
+    html += `
+      <div class="px-2.5 py-1.5 text-[11px] font-black text-[#7E7272] uppercase tracking-wider bg-[#F7F2EC] rounded-xl flex items-center gap-1.5">
+        <i data-lucide="sparkles" class="w-3.5 h-3.5 text-[#E58A7B]"></i> ${optgroupCombosText}
+      </div>
+    `;
     html += combos.map(m => `
-      <option value="${m.service_id}">${m.service_name} — ${Number(m.price).toLocaleString('vi-VN')} đ (${m.duration_min}p)</option>
+      <div onclick="addCartItemFromDropdown('${m.service_id}')" class="p-2.5 rounded-xl hover:bg-[#FFF0EB] hover:text-[#E58A7B] transition cursor-pointer flex justify-between items-center text-xs font-bold text-[#2D2424] group">
+        <span class="truncate flex items-center gap-2">
+          <span>💆</span> <span>${m.service_name}</span>
+        </span>
+        <span class="font-mono text-[#7E7272] group-hover:text-[#E58A7B] text-[11px] shrink-0 font-extrabold">
+          ${Number(m.price).toLocaleString('vi-VN')} đ • ${m.duration_min}p
+        </span>
+      </div>
     `).join('');
-    html += `</optgroup>`;
   }
 
   if (services.length > 0) {
-    html += `<optgroup label="${optgroupAddonsText}">`;
+    html += `
+      <div class="px-2.5 py-1.5 mt-2 text-[11px] font-black text-[#7E7272] uppercase tracking-wider bg-[#F7F2EC] rounded-xl flex items-center gap-1.5">
+        <i data-lucide="plus-circle" class="w-3.5 h-3.5 text-[#2E7D6D]"></i> ${optgroupAddonsText}
+      </div>
+    `;
     html += services.map(m => `
-      <option value="${m.service_id}">${m.service_name} — ${Number(m.price).toLocaleString('vi-VN')} đ (${m.duration_min}p)</option>
+      <div onclick="addCartItemFromDropdown('${m.service_id}')" class="p-2.5 rounded-xl hover:bg-[#FFF0EB] hover:text-[#E58A7B] transition cursor-pointer flex justify-between items-center text-xs font-bold text-[#2D2424] group">
+        <span class="truncate flex items-center gap-2">
+          <span>✨</span> <span>${m.service_name}</span>
+        </span>
+        <span class="font-mono text-[#7E7272] group-hover:text-[#E58A7B] text-[11px] shrink-0 font-extrabold">
+          ${Number(m.price).toLocaleString('vi-VN')} đ • ${m.duration_min}p
+        </span>
+      </div>
     `).join('');
-    html += `</optgroup>`;
   }
 
-  dropdown.innerHTML = html;
+  itemsContainer.innerHTML = html;
+  if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
 }
 
 function renderQuickComboButtons() {
@@ -220,14 +284,7 @@ function toggleQuickCombo(serviceId) {
   updatePOSCalculations();
 }
 
-function addSelectedServiceFromDropdown() {
-  const dropdown = document.getElementById('pos-service-dropdown');
-  const serviceId = dropdown ? dropdown.value : '';
-  if (!serviceId) {
-    alert('Vui lòng chọn một dịch vụ từ danh sách để thêm!');
-    return;
-  }
-
+function addCartItemFromDropdown(serviceId) {
   const menu = getValidatedMenu();
   const item = menu.find(m => m.service_id === serviceId);
   if (!item) return;
@@ -236,13 +293,19 @@ function addSelectedServiceFromDropdown() {
     selectedCartItems.push({ ...item });
   }
 
+  closeCustomDropdownPopover();
   renderMenuDropdown();
   renderQuickComboButtons();
   renderCartUI();
   updatePOSCalculations();
 }
 
-function removeCartItem(serviceId) {
+function addSelectedServiceFromDropdown() {
+  toggleCustomDropdownPopover();
+}
+
+function removeCartItem(serviceId, e) {
+  if (e) e.stopPropagation();
   selectedCartItems = selectedCartItems.filter(i => i.service_id !== serviceId);
   renderMenuDropdown();
   renderQuickComboButtons();
@@ -251,18 +314,14 @@ function removeCartItem(serviceId) {
 }
 
 function renderCartUI() {
-  const listContainer = document.getElementById('pos-cart-items-list');
+  const chipsContainer = document.getElementById('pos-cart-chips-list');
   const countBadge = document.getElementById('pos-cart-count-badge');
   const totalPriceEl = document.getElementById('pos-cart-total-price');
   const totalDurationEl = document.getElementById('pos-cart-total-duration');
-  if (!listContainer) return;
+  if (!chipsContainer) return;
 
   if (selectedCartItems.length === 0) {
-    listContainer.innerHTML = `
-      <div class="p-3.5 text-center text-xs text-[#A39696] italic bg-white/60 rounded-2xl border border-dashed border-[#E8E1D7]">
-        Chưa có dịch vụ nào được chọn. Vui lòng chọn ít nhất 1 dịch vụ!
-      </div>
-    `;
+    chipsContainer.innerHTML = '';
     if (countBadge) countBadge.innerText = '0 dịch vụ';
     if (totalPriceEl) totalPriceEl.innerText = '0 đ';
     if (totalDurationEl) totalDurationEl.innerText = '0 phút';
@@ -274,28 +333,21 @@ function renderCartUI() {
   let totalPrice = 0;
   let totalDuration = 0;
 
-  listContainer.innerHTML = selectedCartItems.map(item => {
+  chipsContainer.innerHTML = selectedCartItems.map(item => {
     const price = Number(item.price) || 0;
     const dur = Number(item.duration_min) || 0;
     totalPrice += price;
     totalDuration += dur;
 
-    const isCombo = String(item.category || '').toLowerCase() === 'combo' || String(item.service_id || '').startsWith('CB') || String(item.service_name || '').toLowerCase().includes('combo');
+    const isCombo = String(item.service_id || '').startsWith('CB') || String(item.service_name || '').toLowerCase().includes('combo');
 
     return `
-      <div class="p-3 rounded-2xl bg-white border border-[#E8E1D7] flex items-center justify-between gap-2 shadow-2xs transition hover:border-[#E58A7B]/40 animate-in fade-in">
-        <div class="min-w-0 flex-1">
-          <div class="text-xs font-bold text-[#2D2424] truncate flex items-center gap-1.5">
-            <span>${isCombo ? '💆' : '✨'} ${item.service_name}</span>
-          </div>
-          <div class="text-[11px] font-mono text-[#7E7272] mt-0.5 flex items-center gap-1.5">
-            <span class="text-[#E58A7B] font-extrabold">${price.toLocaleString('vi-VN')} đ</span>
-            <span>•</span>
-            <span class="text-[#2E7D6D] font-bold">${dur} phút</span>
-          </div>
-        </div>
-        <button type="button" onclick="removeCartItem('${item.service_id}')" class="p-1.5 text-[#A39696] hover:text-rose-600 hover:bg-rose-50 rounded-xl transition cursor-pointer shrink-0" title="Xóa dịch vụ này">
-          <i data-lucide="x" class="w-4 h-4"></i>
+      <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#FFF0EB] border border-[#E58A7B]/40 text-[#2D2424] text-xs font-bold shadow-2xs animate-in zoom-in-95">
+        <span>${isCombo ? '💆' : '✨'}</span>
+        <span class="font-extrabold text-[#2D2424]">${item.service_name}</span>
+        <span class="text-[10px] font-mono text-[#E58A7B] font-black">(${price.toLocaleString('vi-VN')} đ • ${dur}p)</span>
+        <button type="button" onclick="removeCartItem('${item.service_id}', event)" class="pos-chip-remove-btn ml-1 p-0.5 text-[#A39696] hover:text-rose-600 hover:bg-rose-100 rounded-full transition cursor-pointer" title="Xóa dịch vụ">
+          <i data-lucide="x" class="w-3.5 h-3.5"></i>
         </button>
       </div>
     `;
@@ -306,6 +358,7 @@ function renderCartUI() {
 
   if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
 }
+
 
 
 function updatePOSStaffInfo() {
