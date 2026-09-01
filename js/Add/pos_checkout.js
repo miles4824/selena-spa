@@ -1,4 +1,3 @@
-
 // =============================================================
 // TRẠNG THÁI NHÂN LỰC THỜI GIAN THỰC & DROPDOWN THÔNG MINH
 // =============================================================
@@ -2075,4 +2074,334 @@ function renderSelectedAddonChips() {
 function getSelectedAddonsData() {
   const addons = (typeof DEFAULT_ADDONS !== 'undefined') ? DEFAULT_ADDONS : [];
   return selectedAddonIds.map(id => addons.find(a => a.addon_id === id)).filter(Boolean);
+}
+
+
+// =============================================================
+// QUẢN LÝ MODAL ĐỔI & THÊM DỊCH VỤ GIỮA CA (MODAL EDIT LIVE SERVICES)
+// =============================================================
+let modalTempCartItems = [];
+
+function openModalEditLiveServices() {
+  if (!currentLiveSession) {
+    alert('Không tìm thấy ca phục vụ đang chạy!');
+    return;
+  }
+
+  const menu = getValidatedMenu();
+
+  // Khôi phục danh sách dịch vụ từ currentLiveSession
+  if (Array.isArray(currentLiveSession.selected_items) && currentLiveSession.selected_items.length > 0) {
+    modalTempCartItems = currentLiveSession.selected_items.map(i => ({ ...i }));
+  } else {
+    // Nếu chưa có mảng selected_items, tìm theo service_id
+    const item = menu.find(m => m.service_id === currentLiveSession.service_id) || menu[0];
+    modalTempCartItems = item ? [{ ...item }] : [];
+  }
+
+  // Cập nhật thông tin khách
+  const custInfoEl = document.getElementById('modal-edit-live-customer-info');
+  if (custInfoEl) {
+    const custName = currentLiveSession.customer_name || 'Khách vãng lai';
+    const custPhone = currentLiveSession.customer_phone || '';
+    const sName = currentLiveSession.staff_1_name || (currentUser ? currentUser.full_name : 'KTV');
+    custInfoEl.innerText = `Khách: ${custName}${custPhone ? ` (${custPhone})` : ''} • KTV: ${sName}`;
+  }
+
+  renderModalQuickCombos();
+  renderModalMenuDropdown();
+  renderModalCartUI();
+
+  const modal = document.getElementById('modal-edit-live-services');
+  if (modal) {
+    modal.classList.remove('hidden');
+    if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+  }
+}
+
+function closeModalEditLiveServices() {
+  const modal = document.getElementById('modal-edit-live-services');
+  if (modal) modal.classList.add('hidden');
+  closeModalCustomDropdownPopover();
+}
+
+function toggleModalCustomDropdownPopover(e) {
+  if (e && e.target.closest('.modal-chip-remove-btn')) return;
+  const popover = document.getElementById('modal-edit-live-popover');
+  const chevron = document.getElementById('modal-edit-live-chevron');
+  if (!popover) return;
+
+  const isHidden = popover.classList.contains('hidden');
+  if (isHidden) {
+    renderModalMenuDropdown();
+    popover.classList.remove('hidden');
+    if (chevron) chevron.classList.add('rotate-180');
+  } else {
+    closeModalCustomDropdownPopover();
+  }
+}
+
+function closeModalCustomDropdownPopover() {
+  const popover = document.getElementById('modal-edit-live-popover');
+  const chevron = document.getElementById('modal-edit-live-chevron');
+  if (popover) popover.classList.add('hidden');
+  if (chevron) chevron.classList.remove('rotate-180');
+}
+
+function renderModalQuickCombos() {
+  const container = document.getElementById('modal-edit-live-quick-combos');
+  if (!container) return;
+
+  const menu = getValidatedMenu();
+  const selectedIds = new Set(modalTempCartItems.map(item => item.service_id));
+  const quickNumbers = [1, 2, 3, 4, 5];
+
+  container.innerHTML = quickNumbers.map(num => {
+    const item = findComboByNumber(menu, num);
+    if (!item) return '';
+
+    const isSelected = selectedIds.has(item.service_id);
+
+    return `
+      <button type="button" onclick="toggleModalQuickCombo('${item.service_id}')" class="px-3 py-1.5 rounded-2xl text-xs font-extrabold border transition-all duration-200 active:scale-95 cursor-pointer shadow-2xs ${isSelected ? 'bg-[#FFF0EB] text-[#E58A7B] border-[#E58A7B] ring-2 ring-[#E58A7B]/40 font-black shadow-xs' : 'bg-white text-[#5D5050] border-[#E8E1D7] hover:bg-[#FAF6F1] hover:border-[#E58A7B]/40 hover:text-[#E58A7B]'}">
+        ${isSelected ? '✓ ' : ''}Combo ${num}
+      </button>
+    `;
+  }).join('');
+}
+
+function toggleModalQuickCombo(serviceId) {
+  const menu = getValidatedMenu();
+  const item = menu.find(m => m.service_id === serviceId);
+  if (!item) return;
+
+  const existsIndex = modalTempCartItems.findIndex(i => i.service_id === serviceId);
+  if (existsIndex >= 0) {
+    // Hủy chọn combo này
+    modalTempCartItems.splice(existsIndex, 1);
+  } else {
+    // Xóa combo cũ và thay bằng combo mới (Single Combo Rule)
+    modalTempCartItems = modalTempCartItems.filter(i => !isComboItem(i));
+    modalTempCartItems.unshift({ ...item });
+  }
+
+  renderModalQuickCombos();
+  renderModalMenuDropdown();
+  renderModalCartUI();
+}
+
+function renderModalMenuDropdown() {
+  const itemsContainer = document.getElementById('modal-edit-live-dropdown-items');
+  const placeholderEl = document.getElementById('modal-edit-live-placeholder-text');
+  const menu = getValidatedMenu();
+  const selectedIds = new Set(modalTempCartItems.map(item => item.service_id));
+
+  const uiConfig = (typeof DEFAULT_UI_CONFIG !== 'undefined' ? DEFAULT_UI_CONFIG : {});
+  const customConfig = (typeof getStored === 'function' ? getStored('ui_config', {}) : {});
+  const optgroupCombosText = customConfig.optgroup_combos || uiConfig.optgroup_combos || '💆 Combo Gội Chính';
+  const optgroupAddonsText = customConfig.optgroup_addons || uiConfig.optgroup_addons || '✨ Dịch Vụ Lẻ / Làm Thêm';
+
+  const availableItems = menu.filter(m => !selectedIds.has(m.service_id));
+
+  if (!itemsContainer) return;
+
+  if (availableItems.length === 0) {
+    itemsContainer.innerHTML = `
+      <div class="p-3 text-center text-xs text-[#A39696] italic">
+        -- Tất cả dịch vụ đã được chọn --
+      </div>
+    `;
+    return;
+  }
+
+  const combos = availableItems.filter(m => String(m.service_id).startsWith('CB') || String(m.service_name || '').toLowerCase().includes('combo'));
+  const services = availableItems.filter(m => !combos.includes(m));
+
+  let html = '';
+
+  if (combos.length > 0) {
+    html += `
+      <div class="px-2.5 py-1 text-[10px] font-black text-[#7E7272] uppercase tracking-wider bg-[#F7F2EC] rounded-xl flex items-center gap-1.5">
+        <i data-lucide="sparkles" class="w-3 h-3 text-[#E58A7B]"></i> ${optgroupCombosText}
+      </div>
+    `;
+    html += combos.map(m => `
+      <div onclick="addModalCartItemFromDropdown('${m.service_id}')" class="p-2 rounded-xl hover:bg-[#FFF0EB] hover:text-[#E58A7B] transition cursor-pointer flex justify-between items-center text-xs font-bold text-[#2D2424] group">
+        <span class="truncate flex items-center gap-1.5">
+          <span>💆</span> <span>${m.service_name}</span>
+        </span>
+        <span class="font-mono text-[#7E7272] group-hover:text-[#E58A7B] text-[11px] shrink-0 font-extrabold">
+          ${Number(m.price).toLocaleString('vi-VN')} đ • ${m.duration_min}p
+        </span>
+      </div>
+    `).join('');
+  }
+
+  if (services.length > 0) {
+    html += `
+      <div class="px-2.5 py-1 mt-1.5 text-[10px] font-black text-[#7E7272] uppercase tracking-wider bg-[#F7F2EC] rounded-xl flex items-center gap-1.5">
+        <i data-lucide="plus-circle" class="w-3 h-3 text-[#2E7D6D]"></i> ${optgroupAddonsText}
+      </div>
+    `;
+    html += services.map(m => `
+      <div onclick="addModalCartItemFromDropdown('${m.service_id}')" class="p-2 rounded-xl hover:bg-[#FFF0EB] hover:text-[#E58A7B] transition cursor-pointer flex justify-between items-center text-xs font-bold text-[#2D2424] group">
+        <span class="truncate flex items-center gap-1.5">
+          <span>✨</span> <span>${m.service_name}</span>
+        </span>
+        <span class="font-mono text-[#7E7272] group-hover:text-[#E58A7B] text-[11px] shrink-0 font-extrabold">
+          ${Number(m.price).toLocaleString('vi-VN')} đ • ${m.duration_min}p
+        </span>
+      </div>
+    `).join('');
+  }
+
+  itemsContainer.innerHTML = html;
+  if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+}
+
+function addModalCartItemFromDropdown(serviceId) {
+  const menu = getValidatedMenu();
+  const item = menu.find(m => m.service_id === serviceId);
+  if (!item) return;
+
+  if (isComboItem(item)) {
+    // Thay thế combo cũ
+    modalTempCartItems = modalTempCartItems.filter(i => !isComboItem(i));
+    modalTempCartItems.unshift({ ...item });
+  } else {
+    if (!modalTempCartItems.some(i => i.service_id === serviceId)) {
+      modalTempCartItems.push({ ...item });
+    }
+  }
+
+  closeModalCustomDropdownPopover();
+  renderModalQuickCombos();
+  renderModalMenuDropdown();
+  renderModalCartUI();
+}
+
+function removeModalCartItem(serviceId, e) {
+  if (e) e.stopPropagation();
+  modalTempCartItems = modalTempCartItems.filter(i => i.service_id !== serviceId);
+  renderModalQuickCombos();
+  renderModalMenuDropdown();
+  renderModalCartUI();
+}
+
+function renderModalCartUI() {
+  const chipsContainer = document.getElementById('modal-edit-live-chips-list');
+  const countBadge = document.getElementById('modal-edit-live-count-badge');
+  const totalPriceEl = document.getElementById('modal-edit-live-total-price');
+  const totalDurationEl = document.getElementById('modal-edit-live-total-duration');
+  const remainingNoteEl = document.getElementById('modal-edit-live-remaining-note');
+  if (!chipsContainer) return;
+
+  if (modalTempCartItems.length === 0) {
+    chipsContainer.innerHTML = `
+      <div class="p-2 text-center text-xs text-[#A39696] italic">
+        Chưa có dịch vụ nào. Vui lòng chọn ít nhất 1 dịch vụ!
+      </div>
+    `;
+    if (countBadge) countBadge.innerText = '0 dịch vụ';
+    if (totalPriceEl) totalPriceEl.innerText = '0 đ';
+    if (totalDurationEl) totalDurationEl.innerText = '0 phút';
+    if (remainingNoteEl) remainingNoteEl.innerText = 'Không thể để trống ca';
+    return;
+  }
+
+  if (countBadge) countBadge.innerText = `${modalTempCartItems.length} dịch vụ`;
+
+  let totalPrice = 0;
+  let totalDuration = 0;
+
+  chipsContainer.innerHTML = modalTempCartItems.map(item => {
+    const price = Number(item.price) || 0;
+    const dur = Number(item.duration_min) || 0;
+    totalPrice += price;
+    totalDuration += dur;
+
+    const isCombo = String(item.service_id || '').startsWith('CB') || String(item.service_name || '').toLowerCase().includes('combo');
+
+    return `
+      <div class="inline-flex items-center gap-2.5 px-3 py-0.5 rounded-2xl bg-gradient-to-r from-[#FFF0EB] to-[#FFF6F3] border border-[#E58A7B]/35 text-[#2D2424] shadow-2xs hover:shadow-xs transition animate-in zoom-in-95">
+        <div class="text-base flex items-center justify-center shrink-0">
+          ${isCombo ? '💆' : '✨'}
+        </div>
+        <div class="min-w-0 flex-1">
+          <div class="font-black text-[11px] text-[#2D2424] leading-snug truncate">
+            ${item.service_name}
+          </div>
+          <div class="text-[11px] font-mono text-[#7E7272] mt-0.5 flex items-center gap-1.5 leading-tight">
+            <span class="text-[#E58A7B] font-extrabold">${price.toLocaleString('vi-VN')} đ</span>
+            <span>•</span>
+            <span class="text-[#2E7D6D] font-bold">${dur}p</span>
+          </div>
+        </div>
+        <button type="button" onclick="removeModalCartItem('${item.service_id}', event)" class="modal-chip-remove-btn ml-1 p-1 text-[#A39696] hover:text-rose-600 hover:bg-rose-100 rounded-full transition cursor-pointer shrink-0" title="Xóa dịch vụ này">
+          <i data-lucide="x" class="w-3.5 h-3.5"></i>
+        </button>
+      </div>
+    `;
+  }).join('');
+
+  if (totalPriceEl) totalPriceEl.innerText = `${totalPrice.toLocaleString('vi-VN')} đ`;
+  if (totalDurationEl) totalDurationEl.innerText = `${totalDuration} phút`;
+
+  // Tính số phút đã trôi qua và số phút còn lại
+  if (currentLiveSession && currentLiveSession.start_timestamp && remainingNoteEl) {
+    const elapsedMinutes = Math.floor((Date.now() - currentLiveSession.start_timestamp) / 60000);
+    const remMin = totalDuration - elapsedMinutes;
+    if (remMin > 0) {
+      remainingNoteEl.innerText = `Đã chạy ${elapsedMinutes}p • Còn lại khoảng ${remMin} phút`;
+    } else {
+      remainingNoteEl.innerText = `Đã chạy ${elapsedMinutes}p • Quá giờ +${Math.abs(remMin)} phút`;
+    }
+  }
+
+  if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+}
+
+function saveModalEditLiveServices() {
+  if (!currentLiveSession) return;
+  if (!modalTempCartItems || modalTempCartItems.length === 0) {
+    alert('Ca phục vụ phải có ít nhất một dịch vụ!');
+    return;
+  }
+
+  const totalPrice = modalTempCartItems.reduce((sum, item) => sum + (Number(item.price) || 0), 0);
+  const totalDuration = modalTempCartItems.reduce((sum, item) => sum + (Number(item.duration_min) || 0), 0);
+  const serviceDisplayName = modalTempCartItems.map(i => i.service_name).join(' + ');
+  const primaryServiceId = modalTempCartItems[0].service_id;
+
+  // Cập nhật object currentLiveSession
+  currentLiveSession.selected_items = modalTempCartItems.map(i => ({ ...i }));
+  currentLiveSession.price = totalPrice;
+  currentLiveSession.duration_target_min = totalDuration;
+  currentLiveSession.service_id = primaryServiceId;
+  currentLiveSession.service_name = serviceDisplayName;
+
+  // Lưu LocalStorage
+  if (typeof setStored === 'function') {
+    setStored('currentLiveSession', currentLiveSession);
+  }
+
+  // Đồng bộ Firebase Realtime
+  if (typeof firebasePut === 'function' && currentLiveSession.session_id) {
+    firebasePut('active_sessions/' + currentLiveSession.session_id, currentLiveSession);
+  }
+
+  // Cập nhật giao diện màn hình Live Tour
+  const nameEl = document.getElementById('live-session-service-name');
+  if (nameEl) nameEl.innerText = serviceDisplayName;
+
+  const targetDurEl = document.getElementById('live-session-target-duration');
+  if (targetDurEl) targetDurEl.innerText = `${totalDuration} phút`;
+
+  // Cập nhật Live Timer ngay lập tức
+  if (typeof updateLiveTimer === 'function') {
+    updateLiveTimer();
+  }
+
+  closeModalEditLiveServices();
+  alert('🎉 Đã cập nhật gói dịch vụ cho ca phục vụ thành công!');
 }
