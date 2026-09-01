@@ -295,7 +295,7 @@ function loadAdminCustomersList() {
 
         <!-- Nút Hành Động -->
         <div class="flex gap-2 pt-1">
-          <button type="button" onclick="openCustomerNoteModal('${rawP}', '${(c.customer_name || 'Khách').replace(/'/g, "\\'")}')" class="flex-1 py-2 px-3 rounded-full bg-white hover:bg-[#FFF0EB] text-[#7E7272] hover:text-[#E58A7B] border border-[#F0EAE1] text-xs font-bold transition flex items-center justify-center gap-1 cursor-pointer">
+          <button type="button" onclick="openOwnerCustomerEditorModal('${rawP}', '${(c.customer_name || 'Khách').replace(/'/g, "\\'")}')" class="flex-1 py-2 px-3 rounded-full bg-white hover:bg-[#FFF0EB] text-[#7E7272] hover:text-[#E58A7B] border border-[#F0EAE1] text-xs font-bold transition flex items-center justify-center gap-1 cursor-pointer">
             <i data-lucide="edit-3" class="w-3.5 h-3.5"></i> Sửa Info
           </button>
           <button type="button" onclick="openGiftVoucherModal('${rawP}', '${(c.customer_name || 'Khách').replace(/'/g, "\\'")}')" class="flex-1 py-2 px-3 rounded-full bg-[#E8F8F5] hover:bg-[#D1F2EB] text-[#2E7D6D] border border-[#B7EBDD] text-xs font-extrabold transition flex items-center justify-center gap-1 cursor-pointer">

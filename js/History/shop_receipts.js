@@ -151,10 +151,11 @@ function loadOwnerReceiptsList(targetDate) {
 
               <div class="flex items-center justify-between gap-1 text-[11px] text-[#7E7272] flex-wrap">
                 <div class="flex items-center gap-1.5 min-w-0">
-                  <span class="inline-flex items-center gap-1 truncate text-[#2D2424] font-medium">
-                    <i data-lucide="user" class="w-3 h-3 text-[#A39696] shrink-0"></i>
-                    <span class="truncate">${r.customer_name || 'Khách vãng lai'}</span>
-                  </span>
+                  <button type="button" onclick="openOwnerCustomerEditorModal('${r.customer_phone || r.raw_phone || ''}', '${(r.customer_name || 'Khách vãng lai').replace(/'/g, "\\'")}', '${r.receipt_id || ''}')" class="inline-flex items-center gap-1 truncate text-[#2D2424] font-medium hover:text-[#E58A7B] cursor-pointer transition group" title="Bấm để chỉnh sửa thông tin khách hàng">
+                    <i data-lucide="user" class="w-3.5 h-3.5 text-[#A39696] group-hover:text-[#E58A7B] shrink-0"></i>
+                    <span class="truncate font-semibold text-[#2D2424] group-hover:text-[#E58A7B] underline decoration-dotted underline-offset-2">${r.customer_name || 'Khách vãng lai'}</span>
+                    <i data-lucide="edit-3" class="w-3 h-3 text-[#E58A7B] shrink-0 ml-0.5 opacity-80 group-hover:opacity-100"></i>
+                  </button>
                   <span class="text-[#D4C5B9]">•</span>
                   <span class="inline-flex items-center gap-1 font-semibold ${isCash ? 'text-[#D35400]' : 'text-[#2E7D6D]'} shrink-0">
                     <i data-lucide="${isCash ? 'banknote' : 'qr-code'}" class="w-3 h-3"></i>
