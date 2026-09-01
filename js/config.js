@@ -51,7 +51,7 @@ function parseBirthMonth(val) {
   return 0;
 }
 
-const APP_VERSION = 'v0.0.3.3';
+const APP_VERSION = 'v0.0.3.4';
 // =============================================================
 // SELENA SPA - GLOBAL CONFIG & CONSTANTS
 // =============================================================
@@ -62,12 +62,54 @@ const DEFAULT_USERS = [
 ];
 
 const DEFAULT_MENU = [
+  // 1. Combo Gội Chính
   { service_id: 'CB_BE', service_name: 'Combo Bé', price: 45000, duration_min: 30, cosmetics_cost: 4500, commission_type: 'fixed', commission_value: 4500, is_active: true },
   { service_id: 'CB_01', service_name: 'Combo 1', price: 64000, duration_min: 50, cosmetics_cost: 6400, commission_type: 'fixed', commission_value: 6400, is_active: true },
   { service_id: 'CB_02', service_name: 'Combo 2', price: 109000, duration_min: 75, cosmetics_cost: 10000, commission_type: 'fixed', commission_value: 11000, is_active: true },
   { service_id: 'CB_03', service_name: 'Combo 3', price: 139000, duration_min: 85, cosmetics_cost: 14000, commission_type: 'fixed', commission_value: 14000, is_active: true },
   { service_id: 'CB_04', service_name: 'Combo 4', price: 179000, duration_min: 95, cosmetics_cost: 18000, commission_type: 'fixed', commission_value: 18000, is_active: true },
-  { service_id: 'CB_05', service_name: 'Combo 5', price: 219000, duration_min: 110, cosmetics_cost: 22000, commission_type: 'fixed', commission_value: 22000, is_active: true }
+  { service_id: 'CB_05', service_name: 'Combo 5', price: 219000, duration_min: 110, cosmetics_cost: 22000, commission_type: 'fixed', commission_value: 22000, is_active: true },
+
+  // 2. Thêm / Da Đầu
+  { service_id: 'DV_TM01', service_name: 'Tẩy tế bào chết da đầu', price: 30000, duration_min: 15, cosmetics_cost: 3000, commission_type: 'fixed', commission_value: 3000, is_active: true },
+  { service_id: 'DV_TM02', service_name: 'Xông tai nến', price: 40000, duration_min: 20, cosmetics_cost: 5000, commission_type: 'fixed', commission_value: 4000, is_active: true },
+  { service_id: 'DV_TM03', service_name: 'Xông hơi da đầu với thảo dược', price: 40000, duration_min: 20, cosmetics_cost: 4000, commission_type: 'fixed', commission_value: 4000, is_active: true },
+
+  // 3. Massage
+  { service_id: 'DV_MS01', service_name: 'Massage body đá nóng', price: 219000, duration_min: 90, cosmetics_cost: 10000, commission_type: 'fixed', commission_value: 22000, is_active: true },
+  { service_id: 'DV_MS02', service_name: 'Massage tay đá nóng', price: 40000, duration_min: 20, cosmetics_cost: 2000, commission_type: 'fixed', commission_value: 4000, is_active: true },
+  { service_id: 'DV_MS03', service_name: 'Massage chân đá nóng', price: 40000, duration_min: 20, cosmetics_cost: 2000, commission_type: 'fixed', commission_value: 4000, is_active: true },
+  { service_id: 'DV_MS04', service_name: 'Massage lưng đá nóng', price: 50000, duration_min: 25, cosmetics_cost: 3000, commission_type: 'fixed', commission_value: 5000, is_active: true },
+
+  // 4. Waxing
+  { service_id: 'DV_WX01', service_name: 'Wax nách', price: 50000, duration_min: 15, cosmetics_cost: 5000, commission_type: 'fixed', commission_value: 5000, is_active: true },
+  { service_id: 'DV_WX02', service_name: 'Wax 1/2 tay', price: 90000, duration_min: 20, cosmetics_cost: 8000, commission_type: 'fixed', commission_value: 9000, is_active: true },
+  { service_id: 'DV_WX03', service_name: 'Full tay', price: 130000, duration_min: 30, cosmetics_cost: 12000, commission_type: 'fixed', commission_value: 13000, is_active: true },
+  { service_id: 'DV_WX04', service_name: 'Nửa 1/2 chân', price: 100000, duration_min: 25, cosmetics_cost: 9000, commission_type: 'fixed', commission_value: 10000, is_active: true },
+  { service_id: 'DV_WX05', service_name: 'Full chân', price: 140000, duration_min: 35, cosmetics_cost: 14000, commission_type: 'fixed', commission_value: 14000, is_active: true },
+  { service_id: 'DV_WX06', service_name: 'Wax bi', price: 150000, duration_min: 30, cosmetics_cost: 15000, commission_type: 'fixed', commission_value: 15000, is_active: true },
+
+  // 5. Nặn Mụn & Peel
+  { service_id: 'DV_PL01', service_name: 'Nặn mụn chuẩn y khoa', price: 179000, duration_min: 45, cosmetics_cost: 15000, commission_type: 'fixed', commission_value: 18000, is_active: true },
+  { service_id: 'DV_PL02', service_name: 'Peel mụn', price: 399000, duration_min: 45, cosmetics_cost: 35000, commission_type: 'fixed', commission_value: 40000, is_active: true },
+  { service_id: 'DV_PL03', service_name: 'Peel TCA thu nhỏ lcl', price: 399000, duration_min: 45, cosmetics_cost: 35000, commission_type: 'fixed', commission_value: 40000, is_active: true },
+  { service_id: 'DV_PL04', service_name: 'Peel Tảo Ý căng bóng', price: 499000, duration_min: 50, cosmetics_cost: 45000, commission_type: 'fixed', commission_value: 50000, is_active: true },
+  { service_id: 'DV_PL05', service_name: 'Peel phục hồi, thải cort', price: 499000, duration_min: 50, cosmetics_cost: 45000, commission_type: 'fixed', commission_value: 50000, is_active: true },
+  { service_id: 'DV_PL06', service_name: 'Peel trắng da căng bóng phục hồi', price: 599000, duration_min: 60, cosmetics_cost: 55000, commission_type: 'fixed', commission_value: 60000, is_active: true },
+  { service_id: 'DV_PL07', service_name: 'Peel nám', price: 699000, duration_min: 60, cosmetics_cost: 65000, commission_type: 'fixed', commission_value: 70000, is_active: true },
+  { service_id: 'DV_PL08', service_name: 'Peel thâm nách', price: 499000, duration_min: 40, cosmetics_cost: 45000, commission_type: 'fixed', commission_value: 50000, is_active: true },
+  { service_id: 'DV_PL09', service_name: 'Peel lưng – mông', price: 599000, duration_min: 60, cosmetics_cost: 55000, commission_type: 'fixed', commission_value: 60000, is_active: true },
+
+  // 6. Detox
+  { service_id: 'DV_DT01', service_name: 'CO2 Therapy', price: 349000, duration_min: 45, cosmetics_cost: 30000, commission_type: 'fixed', commission_value: 35000, is_active: true },
+  { service_id: 'DV_DT02', service_name: 'Deepclean + detox đu đủ', price: 399000, duration_min: 50, cosmetics_cost: 35000, commission_type: 'fixed', commission_value: 40000, is_active: true },
+  { service_id: 'DV_DT03', service_name: 'Detox than tre + căng bóng', price: 449000, duration_min: 50, cosmetics_cost: 40000, commission_type: 'fixed', commission_value: 45000, is_active: true },
+
+  // 7. Cấy Dưỡng
+  { service_id: 'DV_CY01', service_name: 'Cấy tảo xoắn nano', price: 199000, duration_min: 45, cosmetics_cost: 20000, commission_type: 'fixed', commission_value: 20000, is_active: true },
+  { service_id: 'DV_CY02', service_name: 'Cấy hồng sâm', price: 199000, duration_min: 45, cosmetics_cost: 20000, commission_type: 'fixed', commission_value: 20000, is_active: true },
+  { service_id: 'DV_CY03', service_name: 'Cấy trắng', price: 299000, duration_min: 50, cosmetics_cost: 30000, commission_type: 'fixed', commission_value: 30000, is_active: true },
+  { service_id: 'DV_CY04', service_name: 'Cấy trắng căng bóng', price: 399000, duration_min: 60, cosmetics_cost: 40000, commission_type: 'fixed', commission_value: 40000, is_active: true }
 ];
 
 const DEFAULT_ADDONS = [
