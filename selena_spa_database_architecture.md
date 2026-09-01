@@ -167,3 +167,14 @@
 1. **Khóa khớp số điện thoại**: Luôn chạy qua `phone_normalizer.js` để chuẩn hóa SĐT 10 số trước khi tìm kiếm hoặc lưu vào Google Sheets, tuyệt đối không dùng số bị cắt ngắn (như `94144`).
 2. **Khử lệch 17 phút múi giờ**: Bắt buộc đọc giờ phút bằng hàm `val.getHours():val.getMinutes()` trong `Code.gs` và định dạng qua `time_cleaner.js` trên Web để triệt tiêu lệch 17 phút.
 3. **Thêm cột mới an toàn**: Khi cần thêm cột mới vào Sheet, luôn thêm về phía bên phải và sử dụng hàm ánh xạ header động `createHeaderMap(sheet)` trong `Code.gs` để không bao giờ bị lệch vị trí cột.
+
+---
+
+## ⭐️ 4. QUY TẮC BẮT BUỘC KHI THAY ĐỔI DATABASE & BACKEND CODE.GS (DATABASE SOP)
+
+Mỗi khi có nhu cầu chỉnh sửa, thêm bớt bảng hoặc thêm bớt cột trên Google Sheets, **BẮT BUỘC phải thực hiện đủ 4 bước sau theo đúng thứ tự**:
+
+1. **Bước 1 (Google Sheets)**: Thêm, xóa hoặc chỉnh sửa cột trên Google Sheets (luôn thêm về phía bên phải bảng).
+2. **Bước 2 (Backend `Code.gs`)**: Cập nhật đồng thời các hàm Đọc (`syncAllData`, `checkCustomer`...) và hàm Ghi (`createReceipt`, `updateCustomerNotes`, `addExpense`...) trong [`google_apps_script/Code.gs`](google_apps_script/Code.gs).
+3. **Bước 3 (Triển Khai Apps Script)**: Sao chép toàn bộ code mới dán vào mục **Tiện ích mở rộng > Apps Script** của Google Sheet và bấm **Triển khai mới (New Deployment)** để link API nhận code mới nhất.
+4. **Bước 4 (Cập Nhật Tài Liệu Này)**: Cập nhật ngay vào bảng tra cứu trong tài liệu [`selena_spa_database_architecture.md`](selena_spa_database_architecture.md) này để ghi nhận rõ tên cột mới, kiểu dữ liệu, hàm JS frontend nào đọc/ghi và hàm GAS nào xử lý.
