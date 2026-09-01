@@ -305,6 +305,54 @@ function renderCartUI() {
   if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
 }
 
+
+function updatePOSStaffInfo() {
+  const users = getSortedUsersList();
+  const s1Select = document.getElementById('pos-staff1-select');
+  const isOwner = currentUser && isUserOwner(currentUser);
+  const busyMap = (typeof getBusyStaffPhonesMap === 'function') ? getBusyStaffPhonesMap() : {};
+
+  if (s1Select) {
+    // Lọc danh sách: Chỉ hiện những KTV đang thật sự rảnh (nếu bận thì ẩn hoàn toàn)
+    let availableUsers = users.filter(u => !busyMap[normalizePhone(u.phone)]);
+    if (!isOwner && currentUser) {
+      // Với KTV tự tạo tour cho mình thì luôn giữ tên KTV đó
+      if (!availableUsers.some(u => normalizePhone(u.phone) === normalizePhone(currentUser.phone))) {
+        availableUsers.unshift(currentUser);
+      }
+    }
+
+    if (availableUsers.length === 0) {
+      s1Select.innerHTML = '<option value="">🔴 Tất cả KTV đều đang bận ca</option>';
+    } else {
+      const curVal = s1Select.value;
+      s1Select.innerHTML = availableUsers.map(u => {
+        const isSelected = curVal ? (normalizePhone(u.phone) === normalizePhone(curVal)) : (currentUser && normalizePhone(u.phone) === normalizePhone(currentUser.phone));
+        return `
+          <option value="${u.phone}" ${isSelected ? 'selected' : ''}>
+            ${u.full_name}
+          </option>
+        `;
+      }).join('');
+    }
+  }
+
+  // Cập nhật thẻ hiển thị trạng thái KTV trên tiêu đề
+  const statusEl = document.getElementById('pos-header-subtitle');
+  if (statusEl) {
+    const allStaffs = users.filter(u => !isUserOwner(u));
+    const busyCount = allStaffs.filter(u => busyMap[normalizePhone(u.phone)]).length;
+    const freeStaffs = allStaffs.filter(u => !busyMap[normalizePhone(u.phone)]);
+    if (allStaffs.length > 0) {
+      if (freeStaffs.length === 0) {
+        statusEl.innerHTML = `<span class="text-rose-500 font-bold">🔴 Tất cả ${allStaffs.length} KTV đều đang bận ca</span>`;
+      } else {
+        statusEl.innerHTML = `<span class="text-[#D35400] font-semibold">${busyCount}/${allStaffs.length} KTV đang bận • Còn ${freeStaffs.length} KTV rảnh (${freeStaffs.map(s => s.full_name).join(', ')})</span>`;
+      }
+    }
+  }
+}
+
 function updatePOSCalculations() {
   const totalPrice = selectedCartItems.reduce((sum, item) => sum + (Number(item.price) || 0), 0);
   const totalDuration = selectedCartItems.reduce((sum, item) => sum + (Number(item.duration_min) || 0), 0);
