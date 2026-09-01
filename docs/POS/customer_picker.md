@@ -9,7 +9,8 @@
 - **Hàm Xử Lý SĐT**: `js/Core/Phone/phone_normalizer.js` & `js/Core/Phone/phone_masker.js`
 
 ## 3. Quy Tắc Giao Diện & Kịch Bản Phân Quyền Chi Tiết (UI Scenarios & Permissions)
-- Gõ 2-3 số đầu $ightarrow$ Hiển thị dropdown gợi ý khách quen tự động.
+- Gõ 2-3 số đầu $
+ightarrow$ Hiển thị dropdown gợi ý khách quen tự động.
 - 👩‍🦰 **KTV**: Thấy SĐT che `094*144`.
 - 👑 **Chủ tiệm**: Thấy đủ 10 số `0949251144`.
 - Tự động hiện thẻ Loyalty nếu tìm thấy:
@@ -18,9 +19,11 @@
   - Banner tích chọn dùng Voucher nếu khách có voucher khả dụng.
 
 ## 4. Luồng Xử Lý Logic & Hành Vi Hệ Thống (Business Logic)
-1. Gõ SĐT $ightarrow$ Chuẩn hóa qua `PhoneNormalizer.normalize(val)`.
+1. Gõ SĐT $
+ightarrow$ Chuẩn hóa qua `PhoneNormalizer.normalize(val)`.
 2. Tìm trong mảng `customers` và gọi ngầm `check_customer` về GAS.
-3. Nếu tích chọn *"Dùng voucher"* $ightarrow$ Ca này miễn phí 100% (KTV vẫn nhận đủ 10% hoa hồng theo giá gốc).
+3. Nếu tích chọn *"Dùng voucher"* $
+ightarrow$ Ca này miễn phí 100% (KTV vẫn nhận đủ 10% hoa hồng theo giá gốc).
 
 ## 5. Ánh Xạ Cơ Sở Dữ Liệu Chi Tiết (Database Mapping)
 - **Bảng Google Sheets**: `tb_customers`, `tb_loyalty_cycles`, `tb_vouchers`.

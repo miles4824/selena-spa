@@ -28,7 +28,8 @@
 - BỊ KHÓA HOÀN TOÀN, KTV không có quyền mở modal này.
 
 ## 4. Luồng Xử Lý Logic & Hành Vi Hệ Thống (Business Logic)
-1. **Bước 1**: Chủ tiệm bấm nút sửa $ightarrow$ Gọi `openOwnerCustomerEditorModal(phone, name, receiptId)`.
+1. **Bước 1**: Chủ tiệm bấm nút sửa $
+ightarrow$ Gọi `openOwnerCustomerEditorModal(phone, name, receiptId)`.
 2. **Bước 2**: Tải dữ liệu khách từ LocalStorage và gọi ngầm `check_customer` về GAS.
 3. **Bước 3 (Khi bấm "Cập Nhật Hồ Sơ")**:
    - Chuẩn hóa SĐT mới qua `PhoneNormalizer.normalize(newPhone)`.
@@ -39,10 +40,12 @@
 ## 5. Ánh Xạ Cơ Sở Dữ Liệu Chi Tiết (Database Mapping)
 - **Bảng Google Sheets**: `tb_customers` & `tb_receipts`
 - **Cột Đọc / Ghi**:
-  - `tb_customers` $ightarrow$ Cột A (`phone_number`), Cột B (`customer_name`), Cột C (`birthday`), Cột H (`notes`).
-  - `tb_receipts` $ightarrow$ Cột F (`customer_phone`), Cột G (`customer_name`).
+  - `tb_customers` $
+ightarrow$ Cột A (`phone_number`), Cột B (`customer_name`), Cột C (`birthday`), Cột H (`notes`).
+  - `tb_receipts` $
+ightarrow$ Cột F (`customer_phone`), Cột G (`customer_name`).
 - **Hàm Backend GAS phụ trách**: `updateCustomerNotes(params)` trong `Code.gs`.
 - **Firebase Realtime**: `customers/{phone}`
 
 ## 6. Lịch Sử Thay Đổi & Lưu Vết (Audit Log)
-- `2026-09-01` (`v0.0.0.2`): Đổi tiêu đề modal thành "Thông Tin Khách Hàng" và gắn nút mở trực tiếp trên từng thẻ hóa đơn Lịch sử của Chủ tiệm.
+- `2026-09-01` (`v0.0.0.1`): Đổi tiêu đề modal thành "Thông Tin Khách Hàng" và gắn nút mở trực tiếp trên từng thẻ hóa đơn Lịch sử của Chủ tiệm.

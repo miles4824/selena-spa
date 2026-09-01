@@ -15,11 +15,13 @@
   - 💆 **Combo 3**: Gội Chuyên Sâu Cổ Vai Gáy (150k - 75p)
   - 💆 **Combo 4**: Gội VIP Thảo Dược & Massage Mặt (199k - 90p)
   - 💆 **Combo 5**: Gội Selena Hoàng Gia Toàn Diện (250k - 105p)
-- Khi bấm chọn Combo $ightarrow$ Nút sáng màu hồng cam thương hiệu (`#FFF0EB` viền `#E58A7B`).
+- Khi bấm chọn Combo $
+ightarrow$ Nút sáng màu hồng cam thương hiệu (`#FFF0EB` viền `#E58A7B`).
 - Tự động điền giá tiền và thời lượng chuẩn vào đồng hồ đếm ngược.
 
 ## 4. Luồng Xử Lý Logic & Hành Vi Hệ Thống (Business Logic)
-- Lấy thông tin từ `ServiceCatalog.getCombos()` $ightarrow$ Tính toán hoa hồng dự kiến cho KTV và cài đặt thời lượng cho đồng hồ đếm ngược.
+- Lấy thông tin từ `ServiceCatalog.getCombos()` $
+ightarrow$ Tính toán hoa hồng dự kiến cho KTV và cài đặt thời lượng cho đồng hồ đếm ngược.
 
 ## 5. Ánh Xạ Cơ Sở Dữ Liệu Chi Tiết (Database Mapping)
 - **Bảng Google Sheets**: `tb_menu` (Cột A `service_id`, Cột B `service_name`, Cột C `price`, Cột D `duration_min`).

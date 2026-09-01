@@ -10,11 +10,15 @@
 
 ## 3. Quy Tắc Giao Diện & Kịch Bản Phân Quyền Chi Tiết (UI Scenarios & Permissions)
 - Số đếm ngược font chữ to rõ nét, font Mono chuẩn số học.
-- Thanh tiến trình chuyển màu từ Xanh (`#2E7D6D`) $ightarrow$ Hồng cam (`#E58A7B`) $ightarrow$ Đỏ khi quá giờ.
-- Nếu quá giờ định mức $ightarrow$ Chuyển sang đếm cộng dồn với dấu `+` (Ví dụ: `+02:15`).
+- Thanh tiến trình chuyển màu từ Xanh (`#2E7D6D`) $
+ightarrow$ Hồng cam (`#E58A7B`) $
+ightarrow$ Đỏ khi quá giờ.
+- Nếu quá giờ định mức $
+ightarrow$ Chuyển sang đếm cộng dồn với dấu `+` (Ví dụ: `+02:15`).
 
 ## 4. Luồng Xử Lý Logic & Hành Vi Hệ Thống (Business Logic)
-1. Bắt đầu ca $ightarrow$ Lưu `start_time` và cập nhật Firebase node `active_sessions/`.
+1. Bắt đầu ca $
+ightarrow$ Lưu `start_time` và cập nhật Firebase node `active_sessions/`.
 2. Mỗi 1 giây chạy `setInterval` tính số giây còn lại và cập nhật thanh tiến trình.
 
 ## 5. Ánh Xạ Cơ Sở Dữ Liệu Chi Tiết (Database Mapping)

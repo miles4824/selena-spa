@@ -23,7 +23,10 @@
 - Sau khi hoàn thành bất kỳ tính năng mới hoặc thay đổi cấu trúc nào:
   - Cập nhật phiên bản (+1) và ghi nội dung đã sửa vào **Mục 6 (Lịch Sử Thay Đổi & Lưu Vết)** của file `.md` tương ứng trong `docs/`.
   - Nếu có thay đổi cấu trúc file/module: **Cập nhật lại `selena_spa_master_architecture.md` và `PROJECT_RULES.md`**.
-  - Nếu có thay đổi Database: Tuân thủ nghiêm ngặt **Quy tắc 4 bước** trong [`selena_spa_database_architecture.md`](selena_spa_database_architecture.md) (Cập nhật Sheet $ightarrow$ Cập nhật `Code.gs` $ightarrow$ Triển khai New Deployment $ightarrow$ Cập nhật tài liệu Database).
+  - Nếu có thay đổi Database: Tuân thủ nghiêm ngặt **Quy tắc 4 bước** trong [`selena_spa_database_architecture.md`](selena_spa_database_architecture.md) (Cập nhật Sheet $
+ightarrow$ Cập nhật `Code.gs` $
+ightarrow$ Triển khai New Deployment $
+ightarrow$ Cập nhật tài liệu Database).
 
 ---
 
@@ -104,10 +107,16 @@
 
 ---
 
-## 🔢 11. NGUYÊN TẮC ĐÁNH SỐ PHIÊN BẢN (VERSION INCREMENT RULE)
-- **Tăng tuần tự từng bước nhỏ**: Mỗi lần chỉnh sửa, cập nhật code hoặc tính năng mới, số phiên bản **BẮT BUỘC chỉ được tăng thêm 1 đơn vị ở số cuối cùng** (ví dụ: `v0.0.0.1` -> `v0.0.0.2` -> `v0.0.0.3` -> `v0.0.0.4`...).
-- **Tuyệt đối không được nhảy cóc số phiên bản** (ví dụ: cấm nhảy từ `v0.0.0.1` lên thẳng `v0.0.1.0` hoặc `v0.1.0.0`).
-- **Đồng bộ toàn bộ 3 vị trí**:
-  1. `index.html` (Query string `?v=v0.0.0.x` của tất cả các file script/css).
+## 🔢 11. NGUYÊN TẮC ĐÁNH SỐ PHIÊN BẢN HỆ THỐNG (DECIMAL VERSIONING RULE)
+- **Quy tắc nhảy số tuần tự hệ thập phân (0 - 9 rollover)**: Mỗi lần chỉnh sửa, cập nhật code hoặc tính năng mới, số phiên bản **BẮT BUỘC tăng tuần tự 1 đơn vị theo đúng chuỗi thập phân**:
+  - `v0.0.0.1` $ightarrow$ `v0.0.0.2` $ightarrow$ ... $ightarrow$ `v0.0.0.8` $ightarrow$ `v0.0.0.9`
+  - Sau `.9` $ightarrow$ Nhảy số hàng trước thành: **`v0.0.1.0`**
+  - Tiếp tục: `v0.0.1.0` $ightarrow$ `v0.0.1.1` $ightarrow$ ... $ightarrow$ `v0.0.1.9` $ightarrow$ **`v0.0.2.0`**
+  - Khi đến `v0.0.9.9` $ightarrow$ Nhảy tiếp thành: **`v0.1.0.0`**
+- **Tuyệt đối không nhảy cóc**: Không được bỏ qua bất kỳ số nào trong chuỗi thập phân.
+- **Đồng bộ bắt buộc tại 3 vị trí trong App**:
+  1. `index.html` (Toàn bộ query string `?v=v0.0.0.x` của các file script, css, icon, manifest).
   2. `js/config.js` (`const APP_VERSION = 'v0.0.0.x';`).
-  3. `views/login.html` (Dòng chữ hiển thị phiên bản ở chân trang đăng nhập).
+  3. `views/login.html` (Dòng text hiển thị phiên bản ở chân trang đăng nhập).
+  4. Các file đặc tả trong `docs/` (Mục 6 Audit Log ghi nhận đúng số phiên bản của lần cập nhật đó).
+

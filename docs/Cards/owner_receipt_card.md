@@ -9,7 +9,8 @@
 
 ## 3. Quy Tắc Giao Diện & Kịch Bản Phân Quyền Chi Tiết (UI Scenarios & Permissions)
 - 👑 **Quy tắc hiển thị cho Chủ Tiệm**:
-  - Tên khách có icon cây bút `edit-3` $ightarrow$ Bấm vào mở `modal_owner_customer.html` (Toàn quyền sửa).
+  - Tên khách có icon cây bút `edit-3` $
+ightarrow$ Bấm vào mở `modal_owner_customer.html` (Toàn quyền sửa).
   - Hiển thị tổng tiền khách trả (gồm tiền dịch vụ + tổng tip).
   - Khung KTV hiển thị đầy đủ danh sách tất cả KTV làm ca đó kèm hoa hồng và tip của từng người.
   - Phân loại rõ ràng nhãn [QR Chuyển khoản] màu xanh vs [Tiền mặt] màu cam.
@@ -21,4 +22,4 @@
 - **Bảng Google Sheets**: `tb_receipts` (16 cột) & `tb_payroll_logs` (19 cột).
 
 ## 6. Lịch Sử Thay Đổi & Lưu Vết (Audit Log)
-- `2026-09-01` (`v0.0.0.2`): Gắn nút sửa thông tin khách hàng trực tiếp trên tên khách.
+- `2026-09-01` (`v0.0.0.1`): Gắn nút sửa thông tin khách hàng trực tiếp trên tên khách.

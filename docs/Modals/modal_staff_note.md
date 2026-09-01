@@ -36,9 +36,12 @@
 - Dùng modal riêng `modal_owner_customer.html` với toàn quyền sửa Tên, SĐT thật 10 số, đổi tháng sinh bất cứ lúc nào.
 
 ## 4. Luồng Xử Lý Logic & Hành Vi Hệ Thống (Business Logic)
-1. **Bước 1 (Mở Modal)**: KTV bấm vào tên khách trên thẻ tour $ightarrow$ Gọi `openStaffCustomerNoteModal(phone, name, receiptId)`.
-   - Kiểm tra nếu `phone` rỗng hoặc `name === 'Khách vãng lai'` $ightarrow$ Kích hoạt **Kịch Bản 2 (Khách vãng lai)**.
-   - Ngược lại $ightarrow$ Kích hoạt **Kịch Bản 1 (Khách quen)**.
+1. **Bước 1 (Mở Modal)**: KTV bấm vào tên khách trên thẻ tour $
+ightarrow$ Gọi `openStaffCustomerNoteModal(phone, name, receiptId)`.
+   - Kiểm tra nếu `phone` rỗng hoặc `name === 'Khách vãng lai'` $
+ightarrow$ Kích hoạt **Kịch Bản 2 (Khách vãng lai)**.
+   - Ngược lại $
+ightarrow$ Kích hoạt **Kịch Bản 1 (Khách quen)**.
 2. **Bước 2 (Lưu Thông Tin)**:
    - Khi lưu ca Khách vãng lai:
      + Chuẩn hóa SĐT 10 số qua `PhoneNormalizer.normalize(inputPhone)`.
@@ -49,11 +52,13 @@
 ## 5. Ánh Xạ Cơ Sở Dữ Liệu Chi Tiết (Database Mapping)
 - **Bảng Google Sheets**: `tb_receipts` & `tb_customers`
 - **Cột Đọc / Ghi**:
-  - `tb_receipts` $ightarrow$ Cột F (`customer_phone`), Cột G (`customer_name`).
-  - `tb_customers` $ightarrow$ Cột A (`phone_number`), Cột B (`customer_name`), Cột C (`birthday`), Cột H (`notes`).
+  - `tb_receipts` $
+ightarrow$ Cột F (`customer_phone`), Cột G (`customer_name`).
+  - `tb_customers` $
+ightarrow$ Cột A (`phone_number`), Cột B (`customer_name`), Cột C (`birthday`), Cột H (`notes`).
 - **Hàm Backend GAS phụ trách**: `updateCustomerNotes(params)` trong `Code.gs`.
 - **Firebase Realtime**: `customers/{cleanPhone}/notes`
 
 ## 6. Lịch Sử Thay Đổi & Lưu Vết (Audit Log)
 - `2026-09-01` (`v0.0.0.1`): Bóc tách thành component độc lập và thực thi quy tắc ẩn vĩnh viễn ô chọn tháng khi khách đã có sinh nhật.
-- `2026-09-01` (`v0.0.1.0`): Bổ sung tính năng cho phép KTV nhập Tên + SĐT cho ca Khách vãng lai (khóa 1 lần và lẳng lặng ghi nhật ký đối soát).
+- `2026-09-01` (`v0.0.0.1`): Bổ sung tính năng cho phép KTV nhập Tên + SĐT cho ca Khách vãng lai (khóa 1 lần và lẳng lặng ghi nhật ký đối soát).

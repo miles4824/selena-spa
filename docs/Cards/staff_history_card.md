@@ -9,7 +9,8 @@
 
 ## 3. Quy Tắc Giao Diện & Kịch Bản Phân Quyền Chi Tiết (UI Scenarios & Permissions)
 - 👩‍🦰 **Quy tắc hiển thị cho KTV**:
-  - Tên khách hàng có icon cây bút `edit-3` và đường gạch chân nét đứt $ightarrow$ Bấm vào mở `modal_staff_note.html`.
+  - Tên khách hàng có icon cây bút `edit-3` và đường gạch chân nét đứt $
+ightarrow$ Bấm vào mở `modal_staff_note.html`.
   - Hiển thị rõ ràng dòng: `KTV cùng làm: [Tên bạn làm cùng]` (nếu là ca làm chung).
   - Dùng đúng 2 nhãn chuẩn thân thiện: **`Tiền tour: +6.400 đ`** và **`Tiền tip: +20.000 đ`**.
   - SĐT luôn che `094*144`.

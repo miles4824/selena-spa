@@ -30,13 +30,17 @@
 1. Tổng tiền ca = `Giá combo + Tiền dịch vụ phụ + Tiền mỹ phẩm bán kèm`.
 2. Tổng thanh toán = `Tổng tiền ca + Tổng tiền Tips`.
 3. Hoa hồng KTV = Tính theo tỷ lệ hợp đồng (10% hoặc 20%) và tỷ lệ phân chia (theo phút hoặc 50-50). Tiền tip thuộc $100\%$ về KTV.
-4. Bấm Hoàn tất $ightarrow$ Sinh mã hóa đơn `HD + yymmddhhmmss` $ightarrow$ Cập nhật `tb_receipts`, `tb_payroll_logs`, xóa ca đang chạy trên Firebase và bắn pháo hoa confetti.
+4. Bấm Hoàn tất $
+ightarrow$ Sinh mã hóa đơn `HD + yymmddhhmmss` $
+ightarrow$ Cập nhật `tb_receipts`, `tb_payroll_logs`, xóa ca đang chạy trên Firebase và bắn pháo hoa confetti.
 
 ## 5. Ánh Xạ Cơ Sở Dữ Liệu Chi Tiết (Database Mapping)
 - **Bảng Google Sheets**: `tb_receipts` & `tb_payroll_logs`
 - **Cột Đọc / Ghi**:
-  - `tb_receipts` $ightarrow$ Cột J (`price`), Cột K (`tip_amount`), Cột L (`total_paid`), Cột N (`payment_method`), Cột O (`is_voucher_used`).
-  - `tb_payroll_logs` $ightarrow$ Cột O (`commission_amount`), Cột P (`tip_amount`), Cột Q (`total_earned`).
+  - `tb_receipts` $
+ightarrow$ Cột J (`price`), Cột K (`tip_amount`), Cột L (`total_paid`), Cột N (`payment_method`), Cột O (`is_voucher_used`).
+  - `tb_payroll_logs` $
+ightarrow$ Cột O (`commission_amount`), Cột P (`tip_amount`), Cột Q (`total_earned`).
 - **Hàm Backend GAS phụ trách**: `createReceipt(params)` trong `Code.gs`.
 
 ## 6. Lịch Sử Thay Đổi & Lưu Vết (Audit Log)

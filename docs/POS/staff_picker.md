@@ -16,7 +16,8 @@
 - Hiển thị ước tính tiền hoa hồng nhận được ngay bên cạnh tên KTV (`+6.400 đ`).
 
 ## 5. Ánh Xạ Cơ Sở Dữ Liệu Chi Tiết (Database Mapping)
-- **Bảng Google Sheets**: `tb_users` (danh sách nhân sự) $ightarrow$ Ghi vào `tb_payroll_logs`.
+- **Bảng Google Sheets**: `tb_users` (danh sách nhân sự) $
+ightarrow$ Ghi vào `tb_payroll_logs`.
 
 ## 6. Lịch Sử Thay Đổi & Lưu Vết (Audit Log)
 - `2026-09-01` (`v0.0.0.1`): Bóc tách thành component độc lập.

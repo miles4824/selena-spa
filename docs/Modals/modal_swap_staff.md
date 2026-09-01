@@ -19,10 +19,13 @@
 - Mỗi KTV nhận đúng $50\%$ hoa hồng của ca gội đó.
 
 ## 4. Luồng Xử Lý Logic & Hành Vi Hệ Thống (Business Logic)
-1. KTV bấm nút *"Đổi / Thêm KTV"* trên đồng hồ POS $ightarrow$ Mở modal.
+1. KTV bấm nút *"Đổi / Thêm KTV"* trên đồng hồ POS $
+ightarrow$ Mở modal.
 2. Cho phép bấm `+ Thêm KTV vào tour này` hoặc bấm icon thùng rác để xóa bớt KTV.
-3. Chọn 1 trong 2 chế độ chia tiền $ightarrow$ Hệ thống tự tính bảng phân bổ tiền dự kiến.
-4. Bấm *"Xác Nhận Thay Đổi"* $ightarrow$ Cập nhật mảng KTV phục vụ của ca trên Firebase.
+3. Chọn 1 trong 2 chế độ chia tiền $
+ightarrow$ Hệ thống tự tính bảng phân bổ tiền dự kiến.
+4. Bấm *"Xác Nhận Thay Đổi"* $
+ightarrow$ Cập nhật mảng KTV phục vụ của ca trên Firebase.
 
 ## 5. Ánh Xạ Cơ Sở Dữ Liệu Chi Tiết (Database Mapping)
 - **Bảng Google Sheets**: `tb_payroll_logs`

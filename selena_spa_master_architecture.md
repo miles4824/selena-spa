@@ -23,7 +23,10 @@
 - Sau khi hoàn thành bất kỳ tính năng mới hoặc thay đổi cấu trúc nào:
   - Cập nhật phiên bản (+1) và ghi nội dung đã sửa vào **Mục 6 (Lịch Sử Thay Đổi & Lưu Vết)** của file `.md` tương ứng trong `docs/`.
   - Nếu có thay đổi cấu trúc file/module: **Cập nhật lại `selena_spa_master_architecture.md` và `PROJECT_RULES.md`**.
-  - Nếu có thay đổi Database: Tuân thủ nghiêm ngặt **Quy tắc 4 bước** trong [`selena_spa_database_architecture.md`](selena_spa_database_architecture.md) (Cập nhật Sheet $ightarrow$ Cập nhật `Code.gs` $ightarrow$ Triển khai New Deployment $ightarrow$ Cập nhật tài liệu Database).
+  - Nếu có thay đổi Database: Tuân thủ nghiêm ngặt **Quy tắc 4 bước** trong [`selena_spa_database_architecture.md`](selena_spa_database_architecture.md) (Cập nhật Sheet $
+ightarrow$ Cập nhật `Code.gs` $
+ightarrow$ Triển khai New Deployment $
+ightarrow$ Cập nhật tài liệu Database).
 
 ---
 

@@ -12,10 +12,11 @@
 - Nút "Xem tất cả" và icon mở modal chọn lịch tháng nhanh.
 
 ## 4. Luồng Xử Lý Logic & Hành Vi Hệ Thống (Business Logic)
-- Kiểm tra `DateHelper.isFuture(dateStr)` $ightarrow$ Nếu `true` thì gán class khóa bấm an toàn.
+- Kiểm tra `DateHelper.isFuture(dateStr)` $
+ightarrow$ Nếu `true` thì gán class khóa bấm an toàn.
 
 ## 5. Ánh Xạ Cơ Sở Dữ Liệu Chi Tiết (Database Mapping)
 - Không ghi database, chỉ phục vụ lọc dữ liệu `tb_receipts`.
 
 ## 6. Lịch Sử Thay Đổi & Lưu Vết (Audit Log)
-- `2026-08-31` (`v0.1.8.9`): Tinh chỉnh màu sắc nút ngày tương lai rõ ràng, không bị chìm mất chữ.
+- `2026-08-31` (`v0.0.0.1`): Tinh chỉnh màu sắc nút ngày tương lai rõ ràng, không bị chìm mất chữ.

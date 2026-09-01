@@ -17,7 +17,8 @@
   - Tiền Tips thuộc về KTV $100\%$, tiệm không thu bất kỳ khoản phế nào.
 
 ## 4. Ánh Xạ Cơ Sở Dữ Liệu Chi Tiết (Database Mapping)
-- **Bảng Google Sheets**: `tb_users` (Cột G `salary_type`, Cột H `commission_rate`) $ightarrow$ Ghi vào `tb_payroll_logs` (Cột N `commission_pct`, Cột O `commission_amount`).
+- **Bảng Google Sheets**: `tb_users` (Cột G `salary_type`, Cột H `commission_rate`) $
+ightarrow$ Ghi vào `tb_payroll_logs` (Cột N `commission_pct`, Cột O `commission_amount`).
 
 ## 5. Lịch Sử Thay Đổi & Lưu Vết (Audit Log)
 - `2026-09-01` (`v0.0.0.1`): Đưa vào module Core toán học độc lập.
