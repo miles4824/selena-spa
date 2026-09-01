@@ -8,7 +8,7 @@
         </div>
         <div>
           <h3 class="text-base font-extrabold text-[#2D2424]" id="modal-staff-note-name">Ghi Chú Khách Hàng</h3>
-          <p class="text-xs text-[#7E7272]" id="modal-staff-note-phone">0912***678</p>
+          <p class="text-xs text-[#7E7272] font-mono" id="modal-staff-note-phone">094*144</p>
         </div>
       </div>
       <button type="button" onclick="closeStaffCustomerNoteModal()" class="p-2 rounded-xl hover:bg-[#FAF6F1] text-[#7E7272] hover:text-[#E58A7B] transition cursor-pointer">
@@ -21,49 +21,59 @@
       <input type="hidden" id="modal-staff-note-receipt-id">
       <input type="hidden" id="modal-staff-note-is-guest" value="0">
       
-      <!-- CỤM Ô NHẬP TÊN & SĐT THẬT: CHỈ HIỂN THỊ KHI LÀ KHÁCH VÃNG LAI -->
+      <!-- CỤM KHUNG GOM CHUNG: BỔ SUNG THÔNG TIN KHÁCH (CHỈ HIỂN THỊ KHI LÀ KHÁCH VÃNG LAI) -->
       <div id="modal-staff-note-guest-inputs" class="hidden space-y-3 bg-[#FAF6F1] p-3.5 rounded-2xl border border-[#FCDFD7]">
         <div class="text-xs font-bold text-[#E58A7B] flex items-center justify-between">
           <span class="flex items-center gap-1.5"><i data-lucide="user-plus" class="w-4 h-4"></i> Bổ Sung Thông Tin Khách:</span>
           <span id="modal-staff-note-lookup-badge" class="text-[10px] px-2 py-0.5 rounded-full bg-white font-semibold text-[#7E7272] border border-[#F0EAE1]">Nhập SĐT để dò tìm</span>
         </div>
-        <div>
+
+        <!-- 1. SỐ ĐIỆN THOẠI & DROPDOWN GỢI Ý CHUẨN POS -->
+        <div class="relative">
           <label class="block text-xs font-bold text-[#2D2424] mb-1">📱 Số Điện Thoại:</label>
-          <input type="tel" id="modal-staff-note-guest-phone" oninput="onStaffGuestPhoneInput(this.value)" placeholder="VD: 0949251144" class="w-full bg-white border border-[#EFE8DF] rounded-xl p-2.5 text-xs sm:text-sm text-[#2D2424] font-mono font-bold focus:outline-none focus:border-[#E58A7B] transition">
+          <div class="relative">
+            <input type="tel" id="modal-staff-note-guest-phone" oninput="onStaffGuestPhoneInput(this.value)" onfocus="onStaffGuestPhoneInput(this.value)" autocomplete="off" placeholder="Nhập SĐT hoặc tìm tên..." class="w-full bg-white border border-[#EFE8DF] rounded-xl p-2.5 pl-9 text-xs sm:text-sm text-[#2D2424] font-mono font-bold focus:outline-none focus:border-[#E58A7B] transition">
+            <i data-lucide="phone" class="w-3.5 h-3.5 text-[#A39696] absolute left-3 top-1/2 -translate-y-1/2"></i>
+          </div>
+          <!-- BẢNG SỔ XUỐNG GỢI Ý CHUẨN POS -->
+          <div id="modal-staff-note-suggestions" class="hidden absolute left-0 right-0 top-full mt-1 bg-white border border-[#EFE8DF] rounded-2xl shadow-2xl z-[999] max-h-52 overflow-y-auto divide-y divide-[#FAF6F1]"></div>
           <p id="modal-staff-note-phone-hint" class="text-[11px] text-[#A39696] mt-1 italic hidden"></p>
         </div>
+
+        <!-- 2. TÊN KHÁCH HÀNG -->
         <div>
           <label class="block text-xs font-bold text-[#2D2424] mb-1">👤 Tên Khách Hàng:</label>
           <input type="text" id="modal-staff-note-guest-name" placeholder="VD: Chị Mai Lan" class="w-full bg-white border border-[#EFE8DF] rounded-xl p-2.5 text-xs sm:text-sm text-[#2D2424] font-medium focus:outline-none focus:border-[#E58A7B] transition">
         </div>
+
+        <!-- 3. THÁNG SINH NHẬT NẰM CHUNG TRONG KHUNG NÀY DƯỚI TÊN -->
+        <div id="modal-staff-note-birth-month-container">
+          <label class="block text-xs font-bold text-[#2D2424] mb-1">🎂 Tháng Sinh Nhật Khách Hàng (Tùy chọn):</label>
+          <select id="modal-staff-note-birth-month" class="w-full bg-white border border-[#EFE8DF] rounded-xl p-2.5 text-xs sm:text-sm text-[#2D2424] font-bold focus:outline-none focus:border-[#E58A7B] transition cursor-pointer">
+            <option value="">-- Chọn tháng sinh (để tiệm tặng voucher 20%) --</option>
+            <option value="1">Tháng 1</option>
+            <option value="2">Tháng 2</option>
+            <option value="3">Tháng 3</option>
+            <option value="4">Tháng 4</option>
+            <option value="5">Tháng 5</option>
+            <option value="6">Tháng 6</option>
+            <option value="7">Tháng 7</option>
+            <option value="8">Tháng 8</option>
+            <option value="9">Tháng 9</option>
+            <option value="10">Tháng 10</option>
+            <option value="11">Tháng 11</option>
+            <option value="12">Tháng 12</option>
+          </select>
+        </div>
+
+        <!-- THÔNG BÁO NẾU ĐÃ CÓ THÁNG SINH -->
+        <div id="modal-staff-note-birth-month-fixed" class="hidden text-xs font-bold text-[#2E7D6D] bg-[#E8F8F5] p-2.5 rounded-xl border border-[#B7EBDD] flex items-center gap-1.5">
+          <i data-lucide="cake" class="w-4 h-4 text-[#2E7D6D]"></i>
+          <span id="modal-staff-note-birth-month-fixed-text">Sinh nhật: Tháng --</span>
+        </div>
       </div>
 
-      <!-- Ô CHỌN THÁNG SINH: CHỈ HIỂN THỊ KHI KHÁCH CHƯA CÓ THÁNG SINH -->
-      <div id="modal-staff-note-birth-month-container">
-        <label class="block text-xs font-bold text-[#2D2424] mb-1">🎂 Tháng Sinh Nhật Khách Hàng (Tùy chọn):</label>
-        <select id="modal-staff-note-birth-month" class="w-full bg-[#F7F2EC] border border-[#EFE8DF] rounded-2xl p-3 text-xs sm:text-sm text-[#2D2424] font-bold focus:outline-none focus:border-[#E58A7B] focus:bg-white transition cursor-pointer">
-          <option value="">-- Chọn tháng sinh (để tiệm tặng voucher 20%) --</option>
-          <option value="1">Tháng 1</option>
-          <option value="2">Tháng 2</option>
-          <option value="3">Tháng 3</option>
-          <option value="4">Tháng 4</option>
-          <option value="5">Tháng 5</option>
-          <option value="6">Tháng 6</option>
-          <option value="7">Tháng 7</option>
-          <option value="8">Tháng 8</option>
-          <option value="9">Tháng 9</option>
-          <option value="10">Tháng 10</option>
-          <option value="11">Tháng 11</option>
-          <option value="12">Tháng 12</option>
-        </select>
-      </div>
-
-      <!-- THÔNG BÁO NẾU ĐÃ CÓ THÁNG SINH -->
-      <div id="modal-staff-note-birth-month-fixed" class="hidden text-xs font-bold text-[#2E7D6D] bg-[#E8F8F5] p-2.5 rounded-2xl border border-[#B7EBDD] flex items-center gap-1.5">
-        <i data-lucide="cake" class="w-4 h-4 text-[#2E7D6D]"></i>
-        <span id="modal-staff-note-birth-month-fixed-text">Sinh nhật: Tháng --</span>
-      </div>
-
+      <!-- 4. GHI CHÚ SỞ THÍCH -->
       <div>
         <label class="block text-xs font-bold text-[#2D2424] mb-1">📝 Ghi Chú Sở Thích / Lưu Ý Khi Phục Vụ:</label>
         <textarea id="modal-staff-note-content" rows="3" placeholder="VD: Thích gội nước ấm, sấy mát, da đầu nhạy cảm, massage vai gáy nhẹ..." class="w-full bg-[#F7F2EC] border border-[#EFE8DF] rounded-2xl p-3 text-xs sm:text-sm text-[#2D2424] focus:outline-none focus:border-[#E58A7B] focus:bg-white transition leading-relaxed"></textarea>

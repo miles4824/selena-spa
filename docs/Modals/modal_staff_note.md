@@ -77,4 +77,4 @@ ightarrow$ Thêm 1 dòng (Mã audit, Mã hóa đơn, Thời gian, Mã KTV, Tên 
 
 ## 6. Lịch Sử Thay Đổi & Lưu Vết (Audit Log)
 - `2026-09-01` (`v0.0.0.1`): Bóc tách thành component độc lập và thực thi quy tắc ẩn vĩnh viễn ô chọn tháng khi khách đã có sinh nhật.
-- `2026-09-01` (`v0.0.0.4`): Hoàn thiện kịch bản 2A (trùng số lấy lại tên cũ) và 2B (số mới bật popup xác nhận) cho KTV, đồng thời ghi nhận nhật ký đối soát vào bảng `tb_customer_audits`.
+- `2026-09-01` (`v0.0.0.5`): Hoàn thiện kịch bản 2A (trùng số lấy lại tên cũ) và 2B (số mới bật popup xác nhận) cho KTV, đồng thời ghi nhận nhật ký đối soát vào bảng `tb_customer_audits`.
