@@ -110,13 +110,3 @@
   1. `index.html` (Query string `?v=v0.0.0.x` của tất cả các file script/css).
   2. `js/config.js` (`const APP_VERSION = 'v0.0.0.x';`).
   3. `views/login.html` (Dòng chữ hiển thị phiên bản ở chân trang đăng nhập).
-
----
-
-## ⚙️ 12. NGUYÊN TẮC ĐỒNG BỘ BACKEND CODE.GS VỚI DATABASE GOOGLE SHEETS
-- **Đồng bộ song hành 100%**: Mọi sự thay đổi trên Google Sheets (thêm cột, xóa cột, đổi tên cột, thêm tab bảng mới) **BẮT BUỘC phải cập nhật đồng thời trong `google_apps_script/Code.gs`**.
-- **Quy trình 4 bước bắt buộc khi thay đổi Database**:
-  1. Thêm / sửa cột trên Google Sheets.
-  2. Cập nhật hàm đọc (`syncAllData`, `checkCustomer`...) và hàm ghi (`createReceipt`, `updateCustomerNotes`, `addExpense`...) trong `Code.gs`.
-  3. Sao chép code mới vào **Apps Script** của Google Sheet và bấm **Triển khai mới (New Deployment)**.
-  4. Cập nhật tài liệu [`selena_spa_database_architecture.md`](selena_spa_database_architecture.md).
