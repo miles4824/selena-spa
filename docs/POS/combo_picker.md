@@ -86,4 +86,4 @@ $$	ext{Tổng Phút Định Mức} = \sum_{i \in 	ext{selectedCartItems}} 	ext{D
 ## 6. Lịch Sử Thay Đổi & Lưu Vết (Audit Log)
 - `2026-09-01` (`v0.0.0.1`): Khởi tạo component chọn combo.
 - `2026-09-01` (`v0.0.1.6`): Bổ sung nút dịch vụ làm thêm.
-- `2026-09-01` (`v0.0.1.9`): Cải tiến kiến trúc giỏ dịch vụ toàn diện (Dropdown + Nút bấm nhanh 1 chạm, tự động ẩn món đã chọn khỏi dropdown, hỗ trợ 100% dịch vụ lẻ không cần combo, đồng bộ động từ tb_menu).
+- `2026-09-01` (`v0.0.2.0`): Cải tiến kiến trúc giỏ dịch vụ toàn diện (Dropdown + Nút bấm nhanh 1 chạm, tự động ẩn món đã chọn khỏi dropdown, hỗ trợ 100% dịch vụ lẻ không cần combo, đồng bộ động từ tb_menu).

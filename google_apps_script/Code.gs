@@ -1127,31 +1127,57 @@ function syncAllData(params) {
 
   const isOwner = isOwnerCheck(clientRole, clientPhone, clientStaffId);
 
-  // 1. Menu
-  const sheetMenu = ss.getSheetByName('tb_menu');
-  let menu = [];
-  if (sheetMenu) {
-    const colMapM = createHeaderMap(sheetMenu);
-    const data = sheetMenu.getDataRange().getValues();
-    for (let i = 1; i < data.length; i++) {
-      let r = data[i];
-      let id = String(getCell(r, colMapM, ['service_id', 'combo_id']));
-      let name = String(getCell(r, colMapM, ['service_name', 'ten_combo', 'name']));
-      if (id && name) {
-        let price = Number(getCell(r, colMapM, ['price', 'gia'], 0)) || 0;
-        let duration = Number(getCell(r, colMapM, ['duration_min', 'thoi_gian'], 30)) || 30;
-        let cosmetics = Number(getCell(r, colMapM, ['cosmetics_cost', 'my_pham'], 0)) || 0;
-        let commVal = Number(getCell(r, colMapM, ['commission_value', 'hoa_hong'], price * 0.1)) || (price * 0.1);
+  // 1. Menu (Tự động khởi tạo và nạp đầy đủ 10 dịch vụ nếu Sheet tb_menu còn trống)
+  let sheetMenu = ss.getSheetByName('tb_menu');
+  if (!sheetMenu) {
+    sheetMenu = ss.insertSheet('tb_menu');
+    sheetMenu.appendRow(['service_id', 'service_name', 'category', 'price', 'duration_min', 'cosmetics_cost', 'commission_value', 'description']);
+    sheetMenu.getRange(1, 1, 1, 8).setFontWeight('bold').setBackground('#FFF0EB');
+  }
 
-        menu.push({
-          service_id: id,
-          service_name: name,
-          price: price,
-          duration_min: duration,
-          cosmetics_cost: cosmetics,
-          commission_value: commVal
-        });
-      }
+  const defaultMenuItems = [
+    ['CB01', 'Combo 1 (Gội Dưỡng Sinh Cơ Bản)', 'combo', 64000, 45, 3000, 6400, 'Gội dưỡng sinh, massage mặt nhẹ'],
+    ['CB02', 'Combo 2 (Gội Chuyên Sâu)', 'combo', 99000, 60, 5000, 9900, 'Gội chuyên sâu, đắp mặt nạ'],
+    ['CB03', 'Combo 3 (Gội Dưỡng Sinh Hoàng Gia)', 'combo', 149000, 75, 8000, 14900, 'Gội hoàng gia, massage vai gáy'],
+    ['CB04', 'Combo 4 (Gội + Massage Trị Liệu)', 'combo', 199000, 90, 10000, 19900, 'Trị liệu cổ vai gáy chuyên sâu'],
+    ['CB05', 'Combo 5 (Gội Thư Giãn Toàn Diện)', 'combo', 249000, 105, 12000, 24900, 'Toàn diện cao cấp'],
+    ['DV01', 'Massage Cổ Vai Gáy Chuyên Sâu', 'service', 50000, 20, 0, 5000, 'Dịch vụ làm thêm / lẻ'],
+    ['DV02', 'Tẩy Tế Bào Chết Da Đầu Thảo Dược', 'service', 40000, 15, 3000, 4000, 'Dịch vụ làm thêm / lẻ'],
+    ['DV03', 'Đắp Mặt Nạ Thảo Mộc / Collagen', 'service', 30000, 10, 5000, 3000, 'Dịch vụ làm thêm / lẻ'],
+    ['DV04', 'Xông Hơi Tinh Dầu Trị Liệu', 'service', 35000, 15, 2000, 3500, 'Dịch vụ làm thêm / lẻ'],
+    ['DV05', 'Massage Nâng Cơ Mặt Ngọc Thạch', 'service', 60000, 20, 4000, 6000, 'Dịch vụ làm thêm / lẻ']
+  ];
+
+  let menu = [];
+  const colMapM = createHeaderMap(sheetMenu);
+  let dataM = sheetMenu.getDataRange().getValues();
+
+  // Nếu sheet chỉ có dòng tiêu đề -> Điền tự động 10 món
+  if (dataM.length <= 1) {
+    defaultMenuItems.forEach(item => sheetMenu.appendRow(item));
+    dataM = sheetMenu.getDataRange().getValues();
+  }
+
+  for (let i = 1; i < dataM.length; i++) {
+    let r = dataM[i];
+    let id = String(getCell(r, colMapM, ['service_id', 'combo_id', 'id'])).trim();
+    let name = String(getCell(r, colMapM, ['service_name', 'ten_combo', 'name'])).trim();
+    if (id && name) {
+      let cat = String(getCell(r, colMapM, ['category', 'loai', 'phan_loai'], id.startsWith('CB') ? 'combo' : 'service')).trim().toLowerCase();
+      let price = Number(getCell(r, colMapM, ['price', 'gia'], 0)) || 0;
+      let duration = Number(getCell(r, colMapM, ['duration_min', 'thoi_gian'], 30)) || 30;
+      let cosmetics = Number(getCell(r, colMapM, ['cosmetics_cost', 'my_pham'], 0)) || 0;
+      let commVal = Number(getCell(r, colMapM, ['commission_value', 'hoa_hong'], price * 0.1)) || (price * 0.1);
+
+      menu.push({
+        service_id: id,
+        service_name: name,
+        category: cat,
+        price: price,
+        duration_min: duration,
+        cosmetics_cost: cosmetics,
+        commission_value: commVal
+      });
     }
   }
 
