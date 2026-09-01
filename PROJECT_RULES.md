@@ -164,3 +164,16 @@ Mỗi khi người dùng yêu cầu gửi mã dữ liệu / dữ liệu mẫu / 
 3. **Quy Tắc Kiểu Dữ Liệu Logic (Boolean) & Header**:
    - Dòng 1 luôn là Header đúng chuẩn tên cột tiếng Anh viết thường hoặc snake_case (`service_id`, `service_name`, `price`...).
    - Các cột trạng thái logic phải ghi chữ in hoa chuẩn: **`TRUE`** hoặc **`FALSE`**.
+
+---
+
+## 🌐 14. NGUYÊN TẮC ĐỌC VÀ ĐỒNG BỘ DỮ LIỆU TỪ GOOGLE SHEETS THỰC TẾ (REAL GOOGLE SHEETS DATABASE SOURCE OF TRUTH)
+1. **Đường Dẫn Nguồn Dữ Liệu Duy Nhất (Single Source of Truth URL)**:
+   - Toàn bộ cơ sở dữ liệu thực tế của hệ thống Selena Spa được lưu trữ và quản lý tại Google Spreadsheet chính thức:
+     `https://docs.google.com/spreadsheets/d/1SFFR2sWmOxtRIMOkdlkuKIDYyXJM7IxNyP9gFtZY0L0/edit?usp=sharing`
+2. **Quy Định Nghiêm Ngặt Về Đọc Dữ Liệu (No Hallucinated Data Rule)**:
+   - Khi cần kiểm tra, đọc dữ liệu, đối soát cấu trúc hoặc đồng bộ (`tb_users`, `tb_menu`, `tb_customers`, `tb_receipts`, `tb_payroll_logs`, `tb_config`, `tb_expenses`, `tb_customer_audits`...), AI Assistant **BẮT BUỘC phải đọc trực tiếp từ link Google Sheets thực tế nêu trên** (qua API/Export URL `gviz/tq?tqx=out:csv&sheet={sheet_name}`).
+   - **TUYỆT ĐỐI CẤM TỰ Ý TƯỞNG TƯỢNG, BỊA ĐẶT HAY VẼ VỜI DỮ LIỆU ẢO**: Không được tự suy diễn tên dịch vụ, giá tiền, mã KTV, tên cột hay nội dung cấu hình mà không đối chiếu với Sheet thực tế.
+3. **Quy Tắc Khi Tạo Dữ Liệu Mẫu / Test Data**:
+   - Chỉ được phép tạo dữ liệu mẫu khi có **lệnh yêu cầu trực tiếp bằng văn bản từ người dùng**.
+   - Ngay cả khi tạo dữ liệu mẫu để test, **BẮT BUỘC PHẢI DỰA 100% VÀO CẤU TRÚC TIÊU ĐỀ (HEADER COLUMNS) THỰC TẾ CỦA GOOGLE SHEETS**, tuyệt đối không được tự ý đổi tên cột, thiếu cột hoặc chế thêm cột lạ làm sai lệch hệ thống.
