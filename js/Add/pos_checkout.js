@@ -342,13 +342,13 @@ function renderCartUI() {
     const isCombo = String(item.service_id || '').startsWith('CB') || String(item.service_name || '').toLowerCase().includes('combo');
 
     return `
-      <div class="inline-flex items-center gap-2.5 px-3 py-2 rounded-2xl bg-gradient-to-r from-[#FFF0EB] to-[#FFF6F3] border border-[#E58A7B]/35 text-[#2D2424] shadow-2xs hover:shadow-xs transition animate-in zoom-in-95">
+            <div class="inline-flex items-center gap-2.5 px-3 py-0.5 rounded-2xl bg-gradient-to-r from-[#FFF0EB] to-[#FFF6F3] border border-[#E58A7B]/35 text-[#2D2424] shadow-2xs hover:shadow-xs transition animate-in zoom-in-95">
         <!-- Icon nằm giữa 2 dòng text -->
         <div class="text-base sm:text-lg flex items-center justify-center shrink-0">
           ${isCombo ? '💆' : '✨'}
         </div>
         <!-- Cụm 2 dòng text: Tên ở trên, Giá & Phút ở dưới -->
-        <div class="min-w-0 flex-1 py-0.5">
+        <div class="min-w-0 flex-1">
           <div class="font-black text-[11px] text-[#2D2424] leading-snug truncate">
             ${item.service_name}
           </div>
