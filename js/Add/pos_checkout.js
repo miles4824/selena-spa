@@ -191,7 +191,7 @@ function renderQuickComboButtons() {
     const isSelected = selectedIds.has(item.service_id);
 
     return `
-      <button type="button" onclick="toggleQuickCombo('${item.service_id}')" class="px-3.5 py-2 rounded-2xl text-xs font-bold border transition active:scale-95 cursor-pointer ${isSelected ? 'bg-[#FFF0EB] text-[#E58A7B] border-[#E58A7B] ring-2 ring-[#E58A7B]/50 font-black shadow-xs' : 'bg-white text-[#7E7272] border-[#EFE8DF] hover:bg-[#FAF6F1] hover:text-[#E58A7B]'}">
+      <button type="button" onclick="toggleQuickCombo('${item.service_id}')" class="px-3.5 py-2 rounded-2xl text-xs font-extrabold border transition-all duration-200 active:scale-95 cursor-pointer shadow-2xs ${isSelected ? 'bg-[#FFF0EB] text-[#E58A7B] border-[#E58A7B] ring-2 ring-[#E58A7B]/40 font-black shadow-xs' : 'bg-white text-[#5D5050] border-[#E8E1D7] hover:bg-[#FAF6F1] hover:border-[#E58A7B]/40 hover:text-[#E58A7B]'}">
         ${isSelected ? '✓ ' : ''}Combo ${num}
       </button>
     `;
@@ -257,7 +257,7 @@ function renderCartUI() {
 
   if (selectedCartItems.length === 0) {
     listContainer.innerHTML = `
-      <div class="p-3 text-center text-xs text-[#A39696] italic bg-white rounded-2xl border border-dashed border-[#EFE8DF]">
+      <div class="p-3.5 text-center text-xs text-[#A39696] italic bg-white/60 rounded-2xl border border-dashed border-[#E8E1D7]">
         Chưa có dịch vụ nào được chọn. Vui lòng chọn ít nhất 1 dịch vụ!
       </div>
     `;
@@ -278,19 +278,21 @@ function renderCartUI() {
     totalPrice += price;
     totalDuration += dur;
 
-    const isCombo = String(item.category || '').toLowerCase() === 'combo' || String(item.service_name || '').toLowerCase().includes('combo');
+    const isCombo = String(item.category || '').toLowerCase() === 'combo' || String(item.service_id || '').startsWith('CB') || String(item.service_name || '').toLowerCase().includes('combo');
 
     return `
-      <div class="p-2.5 rounded-2xl bg-white border border-[#EFE8DF] flex items-center justify-between gap-2 shadow-2xs animate-in fade-in">
-        <div class="min-w-0">
+      <div class="p-3 rounded-2xl bg-white border border-[#E8E1D7] flex items-center justify-between gap-2 shadow-2xs transition hover:border-[#E58A7B]/40 animate-in fade-in">
+        <div class="min-w-0 flex-1">
           <div class="text-xs font-bold text-[#2D2424] truncate flex items-center gap-1.5">
             <span>${isCombo ? '💆' : '✨'} ${item.service_name}</span>
           </div>
-          <div class="text-[11px] font-mono text-[#7E7272] mt-0.5">
-            <span class="text-[#E58A7B] font-bold">${price.toLocaleString('vi-VN')} đ</span> • ${dur} phút
+          <div class="text-[11px] font-mono text-[#7E7272] mt-0.5 flex items-center gap-1.5">
+            <span class="text-[#E58A7B] font-extrabold">${price.toLocaleString('vi-VN')} đ</span>
+            <span>•</span>
+            <span class="text-[#2E7D6D] font-bold">${dur} phút</span>
           </div>
         </div>
-        <button type="button" onclick="removeCartItem('${item.service_id}')" class="p-1.5 text-[#A39696] hover:text-red-600 hover:bg-red-50 rounded-xl transition cursor-pointer shrink-0" title="Xóa dịch vụ này">
+        <button type="button" onclick="removeCartItem('${item.service_id}')" class="p-1.5 text-[#A39696] hover:text-rose-600 hover:bg-rose-50 rounded-xl transition cursor-pointer shrink-0" title="Xóa dịch vụ này">
           <i data-lucide="x" class="w-4 h-4"></i>
         </button>
       </div>
@@ -301,54 +303,6 @@ function renderCartUI() {
   if (totalDurationEl) totalDurationEl.innerText = `${totalDuration} phút`;
 
   if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
-}
-
-
-function updatePOSStaffInfo() {
-  const users = getSortedUsersList();
-  const s1Select = document.getElementById('pos-staff1-select');
-  const isOwner = currentUser && isUserOwner(currentUser);
-  const busyMap = getBusyStaffPhonesMap();
-
-  if (s1Select) {
-    // Lọc danh sách: Chỉ hiện những KTV đang thật sự rảnh (nếu bận thì ẩn hoàn toàn)
-    let availableUsers = users.filter(u => !busyMap[normalizePhone(u.phone)]);
-    if (!isOwner && currentUser) {
-      // Với KTV tự tạo tour cho mình thì luôn giữ tên KTV đó
-      if (!availableUsers.some(u => normalizePhone(u.phone) === normalizePhone(currentUser.phone))) {
-        availableUsers.unshift(currentUser);
-      }
-    }
-
-    if (availableUsers.length === 0) {
-      s1Select.innerHTML = '<option value="">🔴 Tất cả KTV đều đang bận ca</option>';
-    } else {
-      const curVal = s1Select.value;
-      s1Select.innerHTML = availableUsers.map(u => {
-        const isSelected = curVal ? (normalizePhone(u.phone) === normalizePhone(curVal)) : (currentUser && normalizePhone(u.phone) === normalizePhone(currentUser.phone));
-        return `
-          <option value="${u.phone}" ${isSelected ? 'selected' : ''}>
-            ${u.full_name}
-          </option>
-        `;
-      }).join('');
-    }
-  }
-
-  // Cập nhật thẻ hiển thị trạng thái KTV trên tiêu đề
-  const statusEl = document.getElementById('pos-header-subtitle');
-  if (statusEl) {
-    const allStaffs = users.filter(u => !isUserOwner(u));
-    const busyCount = allStaffs.filter(u => busyMap[normalizePhone(u.phone)]).length;
-    const freeStaffs = allStaffs.filter(u => !busyMap[normalizePhone(u.phone)]);
-    if (allStaffs.length > 0) {
-      if (freeStaffs.length === 0) {
-        statusEl.innerHTML = `<span class="text-rose-500 font-bold">🔴 Tất cả ${allStaffs.length} KTV đều đang bận ca</span>`;
-      } else {
-        statusEl.innerHTML = `<span class="text-[#D35400] font-semibold">${busyCount}/${allStaffs.length} KTV đang bận • Còn ${freeStaffs.length} KTV rảnh (${freeStaffs.map(s => s.full_name).join(', ')})</span>`;
-      }
-    }
-  }
 }
 
 function updatePOSCalculations() {

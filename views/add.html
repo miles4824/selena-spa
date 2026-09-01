@@ -69,58 +69,64 @@
   <div id="pos-form-box" class="bg-white rounded-[28px] border border-[#F0EAE1] shadow-[0_10px_30px_-5px_rgba(229,138,123,0.05),0_4px_12px_rgba(0,0,0,0.02)] p-5 sm:p-7 space-y-6">
     
     <!-- 1. CHỌN DỊCH VỤ & SẢN PHẨM -->
-    <div class="space-y-3.5">
-      <label class="block text-sm font-bold text-[#2D2424] uppercase tracking-wider flex items-center gap-2">
-        <i data-lucide="sparkles" class="w-4 h-4 text-[#E58A7B]"></i> 1. Chọn Dịch Vụ & Sản Phẩm
-      </label>
-
-      <!-- HÀNG 1 (TRÊN CÙNG): CHỌN NHANH COMBO (CHỈ COMBO 1 - 5) -->
-      <div class="space-y-1.5">
-        <div class="text-[11px] font-bold text-[#7E7272] flex items-center gap-1">
-          <span>⚡ Chọn nhanh Combo:</span>
-        </div>
-        <div id="pos-quick-combos" class="flex flex-wrap gap-2"></div>
+    <div class="space-y-4">
+      <div class="flex items-center justify-between">
+        <label class="text-sm font-black text-[#2D2424] uppercase tracking-wider flex items-center gap-2">
+          <i data-lucide="sparkles" class="w-4 h-4 text-[#E58A7B]"></i> 1. Chọn Dịch Vụ & Sản Phẩm
+        </label>
       </div>
 
-      <!-- ĐƯỜNG DASH NGĂN CÁCH 1: GIỮA CHỌN NHANH VÀ DROPDOWN -->
-      <div class="border-t border-dashed border-[#EFE8DF] my-1"></div>
+      <!-- HÀNG 1 (TRÊN CÙNG): CHỌN NHANH COMBO (CHỈ COMBO 1 - 5) -->
+      <div class="space-y-2">
+        <div class="text-[11px] font-extrabold text-[#7E7272] flex items-center gap-1.5">
+          <i data-lucide="zap" class="w-3.5 h-3.5 text-[#E58A7B]"></i>
+          <span>Chọn nhanh Combo:</span>
+        </div>
+        <div id="pos-quick-combos" class="flex flex-wrap gap-2.5"></div>
+      </div>
+
+      <!-- ĐƯỜNG DASH NGĂN CÁCH 1: THOÁNG ĐÃNG my-3.5 -->
+      <div class="border-t border-dashed border-[#E8E1D7] my-3.5"></div>
 
       <!-- HÀNG 2 (Ở GIỮA): DROPDOWN CHỌN MÓN + NÚT THÊM -->
-      <div class="flex gap-2">
+      <div class="flex gap-2.5 items-center">
         <div class="relative flex-1 min-w-0">
-          <select id="pos-service-dropdown" class="w-full bg-[#F7F2EC] border border-[#EFE8DF] rounded-2xl p-3 text-xs sm:text-sm text-[#2D2424] font-bold focus:outline-none focus:border-[#E58A7B] focus:bg-white transition cursor-pointer"></select>
+          <select id="pos-service-dropdown" class="w-full bg-[#F7F2EC] border border-[#E8E1D7] rounded-2xl py-3 px-3.5 text-xs sm:text-sm text-[#2D2424] font-bold focus:outline-none focus:border-[#E58A7B] focus:bg-white transition cursor-pointer shadow-2xs"></select>
         </div>
-        <button type="button" onclick="addSelectedServiceFromDropdown()" class="px-4 py-3 bg-[#E58A7B] hover:bg-[#D9796A] text-white font-bold text-xs sm:text-sm rounded-2xl flex items-center gap-1.5 shrink-0 transition active:scale-95 cursor-pointer shadow-sm shadow-[#E58A7B]/20">
+        <button type="button" onclick="addSelectedServiceFromDropdown()" class="px-4 py-3 bg-[#E58A7B] hover:bg-[#D9796A] text-white font-black text-xs sm:text-sm rounded-2xl flex items-center gap-1.5 shrink-0 transition active:scale-95 cursor-pointer shadow-sm shadow-[#E58A7B]/25">
           <i data-lucide="plus-circle" class="w-4 h-4"></i>
           <span>Thêm</span>
         </button>
       </div>
 
-      <!-- ĐƯỜNG DASH NGĂN CÁCH 2: GIỮA DROPDOWN VÀ DỊCH VỤ ĐÃ CHỌN -->
-      <div class="border-t border-dashed border-[#EFE8DF] my-1"></div>
+      <!-- ĐƯỜNG DASH NGĂN CÁCH 2: THOÁNG ĐÃNG my-3.5 -->
+      <div class="border-t border-dashed border-[#E8E1D7] my-3.5"></div>
 
       <!-- HÀNG 3 (Ở DƯỚI): KHU VỰC DỊCH VỤ ĐÃ CHỌN -->
-      <div id="pos-cart-box" class="space-y-3">
+      <div id="pos-cart-box" class="space-y-3.5 pt-0.5">
         <div class="flex justify-between items-center">
-          <span class="text-xs font-extrabold text-[#7E7272] uppercase tracking-wider flex items-center gap-1.5">
+          <span class="text-xs font-black text-[#7E7272] uppercase tracking-wider flex items-center gap-1.5">
             <i data-lucide="clipboard-list" class="w-3.5 h-3.5 text-[#2E7D6D]"></i> Dịch Vụ Đã Chọn:
           </span>
-          <span id="pos-cart-count-badge" class="text-[10px] font-extrabold px-2.5 py-0.5 rounded-full bg-[#E8F8F5] text-[#2E7D6D] border border-[#B7EBDD]">
+          <span id="pos-cart-count-badge" class="text-[10px] font-black px-2.5 py-0.5 rounded-full bg-[#E8F8F5] text-[#2E7D6D] border border-[#B7EBDD]">
             1 dịch vụ
           </span>
         </div>
 
         <!-- Danh sách các món trong giỏ -->
-        <div id="pos-cart-items-list" class="space-y-2"></div>
+        <div id="pos-cart-items-list" class="space-y-2.5"></div>
 
-        <!-- DÒNG TỔNG CỘNG ĐÓNG KHUNG RIÊNG NỔI BẬT -->
-        <div class="p-3.5 rounded-2xl bg-[#FAF6F1] border border-[#F0EAE1] flex justify-between items-center text-xs sm:text-sm font-extrabold shadow-2xs">
-          <span class="text-[#2D2424] flex items-center gap-1.5">
-            <i data-lucide="coins" class="w-4 h-4 text-[#E58A7B]"></i> Tổng: <b id="pos-cart-total-price" class="text-[#E58A7B] text-base font-black font-mono ml-1">64.000 đ</b>
-          </span>
-          <span class="text-[#2E7D6D] flex items-center gap-1.5 bg-white px-3 py-1.5 rounded-xl border border-[#EFE8DF]">
-            <i data-lucide="clock" class="w-4 h-4 text-[#2E7D6D]"></i> <span id="pos-cart-total-duration">50 phút</span>
-          </span>
+        <!-- DÒNG TỔNG CỘNG ĐÓNG KHUNG RIÊNG NỔI BẬT SANG TRỌNG -->
+        <div class="p-3.5 sm:p-4 rounded-2xl bg-gradient-to-r from-[#FAF6F1] to-[#FFF9F6] border border-[#EFE8DF] flex justify-between items-center shadow-xs">
+          <div class="flex items-baseline gap-1.5 text-xs sm:text-sm font-extrabold text-[#2D2424]">
+            <i data-lucide="coins" class="w-4 h-4 text-[#E58A7B] self-center"></i>
+            <span>Tổng:</span>
+            <b id="pos-cart-total-price" class="text-[#E58A7B] text-lg sm:text-xl font-black font-mono ml-0.5">64.000 đ</b>
+          </div>
+          <div class="flex items-center gap-1.5 bg-white px-3 py-1.5 rounded-xl border border-[#EFE8DF] text-xs font-black text-[#2E7D6D] shadow-2xs">
+            <i data-lucide="clock" class="w-3.5 h-3.5"></i>
+            <span id="pos-cart-total-duration">50 phút</span>
+          </div>
         </div>
       </div>
     </div>
