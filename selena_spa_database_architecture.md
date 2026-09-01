@@ -174,7 +174,7 @@
 
 Mỗi khi có nhu cầu chỉnh sửa, thêm bớt bảng hoặc thêm bớt cột trên Google Sheets, **BẮT BUỘC phải thực hiện đủ 4 bước sau theo đúng thứ tự**:
 
-1. **Bước 1 (Google Sheets)**: Thêm, xóa hoặc chỉnh sửa cột trên Google Sheets (luôn thêm về phía bên phải bảng).
+1. **Bước 1 (Google Sheets)**: Thêm, xóa hoặc chỉnh sửa cột trên Google Sheets (thoải mái thêm ở bất kỳ vị trí nào vì Code.gs tự động dò tìm theo tên cột).
 2. **Bước 2 (Backend `Code.gs`)**: Cập nhật đồng thời các hàm Đọc (`syncAllData`, `checkCustomer`...) và hàm Ghi (`createReceipt`, `updateCustomerNotes`, `addExpense`...) trong [`google_apps_script/Code.gs`](google_apps_script/Code.gs).
 3. **Bước 3 (Triển Khai Apps Script)**: Sao chép toàn bộ code mới dán vào mục **Tiện ích mở rộng > Apps Script** của Google Sheet và bấm **Triển khai mới (New Deployment)** để link API nhận code mới nhất.
 4. **Bước 4 (Cập Nhật Tài Liệu Này)**: Cập nhật ngay vào bảng tra cứu trong tài liệu [`selena_spa_database_architecture.md`](selena_spa_database_architecture.md) này để ghi nhận rõ tên cột mới, kiểu dữ liệu, hàm JS frontend nào đọc/ghi và hàm GAS nào xử lý.
