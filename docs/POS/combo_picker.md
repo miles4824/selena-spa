@@ -20,4 +20,5 @@
 
 ## 3. Lịch Sử Thay Đổi & Lưu Vết (Audit Log)
 - `2026-09-01` (`v0.0.3.3`): Nâng cấp thanh Tổng Thanh Toán sang trọng.
-- `2026-09-01` (`v0.0.3.4`): Đồng bộ toàn bộ danh mục thực đơn đầy đủ của tiệm (Combo, Thêm, Massage, Waxing, Nặn Mụn & Peel, Detox, Cấy Dưỡng).
+- `2026-09-01` (`v0.0.3.4`):
+- `2026-09-01` (`v0.0.3.5`): Nâng cấp thẻ Chip dịch vụ 2 dòng với icon căn giữa và thanh trigger thêm dịch vụ tách biệt thoáng đãng. Đồng bộ toàn bộ danh mục thực đơn đầy đủ của tiệm (Combo, Thêm, Massage, Waxing, Nặn Mụn & Peel, Detox, Cấy Dưỡng).

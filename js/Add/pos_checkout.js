@@ -342,11 +342,24 @@ function renderCartUI() {
     const isCombo = String(item.service_id || '').startsWith('CB') || String(item.service_name || '').toLowerCase().includes('combo');
 
     return `
-      <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-[#FFF0EB] to-[#FFF6F3] border border-[#E58A7B]/30 text-[#2D2424] text-xs font-bold shadow-2xs hover:shadow-xs transition animate-in zoom-in-95">
-        <span class="text-xs">${isCombo ? '💆' : '✨'}</span>
-        <span class="font-extrabold text-[#2D2424]">${item.service_name}</span>
-        <span class="text-[11px] font-mono text-[#E58A7B] font-black">(${price.toLocaleString('vi-VN')} đ • ${dur}p)</span>
-        <button type="button" onclick="removeCartItem('${item.service_id}', event)" class="pos-chip-remove-btn ml-0.5 p-0.5 text-[#A39696] hover:text-rose-600 hover:bg-rose-100 rounded-full transition cursor-pointer" title="Xóa dịch vụ">
+      <div class="inline-flex items-center gap-2.5 px-3 py-2 rounded-2xl bg-gradient-to-r from-[#FFF0EB] to-[#FFF6F3] border border-[#E58A7B]/35 text-[#2D2424] shadow-2xs hover:shadow-xs transition animate-in zoom-in-95">
+        <!-- Icon nằm giữa 2 dòng text -->
+        <div class="text-base sm:text-lg flex items-center justify-center shrink-0">
+          ${isCombo ? '💆' : '✨'}
+        </div>
+        <!-- Cụm 2 dòng text: Tên ở trên, Giá & Phút ở dưới -->
+        <div class="min-w-0 flex-1">
+          <div class="font-black text-xs text-[#2D2424] leading-snug truncate">
+            ${item.service_name}
+          </div>
+          <div class="text-[11px] font-mono text-[#7E7272] mt-0.5 flex items-center gap-1.5 leading-tight">
+            <span class="text-[#E58A7B] font-extrabold">${price.toLocaleString('vi-VN')} đ</span>
+            <span>•</span>
+            <span class="text-[#2E7D6D] font-bold">${dur}p</span>
+          </div>
+        </div>
+        <!-- Nút xóa ✕ -->
+        <button type="button" onclick="removeCartItem('${item.service_id}', event)" class="pos-chip-remove-btn ml-1 p-1 text-[#A39696] hover:text-rose-600 hover:bg-rose-100 rounded-full transition cursor-pointer shrink-0" title="Xóa dịch vụ này">
           <i data-lucide="x" class="w-3.5 h-3.5"></i>
         </button>
       </div>
