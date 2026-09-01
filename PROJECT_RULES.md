@@ -93,3 +93,13 @@
 2. **Single Source of Truth**: Mỗi công thức chỉ viết ở 1 file duy nhất.
 3. **Micro-Components 1-1**: Khung HTML và mã JS tương ứng 1-1.
 4. **Kiểm tra cú pháp trước khi triển khai**: Luôn chạy Node.js kiểm tra toàn bộ file JS trước khi commit và push.
+
+---
+
+## 🔢 11. NGUYÊN TẮC ĐÁNH SỐ PHIÊN BẢN (VERSION INCREMENT RULE)
+- **Tăng tuần tự từng bước nhỏ**: Mỗi lần chỉnh sửa, cập nhật code hoặc tính năng mới, số phiên bản **BẮT BUỘC chỉ được tăng thêm 1 đơn vị ở số cuối cùng** (ví dụ: `v0.0.0.1` -> `v0.0.0.2` -> `v0.0.0.3` -> `v0.0.0.4`...).
+- **Tuyệt đối không được nhảy cóc số phiên bản** (ví dụ: cấm nhảy từ `v0.0.0.1` lên thẳng `v0.0.1.0` hoặc `v0.1.0.0`).
+- **Đồng bộ toàn bộ 3 vị trí**:
+  1. `index.html` (Query string `?v=v0.0.0.x` của tất cả các file script/css).
+  2. `js/config.js` (`const APP_VERSION = 'v0.0.0.x';`).
+  3. `views/login.html` (Dòng chữ hiển thị phiên bản ở chân trang đăng nhập).
