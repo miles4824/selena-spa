@@ -21,4 +21,5 @@ ightarrow$ Ghi vào `tb_payroll_logs`.
 
 ## 6. Lịch Sử Thay Đổi & Lưu Vết (Audit Log)
 - `2026-09-01` (`v0.0.0.1`):
-- `2026-09-01` (`v0.0.4.4`): Hoàn thiện logic khóa KTV 1 cho Staff, kích hoạt tính năng Thêm KTV Phụ và cô lập phân luồng tour Realtime chuẩn xác. Bóc tách thành component độc lập.
+- `2026-09-01` (`v0.0.4.4`):
+- `2026-09-01` (`v0.0.4.5`): Tối ưu cơ chế kiểm tra và tự động dọn dẹp phiên tour rác/cũ trên Firebase Realtime, đảm bảo trạng thái KTV rảnh chính xác 100%. Hoàn thiện logic khóa KTV 1 cho Staff, kích hoạt tính năng Thêm KTV Phụ và cô lập phân luồng tour Realtime chuẩn xác. Bóc tách thành component độc lập.

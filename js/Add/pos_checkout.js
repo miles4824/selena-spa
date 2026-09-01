@@ -11,18 +11,23 @@ function getBusyStaffPhonesMap() {
     const sId = String(sess.session_id || sess.start_timestamp || '');
     if (dismissedSessionIds.has(sId)) return;
     
-    // Tự động loại bỏ phiên cũ quá 2 tiếng (tránh kẹt phiên thử nghiệm)
+    // Tự động bỏ qua các phiên cũ quá 90 phút hoặc quá hạn liệu trình + 30p
     const sessTime = Number(sess.start_timestamp || 0);
-    if (sessTime > 0 && (now - sessTime) > 2 * 3600 * 1000) {
+    const targetMin = Number(sess.duration_target_min || 60);
+    const maxExpiryMs = (targetMin + 30) * 60 * 1000;
+    if (sessTime > 0 && (now - sessTime) > Math.max(maxExpiryMs, 90 * 60 * 1000)) {
       return;
     }
 
     if (sess.active_staff_phone) {
       busyMap[normalizePhone(sess.active_staff_phone)] = sess;
     }
+    if (sess.staff_1_phone) {
+      busyMap[normalizePhone(sess.staff_1_phone)] = sess;
+    }
     if (sess.staffs && Array.isArray(sess.staffs)) {
       sess.staffs.forEach(st => {
-        if (st.phone) {
+        if (st && st.phone) {
           busyMap[normalizePhone(st.phone)] = sess;
         }
       });
