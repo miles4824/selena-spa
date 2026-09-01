@@ -117,38 +117,37 @@
         <i data-lucide="user" class="w-4 h-4 text-[#E58A7B]"></i> 3. Thông Tin Khách Hàng
       </label>
       
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        <!-- Số Điện Thoại & Gợi Ý Tự Động -->
-        <div class="relative sm:col-span-1">
-          <input type="tel" id="pos-customer-phone" oninput="onCustomerPhoneInput(this.value)" onfocus="onCustomerPhoneInput(this.value)" autocomplete="off" placeholder="0799625591" class="w-full bg-[#F7F2EC] border border-[#EFE8DF] rounded-2xl p-3.5 pl-10 text-[#2D2424] text-sm focus:outline-none focus:border-[#E58A7B] focus:bg-white transition font-mono">
-          <i data-lucide="phone" class="w-4 h-4 text-[#A39696] absolute left-3.5 top-1/2 -translate-y-1/2"></i>
-          
+      <div class="space-y-2.5">
+        <!-- HÀNG 1: SỐ ĐIỆN THOẠI (TOÀN CHIỀU RỘNG, KHÔNG CÓ ICON THỪA BÊN TRONG) -->
+        <div class="relative">
+          <input type="tel" id="pos-customer-phone" oninput="onCustomerPhoneInput(this.value)" onfocus="onCustomerPhoneInput(this.value)" autocomplete="off" placeholder="0799625591" class="w-full bg-[#F7F2EC] border border-[#EFE8DF] rounded-2xl p-3.5 text-[#2D2424] text-sm focus:outline-none focus:border-[#E58A7B] focus:bg-white transition font-mono font-bold">
           <!-- Dropdown Gợi Ý Danh Sách Khách Hàng -->
           <div id="pos-customer-suggestions" class="hidden absolute left-0 right-0 top-full mt-1.5 bg-white border border-[#EFE8DF] rounded-2xl shadow-2xl z-[999] max-h-60 overflow-y-auto divide-y divide-[#FAF6F1]"></div>
         </div>
 
-        <!-- Tên Khách Hàng -->
-        <div class="sm:col-span-1">
-          <input type="text" id="pos-customer-name" placeholder="VD: Chị Ngân Ngân" class="w-full bg-[#F7F2EC] border border-[#EFE8DF] rounded-2xl p-3.5 text-[#2D2424] text-sm focus:outline-none focus:border-[#E58A7B] focus:bg-white transition">
-        </div>
+        <!-- HÀNG 2: [TÊN KHÁCH HÀNG] [SINH NHẬT] (GRID 2 CỘT CÂN XỨNG) -->
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <input type="text" id="pos-customer-name" placeholder="VD: Chị Ngân Ngân" class="w-full bg-[#F7F2EC] border border-[#EFE8DF] rounded-2xl p-3.5 text-[#2D2424] text-sm font-medium focus:outline-none focus:border-[#E58A7B] focus:bg-white transition">
+          </div>
 
-        <!-- Tháng Sinh Nhật (Tùy chọn) -->
-        <div class="sm:col-span-1">
-          <select id="pos-birth-month" class="w-full bg-[#F7F2EC] border border-[#EFE8DF] rounded-2xl p-3.5 text-[#2D2424] text-xs sm:text-sm font-semibold focus:outline-none focus:border-[#E58A7B] focus:bg-white transition cursor-pointer">
-            <option value="">-- Tháng --</option>
-            <option value="1">Tháng 1</option>
-            <option value="2">Tháng 2</option>
-            <option value="3">Tháng 3</option>
-            <option value="4">Tháng 4</option>
-            <option value="5">Tháng 5</option>
-            <option value="6">Tháng 6</option>
-            <option value="7">Tháng 7</option>
-            <option value="8">Tháng 8</option>
-            <option value="9">Tháng 9</option>
-            <option value="10">Tháng 10</option>
-            <option value="11">Tháng 11</option>
-            <option value="12">Tháng 12</option>
-          </select>
+          <div>
+            <select id="pos-birth-month" class="w-full bg-[#F7F2EC] border border-[#EFE8DF] rounded-2xl p-3.5 text-[#2D2424] text-xs sm:text-sm font-bold focus:outline-none focus:border-[#E58A7B] focus:bg-white transition cursor-pointer">
+              <option value="">-- Tháng --</option>
+              <option value="1">Tháng 1</option>
+              <option value="2">Tháng 2</option>
+              <option value="3">Tháng 3</option>
+              <option value="4">Tháng 4</option>
+              <option value="5">Tháng 5</option>
+              <option value="6">Tháng 6</option>
+              <option value="7">Tháng 7</option>
+              <option value="8">Tháng 8</option>
+              <option value="9">Tháng 9</option>
+              <option value="10">Tháng 10</option>
+              <option value="11">Tháng 11</option>
+              <option value="12">Tháng 12</option>
+            </select>
+          </div>
         </div>
       </div>
 
