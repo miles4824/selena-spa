@@ -1,3 +1,4 @@
+function matchPhone(p1, p2) { return isSamePhone(p1, p2); }
 function isSamePhone(p1, p2) {
   if (!p1 || !p2) return false;
   const s1 = String(p1).replace(/[^0-9]/g, '');
@@ -50,7 +51,7 @@ function parseBirthMonth(val) {
   return 0;
 }
 
-const APP_VERSION = 'v0.0.0.3';
+const APP_VERSION = 'v0.0.0.4';
 // =============================================================
 // SELENA SPA - GLOBAL CONFIG & CONSTANTS
 // =============================================================

@@ -27,7 +27,7 @@ function openStaffCustomerNoteModal(phone, name, receiptId) {
 
   // Đọc danh bạ khách hàng hiện tại
   const customers = getStored('customers', DEFAULT_CUSTOMERS);
-  const foundCust = customers.find(c => matchPhone(c.phone_number || c.raw_phone, rawPhone));
+  const foundCust = customers.find(c => isSamePhone(c.phone_number || c.raw_phone, rawPhone));
 
   if (isGuest) {
     // 🟠 KỊCH BẢN 2: KHÁCH VÃNG LAI
@@ -110,7 +110,7 @@ function onStaffGuestPhoneInput(val) {
   }
 
   const customers = getStored('customers', DEFAULT_CUSTOMERS);
-  const foundCust = customers.find(c => matchPhone(c.phone_number || c.raw_phone, clean));
+  const foundCust = customers.find(c => isSamePhone(c.phone_number || c.raw_phone, clean));
 
   if (foundCust) {
     // 🟢 TRƯỜNG HỢP 2A: TRÙNG SĐT KHÁCH CŨ
@@ -183,7 +183,7 @@ function handleSaveStaffCustomerNote(e) {
     }
 
     const customers = getStored('customers', DEFAULT_CUSTOMERS);
-    const existingCust = customers.find(c => matchPhone(c.phone_number || c.raw_phone, targetPhone));
+    const existingCust = customers.find(c => isSamePhone(c.phone_number || c.raw_phone, targetPhone));
 
     if (existingCust) {
       // 🟢 TRƯỜNG HỢP 2A: KHÁCH CŨ
@@ -198,7 +198,7 @@ function handleSaveStaffCustomerNote(e) {
 
   // 1. Cập nhật vào danh bạ tb_customers trên LocalStorage
   const customers = getStored('customers', DEFAULT_CUSTOMERS);
-  let foundIndex = customers.findIndex(c => matchPhone(c.phone_number || c.raw_phone, targetPhone));
+  let foundIndex = customers.findIndex(c => isSamePhone(c.phone_number || c.raw_phone, targetPhone));
 
   if (foundIndex >= 0) {
     // Sửa tại chỗ khách cũ

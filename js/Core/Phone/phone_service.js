@@ -64,3 +64,5 @@ const PhoneService = {
 function normalizePhone(val) { return PhoneService.normalize(val); }
 function maskPhoneNumber(phone, isOwner = false) { return PhoneService.mask(phone, isOwner); }
 function isSamePhone(p1, p2) { return PhoneService.isSame(p1, p2); }
+
+function matchPhone(p1, p2) { return isSamePhone(p1, p2); }
