@@ -51,7 +51,7 @@ function parseBirthMonth(val) {
   return 0;
 }
 
-const APP_VERSION = 'v0.0.1.5';
+const APP_VERSION = 'v0.0.1.6';
 // =============================================================
 // SELENA SPA - GLOBAL CONFIG & CONSTANTS
 // =============================================================
@@ -68,6 +68,16 @@ const DEFAULT_MENU = [
   { service_id: 'CB04', service_name: 'Combo 4 (Gội + Massage Cổ Vai Gáy)', price: 199000, duration_min: 90, commission_ktv_fixed: 19900, commission_ktv_commission: 39800, cosmetics_cost: 10000 },
   { service_id: 'CB05', service_name: 'Combo 5 (Gội Thư Giãn Toàn Diện)', price: 249000, duration_min: 105, commission_ktv_fixed: 24900, commission_ktv_commission: 49800, cosmetics_cost: 12000 }
 ];
+
+const DEFAULT_ADDONS = [
+  { addon_id: 'AD01', name: 'Massage Cổ Vai Gáy Chuyên Sâu', price: 50000, duration_min: 20, icon: '💆' },
+  { addon_id: 'AD02', name: 'Tẩy Tế Bào Chết Da Đầu Thảo Dược', price: 40000, duration_min: 15, icon: '🧖' },
+  { addon_id: 'AD03', name: 'Đắp Mặt Nạ Thảo Mộc / Collagen', price: 30000, duration_min: 10, icon: '🥑' },
+  { addon_id: 'AD04', name: 'Xông Hơi Tinh Dầu Trị Liệu', price: 35000, duration_min: 15, icon: '🌿' },
+  { addon_id: 'AD05', name: 'Massage Nâng Cơ Mặt Ngọc Thạch', price: 60000, duration_min: 20, icon: '💆‍♀️' }
+];
+
+let selectedAddonIds = [];
 
 const DEFAULT_CUSTOMERS = [];
 

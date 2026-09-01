@@ -728,12 +728,29 @@ function startLiveSession() {
     }))
   ];
 
+  const addonsList = (typeof getSelectedAddonsData === 'function') ? getSelectedAddonsData() : [];
+  const addonTotalPrice = addonsList.reduce((sum, a) => sum + (Number(a.price) || 0), 0);
+  const addonTotalDuration = addonsList.reduce((sum, a) => sum + (Number(a.duration_min) || 0), 0);
+  const basePrice = service ? (Number(service.price) || 0) : 64000;
+  const baseDuration = service ? (Number(service.duration_min) || 45) : 45;
+
+  const finalTotalPrice = basePrice + addonTotalPrice;
+  const finalTotalDuration = baseDuration + addonTotalDuration;
+
+  let serviceDisplayName = service.service_name;
+  if (addonsList.length > 0) {
+    const addonNames = addonsList.map(a => a.name).join(' + ');
+    serviceDisplayName += ` (+ ${addonNames})`;
+  }
+
   currentLiveSession = {
     session_id: 'SS' + Date.now(),
     service_id: service.service_id,
-    service_name: service.service_name,
-    price: service.price,
-    duration_target_min: service.duration_min || 45,
+    service_name: serviceDisplayName,
+    base_service_name: service.service_name,
+    addons: addonsList,
+    price: finalTotalPrice,
+    duration_target_min: finalTotalDuration,
     start_timestamp: Date.now(),
     start_time: startTimeStr,
     date: startDateStr,
@@ -1896,4 +1913,86 @@ async function confirmHandoverTour() {
   closeHandoverModal();
 
   alert(`🤝 BÀN GIAO THÀNH CÔNG!\n\nTour đã được chuyển giao cho ${targetUser.full_name} tiếp quản.\nMàn hình của bạn đã kết thúc ca này và trở về trạng thái sẵn sàng đón tour mới.`);
+}
+
+
+// =============================================================
+// QUẢN LÝ DỊCH VỤ LÀM THÊM (ADD-ON SERVICES)
+// =============================================================
+function toggleAddonPickerModal() {
+  const box = document.getElementById('pos-addon-selector-box');
+  if (!box) return;
+  const isHidden = box.classList.contains('hidden');
+  if (isHidden) {
+    renderAddonOptionsList();
+    box.classList.remove('hidden');
+  } else {
+    box.classList.add('hidden');
+  }
+}
+
+function renderAddonOptionsList() {
+  const container = document.getElementById('pos-addon-options-list');
+  if (!container) return;
+  const addons = (typeof DEFAULT_ADDONS !== 'undefined') ? DEFAULT_ADDONS : [];
+
+  container.innerHTML = addons.map(ad => {
+    const isSelected = selectedAddonIds.includes(ad.addon_id);
+    return `
+      <div onclick="toggleSelectAddon('${ad.addon_id}')" class="p-2.5 rounded-xl border transition cursor-pointer flex items-center justify-between gap-2 ${isSelected ? 'bg-[#FFF0EB] border-[#E58A7B] text-[#E58A7B]' : 'bg-white border-[#EFE8DF] text-[#2D2424] hover:bg-[#FAF6F1]'}">
+        <div class="min-w-0">
+          <div class="text-xs font-bold truncate">${ad.icon || '✨'} ${ad.name}</div>
+          <div class="text-[11px] font-mono font-semibold ${isSelected ? 'text-[#E58A7B]' : 'text-[#7E7272]'}">+${Number(ad.price).toLocaleString('vi-VN')} đ (+${ad.duration_min}p)</div>
+        </div>
+        <div class="w-5 h-5 rounded-md border flex items-center justify-center shrink-0 ${isSelected ? 'bg-[#E58A7B] border-[#E58A7B] text-white' : 'border-[#D4C5B9] bg-white'}">
+          ${isSelected ? '✓' : ''}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function toggleSelectAddon(addonId) {
+  if (selectedAddonIds.includes(addonId)) {
+    selectedAddonIds = selectedAddonIds.filter(id => id !== addonId);
+  } else {
+    selectedAddonIds.push(addonId);
+  }
+  renderAddonOptionsList();
+  renderSelectedAddonChips();
+  updatePOSCalculations();
+}
+
+function removeSelectedAddon(addonId) {
+  selectedAddonIds = selectedAddonIds.filter(id => id !== addonId);
+  renderAddonOptionsList();
+  renderSelectedAddonChips();
+  updatePOSCalculations();
+}
+
+function renderSelectedAddonChips() {
+  const container = document.getElementById('pos-selected-addons-chips');
+  if (!container) return;
+  const addons = (typeof DEFAULT_ADDONS !== 'undefined') ? DEFAULT_ADDONS : [];
+
+  if (selectedAddonIds.length === 0) {
+    container.innerHTML = '';
+    return;
+  }
+
+  container.innerHTML = selectedAddonIds.map(id => {
+    const ad = addons.find(a => a.addon_id === id);
+    if (!ad) return '';
+    return `
+      <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#FFF0EB] border border-[#FCDFD7] text-[#E58A7B] text-xs font-bold shadow-2xs animate-in fade-in">
+        <span>${ad.icon || '✨'} ${ad.name} (+${Number(ad.price).toLocaleString('vi-VN')} đ)</span>
+        <button type="button" onclick="removeSelectedAddon('${ad.addon_id}')" class="hover:text-red-600 hover:bg-white/50 rounded-full w-4 h-4 flex items-center justify-center cursor-pointer font-extrabold text-[10px]" title="Xóa dịch vụ làm thêm">✕</button>
+      </span>
+    `;
+  }).join('');
+}
+
+function getSelectedAddonsData() {
+  const addons = (typeof DEFAULT_ADDONS !== 'undefined') ? DEFAULT_ADDONS : [];
+  return selectedAddonIds.map(id => addons.find(a => a.addon_id === id)).filter(Boolean);
 }

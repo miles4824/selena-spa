@@ -23,4 +23,5 @@
 - **Ghi vào `tb_receipts`**: Cột I (`service_name`), Cột J (`price`).
 
 ## 6. Lịch Sử Thay Đổi & Lưu Vết (Audit Log)
-- `2026-09-01` (`v0.0.0.1`): Thiết lập cơ chế tự cộng dồn giờ và tiền.
+- `2026-09-01` (`v0.0.0.1`):
+- `2026-09-01` (`v0.0.1.6`): Tích hợp nút thêm dịch vụ phụ (Add-ons), tự động cộng dồn tiền và phút vào Timer đếm ngược. Thiết lập cơ chế tự cộng dồn giờ và tiền.

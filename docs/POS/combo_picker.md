@@ -27,4 +27,5 @@ ightarrow$ Tính toán hoa hồng dự kiến cho KTV và cài đặt thời lư
 - **Bảng Google Sheets**: `tb_menu` (Cột A `service_id`, Cột B `service_name`, Cột C `price`, Cột D `duration_min`).
 
 ## 6. Lịch Sử Thay Đổi & Lưu Vết (Audit Log)
-- `2026-09-01` (`v0.0.0.1`): Bóc tách thành component độc lập.
+- `2026-09-01` (`v0.0.0.1`):
+- `2026-09-01` (`v0.0.1.6`): Tích hợp nút thêm dịch vụ phụ (Add-ons), tự động cộng dồn tiền và phút vào Timer đếm ngược. Bóc tách thành component độc lập.
