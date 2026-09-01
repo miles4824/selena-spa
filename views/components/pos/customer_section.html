@@ -1,0 +1,76 @@
+<!-- 3. THÔNG TIN KHÁCH HÀNG & TÍCH ĐIỂM -->
+<div class="space-y-3">
+  <label class="block text-sm font-bold text-[#2D2424] uppercase tracking-wider flex items-center gap-2">
+    <i data-lucide="user" class="w-4 h-4 text-[#E58A7B]"></i> 3. Thông Tin Khách Hàng
+  </label>
+  
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+    <div class="relative sm:col-span-1">
+      <input type="tel" id="pos-customer-phone" oninput="onCustomerPhoneInput(this.value)" onfocus="onCustomerPhoneInput(this.value)" autocomplete="off" placeholder="Số điện thoại" class="w-full bg-[#F7F2EC] border border-[#EFE8DF] rounded-2xl p-3.5 pl-10 text-[#2D2424] text-sm focus:outline-none focus:border-[#E58A7B] focus:bg-white transition font-mono">
+      <i data-lucide="phone" class="w-4 h-4 text-[#A39696] absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+      <div id="pos-customer-suggestions" class="hidden absolute left-0 right-0 top-full mt-1.5 bg-white border border-[#EFE8DF] rounded-2xl shadow-2xl z-[999] max-h-60 overflow-y-auto divide-y divide-[#FAF6F1]"></div>
+    </div>
+
+    <div class="sm:col-span-1">
+      <input type="text" id="pos-customer-name" placeholder="Tên khách (Tùy chọn)" class="w-full bg-[#F7F2EC] border border-[#EFE8DF] rounded-2xl p-3.5 text-[#2D2424] text-sm focus:outline-none focus:border-[#E58A7B] focus:bg-white transition">
+    </div>
+
+    <div class="sm:col-span-1">
+      <select id="pos-birth-month" class="w-full bg-[#F7F2EC] border border-[#EFE8DF] rounded-2xl p-3.5 text-[#2D2424] text-xs sm:text-sm font-semibold focus:outline-none focus:border-[#E58A7B] focus:bg-white transition cursor-pointer">
+        <option value="">🎂 Tháng sinh...</option>
+        <option value="1">Tháng 1</option>
+        <option value="2">Tháng 2</option>
+        <option value="3">Tháng 3</option>
+        <option value="4">Tháng 4</option>
+        <option value="5">Tháng 5</option>
+        <option value="6">Tháng 6</option>
+        <option value="7">Tháng 7</option>
+        <option value="8">Tháng 8</option>
+        <option value="9">Tháng 9</option>
+        <option value="10">Tháng 10</option>
+        <option value="11">Tháng 11</option>
+        <option value="12">Tháng 12</option>
+      </select>
+    </div>
+  </div>
+
+  <div id="pos-customer-card" class="hidden p-4 sm:p-5 rounded-3xl bg-[#FFF0EB] border border-[#FCDFD7] space-y-3">
+    <div class="flex justify-between items-center">
+      <div class="flex items-center gap-2">
+        <span class="w-2.5 h-2.5 rounded-full bg-[#2E7D6D] animate-ping"></span>
+        <span id="pos-cust-name-badge" class="text-sm font-bold text-[#2D2424]">Chị Mai Lan</span>
+      </div>
+      <span id="pos-cust-visits-badge" class="text-xs sm:text-sm font-extrabold text-[#E58A7B]">8 / 10 Lần gội</span>
+    </div>
+
+    <div class="space-y-1">
+      <div class="w-full h-2.5 bg-white rounded-full overflow-hidden">
+        <div id="pos-cust-progress-bar" class="h-full bg-gradient-to-r from-[#E58A7B] to-[#F09A8D] rounded-full transition-all duration-500" style="width: 80%"></div>
+      </div>
+      <div class="flex justify-between text-[11px] text-[#7E7272]">
+        <span id="pos-cust-cycle-status-text">Chu kỳ tích 10 lần</span>
+        <span id="pos-cust-cycle-expiry-text" class="text-[#E58A7B] font-semibold">Hạn đến: 30/09/2026</span>
+      </div>
+    </div>
+
+    <div id="pos-birthday-banner" class="hidden flex items-center justify-between p-3 rounded-2xl bg-amber-50 border border-amber-200 text-amber-800 text-xs font-bold">
+      <div class="flex items-center gap-2">
+        <i data-lucide="cake" class="w-4 h-4 text-amber-600"></i>
+        <span>🎂 Sinh nhật tháng này! Ưu đãi giảm 20% cho khách</span>
+      </div>
+      <button type="button" onclick="applyBirthdayDiscount()" class="px-2.5 py-1 rounded-xl bg-amber-500 text-white hover:bg-amber-600 transition cursor-pointer">Áp dụng</button>
+    </div>
+
+    <div id="pos-cust-notes-box" class="text-xs text-[#D35400] bg-white/80 rounded-2xl p-3 border border-[#FCDFD7]">
+      <span class="font-bold">📝 Lưu ý:</span> <span id="pos-cust-notes-text">Da đầu nhạy cảm, thích gội nước ấm, sấy mát</span>
+    </div>
+
+    <div id="pos-voucher-banner" class="hidden flex items-center justify-between p-3 rounded-2xl bg-[#E8F8F5] border border-[#B7EBDD]">
+      <div class="flex items-center gap-2.5 text-xs sm:text-sm text-[#2E7D6D] font-bold">
+        <i data-lucide="gift" class="w-5 h-5 text-[#2E7D6D]"></i>
+        <span id="pos-voucher-text">Khách có 1 Voucher lần miễn phí!</span>
+      </div>
+      <input type="checkbox" id="pos-use-voucher" onchange="onVoucherToggle(this.checked)" class="w-5 h-5 accent-[#2E7D6D] rounded cursor-pointer">
+    </div>
+  </div>
+</div>

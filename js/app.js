@@ -185,6 +185,39 @@ async function loadViewTemplate(containerId, filePath) {
   }
 }
 
+// BỘ NẠP ĐỘNG TOÀN BỘ CÁC TEMPLATE MODAL ĐỘC LẬP TỪ VIEWS/COMPONENTS/MODALS/
+async function loadAllModalTemplates() {
+  const modalFiles = [
+    'views/components/modals/modal_checkout.html',
+    'views/components/modals/modal_swap_staff.html',
+    'views/components/modals/modal_handover.html',
+    'views/components/modals/modal_add_expense.html',
+    'views/components/modals/modal_announcement.html',
+    'views/components/modals/modal_month_picker.html',
+    'views/components/modals/modal_staff_note.html',
+    'views/components/modals/modal_owner_customer.html',
+    'views/components/modals/modal_gift_voucher.html'
+  ];
+
+  try {
+    const results = await Promise.all(
+      modalFiles.map(async (file) => {
+        try {
+          const res = await fetch(file + '?v=' + Date.now());
+          return res.ok ? await res.text() : '';
+        } catch(e) {
+          return '';
+        }
+      })
+    );
+    const combined = results.filter(Boolean).join('\n');
+    const container = document.getElementById('container-modals');
+    if (container && combined) container.innerHTML = combined;
+  } catch(e) {
+    console.error('Error loading modular modals:', e);
+  }
+}
+
 // App Initialization
 window.addEventListener('DOMContentLoaded', async () => {
   // Khởi động Firebase Realtime Engine
@@ -195,7 +228,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     loadViewTemplate('container-login', 'views/login.html'),
     loadViewTemplate('container-add', 'views/add.html'),
     loadViewTemplate('container-nav', 'views/components/bottom_nav.html'),
-    loadViewTemplate('container-modals', 'views/components/modals.html')
+    loadAllModalTemplates()
   ]);
 
   initMenuUI();

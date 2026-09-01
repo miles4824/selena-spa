@@ -1,0 +1,30 @@
+<!-- 2. PHÂN BỔ KỸ THUẬT VIÊN -->
+<div class="space-y-3">
+  <label class="block text-sm font-bold text-[#2D2424] uppercase tracking-wider flex items-center gap-2">
+    <i data-lucide="users" class="w-4 h-4 text-[#E58A7B]"></i> 2. Kỹ Thuật Viên Phục Vụ
+  </label>
+
+  <div id="pos-staff-list-container" class="space-y-3">
+    <!-- KTV 1 (Chính) -->
+    <div class="p-3.5 rounded-2xl bg-[#FAF6F1] border border-[#F0EAE1] space-y-2">
+      <div class="flex justify-between items-center">
+        <span class="text-xs font-bold text-[#7E7272] flex items-center gap-1.5">
+          <span id="pos-staff1-lock-icon" class="text-[#E58A7B]"><i data-lucide="lock" class="w-3.5 h-3.5"></i></span>
+          <span class="font-extrabold text-[#2D2424]">KTV 1 (Chính):</span>
+        </span>
+        <span id="pos-staff1-comm-preview" class="text-xs font-extrabold text-[#2E7D6D] bg-[#E8F8F5] px-2.5 py-0.5 rounded-full">+6.400 đ</span>
+      </div>
+      
+      <select id="pos-staff1-select" onchange="onStaff1SelectChange()" class="w-full bg-white border border-[#EFE8DF] rounded-xl p-3 text-[#2D2424] font-bold text-sm focus:outline-none focus:border-[#E58A7B] disabled:opacity-80 disabled:bg-[#F7F2EC] cursor-pointer"></select>
+      <p id="pos-staff1-role-hint" class="text-[11px] text-[#A39696] hidden">🔒 Tour được gán cố định cho tài khoản của bạn</p>
+    </div>
+
+    <!-- Dynamic Extra Staff Cards -->
+    <div id="pos-extra-staff-container" class="space-y-3"></div>
+  </div>
+
+  <button type="button" id="btn-add-staff-card" onclick="addExtraStaff()" class="w-full py-3.5 px-4 rounded-2xl border-2 border-dashed border-[#E58A7B]/40 hover:border-[#E58A7B] bg-[#FFF5F2]/40 hover:bg-[#FFF0EB] text-[#E58A7B] font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition cursor-pointer active:scale-98">
+    <i data-lucide="user-plus" class="w-4 h-4"></i>
+    <span>Thêm Kỹ Thuật Viên Cùng Làm / Phụ</span>
+  </button>
+</div>

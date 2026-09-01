@@ -1,0 +1,52 @@
+<!-- MODAL ĐỔI / THÊM KTV GIỮA CA & CHIA THEO THỜI GIAN THỰC TẾ -->
+<div id="modal-swap-staff" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md overflow-y-auto">
+  <div class="w-full max-w-md bg-white rounded-[32px] border border-[#F0EAE1] shadow-[0_25px_50px_-12px_rgba(45,36,36,0.15)] p-6 sm:p-7 relative space-y-4 my-auto max-h-[92vh] overflow-y-auto no-scrollbar">
+    <div class="flex justify-between items-center">
+      <h3 class="text-lg font-extrabold text-[#2D2424] flex items-center gap-2">
+        <i data-lucide="user-switch" class="w-5 h-5 text-[#E58A7B]"></i> Điều Chỉnh KTV Tour Này
+      </h3>
+      <button type="button" onclick="closeSwapStaffModal()" class="p-2 rounded-full bg-[#F7F2EC] hover:bg-[#FFF0EB] text-[#7E7272] hover:text-[#E58A7B] transition cursor-pointer">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+    </div>
+
+    <p class="text-xs text-[#7E7272]">Bạn có thể đổi người, thêm hoặc bớt KTV đang phục vụ ca này và chọn hình thức phân chia hoa hồng phù hợp.</p>
+
+    <!-- Dynamic Staff List in Swap Modal -->
+    <div class="space-y-3">
+      <label class="block text-xs font-bold text-[#7E7272] uppercase tracking-wider">Danh Sách KTV Phục Vụ Tour Này</label>
+      <div id="swap-modal-staff-container" class="space-y-2.5"></div>
+
+      <button type="button" id="btn-swap-add-staff" onclick="addStaffInSwapModal()" class="w-full py-2.5 px-3 rounded-xl border border-dashed border-[#E58A7B]/60 hover:bg-[#FFF0EB] text-[#E58A7B] font-bold text-xs flex items-center justify-center gap-1.5 transition cursor-pointer">
+        <i data-lucide="user-plus" class="w-3.5 h-3.5"></i> + Thêm KTV vào tour này
+      </button>
+    </div>
+
+    <!-- Hình thức phân chia hoa hồng -->
+    <div class="space-y-2 pt-1">
+      <label class="block text-xs font-bold text-[#7E7272] uppercase tracking-wider">Hình Thức Phân Chia Hoa Hồng</label>
+      <div class="grid grid-cols-2 gap-2">
+        <button type="button" id="btn-split-timer" onclick="setSplitMode('timer')" class="p-2.5 rounded-xl border bg-[#FFF0EB] border-[#E58A7B] text-[#E58A7B] font-bold text-xs flex flex-col items-center gap-0.5 cursor-pointer">
+          <span>⏱️ Theo thời gian thực</span>
+          <span id="split-timer-pct" class="text-[10px] font-normal text-[#7E7272]">Tính theo số phút đã làm</span>
+        </button>
+        <button type="button" id="btn-split-half" onclick="setSplitMode('equal')" class="p-2.5 rounded-xl border bg-[#F7F2EC] border-[#EFE8DF] text-[#7E7272] font-bold text-xs flex flex-col items-center gap-0.5 cursor-pointer">
+          <span>🤝 Chia đều</span>
+          <span id="split-equal-pct" class="text-[10px] font-normal text-[#7E7272]">Làm cùng từ đầu</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Tóm tắt phân chia hoa hồng -->
+    <div class="p-3.5 rounded-2xl bg-[#FAF6F1] border border-[#F0EAE1] text-xs space-y-1.5">
+      <span class="font-bold text-[#7E7272] block pb-0.5 border-b border-[#F0EAE1]">Dự kiến phân bổ hoa hồng tour:</span>
+      <div id="swap-summary-pct-list" class="space-y-1"></div>
+    </div>
+
+    <div class="pt-2">
+      <button type="button" onclick="saveSwapStaffSetting()" class="w-full py-3.5 rounded-full bg-[#E58A7B] hover:bg-[#D9796A] text-white font-extrabold text-sm shadow-md shadow-[#E58A7B]/20 flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 transition">
+        <i data-lucide="check" class="w-4 h-4"></i> Lưu Thay Đổi Phân Chia
+      </button>
+    </div>
+  </div>
+</div>
