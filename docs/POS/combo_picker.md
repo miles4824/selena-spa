@@ -38,7 +38,9 @@ ightarrow$ Hủy chọn (Toggle).
 ### 3.3. Quản Lý Nhãn Động Qua Google Sheets (`tb_config`):
 - **`opt_select_service`**: `-- Chọn thêm dịch vụ / sản phẩm --` (Chữ mặc định của dropdown chọn dịch vụ khi còn món để chọn).
 - **`opt_select_service_all_selected`**: `-- Tất cả dịch vụ đã được chọn --` (Chữ hiển thị khi giỏ đã chọn toàn bộ các món trong menu).
-- Cả 2 nhãn này được kết nối động trực tiếp với bảng `tb_config`, cho phép Chủ Tiệm thay đổi câu chữ bất cứ lúc nào từ Google Sheets mà không cần sửa code.
+- **`optgroup_combos`**: `💆 Combo Gội Chính` (Tiêu đề nhóm Combo trong Dropdown).
+- **`optgroup_addons`**: `✨ Dịch Vụ Lẻ / Làm Thêm` (Tiêu đề nhóm Dịch vụ lẻ / làm thêm trong Dropdown).
+- Toàn bộ các nhãn này được kết nối động trực tiếp với bảng `tb_config`, cho phép Chủ Tiệm thay đổi câu chữ bất cứ lúc nào từ Google Sheets mà không cần sửa code.
 
 ## 4. Ánh Xạ Cơ Sở Dữ Liệu Chi Tiết (Database Mapping)
 - **Bảng Google Sheets**: `tb_menu`
@@ -60,4 +62,5 @@ ightarrow$ Hủy chọn (Toggle).
 - `2026-09-01` (`v0.0.2.5`):
 - `2026-09-01` (`v0.0.2.6`):
 - `2026-09-01` (`v0.0.2.7`):
-- `2026-09-01` (`v0.0.2.8`): Khắc phục triệt để hàm điều phối KTV updatePOSStaffInfo. Tái thiết kế toàn bộ cụm chọn dịch vụ POS thoáng đãng, nâng cấp khoảng cách `my-3` và thẻ dịch vụ sang trọng. Bổ sung các đường nét đứt (dash) phân cách các tầng và đóng khung hộp nổi bật cho dòng Tổng cộng. Đưa hàng chọn nhanh Combo 1-5 lên trên cùng, ẩn Combo Bé khỏi nút chọn nhanh, mở rộng khu vực dịch vụ đã chọn không đóng khung. Bổ sung cấu hình động nhãn dropdown `opt_select_service` vào bảng `tb_config`. Cập nhật chính xác 100% danh mục Menu của tiệm (Combo Bé 45k 30p, Combo 1 64k 50p, Combo 2 109k 75p, Combo 3 139k 85p, Combo 4 179k 95p, Combo 5 219k 110p) và cấu trúc 8 cột bảng `tb_menu`.
+- `2026-09-01` (`v0.0.2.8`):
+- `2026-09-01` (`v0.0.3.0`): Chuyển đổi toàn bộ tiêu đề nhóm phân loại Dropdown (`optgroup_combos`, `optgroup_addons`) lên quản lý động qua `tb_config`. Khắc phục triệt để hàm điều phối KTV updatePOSStaffInfo. Tái thiết kế toàn bộ cụm chọn dịch vụ POS thoáng đãng, nâng cấp khoảng cách `my-3` và thẻ dịch vụ sang trọng. Bổ sung các đường nét đứt (dash) phân cách các tầng và đóng khung hộp nổi bật cho dòng Tổng cộng. Đưa hàng chọn nhanh Combo 1-5 lên trên cùng, ẩn Combo Bé khỏi nút chọn nhanh, mở rộng khu vực dịch vụ đã chọn không đóng khung. Bổ sung cấu hình động nhãn dropdown `opt_select_service` vào bảng `tb_config`. Cập nhật chính xác 100% danh mục Menu của tiệm (Combo Bé 45k 30p, Combo 1 64k 50p, Combo 2 109k 75p, Combo 3 139k 85p, Combo 4 179k 95p, Combo 5 219k 110p) và cấu trúc 8 cột bảng `tb_menu`.

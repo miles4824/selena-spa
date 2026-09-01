@@ -51,7 +51,7 @@ function parseBirthMonth(val) {
   return 0;
 }
 
-const APP_VERSION = 'v0.0.2.9';
+const APP_VERSION = 'v0.0.3.0';
 // =============================================================
 // SELENA SPA - GLOBAL CONFIG & CONSTANTS
 // =============================================================
@@ -796,6 +796,8 @@ const DEFAULT_UI_CONFIG = {
   opt_birth_month: '-- Tháng --',
   opt_select_service: '-- Chọn thêm dịch vụ / sản phẩm --',
   opt_select_service_all_selected: '-- Tất cả dịch vụ đã được chọn --',
+  optgroup_combos: '💆 Combo Gội Chính',
+  optgroup_addons: '✨ Dịch Vụ Lẻ / Làm Thêm',
   ph_login_phone: '0949251144',
   ph_login_password: '••••••',
   ph_admin_cust_search: '🔍 Tìm kiếm theo tên hoặc số điện thoại...',

@@ -142,6 +142,8 @@ function renderMenuDropdown() {
   const customConfig = (typeof getStored === 'function' ? getStored('ui_config', {}) : {});
   const optSelectText = customConfig.opt_select_service || uiConfig.opt_select_service || '-- Chọn thêm dịch vụ / sản phẩm --';
   const optAllSelectedText = customConfig.opt_select_service_all_selected || uiConfig.opt_select_service_all_selected || '-- Tất cả dịch vụ đã được chọn --';
+  const optgroupCombosText = customConfig.optgroup_combos || uiConfig.optgroup_combos || '💆 Combo Gội Chính';
+  const optgroupAddonsText = customConfig.optgroup_addons || uiConfig.optgroup_addons || '✨ Dịch Vụ Lẻ / Làm Thêm';
 
   if (availableItems.length === 0) {
     dropdown.innerHTML = `<option value="">${optAllSelectedText}</option>`;
@@ -156,7 +158,7 @@ function renderMenuDropdown() {
   let html = `<option value="">${optSelectText}</option>`;
 
   if (combos.length > 0) {
-    html += `<optgroup label="💆 Combo Gội Chính">`;
+    html += `<optgroup label="${optgroupCombosText}">`;
     html += combos.map(m => `
       <option value="${m.service_id}">${m.service_name} — ${Number(m.price).toLocaleString('vi-VN')} đ (${m.duration_min}p)</option>
     `).join('');
@@ -164,7 +166,7 @@ function renderMenuDropdown() {
   }
 
   if (services.length > 0) {
-    html += `<optgroup label="✨ Dịch Vụ Lẻ / Làm Thêm">`;
+    html += `<optgroup label="${optgroupAddonsText}">`;
     html += services.map(m => `
       <option value="${m.service_id}">${m.service_name} — ${Number(m.price).toLocaleString('vi-VN')} đ (${m.duration_min}p)</option>
     `).join('');

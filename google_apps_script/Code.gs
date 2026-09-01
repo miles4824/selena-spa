@@ -1511,6 +1511,8 @@ function syncAllData(params) {
     ['opt_birth_month', '-- Tháng --', 'Chữ mặc định của dropdown tháng sinh'],
     ['opt_select_service', '-- Chọn thêm dịch vụ / sản phẩm --', 'Chữ mặc định của dropdown chọn dịch vụ POS'],
     ['opt_select_service_all_selected', '-- Tất cả dịch vụ đã được chọn --', 'Chữ hiển thị khi đã chọn hết dịch vụ'],
+    ['optgroup_combos', '💆 Combo Gội Chính', 'Tiêu đề nhóm Combo trong Dropdown'],
+    ['optgroup_addons', '✨ Dịch Vụ Lẻ / Làm Thêm', 'Tiêu đề nhóm Dịch Vụ Lẻ trong Dropdown'],
     ['ph_login_phone', '0949251144', 'Placeholder SĐT màn hình đăng nhập'],
     ['ph_login_password', '••••••', 'Placeholder Mật khẩu màn hình đăng nhập'],
     ['ph_admin_cust_search', '🔍 Tìm kiếm theo tên hoặc số điện thoại...', 'Placeholder ô tìm kiếm khách hàng'],
@@ -1535,7 +1537,9 @@ function syncAllData(params) {
     ph_notes: 'Ghi chú chi tiết sở thích hoặc lưu ý về khách...',
     opt_birth_month: '-- Tháng --',
     opt_select_service: '-- Chọn thêm dịch vụ / sản phẩm --',
-    opt_select_service_all_selected: '-- Tất cả dịch vụ đã được chọn --'
+    opt_select_service_all_selected: '-- Tất cả dịch vụ đã được chọn --',
+    optgroup_combos: '💆 Combo Gội Chính',
+    optgroup_addons: '✨ Dịch Vụ Lẻ / Làm Thêm'
   };
 
   const colMapCf = createHeaderMap(sheetConfig);
