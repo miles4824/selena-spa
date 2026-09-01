@@ -18,7 +18,25 @@
 
     <form onsubmit="handleSaveStaffCustomerNote(event)" class="space-y-3.5">
       <input type="hidden" id="modal-staff-note-raw-phone">
+      <input type="hidden" id="modal-staff-note-receipt-id">
+      <input type="hidden" id="modal-staff-note-is-guest" value="0">
       
+      <!-- CỤM Ô NHẬP TÊN & SĐT THẬT: CHỈ HIỂN THỊ KHI LÀ KHÁCH VÃNG LAI -->
+      <div id="modal-staff-note-guest-inputs" class="hidden space-y-3 bg-[#FAF6F1] p-3.5 rounded-2xl border border-[#FCDFD7]">
+        <div class="text-xs font-bold text-[#E58A7B] flex items-center gap-1.5">
+          <i data-lucide="user-plus" class="w-4 h-4"></i>
+          <span>Bổ Sung Thông Tin Khách Mới:</span>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-[#2D2424] mb-1">👤 Tên Khách Hàng:</label>
+          <input type="text" id="modal-staff-note-guest-name" placeholder="VD: Chị Mai Lan" class="w-full bg-white border border-[#EFE8DF] rounded-xl p-2.5 text-xs sm:text-sm text-[#2D2424] font-medium focus:outline-none focus:border-[#E58A7B] transition">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-[#2D2424] mb-1">📱 Số Điện Thoại:</label>
+          <input type="tel" id="modal-staff-note-guest-phone" placeholder="VD: 0949251144" class="w-full bg-white border border-[#EFE8DF] rounded-xl p-2.5 text-xs sm:text-sm text-[#2D2424] font-mono font-bold focus:outline-none focus:border-[#E58A7B] transition">
+        </div>
+      </div>
+
       <!-- Ô CHỌN THÁNG SINH: CHỈ HIỂN THỊ KHI KHÁCH CHƯA CÓ THÁNG SINH -->
       <div id="modal-staff-note-birth-month-container">
         <label class="block text-xs font-bold text-[#2D2424] mb-1">🎂 Tháng Sinh Nhật Khách Hàng (Tùy chọn):</label>
@@ -39,15 +57,21 @@
         </select>
       </div>
 
+      <!-- THÔNG BÁO NẾU ĐÃ CÓ THÁNG SINH -->
+      <div id="modal-staff-note-birth-month-fixed" class="hidden text-xs font-bold text-[#2E7D6D] bg-[#E8F8F5] p-2.5 rounded-2xl border border-[#B7EBDD] flex items-center gap-1.5">
+        <i data-lucide="cake" class="w-4 h-4 text-[#2E7D6D]"></i>
+        <span id="modal-staff-note-birth-month-fixed-text">Sinh nhật: Tháng --</span>
+      </div>
+
       <div>
         <label class="block text-xs font-bold text-[#2D2424] mb-1">📝 Ghi Chú Sở Thích / Lưu Ý Khi Phục Vụ:</label>
-        <textarea id="modal-staff-note-content" rows="3" placeholder="VD: Thích gội nước ấm, sấy mát, da đầu nhạy cảm, massage vai gáy nhẹ..." class="w-full bg-[#F7F2EC] border border-[#EFE8DF] rounded-2xl p-3 text-xs sm:text-sm text-[#2D2424] focus:outline-none focus:border-[#E58A7B] focus:bg-white transition leading-relaxed" required></textarea>
+        <textarea id="modal-staff-note-content" rows="3" placeholder="VD: Thích gội nước ấm, sấy mát, da đầu nhạy cảm, massage vai gáy nhẹ..." class="w-full bg-[#F7F2EC] border border-[#EFE8DF] rounded-2xl p-3 text-xs sm:text-sm text-[#2D2424] focus:outline-none focus:border-[#E58A7B] focus:bg-white transition leading-relaxed"></textarea>
       </div>
 
       <div class="flex gap-2 pt-2">
         <button type="button" onclick="closeStaffCustomerNoteModal()" class="flex-1 py-3 rounded-full bg-[#F7F2EC] hover:bg-[#EFE8DF] text-[#7E7272] font-bold text-xs sm:text-sm cursor-pointer">Đóng</button>
         <button type="submit" id="btn-save-staff-customer-note" class="flex-1 py-3 rounded-full bg-[#E58A7B] hover:bg-[#D9796A] text-white font-bold text-xs sm:text-sm shadow-md shadow-[#E58A7B]/20 flex items-center justify-center gap-1.5 cursor-pointer">
-          <i data-lucide="check" class="w-4 h-4"></i> Lưu Ghi Chú
+          <i data-lucide="check" class="w-4 h-4"></i> Lưu Thông Tin
         </button>
       </div>
     </form>
