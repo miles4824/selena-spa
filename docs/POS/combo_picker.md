@@ -56,4 +56,5 @@ ightarrow$ Hủy chọn (Toggle).
 ## 5. Lịch Sử Thay Đổi & Lưu Vết (Audit Log)
 - `2026-09-01` (`v0.0.0.1`): Khởi tạo component chọn combo.
 - `2026-09-01` (`v0.0.2.1`):
-- `2026-09-01` (`v0.0.2.4`): Bổ sung cấu hình động nhãn dropdown `opt_select_service` vào bảng `tb_config`. Cập nhật chính xác 100% danh mục Menu của tiệm (Combo Bé 45k 30p, Combo 1 64k 50p, Combo 2 109k 75p, Combo 3 139k 85p, Combo 4 179k 95p, Combo 5 219k 110p) và cấu trúc 8 cột bảng `tb_menu`.
+- `2026-09-01` (`v0.0.2.4`):
+- `2026-09-01` (`v0.0.2.5`): Đưa hàng chọn nhanh Combo 1-5 lên trên cùng, ẩn Combo Bé khỏi nút chọn nhanh, mở rộng khu vực dịch vụ đã chọn không đóng khung. Bổ sung cấu hình động nhãn dropdown `opt_select_service` vào bảng `tb_config`. Cập nhật chính xác 100% danh mục Menu của tiệm (Combo Bé 45k 30p, Combo 1 64k 50p, Combo 2 109k 75p, Combo 3 139k 85p, Combo 4 179k 95p, Combo 5 219k 110p) và cấu trúc 8 cột bảng `tb_menu`.

@@ -74,8 +74,16 @@
         <i data-lucide="sparkles" class="w-4 h-4 text-[#E58A7B]"></i> 1. Chọn Dịch Vụ & Sản Phẩm
       </label>
 
-      <!-- HÀNG 1: DROPDOWN CHỌN MÓN + NÚT THÊM -->
-      <div class="flex gap-2">
+      <!-- HÀNG 1 (TRÊN CÙNG): CHỌN NHANH COMBO (CHỈ COMBO 1 - 5) -->
+      <div class="space-y-1.5">
+        <div class="text-[11px] font-bold text-[#7E7272] flex items-center gap-1">
+          <span>⚡ Chọn nhanh Combo:</span>
+        </div>
+        <div id="pos-quick-combos" class="flex flex-wrap gap-2"></div>
+      </div>
+
+      <!-- HÀNG 2 (Ở GIỮA): DROPDOWN CHỌN MÓN + NÚT THÊM -->
+      <div class="flex gap-2 pt-1">
         <div class="relative flex-1 min-w-0">
           <select id="pos-service-dropdown" class="w-full bg-[#F7F2EC] border border-[#EFE8DF] rounded-2xl p-3 text-xs sm:text-sm text-[#2D2424] font-bold focus:outline-none focus:border-[#E58A7B] focus:bg-white transition cursor-pointer"></select>
         </div>
@@ -85,17 +93,9 @@
         </button>
       </div>
 
-      <!-- HÀNG 2: CHỌN NHANH COMBO -->
-      <div class="space-y-1.5">
-        <div class="text-[11px] font-bold text-[#7E7272] flex items-center gap-1">
-          <span>⚡ Chọn nhanh Combo:</span>
-        </div>
-        <div id="pos-quick-combos" class="flex flex-wrap gap-2"></div>
-      </div>
-
-      <!-- HÀNG 3: KHUNG DỊCH VỤ ĐÃ CHỌN & TỔNG CỘNG -->
-      <div id="pos-cart-box" class="p-3.5 rounded-3xl bg-[#FAF6F1] border border-[#F0EAE1] space-y-3">
-        <div class="flex justify-between items-center pb-2 border-b border-[#EFE8DF]">
+      <!-- HÀNG 3 (Ở DƯỚI): KHU VỰC DỊCH VỤ ĐÃ CHỌN (MỞ RỘNG TỰ NHIÊN, KHÔNG ĐÓNG KHUNG) -->
+      <div id="pos-cart-box" class="pt-2 space-y-2.5">
+        <div class="flex justify-between items-center pb-1.5 border-b border-[#F0EAE1]">
           <span class="text-xs font-extrabold text-[#7E7272] uppercase tracking-wider flex items-center gap-1.5">
             <i data-lucide="clipboard-list" class="w-3.5 h-3.5 text-[#2E7D6D]"></i> Dịch Vụ Đã Chọn:
           </span>
@@ -108,12 +108,12 @@
         <div id="pos-cart-items-list" class="space-y-2"></div>
 
         <!-- Dòng Tổng Cộng -->
-        <div class="pt-2 border-t border-[#EFE8DF] flex justify-between items-center text-xs sm:text-sm font-extrabold">
+        <div class="pt-2 border-t border-[#F0EAE1] flex justify-between items-center text-xs sm:text-sm font-extrabold">
           <span class="text-[#2D2424] flex items-center gap-1">
             <i data-lucide="coins" class="w-4 h-4 text-[#E58A7B]"></i> Tổng: <b id="pos-cart-total-price" class="text-[#E58A7B] text-base font-black font-mono ml-1">64.000 đ</b>
           </span>
           <span class="text-[#2E7D6D] flex items-center gap-1">
-            <i data-lucide="clock" class="w-4 h-4"></i> <span id="pos-cart-total-duration">45 phút</span>
+            <i data-lucide="clock" class="w-4 h-4"></i> <span id="pos-cart-total-duration">50 phút</span>
           </span>
         </div>
       </div>

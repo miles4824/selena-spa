@@ -181,24 +181,18 @@ function renderQuickComboButtons() {
   const menu = getValidatedMenu();
   const selectedIds = new Set(selectedCartItems.map(item => item.service_id));
 
-  // Lấy tất cả các món thuộc menu
-  const combos = menu.filter(m => m.service_id.startsWith('CB') || String(m.service_name).toLowerCase().includes('combo'));
+  // Chỉ lấy Combo 1 đến Combo 5 (ẩn Combo Bé khỏi hàng nút chọn nhanh)
+  const quickNumbers = [1, 2, 3, 4, 5];
 
-  if (combos.length === 0) {
-    container.innerHTML = '';
-    return;
-  }
+  container.innerHTML = quickNumbers.map(num => {
+    const item = findComboByNumber(menu, num);
+    if (!item) return '';
 
-  container.innerHTML = combos.map(item => {
     const isSelected = selectedIds.has(item.service_id);
-    let displayName = item.service_name;
-    if (displayName.includes('(')) {
-      displayName = displayName.split('(')[0].trim();
-    }
 
     return `
-      <button type="button" onclick="toggleQuickCombo('${item.service_id}')" class="px-3 py-1.5 rounded-2xl text-xs font-bold border transition active:scale-95 cursor-pointer ${isSelected ? 'bg-[#FFF0EB] text-[#E58A7B] border-[#E58A7B] ring-2 ring-[#E58A7B]/50 font-black shadow-xs' : 'bg-white text-[#7E7272] border-[#EFE8DF] hover:bg-[#FAF6F1] hover:text-[#E58A7B]'}">
-        ${isSelected ? '✓ ' : ''}${displayName}
+      <button type="button" onclick="toggleQuickCombo('${item.service_id}')" class="px-3.5 py-2 rounded-2xl text-xs font-bold border transition active:scale-95 cursor-pointer ${isSelected ? 'bg-[#FFF0EB] text-[#E58A7B] border-[#E58A7B] ring-2 ring-[#E58A7B]/50 font-black shadow-xs' : 'bg-white text-[#7E7272] border-[#EFE8DF] hover:bg-[#FAF6F1] hover:text-[#E58A7B]'}">
+        ${isSelected ? '✓ ' : ''}Combo ${num}
       </button>
     `;
   }).join('');
