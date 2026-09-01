@@ -108,15 +108,16 @@ ightarrow$ Cập nhật tài liệu Database).
 ---
 
 ## 🔢 11. NGUYÊN TẮC ĐÁNH SỐ PHIÊN BẢN HỆ THỐNG (DECIMAL VERSIONING RULE)
-- **Quy tắc nhảy số tuần tự hệ thập phân (0 - 9 rollover)**: Mỗi lần chỉnh sửa, cập nhật code hoặc tính năng mới, số phiên bản **BẮT BUỘC tăng tuần tự 1 đơn vị theo đúng chuỗi thập phân**:
+- **Quy tắc nhảy số tuần tự hệ thập phân (0 – 9 Rollover)**: Mỗi lần chỉnh sửa, cập nhật code hoặc tính năng mới, số phiên bản **BẮT BUỘC tăng tuần tự 1 đơn vị theo đúng chuỗi thập phân**:
   - `v0.0.0.1` $ightarrow$ `v0.0.0.2` $ightarrow$ ... $ightarrow$ `v0.0.0.8` $ightarrow$ `v0.0.0.9`
   - Sau `.9` $ightarrow$ Nhảy số hàng trước thành: **`v0.0.1.0`**
   - Tiếp tục: `v0.0.1.0` $ightarrow$ `v0.0.1.1` $ightarrow$ ... $ightarrow$ `v0.0.1.9` $ightarrow$ **`v0.0.2.0`**
-  - Khi đến `v0.0.9.9` $ightarrow$ Nhảy tiếp thành: **`v0.1.0.0`**
+  - Khi đạt đến `v0.0.9.9` $ightarrow$ Nhảy tiếp thành: **`v0.1.0.0`**
+  - Khi đạt đến `v0.9.9.9` $ightarrow$ Nhảy tiếp thành: **`v1.0.0.0`** (Bản phát hành chính thức toàn diện)
 - **Tuyệt đối không nhảy cóc**: Không được bỏ qua bất kỳ số nào trong chuỗi thập phân.
-- **Đồng bộ bắt buộc tại 3 vị trí trong App**:
+- **Đồng bộ bắt buộc tại 4 vị trí**:
   1. `index.html` (Toàn bộ query string `?v=v0.0.0.x` của các file script, css, icon, manifest).
   2. `js/config.js` (`const APP_VERSION = 'v0.0.0.x';`).
   3. `views/login.html` (Dòng text hiển thị phiên bản ở chân trang đăng nhập).
-  4. Các file đặc tả trong `docs/` (Mục 6 Audit Log ghi nhận đúng số phiên bản của lần cập nhật đó).
+  4. Mục 6 (Audit Log) của các file trong `docs/`.
 
