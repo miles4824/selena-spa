@@ -2,9 +2,9 @@
 <div id="modal-staff-customer-note" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs" onclick="if(event.target === this) closeStaffCustomerNoteModal()">
   <div class="w-full max-w-md bg-white rounded-[32px] border border-[#F0EAE1] shadow-[0_25px_50px_-12px_rgba(45,36,36,0.15)] p-6 space-y-4 relative my-auto animate-in fade-in zoom-in-95">
     <div class="flex justify-between items-center">
-      <div class="flex items-center gap-2">
-        <div class="w-8 h-8 rounded-full bg-[#FFF0EB] flex items-center justify-center text-[#E58A7B]">
-          <i data-lucide="edit-3" class="w-4 h-4"></i>
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-2xl bg-[#FFF0EB] flex items-center justify-center text-[#E58A7B]">
+          <i data-lucide="edit-3" class="w-4.5 h-4.5"></i>
         </div>
         <div>
           <h3 class="text-base font-extrabold text-[#2D2424]" id="modal-staff-note-name">Ghi Chú Khách Hàng</h3>
@@ -21,16 +21,18 @@
       <input type="hidden" id="modal-staff-note-receipt-id">
       <input type="hidden" id="modal-staff-note-is-guest" value="0">
       
-      <!-- CỤM KHUNG GOM CHUNG: BỔ SUNG THÔNG TIN KHÁCH (CHỈ HIỂN THỊ KHI LÀ KHÁCH VÃNG LAI) -->
+      <!-- CỤM KHUNG BỔ SUNG THÔNG TIN KHÁCH (CHỈ HIỆN KHI LÀ KHÁCH VÃNG LAI) -->
       <div id="modal-staff-note-guest-inputs" class="hidden space-y-3 bg-[#FAF6F1] p-3.5 rounded-2xl border border-[#FCDFD7]">
         <div class="text-xs font-bold text-[#E58A7B] flex items-center justify-between">
-          <span class="flex items-center gap-1.5"><i data-lucide="user-plus" class="w-4 h-4"></i> Bổ Sung Thông Tin Khách:</span>
+          <span class="flex items-center gap-1.5"><i data-lucide="user-plus" class="w-4 h-4 text-[#E58A7B]"></i> Bổ Sung Thông Tin Khách:</span>
           <span id="modal-staff-note-lookup-badge" class="text-[10px] px-2 py-0.5 rounded-full bg-white font-semibold text-[#7E7272] border border-[#F0EAE1]">Nhập SĐT để dò tìm</span>
         </div>
 
-        <!-- 1. SỐ ĐIỆN THOẠI & DROPDOWN GỢI Ý CHUẨN POS -->
+        <!-- SỐ ĐIỆN THOẠI & DROPDOWN GỢI Ý CHUẨN POS -->
         <div class="relative">
-          <label class="block text-xs font-bold text-[#2D2424] mb-1">📱 Số Điện Thoại:</label>
+          <label class="block text-xs font-bold text-[#2D2424] mb-1 flex items-center gap-1.5">
+            <i data-lucide="phone" class="w-3.5 h-3.5 text-[#E58A7B]"></i> Số Điện Thoại:
+          </label>
           <div class="relative">
             <input type="tel" id="modal-staff-note-guest-phone" oninput="onStaffGuestPhoneInput(this.value)" onfocus="onStaffGuestPhoneInput(this.value)" autocomplete="off" placeholder="Nhập SĐT hoặc tìm tên..." class="w-full bg-white border border-[#EFE8DF] rounded-xl p-2.5 pl-9 text-xs sm:text-sm text-[#2D2424] font-mono font-bold focus:outline-none focus:border-[#E58A7B] transition">
             <i data-lucide="phone" class="w-3.5 h-3.5 text-[#A39696] absolute left-3 top-1/2 -translate-y-1/2"></i>
@@ -40,16 +42,23 @@
           <p id="modal-staff-note-phone-hint" class="text-[11px] text-[#A39696] mt-1 italic hidden"></p>
         </div>
 
-        <!-- 2. TÊN KHÁCH HÀNG -->
+        <!-- TÊN KHÁCH HÀNG -->
         <div>
-          <label class="block text-xs font-bold text-[#2D2424] mb-1">👤 Tên Khách Hàng:</label>
+          <label class="block text-xs font-bold text-[#2D2424] mb-1 flex items-center gap-1.5">
+            <i data-lucide="user" class="w-3.5 h-3.5 text-[#E58A7B]"></i> Tên Khách Hàng:
+          </label>
           <input type="text" id="modal-staff-note-guest-name" placeholder="VD: Chị Mai Lan" class="w-full bg-white border border-[#EFE8DF] rounded-xl p-2.5 text-xs sm:text-sm text-[#2D2424] font-medium focus:outline-none focus:border-[#E58A7B] transition">
         </div>
+      </div>
 
-        <!-- 3. THÁNG SINH NHẬT NẰM CHUNG TRONG KHUNG NÀY DƯỚI TÊN -->
+      <!-- MỤC THÁNG SINH NHẬT (ÁP DỤNG CHO CẢ KHÁCH QUEN LẪN KHÁCH VÃNG LAI) -->
+      <div id="modal-staff-note-birth-month-section" class="space-y-1">
+        <!-- 1. Ô CHỌN THÁNG (KHI CHƯA CÓ THÁNG SINH) -->
         <div id="modal-staff-note-birth-month-container">
-          <label class="block text-xs font-bold text-[#2D2424] mb-1">🎂 Tháng Sinh Nhật Khách Hàng (Tùy chọn):</label>
-          <select id="modal-staff-note-birth-month" class="w-full bg-white border border-[#EFE8DF] rounded-xl p-2.5 text-xs sm:text-sm text-[#2D2424] font-bold focus:outline-none focus:border-[#E58A7B] transition cursor-pointer">
+          <label class="block text-xs font-bold text-[#2D2424] mb-1 flex items-center gap-1.5">
+            <i data-lucide="cake" class="w-3.5 h-3.5 text-[#E58A7B]"></i> Tháng Sinh Nhật Khách Hàng (Tùy chọn):
+          </label>
+          <select id="modal-staff-note-birth-month" class="w-full bg-[#F7F2EC] border border-[#EFE8DF] rounded-2xl p-3 text-xs sm:text-sm text-[#2D2424] font-bold focus:outline-none focus:border-[#E58A7B] focus:bg-white transition cursor-pointer">
             <option value="">-- Chọn tháng sinh (để tiệm tặng voucher 20%) --</option>
             <option value="1">Tháng 1</option>
             <option value="2">Tháng 2</option>
@@ -66,16 +75,18 @@
           </select>
         </div>
 
-        <!-- THÔNG BÁO NẾU ĐÃ CÓ THÁNG SINH -->
-        <div id="modal-staff-note-birth-month-fixed" class="hidden text-xs font-bold text-[#2E7D6D] bg-[#E8F8F5] p-2.5 rounded-xl border border-[#B7EBDD] flex items-center gap-1.5">
+        <!-- 2. THÔNG BÁO NẾU ĐÃ CÓ THÁNG SINH (KHÓA CỐ ĐỊNH CHO KTV) -->
+        <div id="modal-staff-note-birth-month-fixed" class="hidden text-xs font-bold text-[#2E7D6D] bg-[#E8F8F5] p-3 rounded-2xl border border-[#B7EBDD] flex items-center gap-2">
           <i data-lucide="cake" class="w-4 h-4 text-[#2E7D6D]"></i>
           <span id="modal-staff-note-birth-month-fixed-text">Sinh nhật: Tháng --</span>
         </div>
       </div>
 
-      <!-- 4. GHI CHÚ SỞ THÍCH -->
+      <!-- MỤC GHI CHÚ SỞ THÍCH -->
       <div>
-        <label class="block text-xs font-bold text-[#2D2424] mb-1">📝 Ghi Chú Sở Thích / Lưu Ý Khi Phục Vụ:</label>
+        <label class="block text-xs font-bold text-[#2D2424] mb-1 flex items-center gap-1.5">
+          <i data-lucide="file-text" class="w-3.5 h-3.5 text-[#E58A7B]"></i> Ghi Chú Sở Thích / Lưu Ý Khi Phục Vụ:
+        </label>
         <textarea id="modal-staff-note-content" rows="3" placeholder="VD: Thích gội nước ấm, sấy mát, da đầu nhạy cảm, massage vai gáy nhẹ..." class="w-full bg-[#F7F2EC] border border-[#EFE8DF] rounded-2xl p-3 text-xs sm:text-sm text-[#2D2424] focus:outline-none focus:border-[#E58A7B] focus:bg-white transition leading-relaxed"></textarea>
       </div>
 

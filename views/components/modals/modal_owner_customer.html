@@ -2,12 +2,12 @@
 <div id="modal-owner-customer-editor" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs" onclick="if(event.target === this) closeOwnerCustomerEditorModal()">
   <div class="w-full max-w-md bg-white rounded-[32px] border border-[#F0EAE1] shadow-[0_25px_50px_-12px_rgba(45,36,36,0.15)] p-6 space-y-4 relative my-auto animate-in fade-in zoom-in-95">
     <div class="flex justify-between items-center">
-      <div class="flex items-center gap-2">
-        <div class="w-8 h-8 rounded-full bg-[#E8F8F5] flex items-center justify-center text-[#2E7D6D]">
-          <i data-lucide="shield-check" class="w-4 h-4"></i>
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-2xl bg-[#E8F8F5] flex items-center justify-center text-[#2E7D6D]">
+          <i data-lucide="shield-check" class="w-5 h-5"></i>
         </div>
         <div>
-          <h3 class="text-base font-extrabold text-[#2D2424]">👑 Quản Trị Hồ Sơ Khách Hàng</h3>
+          <h3 class="text-base font-extrabold text-[#2D2424]">Quản Trị Hồ Sơ Khách Hàng</h3>
           <p class="text-xs text-[#7E7272]">Dành riêng cho Chủ Tiệm</p>
         </div>
       </div>
@@ -21,17 +21,23 @@
 
       <div class="grid grid-cols-2 gap-2.5">
         <div>
-          <label class="block text-xs font-bold text-[#2D2424] mb-1">Tên Khách Hàng:</label>
+          <label class="block text-xs font-bold text-[#2D2424] mb-1 flex items-center gap-1.5">
+            <i data-lucide="user" class="w-3.5 h-3.5 text-[#2E7D6D]"></i> Tên Khách Hàng:
+          </label>
           <input type="text" id="modal-owner-edit-name" class="w-full bg-[#F7F2EC] border border-[#EFE8DF] rounded-2xl p-3 text-xs sm:text-sm text-[#2D2424] font-bold focus:outline-none focus:border-[#2E7D6D] focus:bg-white transition" required>
         </div>
         <div>
-          <label class="block text-xs font-bold text-[#2D2424] mb-1">Số Điện Thoại:</label>
+          <label class="block text-xs font-bold text-[#2D2424] mb-1 flex items-center gap-1.5">
+            <i data-lucide="phone" class="w-3.5 h-3.5 text-[#2E7D6D]"></i> Số Điện Thoại:
+          </label>
           <input type="text" id="modal-owner-edit-phone" class="w-full bg-[#F7F2EC] border border-[#EFE8DF] rounded-2xl p-3 text-xs sm:text-sm text-[#2D2424] font-mono font-bold focus:outline-none focus:border-[#2E7D6D] focus:bg-white transition" required>
         </div>
       </div>
 
       <div>
-        <label class="block text-xs font-bold text-[#2D2424] mb-1">🎂 Tháng Sinh Nhật (Chủ tiệm toàn quyền sửa):</label>
+        <label class="block text-xs font-bold text-[#2D2424] mb-1 flex items-center gap-1.5">
+          <i data-lucide="cake" class="w-3.5 h-3.5 text-[#2E7D6D]"></i> Tháng Sinh Nhật (Toàn quyền sửa):
+        </label>
         <select id="modal-owner-edit-birth-month" class="w-full bg-[#F7F2EC] border border-[#EFE8DF] rounded-2xl p-3 text-xs sm:text-sm text-[#2D2424] font-bold focus:outline-none focus:border-[#2E7D6D] focus:bg-white transition cursor-pointer">
           <option value="">-- Chưa thiết lập tháng sinh --</option>
           <option value="1">Tháng 1</option>
@@ -52,23 +58,25 @@
       <!-- Thống kê chu kỳ 60 ngày của khách -->
       <div class="p-3.5 rounded-2xl bg-[#FAF6F1] border border-[#F0EAE1] text-xs space-y-1.5 text-[#7E7272]">
         <div class="flex justify-between items-center">
-          <span>Chu kỳ tích điểm (60 ngày):</span>
+          <span class="flex items-center gap-1"><i data-lucide="rotate-cw" class="w-3.5 h-3.5 text-[#2E7D6D]"></i> Chu kỳ tích điểm (60 ngày):</span>
           <span id="modal-owner-edit-cycle-visits" class="font-extrabold text-[#2E7D6D]">1 / 10 lần</span>
         </div>
         <div class="flex justify-between items-center">
-          <span>Số voucher hiện có:</span>
+          <span class="flex items-center gap-1"><i data-lucide="gift" class="w-3.5 h-3.5 text-[#E58A7B]"></i> Số voucher hiện có:</span>
           <span id="modal-owner-edit-voucher-count" class="font-extrabold text-[#E58A7B]">0 voucher</span>
         </div>
       </div>
 
       <div>
-        <label class="block text-xs font-bold text-[#2D2424] mb-1">📝 Ghi Chú Sở Thích / Lưu Ý:</label>
+        <label class="block text-xs font-bold text-[#2D2424] mb-1 flex items-center gap-1.5">
+          <i data-lucide="file-text" class="w-3.5 h-3.5 text-[#2E7D6D]"></i> Ghi Chú Sở Thích / Lưu Ý:
+        </label>
         <textarea id="modal-owner-edit-notes" rows="3" placeholder="Ghi chú chi tiết sở thích hoặc lưu ý về khách..." class="w-full bg-[#F7F2EC] border border-[#EFE8DF] rounded-2xl p-3 text-xs sm:text-sm text-[#2D2424] focus:outline-none focus:border-[#2E7D6D] focus:bg-white transition leading-relaxed"></textarea>
       </div>
 
       <div class="flex gap-2 pt-2">
         <button type="button" onclick="closeOwnerCustomerEditorModal()" class="flex-1 py-3 rounded-full bg-[#F7F2EC] hover:bg-[#EFE8DF] text-[#7E7272] font-bold text-xs sm:text-sm cursor-pointer">Đóng</button>
-        <button type="submit" id="btn-save-owner-customer-editor" class="flex-1 py-3 rounded-full bg-[#2E7D6D] hover:bg-[#25685B] text-white font-bold text-xs sm:text-sm shadow-md shadow-[#2E7D6D]/20 flex items-center justify-center gap-1.5 cursor-pointer">
+        <button type="submit" class="flex-1 py-3 rounded-full bg-[#2E7D6D] hover:bg-[#256659] text-white font-bold text-xs sm:text-sm shadow-md shadow-[#2E7D6D]/20 flex items-center justify-center gap-1.5 cursor-pointer">
           <i data-lucide="check" class="w-4 h-4"></i> Cập Nhật Hồ Sơ
         </button>
       </div>

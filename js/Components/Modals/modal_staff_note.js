@@ -30,7 +30,15 @@ async function openStaffCustomerNoteModal(phone, name, receiptId) {
 
   // Đọc danh bạ khách hàng hiện tại
   const customers = getStored('customers', DEFAULT_CUSTOMERS);
-  const foundCust = customers.find(c => isSamePhone(c.phone_number || c.raw_phone, rawPhone));
+  let foundCust = null;
+  if (rawPhone) {
+    foundCust = customers.find(c => isSamePhone(c.phone_number || c.raw_phone, rawPhone));
+  }
+  if (!foundCust && name && name !== 'Khách vãng lai' && name !== 'Khách hàng') {
+    foundCust = customers.find(c => c.customer_name && c.customer_name.trim().toLowerCase() === name.trim().toLowerCase());
+  }
+
+  let bMonth = (foundCust && foundCust.birth_month) ? Number(foundCust.birth_month) : (foundCust && foundCust.birthday ? parseBirthMonth(foundCust.birthday) : 0);
 
   if (isGuest) {
     // 🟠 KỊCH BẢN 2: KHÁCH VÃNG LAI
@@ -43,37 +51,37 @@ async function openStaffCustomerNoteModal(phone, name, receiptId) {
       guestNameInput.readOnly = false;
       guestNameInput.classList.remove('bg-gray-100', 'text-gray-500');
     }
-    if (guestPhoneInput) guestPhoneInput.value = '';
+    if (guestPhoneInput) {
+      guestPhoneInput.value = '';
+      delete guestPhoneInput.dataset.rawPhone;
+    }
     if (lookupBadge) {
       lookupBadge.innerText = 'Nhập SĐT để dò tìm';
       lookupBadge.className = 'text-[10px] px-2 py-0.5 rounded-full bg-white font-semibold text-[#7E7272] border border-[#F0EAE1]';
     }
     if (phoneHint) phoneHint.classList.add('hidden');
 
+    // Khách vãng lai -> Luôn mở ô chọn tháng
     if (monthContainer) monthContainer.classList.remove('hidden');
     if (monthFixed) monthFixed.classList.add('hidden');
     if (monthSelect) monthSelect.value = '';
     if (noteContent) noteContent.value = '';
   } else {
     // 🟢 KỊCH BẢN 1: KHÁCH QUEN ĐÃ CÓ SĐT
+    const displayPhone = rawPhone ? maskPhoneNumber(rawPhone, false) : '094*144';
     document.getElementById('modal-staff-note-name').innerText = name || foundCust?.customer_name || 'Khách Hàng';
-    document.getElementById('modal-staff-note-phone').innerText = maskPhoneNumber(rawPhone, false);
+    document.getElementById('modal-staff-note-phone').innerText = displayPhone;
     
     if (guestInputs) guestInputs.classList.add('hidden');
 
-    let bMonth = foundCust?.birth_month || 0;
-    if (!bMonth && foundCust?.birthday) {
-      bMonth = parseBirthMonth(foundCust.birthday);
-    }
-
     if (bMonth && bMonth >= 1 && bMonth <= 12) {
-      // Đã có sinh nhật -> ẨN DROPDOWN VĨNH VIỄN
+      // ĐÃ CÓ THÁNG SINH -> ẨN DROPDOWN VĨNH VIỄN, HIỆN DÒNG CỐ ĐỊNH
       if (monthContainer) monthContainer.classList.add('hidden');
       if (monthFixed) monthFixed.classList.remove('hidden');
       if (monthFixedText) monthFixedText.innerText = `Sinh nhật: Tháng ${bMonth}`;
       if (monthSelect) monthSelect.value = String(bMonth);
     } else {
-      // Chưa có sinh nhật -> Hiện dropdown để KTV lưu lần đầu
+      // CHƯA CÓ THÁNG SINH -> MỞ DROPDOWN CHO KTV LƯU LẦN ĐẦU
       if (monthContainer) monthContainer.classList.remove('hidden');
       if (monthFixed) monthFixed.classList.add('hidden');
       if (monthSelect) monthSelect.value = '';
@@ -85,7 +93,7 @@ async function openStaffCustomerNoteModal(phone, name, receiptId) {
   }
 
   modal.classList.remove('hidden');
-  lucide.createIcons();
+  if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
 }
 
 // 🔍 TỰ ĐỘNG DÒ TÌM SĐT KHÁCH QUEN & HIỂN THỊ DROPDOWN CHUẨN POS
@@ -175,6 +183,9 @@ function onStaffGuestPhoneInput(val) {
         if (monthFixed) monthFixed.classList.remove('hidden');
         if (monthFixedText) monthFixedText.innerText = `Sinh nhật: Tháng ${bMonth}`;
         if (monthSelect) monthSelect.value = String(bMonth);
+      } else {
+        if (monthContainer) monthContainer.classList.remove('hidden');
+        if (monthFixed) monthFixed.classList.add('hidden');
       }
       return;
     }

@@ -48,4 +48,5 @@ ightarrow$ Cột F (`customer_phone`), Cột G (`customer_name`).
 - **Firebase Realtime**: `customers/{phone}`
 
 ## 6. Lịch Sử Thay Đổi & Lưu Vết (Audit Log)
-- `2026-09-01` (`v0.0.0.1`): Đổi tiêu đề modal thành "Thông Tin Khách Hàng" và gắn nút mở trực tiếp trên từng thẻ hóa đơn Lịch sử của Chủ tiệm.
+- `2026-09-01` (`v0.0.0.1`):
+- `2026-09-01` (`v0.0.0.6`): Khắc phục hiển thị SĐT 10 số thật cho Chủ Tiệm, hiển thị ô chọn tháng cho khách chưa có tháng sinh và chuẩn hóa SVG Lucide. Đổi tiêu đề modal thành "Thông Tin Khách Hàng" và gắn nút mở trực tiếp trên từng thẻ hóa đơn Lịch sử của Chủ tiệm.
