@@ -10,9 +10,9 @@
 
 ### 2. Tạo Tính Năng Mới Phải Tuân Thủ Tuyệt Đối Kiến Trúc Chuẩn:
 - Khi tạo bất kỳ tính năng hoặc màn hình mới nào, **luôn dựa trên kiến trúc chuẩn để tạo ra module mới tương tự** nhằm đảm bảo tính đồng bộ 100%:
-  - **Khung HTML tĩnh**: Tạo file riêng trong `views/` (chỉ 30 - 80 dòng).
-  - **Component xử lý giao diện JS**: Tạo file riêng trong `js/Components/` hoặc `js/Screens/`.
-  - **Nghiệp vụ tính toán & Toán học lõi**: Tạo file riêng trong `js/Core/`.
+  - **Khung HTML tĩnh**: Tạo file riêng độc lập trong `views/`.
+  - **Component xử lý giao diện JS**: Tạo file riêng độc lập trong `js/Components/` hoặc `js/Screens/`.
+  - **Nghiệp vụ tính toán & Toán học lõi**: Tạo file riêng độc lập trong `js/Core/`.
 
 ### 3. Luôn Cập Nhật Lại Kiến Trúc Sau Khi Hoàn Thành:
 - Sau khi hoàn thành bất kỳ tính năng mới hoặc thay đổi cấu trúc nào, **BẮT BUỘC phải cập nhật lại tài liệu `selena_spa_master_architecture.md` và `PROJECT_RULES.md`** để toàn bộ dự án luôn đồng bộ, minh bạch và chính xác tuyệt đối.
@@ -24,7 +24,7 @@
   - **Khung giao diện HTML tĩnh**: Đặt trong `views/components/modals/`, `views/components/pos/`, `views/staff/`, `views/owner/`.
   - **Logic xử lý động JavaScript**: Đặt tương ứng trong `js/Components/Modals/`, `js/Components/POS/`, `js/Screens/Staff/`, `js/Screens/Owner/`.
   - **Nghiệp vụ lõi & Công thức toán**: Đặt tách biệt hoàn toàn trong `js/Core/`.
-- Mỗi file HTML hoặc JS chỉ dài **30 - 80 dòng**, tuyệt đối không viết gộp file lớn.
+- Mỗi file đảm nhiệm đúng một nhiệm vụ duy nhất (Single Responsibility), gọn gàng, trong sáng, tuyệt đối không gộp chung nhiều màn hình vào một file khổng lồ.
 
 ---
 
