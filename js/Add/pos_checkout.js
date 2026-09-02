@@ -1254,7 +1254,9 @@ function renderSwapModalStaffUI() {
   if (!container) return;
 
   const users = getSortedUsersList();
-  const isOwner = currentUser && isUserOwner(currentUser);
+  const cUser = (typeof currentUser !== 'undefined' && currentUser) ? currentUser : null;
+  const isOwner = cUser ? (typeof isUserOwner === 'function' ? isUserOwner(cUser) : (cUser.role === 'admin' || cUser.role === 'owner')) : false;
+  const targetMin = currentLiveSession?.duration_target_min || 50;
 
   container.innerHTML = tempSwapStaffs.map((item, idx) => {
     const isFirst = idx === 0;
@@ -1262,7 +1264,7 @@ function renderSwapModalStaffUI() {
     const busyMap = getBusyStaffPhonesMap();
     const currentTourId = currentLiveSession?.session_id;
     const usedOtherPhones = tempSwapStaffs.filter((_, i) => i !== idx).map(s => normalizePhone(s.phone));
-    // Chỉ cho phép chọn người rảnh hoặc người đang ở vị trí này
+    
     const selectable = users.filter(u => {
       const uPhone = normalizePhone(u.phone);
       if (usedOtherPhones.includes(uPhone)) return false;
@@ -1271,28 +1273,46 @@ function renderSwapModalStaffUI() {
       if (busySess && busySess.session_id !== currentTourId) return false;
       return true;
     });
-    const joinHint = item.is_midway ? `<span class="text-[10px] text-amber-600 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded-md font-semibold">Vào từ phút ${item.joined_min}</span>` : '';
+
+    const joinedMin = item.joined_min || 0;
+    const leftMin = item.left_min || targetMin;
+    const isEarlyLeave = leftMin < targetMin;
 
     return `
-      <div class="relative p-3 rounded-xl bg-[#FAF6F1] border border-[#F0EAE1] space-y-1.5">
-        <div class="flex justify-between items-center pr-6">
+      <div class="relative p-3 rounded-2xl bg-[#FAF6F1] border border-[#F0EAE1] space-y-2">
+        <div class="flex justify-between items-center pr-7">
           <div class="text-xs font-bold text-[#2D2424] flex items-center gap-1.5 flex-wrap">
             ${isLocked ? '<i data-lucide="lock" class="w-3.5 h-3.5 text-[#E58A7B]"></i>' : ''}
             <span class="text-[#E58A7B] font-extrabold">KTV ${idx + 1}${isFirst ? ' (Chính)' : ''}:</span>
             <span>${item.name || ''}</span>
-            ${joinHint}
           </div>
-          <span class="text-[11px] font-extrabold text-[#2E7D6D] bg-[#E8F8F5] px-2 py-0.5 rounded-full" id="swap-item-comm-${idx}">...</span>
+          <span class="text-[11px] font-extrabold text-[#2E7D6D] bg-[#E8F8F5] px-2 py-0.5 rounded-full font-mono" id="swap-item-comm-${idx}">...</span>
         </div>
 
-        <select ${isLocked ? 'disabled' : ''} onchange="onSwapStaffSelectChange(${idx}, this.value)" class="w-full bg-white border border-[#EFE8DF] rounded-lg p-2.5 text-xs font-bold text-[#2D2424] focus:outline-none focus:border-[#E58A7B] ${isLocked ? 'disabled:bg-[#F7F2EC] disabled:opacity-90 cursor-not-allowed' : 'cursor-pointer'}">
+        <select ${isLocked ? 'disabled' : ''} onchange="onSwapStaffSelectChange(${idx}, this.value)" class="w-full bg-white border border-[#EFE8DF] rounded-xl p-2.5 text-xs font-bold text-[#2D2424] focus:outline-none focus:border-[#E58A7B] ${isLocked ? 'disabled:bg-[#F7F2EC] disabled:opacity-90 cursor-not-allowed' : 'cursor-pointer'}">
           ${selectable.map(u => `
             <option value="${u.phone}" ${normalizePhone(u.phone) === normalizePhone(item.phone) ? 'selected' : ''}>${u.full_name}</option>
           `).join('')}
         </select>
 
         ${!isFirst ? `
-          <button type="button" onclick="removeStaffInSwapModal(${idx})" title="Xóa KTV này khỏi tour" class="absolute top-2 right-2 w-6 h-6 rounded-full bg-white border border-rose-300 text-rose-500 hover:bg-rose-500 hover:text-white flex items-center justify-center cursor-pointer active:scale-90 transition">
+          <!-- Tinh chỉnh thời gian tham gia của KTV phụ -->
+          <div class="pt-1.5 border-t border-[#F0EAE1]/80 flex flex-wrap items-center justify-between gap-2 text-[11px]">
+            <div class="flex items-center gap-1.5 flex-wrap">
+              <span class="text-[#7E7272]">⏱️ Làm từ phút:</span>
+              <input type="number" min="0" max="${targetMin - 1}" value="${joinedMin}" onchange="onSwapStaffJoinedMinChange(${idx}, this.value)" class="w-12 text-center bg-white border border-[#E58A7B]/40 rounded-lg p-1 text-xs font-bold font-mono text-[#2D2424] focus:outline-none focus:border-[#E58A7B]">
+              <span class="text-[#7E7272]">➔</span>
+              <input type="number" min="${joinedMin + 1}" max="${targetMin}" value="${leftMin}" onchange="onSwapStaffLeftMinChange(${idx}, this.value)" class="w-12 text-center bg-white border border-[#E58A7B]/40 rounded-lg p-1 text-xs font-bold font-mono text-[#E58A7B] focus:outline-none focus:border-[#E58A7B]">
+              <span class="text-[10px] text-[#A39696] font-mono">/ ${targetMin}p</span>
+            </div>
+
+            <label class="inline-flex items-center gap-1 cursor-pointer text-[11px] font-semibold text-[#7E7272] hover:text-[#E58A7B] select-none">
+              <input type="checkbox" ${isEarlyLeave ? 'checked' : ''} onchange="toggleSwapStaffEarlyLeave(${idx}, this.checked)" class="rounded text-[#E58A7B] focus:ring-0 cursor-pointer">
+              <span>Xong việc rời sớm</span>
+            </label>
+          </div>
+
+          <button type="button" onclick="removeStaffInSwapModal(${idx})" title="Xóa KTV này khỏi tour" class="absolute top-2.5 right-2.5 w-6 h-6 rounded-full bg-white border border-rose-300 text-rose-500 hover:bg-rose-500 hover:text-white flex items-center justify-center cursor-pointer active:scale-90 transition">
             <i data-lucide="minus" class="w-3.5 h-3.5 stroke-[2.5]"></i>
           </button>
         ` : ''}
@@ -1311,14 +1331,36 @@ function renderSwapModalStaffUI() {
   lucide.createIcons();
 }
 
-function onSwapStaffSelectChange(index, newPhone) {
-  const users = getSortedUsersList();
-  const u = users.find(user => normalizePhone(user.phone) === normalizePhone(newPhone));
-  if (u) {
-    tempSwapStaffs[index].phone = u.phone;
-    tempSwapStaffs[index].name = u.full_name;
-    tempSwapStaffs[index].user_id = u.user_id || u.phone;
-    tempSwapStaffs[index].staff_id = u.staff_id || (isUserOwner(u) ? 'FOUNDER_01' : 'KTV');
+function onSwapStaffJoinedMinChange(idx, val) {
+  const targetMin = currentLiveSession?.duration_target_min || 50;
+  const minVal = Math.max(0, Math.min(targetMin - 1, parseInt(val, 10) || 0));
+  tempSwapStaffs[idx].joined_min = minVal;
+  if ((tempSwapStaffs[idx].left_min || targetMin) <= minVal) {
+    tempSwapStaffs[idx].left_min = Math.min(targetMin, minVal + 5);
+  }
+  tempSwapStaffs[idx].is_midway = minVal > 0;
+  renderSwapModalStaffUI();
+  updateSwapPreviewDisplay();
+}
+
+function onSwapStaffLeftMinChange(idx, val) {
+  const targetMin = currentLiveSession?.duration_target_min || 50;
+  const joinedMin = tempSwapStaffs[idx].joined_min || 0;
+  const leftVal = Math.max(joinedMin + 1, Math.min(targetMin, parseInt(val, 10) || targetMin));
+  tempSwapStaffs[idx].left_min = leftVal;
+  renderSwapModalStaffUI();
+  updateSwapPreviewDisplay();
+}
+
+function toggleSwapStaffEarlyLeave(idx, isChecked) {
+  const targetMin = currentLiveSession?.duration_target_min || 50;
+  const elapsedSec = Math.max(1, Math.floor((Date.now() - currentLiveSession.start_timestamp) / 1000));
+  const elapsedMin = Math.floor(elapsedSec / 60);
+
+  if (isChecked) {
+    tempSwapStaffs[idx].left_min = Math.max((tempSwapStaffs[idx].joined_min || 0) + 1, Math.min(targetMin - 1, elapsedMin));
+  } else {
+    tempSwapStaffs[idx].left_min = targetMin;
   }
   renderSwapModalStaffUI();
   updateSwapPreviewDisplay();
@@ -1342,8 +1384,9 @@ function addStaffInSwapModal() {
     return;
   }
 
+  const targetMin = currentLiveSession?.duration_target_min || 50;
   const elapsedSec = Math.max(1, Math.floor((Date.now() - currentLiveSession.start_timestamp) / 1000));
-  const elapsedMin = Math.floor(elapsedSec / 60);
+  const elapsedMin = Math.max(1, Math.min(targetMin - 1, Math.floor(elapsedSec / 60)));
 
   const next = available[0];
   tempSwapStaffs.push({
@@ -1353,6 +1396,7 @@ function addStaffInSwapModal() {
     staff_id: next.staff_id || (isUserOwner(next) ? 'FOUNDER_01' : 'KTV'),
     pct: 0,
     joined_min: elapsedMin,
+    left_min: targetMin,
     is_midway: true
   });
 
@@ -1381,9 +1425,7 @@ function updateSwapPreviewDisplay() {
   if (!currentLiveSession || tempSwapStaffs.length === 0) return;
   const users = getSortedUsersList();
   const count = tempSwapStaffs.length;
-  const targetMin = currentLiveSession.duration_target_min || 45;
-  const elapsedSec = Math.max(1, Math.floor((Date.now() - currentLiveSession.start_timestamp) / 1000));
-  const elapsedMin = Math.floor(elapsedSec / 60);
+  const targetMin = currentLiveSession.duration_target_min || 50;
 
   const cUser = (typeof currentUser !== 'undefined' && currentUser) ? currentUser : null;
   const isAdmin = cUser ? (typeof isUserOwner === 'function' ? isUserOwner(cUser) : (cUser.role === 'admin' || cUser.role === 'owner')) : false;
@@ -1395,6 +1437,8 @@ function updateSwapPreviewDisplay() {
   if (count === 1) {
     const s = tempSwapStaffs[0];
     s.pct = 100;
+    s.joined_min = 0;
+    s.left_min = targetMin;
     const staffObj = users.find(u => normalizePhone(u.phone) === normalizePhone(s.phone));
     const rate = (staffObj && parsePercentage(staffObj?.commission_rate) > 0) ? parsePercentage(staffObj?.commission_rate) : 10;
     s.comm_vnd = Math.round(currentLiveSession.price * (rate / 100));
@@ -1414,25 +1458,68 @@ function updateSwapPreviewDisplay() {
       </div>
     `;
   } else if (currentSplitMode === 'timer') {
-    const midwayStaff = tempSwapStaffs.find(s => s.is_midway);
-    const joinMin = Math.min(targetMin, Math.max(1, midwayStaff ? (midwayStaff.joined_min || elapsedMin) : elapsedMin));
-    const remMin = Math.max(0, targetMin - joinMin);
+    // Thuật toán Boundary Intervals Partition Đa Giai Đoạn Linh Hoạt
+    tempSwapStaffs[0].joined_min = 0;
+    tempSwapStaffs[0].left_min = targetMin;
 
-    const earlyStaffs = tempSwapStaffs.filter(s => !s.is_midway);
-    const nEarly = earlyStaffs.length > 0 ? earlyStaffs.length : 1;
-    const nTotal = tempSwapStaffs.length;
+    const boundaries = new Set([0, targetMin]);
+    tempSwapStaffs.forEach(s => {
+      const jMin = Math.max(0, Math.min(targetMin - 1, s.joined_min || 0));
+      const lMin = Math.max(jMin + 1, Math.min(targetMin, s.left_min || targetMin));
+      s.joined_min = jMin;
+      s.left_min = lMin;
+      boundaries.add(jMin);
+      boundaries.add(lMin);
+    });
 
-    // Tính % theo thời gian thực tế tham gia
-    const earlyPct = Math.min(99, Math.max(1, Math.round(((joinMin + (remMin / nTotal)) / targetMin) * 100)));
-    const remTotalPct = Math.max(0, 100 - earlyPct);
-    const latePerPct = Math.floor(remTotalPct / (nTotal - nEarly > 0 ? (nTotal - nEarly) : 1));
+    const sortedBounds = Array.from(boundaries).sort((a, b) => a - b);
+    const stages = [];
+    const staffEffectiveMins = tempSwapStaffs.map(() => 0);
 
-    tempSwapStaffs.forEach((s, idx) => {
-      if (!s.is_midway) {
-        s.pct = earlyPct;
-      } else {
-        s.pct = latePerPct;
+    for (let i = 0; i < sortedBounds.length - 1; i++) {
+      const tStart = sortedBounds[i];
+      const tEnd = sortedBounds[i + 1];
+      const dur = tEnd - tStart;
+      if (dur <= 0) continue;
+
+      const activeStaffIndices = [];
+      tempSwapStaffs.forEach((s, sIdx) => {
+        if (s.joined_min <= tStart && s.left_min >= tEnd) {
+          activeStaffIndices.push(sIdx);
+        }
+      });
+
+      if (activeStaffIndices.length > 0) {
+        const perStaffDur = dur / activeStaffIndices.length;
+        activeStaffIndices.forEach(sIdx => {
+          staffEffectiveMins[sIdx] += perStaffDur;
+        });
+
+        stages.push({
+          stage_num: stages.length + 1,
+          start: tStart,
+          end: tEnd,
+          duration: dur,
+          active_indices: activeStaffIndices
+        });
       }
+    }
+
+    // Tính % và hoa hồng cho từng KTV
+    let totalPctAssigned = 0;
+    tempSwapStaffs.forEach((s, idx) => {
+      const effMin = staffEffectiveMins[idx];
+      s.pct = Math.round((effMin / targetMin) * 100);
+      totalPctAssigned += s.pct;
+    });
+
+    // Cân bằng sai số làm tròn để tổng đúng 100%
+    if (tempSwapStaffs.length > 0 && totalPctAssigned !== 100) {
+      tempSwapStaffs[0].pct += (100 - totalPctAssigned);
+    }
+
+    // Tính tiền theo % hoa hồng riêng của từng người từ tb_users
+    tempSwapStaffs.forEach((s, idx) => {
       const staffObj = users.find(u => normalizePhone(u.phone) === normalizePhone(s.phone));
       const rate = (staffObj && parsePercentage(staffObj?.commission_rate) > 0) ? parsePercentage(staffObj?.commission_rate) : 10;
       s.comm_vnd = Math.round(currentLiveSession.price * (rate / 100) * (s.pct / 100));
@@ -1443,34 +1530,34 @@ function updateSwapPreviewDisplay() {
       if (itemCommBadge) itemCommBadge.innerText = badgeText;
     });
 
+    // Render danh sách giai đoạn
+    const stageColors = ['#E58A7B', '#2E7D6D', '#D35400', '#6366F1', '#EC4899'];
     html = `
-      <div class="space-y-2.5">
-        <div class="p-2.5 rounded-xl bg-white border border-[#F0EAE1] space-y-1">
-          <div class="flex justify-between items-center text-[11px] font-bold text-[#E58A7B]">
-            <span>🔹 Giai đoạn 1: ${joinMin} phút đầu (${earlyStaffs.length} KTV làm)</span>
-          </div>
-          ${earlyStaffs.map((s) => `
-            <div class="flex justify-between items-center text-[11px] text-[#7E7272] pl-2">
-              <span>• ${s.name}:</span>
-              <span class="font-semibold text-[#2D2424]">${(isAdmin || normalizePhone(s.phone) === myPhone) ? `+${s.comm_vnd.toLocaleString('vi-VN')} đ` : `${s.pct}%`}</span>
+      <div class="space-y-2">
+        ${stages.map((stg, sIdx) => {
+          const color = stageColors[sIdx % stageColors.length];
+          const activeStaffs = stg.active_indices.map(idx => tempSwapStaffs[idx]);
+          return `
+            <div class="p-2.5 rounded-xl bg-white border border-[#F0EAE1] space-y-1">
+              <div class="flex justify-between items-center text-[11px] font-bold" style="color: ${color}">
+                <span>🔹 Giai đoạn ${stg.stage_num}: Phút ${stg.start} ➔ ${stg.end} (${stg.duration} phút)</span>
+                <span class="text-[#7E7272] font-normal text-[10px] font-mono">${activeStaffs.length} KTV</span>
+              </div>
+              ${activeStaffs.map(s => {
+                const isMe = normalizePhone(s.phone) === myPhone;
+                return `
+                  <div class="flex justify-between items-center text-[11px] text-[#7E7272] pl-2">
+                    <span>• ${s.name}${s.joined_min > 0 && s.joined_min === stg.start ? ' (Vào lúc này)' : ''}${s.left_min === stg.end && s.left_min < targetMin ? ' (Rời ca sau lúc này)' : ''}:</span>
+                    <span class="font-semibold text-[#2D2424] font-mono">${(isAdmin || isMe) ? `+${s.comm_vnd.toLocaleString('vi-VN')} đ` : `${s.pct}%`}</span>
+                  </div>
+                `;
+              }).join('')}
             </div>
-          `).join('')}
-        </div>
-
-        <div class="p-2.5 rounded-xl bg-white border border-[#F0EAE1] space-y-1">
-          <div class="flex justify-between items-center text-[11px] font-bold text-[#2E7D6D]">
-            <span>🔹 Giai đoạn 2: ${remMin} phút sau (${nTotal} KTV cùng làm)</span>
-          </div>
-          ${tempSwapStaffs.map((s) => `
-            <div class="flex justify-between items-center text-[11px] text-[#7E7272] pl-2">
-              <span>• ${s.name}${s.is_midway ? ' (Vào sau)' : ''}:</span>
-              <span class="font-semibold text-[#2D2424]">${(isAdmin || normalizePhone(s.phone) === myPhone) ? `+${s.comm_vnd.toLocaleString('vi-VN')} đ` : `${s.pct}%`}</span>
-            </div>
-          `).join('')}
-        </div>
+          `;
+        }).join('')}
 
         <div class="pt-1.5 border-t border-[#F0EAE1] space-y-1">
-          <div class="text-[11px] font-extrabold text-[#2D2424] uppercase tracking-wider">🏆 Dự Kiến Phân Bổ:</div>
+          <div class="text-[11px] font-extrabold text-[#2D2424] uppercase tracking-wider">🏆 Dự Kiến Phân Bổ Tổng:</div>
           ${tempSwapStaffs.map(s => {
             const isMe = normalizePhone(s.phone) === myPhone;
             const moneyStr = (isAdmin || isMe) ? `+${s.comm_vnd.toLocaleString('vi-VN')} đ ` : '';
@@ -1486,14 +1573,17 @@ function updateSwapPreviewDisplay() {
     `;
 
     const timerTextEl = document.getElementById('split-timer-pct');
-    if (timerTextEl) timerTextEl.innerText = `Theo giai đoạn (${joinMin}p đầu & ${remMin}p sau)`;
+    if (timerTextEl) timerTextEl.innerText = `Theo ${stages.length} giai đoạn thực tế`;
   } else {
+    // Chế độ chia đều
     const equalPct = Math.floor(100 / count);
     const remPct = 100 - (equalPct * count);
 
     tempSwapStaffs.forEach((s, idx) => {
       const isFirst = idx === 0;
       s.pct = equalPct + (isFirst ? remPct : 0);
+      s.joined_min = 0;
+      s.left_min = targetMin;
       const staffObj = users.find(u => normalizePhone(u.phone) === normalizePhone(s.phone));
       const rate = (staffObj && parsePercentage(staffObj?.commission_rate) > 0) ? parsePercentage(staffObj?.commission_rate) : 10;
       s.comm_vnd = Math.round(currentLiveSession.price * (rate / 100) * (s.pct / 100));
