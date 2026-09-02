@@ -1183,6 +1183,7 @@ function restoreLiveSessionIfExists() {
 let tempSwapStaffs = [];
 
 function openSwapStaffModal() {
+  setTimeout(() => { if (typeof lucide !== 'undefined') lucide.createIcons(); }, 50);
   if (!currentLiveSession) return;
   const users = getSortedUsersList();
 
@@ -1580,13 +1581,13 @@ function updateSwapPreviewDisplay() {
 
         <div class="pt-1.5 border-t border-[#F0EAE1] space-y-1">
           <div class="text-[11px] font-extrabold text-[#2D2424] uppercase tracking-wider">🏆 Dự Kiến Phân Bổ Tổng:</div>
-          ${tempSwapStaffs.map(s => {
+          ${tempSwapStaffs.map((s, sIdx) => {
             const isMe = normalizePhone(s.phone) === myPhone;
-            const moneyStr = (isAdmin || isMe) ? `+${s.comm_vnd.toLocaleString('vi-VN')} đ ` : '';
+            const roleTag = sIdx === 0 ? 'Chính' : 'Phụ';
             return `
               <div class="flex justify-between items-center text-xs font-bold">
-                <span class="text-[#2D2424]">${s.name}:</span>
-                <span class="text-[#2E7D6D] font-extrabold font-mono">${moneyStr}(${s.pct}%)</span>
+                <span class="text-[#2D2424]">${s.name} (${roleTag}):</span>
+                <span class="text-[#2E7D6D] font-extrabold font-mono">${(isAdmin || isMe) ? `+${s.comm_vnd.toLocaleString('vi-VN')} đ` : `${s.pct}%`}</span>
               </div>
             `;
           }).join('')}
@@ -1623,11 +1624,11 @@ function updateSwapPreviewDisplay() {
         </div>
         ${tempSwapStaffs.map((s, i) => {
           const isMe = normalizePhone(s.phone) === myPhone;
-          const moneyStr = (isAdmin || isMe) ? `+${s.comm_vnd.toLocaleString('vi-VN')} đ ` : '';
+          const roleTag = i === 0 ? 'Chính' : 'Phụ';
           return `
             <div class="flex justify-between items-center text-xs font-bold">
-              <span class="text-[#2D2424]">${s.name} (${i === 0 ? 'Chính' : 'Phụ'}):</span>
-              <span class="text-[#2E7D6D] font-extrabold font-mono">${moneyStr}(${s.pct}%)</span>
+              <span class="text-[#2D2424]">${s.name} (${roleTag}):</span>
+              <span class="text-[#2E7D6D] font-extrabold font-mono">${(isAdmin || isMe) ? `+${s.comm_vnd.toLocaleString('vi-VN')} đ` : `${s.pct}%`}</span>
             </div>
           `;
         }).join('')}

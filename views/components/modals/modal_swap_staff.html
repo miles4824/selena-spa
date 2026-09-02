@@ -3,18 +3,16 @@
   <div class="w-full max-w-md bg-white rounded-[32px] border border-[#F0EAE1] shadow-[0_25px_50px_-12px_rgba(45,36,36,0.15)] p-6 sm:p-7 relative space-y-4 my-auto max-h-[92vh] overflow-y-auto no-scrollbar">
     <div class="flex justify-between items-center">
       <h3 class="text-lg font-extrabold text-[#2D2424] flex items-center gap-2">
-        <i data-lucide="user-switch" class="w-5 h-5 text-[#E58A7B]"></i> Điều Chỉnh KTV Tour Này
+        <i data-lucide="users" class="w-5 h-5 text-[#E58A7B]"></i> Điều Chỉnh KTV Tour Này
       </h3>
       <button type="button" onclick="closeSwapStaffModal()" class="p-2 rounded-full bg-[#F7F2EC] hover:bg-[#FFF0EB] text-[#7E7272] hover:text-[#E58A7B] transition cursor-pointer">
         <i data-lucide="x" class="w-5 h-5"></i>
       </button>
     </div>
 
-    <p class="text-xs text-[#7E7272]">Bạn có thể đổi người, thêm hoặc bớt KTV đang phục vụ ca này và chọn hình thức phân chia hoa hồng phù hợp.</p>
-
     <!-- Dynamic Staff List in Swap Modal -->
     <div class="space-y-3">
-      <label class="block text-xs font-bold text-[#7E7272] uppercase tracking-wider">Danh Sách KTV Phục Vụ Tour Này</label>
+      <label class="block text-xs font-bold text-[#7E7272] uppercase tracking-wider">Danh Sách KTV đang làm</label>
       <div id="swap-modal-staff-container" class="space-y-2.5"></div>
 
       <button type="button" id="btn-swap-add-staff" onclick="addStaffInSwapModal()" class="w-full py-2.5 px-3 rounded-xl border border-dashed border-[#E58A7B]/60 hover:bg-[#FFF0EB] text-[#E58A7B] font-bold text-xs flex items-center justify-center gap-1.5 transition cursor-pointer">
