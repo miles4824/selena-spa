@@ -1450,12 +1450,16 @@ function updateSwapPreviewDisplay() {
     const itemCommBadge = document.getElementById('swap-item-comm-0');
     if (itemCommBadge) itemCommBadge.innerText = badgeText;
 
-    const moneyPart = (isAdmin || isMe) ? `+${s.comm_vnd.toLocaleString('vi-VN')} đ ` : '';
     html = `
-      <div class="space-y-1">
-        <div class="flex justify-between items-center text-[#2D2424] font-bold">
-          <span>${s.name} (100% trọn tour):</span>
-          <span class="text-[#2E7D6D] font-extrabold font-mono">${moneyPart}(100%)</span>
+      <div class="space-y-1.5">
+        <div class="text-[11px] font-extrabold text-[#2D2424] uppercase tracking-wider">🏆 Tổng thu nhập trong tour này:</div>
+        <div class="flex justify-between items-center text-xs text-[#7E7272]">
+          <span>• Làm trọn tour (${targetMin} phút):</span>
+          <span class="font-bold text-[#2D2424] font-mono">100%</span>
+        </div>
+        <div class="flex justify-between items-center pt-2 border-t border-[#F0EAE1] font-bold text-xs">
+          <span class="text-[#2D2424]">Tổng tiền nhận:</span>
+          <span class="text-sm font-extrabold text-[#2E7D6D] font-mono">+${s.comm_vnd.toLocaleString('vi-VN')} đ</span>
         </div>
       </div>
     `;
@@ -1495,10 +1499,9 @@ function updateSwapPreviewDisplay() {
       const nActive = activeStaffIndices.length;
       if (nActive > 0) {
         const perStaffDur = dur / nActive;
-        const stageWeight = dur / targetMin; // Tỷ trọng thời gian của giai đoạn này trên tổng tour
+        const stageWeight = dur / targetMin;
         const stagePrice = tourPrice * stageWeight;
 
-        // % chia đều trong nội bộ giai đoạn này
         const stageEqualPct = Math.floor(100 / nActive);
         const stageRemPct = 100 - (stageEqualPct * nActive);
 
@@ -1541,7 +1544,6 @@ function updateSwapPreviewDisplay() {
       totalPctAssigned += s.pct;
     });
 
-    // Cân bằng sai số làm tròn để tổng đúng 100%
     if (tempSwapStaffs.length > 0 && totalPctAssigned !== 100) {
       tempSwapStaffs[0].pct += (100 - totalPctAssigned);
     }
@@ -1554,8 +1556,10 @@ function updateSwapPreviewDisplay() {
       if (itemCommBadge) itemCommBadge.innerText = badgeText;
     });
 
-    // Render danh sách giai đoạn hiển thị rõ % của từng giai đoạn
+    // Render danh sách giai đoạn
     const stageColors = ['#E58A7B', '#2E7D6D', '#D35400', '#6366F1', '#EC4899'];
+    const myStaffEntry = tempSwapStaffs.find(s => normalizePhone(s.phone) === myPhone) || tempSwapStaffs[0];
+
     html = `
       <div class="space-y-2">
         ${stages.map((stg, sIdx) => {
@@ -1579,18 +1583,45 @@ function updateSwapPreviewDisplay() {
           `;
         }).join('')}
 
-        <div class="pt-1.5 border-t border-[#F0EAE1] space-y-1">
-          <div class="text-[11px] font-extrabold text-[#2D2424] uppercase tracking-wider">🏆 Dự Kiến Phân Bổ Tổng:</div>
-          ${tempSwapStaffs.map((s, sIdx) => {
-            const isMe = normalizePhone(s.phone) === myPhone;
-            const roleTag = sIdx === 0 ? 'Chính' : 'Phụ';
-            return `
-              <div class="flex justify-between items-center text-xs font-bold">
-                <span class="text-[#2D2424]">${s.name} (${roleTag}):</span>
-                <span class="text-[#2E7D6D] font-extrabold font-mono">${(isAdmin || isMe) ? `+${s.comm_vnd.toLocaleString('vi-VN')} đ` : `${s.pct}%`}</span>
-              </div>
-            `;
-          }).join('')}
+        <div class="pt-1.5 border-t border-[#F0EAE1] space-y-1.5">
+          <div class="text-[11px] font-extrabold text-[#2D2424] uppercase tracking-wider">🏆 Tổng thu nhập trong tour này:</div>
+          ${!isAdmin ? `
+            <!-- Giao diện KTV: Liệt kê từng giai đoạn của chính mình và Tổng tiền nhận -->
+            <div class="space-y-1 pl-1 text-xs">
+              ${stages.map(stg => {
+                const myStage = stg.active_staffs.find(st => normalizePhone(st.staff_phone) === myPhone);
+                if (!myStage) {
+                  return `
+                    <div class="flex justify-between items-center text-[#A39696]">
+                      <span>• Giai đoạn ${stg.stage_num} (${stg.duration}p):</span>
+                      <span class="font-mono text-[11px]">Không tham gia</span>
+                    </div>
+                  `;
+                }
+                return `
+                  <div class="flex justify-between items-center text-[#7E7272]">
+                    <span>• Giai đoạn ${stg.stage_num} (${stg.duration}p):</span>
+                    <span class="font-bold text-[#2D2424] font-mono">+${myStage.stage_comm.toLocaleString('vi-VN')} đ</span>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+            <div class="flex justify-between items-center pt-2 border-t border-[#F0EAE1] font-bold text-xs">
+              <span class="text-[#2D2424]">Tổng tiền nhận:</span>
+              <span class="text-sm font-extrabold text-[#2E7D6D] font-mono">+${(myStaffEntry.comm_vnd || 0).toLocaleString('vi-VN')} đ</span>
+            </div>
+          ` : `
+            <!-- Giao diện Admin: Xem chi tiết toàn bộ nhân sự -->
+            ${tempSwapStaffs.map((s, sIdx) => {
+              const roleTag = sIdx === 0 ? 'Chính' : 'Phụ';
+              return `
+                <div class="flex justify-between items-center text-xs font-bold">
+                  <span class="text-[#2D2424]">${s.name} (${roleTag}):</span>
+                  <span class="text-[#2E7D6D] font-extrabold font-mono">+${s.comm_vnd.toLocaleString('vi-VN')} đ</span>
+                </div>
+              `;
+            }).join('')}
+          `}
         </div>
       </div>
     `;
@@ -1617,21 +1648,31 @@ function updateSwapPreviewDisplay() {
       if (itemCommBadge) itemCommBadge.innerText = badgeText;
     });
 
+    const myStaffEntry = tempSwapStaffs.find(s => normalizePhone(s.phone) === myPhone) || tempSwapStaffs[0];
+
     html = `
       <div class="space-y-1.5">
-        <div class="text-[11px] font-bold text-[#7E7272] flex items-center gap-1">
-          <span>🤝 Cùng làm từ đầu (Chia đều trọn tour ${targetMin} phút):</span>
-        </div>
-        ${tempSwapStaffs.map((s, i) => {
-          const isMe = normalizePhone(s.phone) === myPhone;
-          const roleTag = i === 0 ? 'Chính' : 'Phụ';
-          return `
-            <div class="flex justify-between items-center text-xs font-bold">
-              <span class="text-[#2D2424]">${s.name} (${roleTag}):</span>
-              <span class="text-[#2E7D6D] font-extrabold font-mono">${(isAdmin || isMe) ? `+${s.comm_vnd.toLocaleString('vi-VN')} đ` : `${s.pct}%`}</span>
-            </div>
-          `;
-        }).join('')}
+        <div class="text-[11px] font-extrabold text-[#2D2424] uppercase tracking-wider">🏆 Tổng thu nhập trong tour này:</div>
+        ${!isAdmin ? `
+          <div class="flex justify-between items-center text-xs text-[#7E7272]">
+            <span>• Chia đều trọn tour (${targetMin}p):</span>
+            <span class="font-bold text-[#2D2424] font-mono">${myStaffEntry.pct}%</span>
+          </div>
+          <div class="flex justify-between items-center pt-2 border-t border-[#F0EAE1] font-bold text-xs">
+            <span class="text-[#2D2424]">Tổng tiền nhận:</span>
+            <span class="text-sm font-extrabold text-[#2E7D6D] font-mono">+${myStaffEntry.comm_vnd.toLocaleString('vi-VN')} đ</span>
+          </div>
+        ` : `
+          ${tempSwapStaffs.map((s, i) => {
+            const roleTag = i === 0 ? 'Chính' : 'Phụ';
+            return `
+              <div class="flex justify-between items-center text-xs font-bold">
+                <span class="text-[#2D2424]">${s.name} (${roleTag}):</span>
+                <span class="text-[#2E7D6D] font-extrabold font-mono">+${s.comm_vnd.toLocaleString('vi-VN')} đ</span>
+              </div>
+            `;
+          }).join('')}
+        `}
       </div>
     `;
 
