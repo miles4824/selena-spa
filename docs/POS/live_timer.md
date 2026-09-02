@@ -31,6 +31,7 @@ ightarrow$ Lưu `start_time` và cập nhật Firebase node `active_sessions/`.
 - **Ghi vào `tb_receipts`**: Cột C (`start_time`), Cột D (`end_time`), Cột E (`duration_min`).
 
 ## 6. Lịch Sử Thay Đổi & Lưu Vết (Audit Log)
+- `2026-09-02` (`v0.0.9.4`): Sửa logic lọc Firebase để KTV Phụ đã rời ca không bao giờ bị nhận lại tour đang chạy, tự động đóng đồng hồ đếm giờ và giải phóng về màn hình chính.
 - `2026-09-02` (`v0.0.9.3`): Khắc phục lỗi hàm đồng bộ Firebase `fbSaveLiveSession`, đảm bảo máy KTV Chính nhận dữ liệu cập nhật % và tiền hoa hồng tức thì khi KTV Phụ bấm rời ca sớm.
 - `2026-09-02` (`v0.0.9.2`): Đồng bộ thời gian thực trạng thái rời ca sớm sang Firebase để màn hình KTV Chính cập nhật tức thì; chip KTV phụ hiển thị trạng thái `Đã xong p.X`.
 - `2026-09-02` (`v0.0.9.1`): Khắc phục lỗi biến `isAdmin` chưa khai báo trong `renderLiveSessionUI`, đảm bảo các nút chip `Đổi / Thêm KTV` và `Bàn Giao ca` luôn hiển thị đầy đủ và hoạt động mượt mà.

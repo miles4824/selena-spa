@@ -1171,6 +1171,25 @@ function renderLiveSessionUI() {
     return;
   }
 
+  const cUser = (typeof currentUser !== 'undefined' && currentUser) ? currentUser : null;
+  const myPhone = (cUser && cUser.phone) ? normalizePhone(cUser.phone) : '';
+  const isAdmin = cUser ? (typeof isUserOwner === 'function' ? isUserOwner(cUser) : (cUser.role === 'admin' || cUser.role === 'owner')) : false;
+
+  const staffs = currentLiveSession.staffs || [
+    { phone: currentLiveSession.staff_1_phone, name: currentLiveSession.staff_1_name, pct: 100 }
+  ];
+  const myStaffEntry = staffs.find(s => normalizePhone(s.phone) === myPhone);
+
+  // Nếu user là KTV Phụ và đã rời ca -> Thoát ngay màn hình đếm số
+  if (myStaffEntry && myStaffEntry.left_early && !isAdmin) {
+    currentLiveSession = null;
+    localStorage.removeItem('selena_active_live_session');
+    clearInterval(liveTimerInterval);
+    if (liveCard) liveCard.classList.add('hidden');
+    if (formBox) formBox.classList.remove('hidden');
+    return;
+  }
+
   if (liveCard) liveCard.classList.remove('hidden');
   if (formBox) formBox.classList.add('hidden');
 
@@ -1433,19 +1452,27 @@ function renderSwapModalStaffUI() {
 
         ${!isFirst ? `
           <!-- Tinh chỉnh thời gian tham gia của KTV phụ -->
-          <div class="pt-1.5 border-t border-[#F0EAE1]/80 flex flex-wrap items-center justify-between gap-2 text-[11px]">
-            <div class="flex items-center gap-1.5 flex-wrap">
-              <span class="text-[#7E7272]">⏱️ Làm từ phút:</span>
-              <input type="number" min="0" max="${targetMin - 1}" value="${joinedMin}" onchange="onSwapStaffJoinedMinChange(${idx}, this.value)" class="w-12 text-center bg-white border border-[#E58A7B]/40 rounded-lg p-1 text-xs font-bold font-mono text-[#2D2424] focus:outline-none focus:border-[#E58A7B]">
-              <span class="text-[#7E7272]">➔</span>
-              <input type="number" min="${joinedMin + 1}" max="${targetMin}" value="${leftMin}" onchange="onSwapStaffLeftMinChange(${idx}, this.value)" class="w-12 text-center bg-white border border-[#E58A7B]/40 rounded-lg p-1 text-xs font-bold font-mono text-[#E58A7B] focus:outline-none focus:border-[#E58A7B]">
-              <span class="text-[10px] text-[#A39696] font-mono">/ ${targetMin}p</span>
+          <div class="pt-1.5 border-t border-[#F0EAE1]/80 space-y-2 text-[11px]">
+            <div class="flex items-center justify-between gap-2 flex-wrap">
+              <div class="flex items-center gap-1.5">
+                <span class="text-[#7E7272]">⏱️ Làm từ phút:</span>
+                <input type="number" min="0" max="${targetMin - 1}" value="${joinedMin}" onchange="onSwapStaffJoinedMinChange(${idx}, this.value)" class="w-12 text-center bg-white border border-[#E58A7B]/40 rounded-lg p-1 text-xs font-bold font-mono text-[#2D2424] focus:outline-none focus:border-[#E58A7B]">
+                <span class="text-[#7E7272]">➔</span>
+                <input type="number" min="${joinedMin + 1}" max="${targetMin}" value="${leftMin}" onchange="onSwapStaffLeftMinChange(${idx}, this.value)" class="w-12 text-center bg-white border border-[#E58A7B]/40 rounded-lg p-1 text-xs font-bold font-mono text-[#E58A7B] focus:outline-none focus:border-[#E58A7B]">
+                <span class="text-[10px] text-[#A39696] font-mono">/ ${targetMin}p</span>
+              </div>
+
+              <label class="inline-flex items-center gap-1 cursor-pointer text-[11px] font-semibold text-[#7E7272] hover:text-[#E58A7B] select-none">
+                <input type="checkbox" ${item.left_early || leftMin < targetMin ? 'checked' : ''} onchange="toggleSwapStaffEarlyLeave(${idx}, this.checked)" class="rounded text-[#E58A7B] focus:ring-0 cursor-pointer">
+                <span>Xong việc rời sớm</span>
+              </label>
             </div>
 
-            <label class="inline-flex items-center gap-1 cursor-pointer text-[11px] font-semibold text-[#7E7272] hover:text-[#E58A7B] select-none">
-              <input type="checkbox" ${item.left_early || leftMin < targetMin ? 'checked' : ''} onchange="toggleSwapStaffEarlyLeave(${idx}, this.checked)" class="rounded text-[#E58A7B] focus:ring-0 cursor-pointer">
-              <span>Xong việc rời sớm</span>
-            </label>
+            <!-- Nút bấm trực tiếp rời tour sớm trong modal -->
+            <button type="button" onclick="triggerEarlyLeaveInSwapModal(${idx})" class="w-full py-2 px-3 rounded-xl border ${item.left_early ? 'border-[#2E7D6D] bg-[#E8F8F5] text-[#2E7D6D]' : 'border-[#E58A7B] bg-[#FFF0EB] text-[#E58A7B]'} hover:opacity-90 font-bold text-xs flex items-center justify-center gap-1.5 transition active:scale-95 cursor-pointer">
+              <i data-lucide="${item.left_early ? 'check-circle' : 'log-out'}" class="w-3.5 h-3.5"></i>
+              <span>${item.left_early ? `Đã xác nhận rời ca phút thứ ${leftMin} (Bấm để hủy)` : '🏃 Bấm Xác Nhận Xong Việc Rời Ca Ngay'}</span>
+            </button>
           </div>
 
           <button type="button" onclick="removeStaffInSwapModal(${idx})" title="Xóa KTV này khỏi tour" class="absolute top-2.5 right-2.5 w-6 h-6 rounded-full bg-white border border-rose-300 text-rose-500 hover:bg-rose-500 hover:text-white flex items-center justify-center cursor-pointer active:scale-90 transition">
@@ -2944,4 +2971,23 @@ Khi KTV chính hoàn thành và chốt ca, hoa hồng + tip sẽ được tự �
   if (typeof showView === 'function') {
     showView('home');
   }
+}
+
+function triggerEarlyLeaveInSwapModal(idx) {
+  const targetMin = currentLiveSession?.duration_target_min || 50;
+  const elapsedSec = Math.max(0, Math.floor((Date.now() - currentLiveSession.start_timestamp) / 1000));
+  const elapsedMin = Math.max(1, Math.floor(elapsedSec / 60));
+
+  if (!tempSwapStaffs[idx].left_early) {
+    tempSwapStaffs[idx].left_early = true;
+    tempSwapStaffs[idx].left_min = Math.max((tempSwapStaffs[idx].joined_min || 0) + 1, Math.min(targetMin, elapsedMin));
+    tempSwapStaffs[idx].left_at_min = tempSwapStaffs[idx].left_min;
+  } else {
+    tempSwapStaffs[idx].left_early = false;
+    tempSwapStaffs[idx].left_min = targetMin;
+  }
+  currentSplitMode = 'timer';
+  renderSwapModalStaffUI();
+  updateSplitButtonsUI();
+  updateSwapPreviewDisplay();
 }

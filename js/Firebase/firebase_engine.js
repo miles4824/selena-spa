@@ -131,16 +131,25 @@ function setupRealtimeListeners() {
 
     if (sessionsObj) {
       const allSessions = Object.values(sessionsObj).filter(Boolean);
-      // Tìm tour mà KTV hiện tại đang tham gia làm (Kiểm tra phone chặt chẽ, chống rỗng)
+      // Tìm tour mà KTV hiện tại đang tham gia làm (Ưu tiên kiểm tra trạng thái rời ca)
       const mySession = allSessions.find(s => {
         const sId = String(s.session_id || s.start_timestamp || '');
         if (dismissedSessionIds.has(sId)) return false;
         if (!myPhone) return false;
-        if (s.active_staff_phone && normalizePhone(s.active_staff_phone) === myPhone) return true;
-        if (s.staff_1_phone && normalizePhone(s.staff_1_phone) === myPhone) return true;
-        if (s.staffs && Array.isArray(s.staffs)) {
-          return s.staffs.some(st => st.phone && normalizePhone(st.phone) === myPhone && !st.left_early);
+
+        // Nếu có mảng staffs chi tiết
+        if (s.staffs && Array.isArray(s.staffs) && s.staffs.length > 0) {
+          const myEntry = s.staffs.find(st => st && st.phone && normalizePhone(st.phone) === myPhone);
+          if (myEntry) {
+            // Nếu KTV này đã rời ca sớm -> Tuyệt đối không nhận session này
+            if (myEntry.left_early) return false;
+            return true;
+          }
         }
+
+        // KTV Chính khởi tạo tour
+        if (s.staff_1_phone && normalizePhone(s.staff_1_phone) === myPhone) return true;
+        if (s.active_staff_phone && normalizePhone(s.active_staff_phone) === myPhone) return true;
         return false;
       });
 
