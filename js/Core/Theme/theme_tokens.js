@@ -17,7 +17,8 @@ const THEME_TOKENS = {
   COLOR_DISABLED: '#B8ACA2',
   COLOR_CASH: '#D35400',
 
-  // 🔤 Typography Tokens (2 Họ Font Google Fonts Thực Tế Duy Nhất Trong Dự Án)
-  FONT_HEADING: "'Literata', serif",
-  FONT_BODY: "'Plus Jakarta Sans', sans-serif"
+  // 🔤 Typography Tokens (Google Fonts Chính Thức)
+  FONT_HEADING: "'Playfair Display', serif",
+  FONT_BODY: "'Plus Jakarta Sans', sans-serif",
+  FONT_MONO: "'JetBrains Mono', monospace"
 };

@@ -14,7 +14,7 @@ function renderStaffHistoryCard(item, cleanTime, durStatus, partnerNameStr, myCo
         ` : ''}
         <div class="flex justify-between items-center text-[#7E7272]">
           <span>Tiền tour:</span>
-          <span class="text-[#2E7D6D] font-extrabold">+${myComm.toLocaleString('vi-VN')} đ</span>
+          <span class="text-[#2E7D6D] font-extrabold font-mono">+${myComm.toLocaleString('vi-VN')} đ</span>
         </div>
         ${myTip > 0 ? `
           <div class="flex justify-between items-center text-[#E58A7B] font-bold pt-0.5 border-t border-[#F0EAE1]">
@@ -22,7 +22,7 @@ function renderStaffHistoryCard(item, cleanTime, durStatus, partnerNameStr, myCo
               <i data-lucide="gift" class="w-3.5 h-3.5 text-[#E58A7B]"></i>
               <span>Tiền tip:</span>
             </span>
-            <span class="font-extrabold">+${myTip.toLocaleString('vi-VN')} đ</span>
+            <span class="font-extrabold font-mono">+${myTip.toLocaleString('vi-VN')} đ</span>
           </div>
         ` : ''}
       </div>
@@ -33,14 +33,14 @@ function renderStaffHistoryCard(item, cleanTime, durStatus, partnerNameStr, myCo
     <div class="flex gap-3.5 items-center">
       <div class="text-right w-12 shrink-0 py-1">
         <span class="text-xs font-extrabold text-[#2D2424] block font-mono leading-tight">${cleanTime}</span>
-        <span class="text-[10px] ${durStatus.colorClass} font-extrabold block font-mono leading-tight mt-0.5" title="${durStatus.title}">${durStatus.label}</span>
+        <span class="text-xs ${durStatus.colorClass} font-extrabold block font-mono leading-tight mt-0.5" title="${durStatus.title}">${durStatus.label}</span>
       </div>
 
       <div class="bg-white rounded-[28px] border border-[#F0EAE1] shadow-[0_10px_30px_-5px_rgba(229,138,123,0.05),0_4px_12px_rgba(0,0,0,0.02)] p-3.5 flex-1 space-y-2.5 min-w-0">
         <div class="space-y-1">
           <div class="flex justify-between items-center gap-2">
             <h4 class="font-bold text-[#2D2424] text-sm truncate">${item.service_name}</h4>
-            <span class="text-sm font-extrabold text-[#2E7D6D] whitespace-nowrap shrink-0">+${totalEarn.toLocaleString('vi-VN')} đ</span>
+            <span class="text-sm font-extrabold text-[#2E7D6D] whitespace-nowrap shrink-0 font-mono">+${totalEarn.toLocaleString('vi-VN')} đ</span>
           </div>
 
           <div class="flex items-center justify-between gap-1.5 text-[11px] text-[#7E7272] flex-wrap">

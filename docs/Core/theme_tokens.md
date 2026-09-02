@@ -10,7 +10,7 @@
 ## 2. Danh Sách File Cấu Thành (HTML, JS & CSS)
 - **File Định Nghĩa Mã Màu Core**: `js/Core/Theme/theme_tokens.js`
 - **Cấu hình Tailwind CSS & Typography**: `index.html` (Khối `<script>` Tailwind CDN)
-- **Tài Nguyên Font Chữ Trực Tuyến**: Google Fonts (*Literata* & *Plus Jakarta Sans*)
+- **Tài Nguyên Font Chữ Trực Tuyến**: Google Fonts (*Playfair Display* 400..900, *Plus Jakarta Sans* 200..800, *JetBrains Mono* 100..800)
 - **File Đặc Tả Kỹ Thuật**: `docs/Core/theme_tokens.md`
 
 ---
@@ -39,13 +39,16 @@
 
 ## 4. Hệ Thống Typography (Font Chữ) & Bo Góc (Border Radius)
 
-### 4.1. Hệ Thống Font Chữ (Chính Xác 2 Họ Font Duy Nhất):
-1. **Font Tiêu Đề (`font-serif`)**: *Literata* (Google Fonts)
-   - Áp dụng trong `css/style.css`: Cho toàn bộ thẻ tiêu đề `h1, h2, h3`, `.font-heading`, `.font-serif-luxury`.
-   - Phong cách: Sang trọng, quý phái chuẩn Spa cao cấp.
-2. **Font Nội Dung & Nhập Liệu (`font-sans`)**: *Plus Jakarta Sans* (Google Fonts)
+### 4.1. Hệ Thống Font Chữ (3 Họ Font Chuẩn):
+1. **Font Tiêu Đề (`font-serif`)**: *Playfair Display* (Google Fonts 400..900)
+   - Áp dụng cho: Toàn bộ thẻ tiêu đề `h1, h2, h3`, `.font-heading`, `.font-serif-luxury`.
+   - Phong cách: Đẳng cấp, sang trọng quý phái chuẩn Luxury Spa.
+2. **Font Nội Dung & Nhập Liệu (`font-sans`)**: *Plus Jakarta Sans* (Google Fonts 200..800)
    - Áp dụng cho: Toàn trang (`body`), các ô input, tên khách hàng, SĐT, danh sách dịch vụ, nút bấm.
    - Phong cách: Tròn trịa, hiện đại, sắc nét tuyệt đối trên mọi màn hình di động.
+3. **Font Số Tiền & Kỹ Thuật (`font-mono`)**: *JetBrains Mono* (Google Fonts 100..800)
+   - Áp dụng cho: Toàn bộ số tiền (`+24.900 đ`), giờ bắt đầu (`21:59`), thời lượng (`23p`), đồng hồ đếm ngược (`00:00`), mã hóa đơn (`HD842235`).
+   - Phong cách: Số monospaced thẳng hàng tuyệt đối, sắc sảo và hiện đại.
 
 ### 4.2. Hệ Thống Bo Góc (Border Radius Standards):
 - **`rounded-3xl` (24px - 28px)**: Dùng cho Thẻ Card bao ngoài lớn (`live-session-card`, `pos-form-box`, Modals).
@@ -67,5 +70,6 @@
 - `2026-09-02` (`v0.0.5.0`):
 - `2026-09-02` (`v0.0.5.4`):
 - `2026-09-02` (`v0.0.5.6`):
+- `2026-09-02` (`v0.0.6.2`): Nạp đầy đủ 3 họ Google Fonts với toàn bộ dải Weights: Playfair Display (400..900), Plus Jakarta Sans (200..800) và JetBrains Mono (100..800).
 - `2026-09-02` (`v0.0.5.8`): Xóa bỏ hoàn toàn mọi tham chiếu JetBrains Mono, tối ưu hệ thống nhẹ nhàng và minh bạch.
 - `2026-09-02` (`v0.0.5.7`): Nạp đầy đủ dải độ dày 200..900 cho Font Literata, tinh chỉnh độ đậm tiêu đề thanh thoát chuẩn Luxury Spa và áp dụng class `uppercase tracking-wider` cho các tiêu đề chính. Đính chính chính xác dự án chỉ sử dụng duy nhất 2 họ font thực tế là Literata và Plus Jakarta Sans, loại bỏ hoàn toàn tên gọi JetBrains Mono thừa. Bổ sung đầy đủ định nghĩa Font-family tokens (Literata, Plus Jakarta Sans, JetBrains Mono) vào THEME_TOKENS. Khởi tạo tài liệu đặc tả chuẩn hóa Hệ thống Giao diện & Bảng mã màu thương hiệu (Theme Tokens & Design System).

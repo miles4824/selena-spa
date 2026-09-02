@@ -1,6 +1,3 @@
-/* =============================================================
-   SELENA SPA - LUXURY WELLNESS THEME (TAILWIND CSS 4 NATIVE)
-   ============================================================= */
 :root {
   --sticky-date-offset: 130px;
 }
@@ -14,13 +11,17 @@ body {
 }
 
 h1, h2, h3, .font-heading, .font-serif-luxury {
-  font-family: 'Literata', serif;
+  font-family: 'Playfair Display', serif;
   letter-spacing: 0.02em;
 }
 
 h4, h5, h6 {
   font-family: 'Plus Jakarta Sans', sans-serif;
   letter-spacing: -0.01em;
+}
+
+.font-mono, [class*="font-mono"] {
+  font-family: 'JetBrains Mono', monospace !important;
 }
 
 /* Luxury View Transition Animation */
