@@ -1,3 +1,16 @@
+
+function parseDurationVal(val, defaultVal) {
+  if (!val && val !== 0) return defaultVal || 45;
+  if (val instanceof Date) {
+    return (val.getHours() * 60) + val.getMinutes();
+  }
+  let num = parseFloat(val);
+  if (isNaN(num) || num <= 0 || num > 1000) {
+    return defaultVal || 45;
+  }
+  return Math.round(num);
+}
+
 function parseCurrency(val) {
   if (!val) return 0;
   if (typeof val === 'number') return isNaN(val) ? 0 : val;
@@ -1346,7 +1359,7 @@ function syncAllData(params) {
         let rDate = formatDateVal(getCell(r, colMapR, ['date', 'ngay']));
         let startTime = formatTimeVal(getCell(r, colMapR, ['start_time', 'time', 'gio_bat_dau']));
         let endTime = formatTimeVal(getCell(r, colMapR, ['end_time', 'gio_ket_thuc']));
-        let durationMin = Number(getCell(r, colMapR, ['duration_min', 'duration'], 45)) || 45;
+        let durationMin = parseDurationVal(getCell(r, colMapR, ['duration_min', 'duration'], 45), 45);
         let cPhone = getCell(r, colMapR, ['customer_phone', 'phone']);
         let cName = String(getCell(r, colMapR, ['customer_name', 'ten_khach']));
         let sId = String(getCell(r, colMapR, ['service_id', 'combo_id']));
@@ -1456,7 +1469,7 @@ function syncAllData(params) {
           date: formatDateVal(getCell(r, colMapP, ['date', 'ngay'])),
           start_time: formatTimeVal(getCell(r, colMapP, ['start_time', 'gio_bat_dau', 'time'])),
           end_time: formatTimeVal(getCell(r, colMapP, ['end_time', 'gio_ket_thuc'])),
-          duration_min: Number(getCell(r, colMapP, ['duration_min', 'thoi_luong_phut', 'thoi_luong'], 45)) || 45,
+          duration_min: parseDurationVal(getCell(r, colMapP, ['duration_min', 'thoi_luong_phut', 'thoi_luong'], 45), 45),
           customer_name: String(getCell(r, colMapP, ['customer_name', 'ten_khach'])),
           service_name: String(getCell(r, colMapP, ['service_name', 'ten_combo', 'dich_vu'])),
           price: parseCurrency(getCell(r, colMapP, ['price', 'gia', 'don_gia'])),

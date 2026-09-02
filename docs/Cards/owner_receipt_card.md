@@ -23,6 +23,7 @@ ightarrow$ Bấm vào mở `modal_owner_customer.html` (Toàn quyền sửa).
 
 ## 6. Lịch Sử Thay Đổi & Lưu Vết (Audit Log)
 - `2026-09-02` (`v0.0.7.9`): Sắp xếp danh sách hóa đơn theo thứ tự thời gian giảm dần (Mới nhất hiển thị trên cùng).
+- `2026-09-02` (`v0.0.9.8`): Lọc sạch giá trị thời lượng hiển thị trên trục thời gian, đảm bảo không bao giờ bị dính số âm timestamp mili-giây từ Google Sheets.
 - `2026-09-02` (`v0.0.8.7`): Khắc phục triệt để lỗi đảo ngược thứ tự KTV khi lưu `payroll_logs` (thay `forEach unshift` bằng `unshift(...newLogs)`), đảm bảo KTV `Chính` luôn nằm ở dòng đầu tiên, theo sau là các KTV `Phụ`.
 - `2026-09-02` (`v0.0.8.5`): Đảm bảo 100% các dòng KTV trên thẻ lịch sử luôn hiển thị đầy đủ nhãn `(Chính)` / `(Phụ)` tức thì ngay sau khi lưu ca.
 - `2026-09-02` (`v0.0.8.2`): Rút gọn nhãn vai trò KTV thành `(Chính)` và `(Phụ)` ngắn gọn, tinh gọn thẻ lịch sử.

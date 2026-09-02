@@ -1,3 +1,32 @@
+
+function parseCleanDurationMin(val, startTime, endTime, fallbackMin = 45) {
+  if (val instanceof Date) {
+    val = val.getMinutes() + (val.getHours() * 60);
+  }
+  let num = parseFloat(val);
+  // Nếu num bị âm (như timestamp -2209099324000 từ mốc 1899-12-30 của Google Sheets) hoặc quá lớn (> 1000 phút)
+  if (isNaN(num) || num <= 0 || num > 1000) {
+    if (startTime && endTime) {
+      try {
+        const parseTime = (tStr) => {
+          const match = String(tStr).match(/(\d{1,2}):(\d{2})/);
+          if (match) return parseInt(match[1], 10) * 60 + parseInt(match[2], 10);
+          return null;
+        };
+        const sM = parseTime(startTime);
+        const eM = parseTime(endTime);
+        if (sM !== null && eM !== null) {
+          let diff = eM - sM;
+          if (diff < 0) diff += 1440;
+          if (diff > 0 && diff < 1000) return diff;
+        }
+      } catch(e) {}
+    }
+    return fallbackMin || 45;
+  }
+  return Math.round(num);
+}
+
 function matchPhone(p1, p2) { return isSamePhone(p1, p2); }
 function isSamePhone(p1, p2) {
   if (!p1 || !p2) return false;
@@ -51,7 +80,7 @@ function parseBirthMonth(val) {
   return 0;
 }
 
-const APP_VERSION = 'v0.0.9.7';
+const APP_VERSION = 'v0.0.9.8';
 // =============================================================
 // SELENA SPA - GLOBAL CONFIG & CONSTANTS
 // =============================================================
@@ -208,7 +237,8 @@ function getReceiptDurationStatus(r) {
     }
   }
 
-  const actualMin = Number(r.duration_min) || Number(r.duration_actual_min) || 45;
+  const rawActual = r.duration_min !== undefined ? r.duration_min : (r.duration_actual_min !== undefined ? r.duration_actual_min : 45);
+  const actualMin = parseCleanDurationMin(rawActual, r.start_time, r.end_time || r.time, targetMin);
   const isFullTime = actualMin >= targetMin;
 
   return {
