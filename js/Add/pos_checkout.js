@@ -1384,16 +1384,13 @@ function openSwapStaffModal(isLeaveEarlyMode = false) {
   const isAdmin = cUser ? (typeof isUserOwner === 'function' ? isUserOwner(cUser) : (cUser.role === 'admin' || cUser.role === 'owner')) : false;
   const targetMin = currentLiveSession.duration_target_min || 50;
 
-  const elapsedSec = Math.max(0, Math.floor((Date.now() - (currentLiveSession?.start_timestamp || Date.now())) / 1000));
-  const currentElapsedMin = Math.max(1, Math.min(targetMin, Math.floor(elapsedSec / 60) + (elapsedSec % 60 >= 30 ? 1 : 0)));
-
   if (!tempSwapStaffs || tempSwapStaffs.length === 0 || !isLeaveEarlyMode) {
     tempSwapStaffs = (currentLiveSession.staffs || [
       { phone: currentLiveSession.staff_1_phone, name: currentLiveSession.staff_1_name, pct: 100, joined_min: 0 }
     ]).map(s => {
       const copy = { ...s };
-      if (!copy.left_early && (!copy.left_min || copy.left_min === targetMin)) {
-        copy.left_min = Math.max((copy.joined_min || 0) + 1, currentElapsedMin);
+      if (!copy.left_early) {
+        copy.left_min = copy.left_min && copy.left_min < targetMin ? copy.left_min : targetMin;
       }
       return copy;
     });
@@ -1583,7 +1580,7 @@ function renderSwapModalStaffUI() {
                 </label>
               </div>
 
-              <button type="button" onclick="triggerEarlyLeaveInSwapModal(${idx})" class="w-full py-2.5 px-3 rounded-xl border border-[#E58A7B] bg-[#FFF0EB] hover:bg-[#FFE5DC] text-[#E58A7B] font-bold text-xs flex items-center justify-center gap-1.5 transition active:scale-95 cursor-pointer">
+              <button type="button" onclick="triggerEarlyLeaveInSwapModal(${idx})" class="${item.left_early ? '' : 'hidden'} w-full py-2.5 px-3 rounded-xl border border-[#E58A7B] bg-[#FFF0EB] hover:bg-[#FFE5DC] text-[#E58A7B] font-bold text-xs flex items-center justify-center gap-1.5 transition active:scale-95 cursor-pointer">
                 <i data-lucide="log-out" class="w-3.5 h-3.5 shrink-0"></i>
                 <span>Xong Việc Rời Tour Sớm</span>
               </button>
