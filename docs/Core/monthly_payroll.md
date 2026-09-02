@@ -15,6 +15,7 @@
 - **Bảng Google Sheets**: `tb_payroll_logs` (lọc theo cột `date` và `staff_phone`).
 
 ## 5. Lịch Sử Thay Đổi & Lưu Vết (Audit Log)
+- `2026-09-02` (`v0.0.8.3`): Cập nhật `google_apps_script/Code.gs` đồng bộ 100% với Frontend: ghi nhận `role_in_tour` chuẩn hóa thành `Chính` và `Phụ`, hỗ trợ mảng $N$ KTV động.
 - `2026-09-02` (`v0.0.7.8`): Đảm bảo `gas_api.js` lưu toàn bộ mảng `payload.payroll_logs` vào `localStorage` khi đồng bộ từ Google Sheets.
 - `2026-09-02` (`v0.0.7.6`): Khắc phục việc tạo tức thì các bản ghi `payroll_logs` tương ứng với `receipts` trong localStorage ngay khi hoàn tất hóa đơn.
 - `2026-09-01` (`v0.0.0.1`): Chuẩn hóa chu kỳ tính lương 1 - 30.

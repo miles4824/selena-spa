@@ -808,7 +808,7 @@ function createReceipt(params) {
           phone: normalizePhone(st.phone || st.user_id),
           staff_id: st.staff_id || (st.is_owner ? 'FOUNDER_01' : `KTV0${idx+1}`),
           name: st.name || `KTV ${idx+1}`,
-          role: idx === 0 ? 'KTV 1 (Chính)' : `KTV ${idx+1} (Cùng làm)`,
+          role: st.role || (idx === 0 ? 'Chính' : 'Phụ'),
           pct: Number(st.pct) || Math.round(100 / params.staffs.length),
           comm: Number(st.comm_vnd || st.comm) || 0,
           tip: Number(st.tip_vnd || st.tip) || 0
@@ -820,19 +820,19 @@ function createReceipt(params) {
     const defPct = Math.floor(100 / nStaffs);
     if (s1Phone) {
       payrollList.push({
-        phone: s1Phone, staff_id: s1Id, name: s1Name, role: 'KTV 1 (Chính)',
+        phone: s1Phone, staff_id: s1Id, name: s1Name, role: 'Chính',
         pct: params.staff_1_pct !== undefined ? Number(params.staff_1_pct) : (nStaffs === 1 ? 100 : (nStaffs === 2 ? 50 : 34)), comm: s1Comm, tip: s1Tip
       });
     }
     if (s2Phone && s2Phone !== '-') {
       payrollList.push({
-        phone: s2Phone, staff_id: s2Id, name: s2Name, role: 'KTV 2 (Cùng làm)',
+        phone: s2Phone, staff_id: s2Id, name: s2Name, role: 'Phụ',
         pct: params.staff_2_pct !== undefined ? Number(params.staff_2_pct) : (nStaffs === 2 ? 50 : 33), comm: s2Comm, tip: s2Tip
       });
     }
     if (s3Phone && s3Phone !== '-') {
       payrollList.push({
-        phone: s3Phone, staff_id: s3Id, name: s3Name, role: 'KTV 3 (Cùng làm)',
+        phone: s3Phone, staff_id: s3Id, name: s3Name, role: 'Phụ',
         pct: Number(params.staff_3_pct) || 0, comm: s3Comm, tip: s3Tip
       });
     }
@@ -1380,7 +1380,7 @@ function syncAllData(params) {
               name: pName,
               phone: '',
               staff_id: `KTV0${pIdx+1}`,
-              role: pIdx === 0 ? 'KTV 1 (Chính)' : `KTV ${pIdx+1} (Cùng làm)`
+              role: pIdx === 0 ? 'Chính' : 'Phụ'
             });
           });
         }
@@ -1870,7 +1870,7 @@ function backfillPayrollLogs() {
       sheetPayroll.appendRow([
         rId + '_S1', rId, dateStr, startTime, endTime, durationMin,
         customerName, serviceName, price, s1Phone, s1Id || 'KTV01',
-        s1Name || 'KTV 1', 'KTV 1 (Chính)', '100%', s1Comm, s1Tip, (s1Comm + s1Tip),
+        s1Name || 'KTV 1', 'Chính', '100%', s1Comm, s1Tip, (s1Comm + s1Tip),
         paymentMethod, createdAt
       ]);
       countAdded++;
@@ -1887,7 +1887,7 @@ function backfillPayrollLogs() {
       sheetPayroll.appendRow([
         rId + '_S2', rId, dateStr, startTime, endTime, durationMin,
         customerName, serviceName, price, s2Phone, s2Id || 'KTV02',
-        s2Name || 'KTV 2', 'KTV 2 (Cùng làm)', '50%', s2Comm, s2Tip, (s2Comm + s2Tip),
+        s2Name || 'KTV 2', 'Phụ', '50%', s2Comm, s2Tip, (s2Comm + s2Tip),
         paymentMethod, createdAt
       ]);
       countAdded++;

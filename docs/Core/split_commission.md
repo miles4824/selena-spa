@@ -17,6 +17,7 @@
 - Ghi 2 dòng riêng biệt vào `tb_payroll_logs` cho 2 KTV tương ứng.
 
 ## 5. Lịch Sử Thay Đổi & Lưu Vết (Audit Log)
+- `2026-09-02` (`v0.0.8.3`): Đồng bộ hóa file backend GAS `Code.gs` ghi nhận vai trò `Chính` và `Phụ` vào `tb_payroll_logs`.
 - `2026-09-02` (`v0.0.7.5`): Định dạng chi tiết hoa hồng theo từng giai đoạn độc lập: tính đúng % chia đều trong từng giai đoạn (100%, 50%, 33%) nhân với thời lượng đoạn đó.
 - `2026-09-02` (`v0.0.7.4`): Thuật toán chia hoa hồng theo dải biên thời gian (Boundary Intervals Partition) hỗ trợ không giới hạn số giai đoạn và xử lý hoàn hảo trường hợp KTV phụ rời ca sớm.
 - `2026-09-02` (`v0.0.7.2`): Tách biệt công thức tính hoa hồng theo rate cá nhân của từng KTV (người 10%, người 20%) nhân với % phân bổ ca.
