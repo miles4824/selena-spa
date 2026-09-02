@@ -1582,19 +1582,21 @@ function renderSwapModalStaffUI() {
                   <span class="text-[10px] text-[#A39696] font-mono">/ ${targetMin}p</span>
                 </div>
 
-                <label class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl border transition-all select-none cursor-pointer ${isWantsEarly ? 'bg-[#FFF0EB] border-[#E58A7B] text-[#E58A7B] shadow-2xs' : 'bg-white border-[#E8E1D7] text-[#7E7272] hover:border-[#E58A7B]/60'}">
-                  <div class="relative flex items-center justify-center">
+                <!-- Checkbox Style chuẩn UI hiện đại -->
+                <label class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border transition-all select-none cursor-pointer ${isWantsEarly ? 'bg-[#E8F8F5] border-[#2E7D6D] text-[#134E4A] shadow-2xs' : 'bg-white border-[#E8E1D7] text-[#7E7272] hover:border-[#2E7D6D]/50'}">
+                  <div class="relative flex items-center justify-center shrink-0">
                     <input type="checkbox" ${isWantsEarly ? 'checked' : ''} onchange="toggleSwapStaffEarlyLeave(${idx}, this.checked)" class="sr-only peer">
-                    <div class="w-4 h-4 rounded-md border flex items-center justify-center transition-all ${isWantsEarly ? 'bg-[#E58A7B] border-[#E58A7B]' : 'bg-white border-[#C9BCB5] peer-hover:border-[#E58A7B]'}">
+                    <div class="w-4 h-4 rounded border-2 flex items-center justify-center transition-all ${isWantsEarly ? 'bg-[#2E7D6D] border-[#2E7D6D]' : 'bg-white border-[#A39696] peer-hover:border-[#2E7D6D]'}">
                       <i data-lucide="check" class="w-3 h-3 text-white stroke-[3] ${isWantsEarly ? '' : 'hidden'}"></i>
                     </div>
                   </div>
-                  <span class="text-xs font-bold">Xong việc rời sớm</span>
+                  <span class="text-xs font-bold ${isWantsEarly ? 'text-[#134E4A]' : 'text-[#2D2424]'}">Xong việc rời sớm</span>
                 </label>
               </div>
 
-              <button type="button" onclick="triggerEarlyLeaveInSwapModal(${idx})" class="${isWantsEarly ? '' : 'hidden'} w-full py-2.5 px-3 rounded-xl border border-[#E58A7B] bg-[#FFF0EB] hover:bg-[#FFE5DC] text-[#E58A7B] font-bold text-xs flex items-center justify-center gap-1.5 transition active:scale-95 cursor-pointer">
-                <i data-lucide="log-out" class="w-3.5 h-3.5 shrink-0"></i>
+              <!-- Outlined Rounded-Full Button theo đúng hình mẫu -->
+              <button type="button" onclick="triggerEarlyLeaveInSwapModal(${idx})" class="${isWantsEarly ? '' : 'hidden'} w-full py-2.5 px-4 rounded-full border-2 border-[#2E7D6D] bg-white hover:bg-[#E8F8F5] text-[#2E7D6D] font-extrabold text-xs sm:text-sm flex items-center justify-center gap-1.5 transition active:scale-95 cursor-pointer shadow-xs">
+                <i data-lucide="check" class="w-4 h-4 stroke-[3]"></i>
                 <span>Xác nhận xong việc</span>
               </button>
             </div>
