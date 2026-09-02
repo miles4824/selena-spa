@@ -27,7 +27,7 @@ function getBusyStaffPhonesMap() {
     }
     if (sess.staffs && Array.isArray(sess.staffs)) {
       sess.staffs.forEach(st => {
-        if (st && st.phone) {
+        if (st && st.phone && !st.left_early) {
           busyMap[normalizePhone(st.phone)] = sess;
         }
       });
@@ -1227,14 +1227,15 @@ function openSwapStaffModal() {
   ]).map(s => ({ ...s }));
 
   const initialCount = currentLiveSession.initial_staff_count || 1;
+  const hasEarlyLeave = tempSwapStaffs.some(s => s.left_early || (s.left_min && s.left_min < (currentLiveSession.duration_target_min || 50)));
   const hasNewMidwayStaff = tempSwapStaffs.some(s => s.is_midway);
 
-  if (initialCount >= 2 && !hasNewMidwayStaff) {
+  if (hasEarlyLeave || hasNewMidwayStaff || currentLiveSession.split_mode === 'timer') {
+    currentSplitMode = 'timer';
+  } else if (initialCount >= 2) {
     currentSplitMode = 'equal';
-  } else if (currentLiveSession.split_mode) {
-    currentSplitMode = currentLiveSession.split_mode;
   } else {
-    currentSplitMode = (initialCount === 1 && tempSwapStaffs.length > 1) ? 'timer' : 'equal';
+    currentSplitMode = tempSwapStaffs.length > 1 ? 'timer' : 'equal';
   }
 
   renderSwapModalStaffUI();
@@ -2806,12 +2807,17 @@ function confirmStaffLeaveTourEarly() {
   myStaff.left_early = true;
   myStaff.left_at_min = elapsedMin;
   myStaff.left_timestamp = Date.now();
+  currentLiveSession.split_mode = 'timer';
 
   currentLiveSession.staffs = staffs;
   localStorage.setItem('selena_active_live_session', JSON.stringify(currentLiveSession));
   
   if (typeof fbSetLiveSession === 'function') {
     fbSetLiveSession(currentLiveSession);
+  }
+
+  if (typeof updateStaffAvailabilityHeader === 'function') {
+    updateStaffAvailabilityHeader();
   }
 
   if (typeof markSessionDismissed === 'function') {

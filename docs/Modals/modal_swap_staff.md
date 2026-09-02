@@ -33,6 +33,7 @@ ightarrow$ Cập nhật mảng KTV phục vụ của ca trên Firebase.
 - **Hàm Backend GAS phụ trách**: `createReceipt(params)` ghi nhận từng dòng KTV tương ứng.
 
 ## 6. Lịch Sử Thay Đổi & Lưu Vết (Audit Log)
+- `2026-09-02` (`v0.0.9.2`): Tự động phát hiện KTV rời tour sớm để chuyển sang chế độ `timer` đa giai đoạn (Giai đoạn 1 KTV Chính, Giai đoạn 2 Cùng làm, Giai đoạn 3 KTV Chính làm tiếp 100%); giải phóng trạng thái bận để KTV rời ca có thể nhận tour mới.
 - `2026-09-02` (`v0.0.9.0`): Cập nhật hiển thị thời gian làm việc của KTV phụ theo dạng `Làm từ phút: [input] ➔ [leftMin] / [50p]` với mốc phút kết thúc tự động cập nhật khi rời tour sớm.
 - `2026-09-02` (`v0.0.8.9`): Khắc phục lỗi `ReferenceError: s is not defined` trong `renderSwapModalStaffUI` bằng cách đồng bộ tên biến đối tượng KTV.
 - `2026-09-02` (`v0.0.8.8`): Lược bỏ ô nhập số kết thúc và checkbox 'Xong việc rời sớm' trong modal Điều Chỉnh KTV (chỉ giữ lại ô nhập phút bắt đầu làm); chuyển tính năng rời tour sớm ra nút bấm trực tiếp ngoài màn hình đếm giờ trực tiếp cho KTV Phụ.

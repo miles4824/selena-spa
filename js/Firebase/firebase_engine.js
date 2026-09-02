@@ -139,7 +139,7 @@ function setupRealtimeListeners() {
         if (s.active_staff_phone && normalizePhone(s.active_staff_phone) === myPhone) return true;
         if (s.staff_1_phone && normalizePhone(s.staff_1_phone) === myPhone) return true;
         if (s.staffs && Array.isArray(s.staffs)) {
-          return s.staffs.some(st => st.phone && normalizePhone(st.phone) === myPhone);
+          return s.staffs.some(st => st.phone && normalizePhone(st.phone) === myPhone && !st.left_early);
         }
         return false;
       });
