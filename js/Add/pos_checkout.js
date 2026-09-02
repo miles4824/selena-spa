@@ -47,13 +47,33 @@ function updateStaffAvailabilityHeader() {
   const freeCount = Math.max(0, totalStaff - busyCount);
   const freeUsers = users.filter(u => !busyMap[normalizePhone(u.phone)]);
 
+  // Format tên sạch gọn, loại bỏ tiền tố và ngoặc đơn phụ
+  const formatShortName = (name) => {
+    return String(name || '').replace(/\([^)]*\)/g, '').replace('👑', '').replace('KTV', '').trim();
+  };
+
   if (busyCount === 0) {
-    subEl.innerHTML = `<span class="inline-flex items-center gap-1.5 text-xs text-[#2E7D6D] font-bold"><span class="w-2 h-2 rounded-full bg-[#2E7D6D] animate-pulse"></span> Sẵn sàng đón khách • Tất cả ${totalStaff} nhân sự đang rảnh</span>`;
+    subEl.innerHTML = `
+      <span class="inline-flex items-center gap-1.5 text-xs text-[#2E7D6D] font-bold">
+        <span class="w-2 h-2 rounded-full bg-[#2E7D6D] animate-pulse"></span>
+        <span>Sẵn sàng đón khách • Tất cả ${totalStaff} KTV đều rảnh</span>
+      </span>
+    `;
   } else if (freeCount > 0) {
-    const freeNames = freeUsers.map(u => u.full_name.replace('👑 ', '').replace('KTV ', '')).join(', ');
-    subEl.innerHTML = `<span class="inline-flex items-center gap-1.5 text-xs text-[#E58A7B] font-bold"><span class="w-2 h-2 rounded-full bg-[#E58A7B]"></span> ${busyCount}/${totalStaff} nhân sự đang bận • Còn ${freeCount} người rảnh (${freeNames})</span>`;
+    const freeNames = freeUsers.map(u => formatShortName(u.full_name)).join(', ');
+    subEl.innerHTML = `
+      <span class="inline-flex items-center gap-1.5 text-xs text-[#E58A7B] font-bold">
+        <span class="w-2 h-2 rounded-full bg-[#E58A7B]"></span>
+        <span>Đang bận: ${busyCount}/${totalStaff} • Còn ${freeCount} KTV rảnh (${freeNames})</span>
+      </span>
+    `;
   } else {
-    subEl.innerHTML = `<span class="inline-flex items-center gap-1.5 text-xs text-[#D97706] font-bold"><span class="w-2 h-2 rounded-full bg-[#D97706]"></span> ${totalStaff}/${totalStaff} nhân sự đều đang bận • Tạm hết nhân lực</span>`;
+    subEl.innerHTML = `
+      <span class="inline-flex items-center gap-1.5 text-xs text-rose-500 font-bold">
+        <span class="w-2 h-2 rounded-full bg-rose-500"></span>
+        <span>Tất cả ${totalStaff} KTV đều đang bận</span>
+      </span>
+    `;
   }
 }
 

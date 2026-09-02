@@ -16,7 +16,7 @@
 - **Phương thức thanh toán**: Nút chọn `Quét Mã QR (VIB)` hoặc `Tiền Mặt`.
 - **Hiển thị mã QR**: Ảnh QR động chứa đúng số tiền ca gội.
 - **QUY TẮC VÀNG BẢO MẬT**: **TUYỆT ĐỐI GIẤU 100% TOÀN BỘ CHỮ VÀ Ô NHẬP TIỀN TIPS**.
-- **Nút hành động**: *"Khách Đã Thanh Toán Xong • Tiếp Tục"*.
+- **Nút hành động**: *"Khách Đã Thanh Toán"* (kèm icon mũi tên bên phải).
 
 ### 🔒 KỊCH BẢN 2: PHA 2 - NHẬP TIỀN TIPS NỘI BỘ KTV (PRIVATE STEP)
 - **Mục tiêu**: KTV ghi nhận tiền tip khách cho riêng từng người.
@@ -44,4 +44,5 @@ ightarrow$ Cột O (`commission_amount`), Cột P (`tip_amount`), Cột Q (`tota
 - **Hàm Backend GAS phụ trách**: `createReceipt(params)` trong `Code.gs`.
 
 ## 6. Lịch Sử Thay Đổi & Lưu Vết (Audit Log)
-- `2026-09-01` (`v0.0.0.1`): Bóc tách thành component độc lập và chuẩn hóa luồng 2 pha.
+- `2026-09-01` (`v0.0.0.1`):
+- `2026-09-02` (`v0.0.4.7`): Cập nhật nhãn nút bấm Pha 1 thành 'Khách Đã Thanh Toán' kèm icon mũi tên chuyển bước bên phải. Bóc tách thành component độc lập và chuẩn hóa luồng 2 pha.
