@@ -1509,20 +1509,35 @@ function renderSwapModalStaffUI() {
 
   const targetMin = currentLiveSession?.duration_target_min || 50;
 
-  const activeStaffItems = [];
-  const leftStaffItems = [];
+  const elapsedSecNow = Math.max(0, Math.floor((Date.now() - (currentLiveSession?.start_timestamp || Date.now())) / 1000));
+  const currentElapsedMinNow = Math.max(1, Math.min(targetMin, Math.floor(elapsedSecNow / 60) + (elapsedSecNow % 60 >= 30 ? 1 : 0)));
 
-  tempSwapStaffs.forEach((item, idx) => {
-    if (item.left_early) {
-      leftStaffItems.push({ item, idx });
-    } else {
-      activeStaffItems.push({ item, idx });
-    }
-  });
-
-  let htmlActive = activeStaffItems.map(({ item, idx }) => {
+  // Render theo đúng thứ tự thời gian tuần tự (Chặng 2 mới thêm luôn nằm dưới cùng)
+  let htmlStaffCards = tempSwapStaffs.map((item, idx) => {
     const isFirst = idx === 0;
     const isMe = normalizePhone(item.phone) === myPhone;
+
+    // Nếu KTV đã rời ca: Render thẻ gọn gàng
+    if (item.left_early) {
+      return `
+        <div class="p-3 rounded-2xl bg-[#FFF0EB]/70 border border-[#FCDFD7] space-y-1.5">
+          <div class="flex justify-between items-center text-xs bg-white p-2.5 rounded-xl border border-[#F0EAE1]">
+            <div>
+              <span class="font-bold text-[#2D2424]">• ${item.name}</span>
+              <span class="text-[#7E7272] text-[11px]"> (Phút ${item.joined_min || 0} ➔ ${item.left_min}):</span>
+            </div>
+            <div class="flex items-center gap-2">
+              ${(isOwner || isMe) ? `
+                <span class="font-bold text-[#2E7D6D] font-mono">+${(item.comm_vnd || 0).toLocaleString('vi-VN')} đ (${item.pct}%)</span>
+              ` : ''}
+              ${canEdit ? `<button type="button" onclick="restoreStaffInSwapModal(${idx})" class="p-1 text-[#7E7272] hover:text-[#E58A7B] text-[10px] underline cursor-pointer" title="Khôi phục lại ca nối liền do lỡ tay bấm nhầm rời sớm">Hoàn tác (bấm nhầm)</button>` : ''}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // Nếu KTV đang làm: Render thẻ điều chỉnh đầy đủ
     const busyMap = getBusyStaffPhonesMap();
     const currentTourId = currentLiveSession?.session_id;
     const usedOtherActivePhones = tempSwapStaffs.filter((s, i) => i !== idx && !s.left_early).map(s => normalizePhone(s.phone));
@@ -1537,10 +1552,6 @@ function renderSwapModalStaffUI() {
     });
 
     const isDropdownDisabled = !canEdit || selectable.length <= 1;
-
-    const elapsedSecNow = Math.max(0, Math.floor((Date.now() - (currentLiveSession?.start_timestamp || Date.now())) / 1000));
-    const currentElapsedMinNow = Math.max(1, Math.min(targetMin, Math.floor(elapsedSecNow / 60) + (elapsedSecNow % 60 >= 30 ? 1 : 0)));
-
     const joinedMin = item.joined_min || 0;
     const isWantsEarly = Boolean(item.wants_early_leave);
     const leftMin = isWantsEarly ? (item.left_min && item.left_min < targetMin ? item.left_min : currentElapsedMinNow) : (item.left_min !== undefined ? item.left_min : targetMin);
@@ -1582,9 +1593,12 @@ function renderSwapModalStaffUI() {
                   <span class="text-[10px] text-[#A39696] font-mono">/ ${targetMin}p</span>
                 </div>
 
-                <!-- Checkbox chuẩn nét cao cấp Selena -->
-                <label class="inline-flex items-center gap-1.5 cursor-pointer select-none py-1 group">
-                  <input type="checkbox" ${isWantsEarly ? 'checked' : ''} onchange="toggleSwapStaffEarlyLeave(${idx}, this.checked)" class="w-4 h-4 rounded text-[#E58A7B] accent-[#E58A7B] cursor-pointer">
+                <!-- Checkbox Style chuẩn UI hồng đào với dấu check trắng sắc nét -->
+                <label class="inline-flex items-center gap-2 cursor-pointer select-none py-1 group">
+                  <input type="checkbox" ${isWantsEarly ? 'checked' : ''} onchange="toggleSwapStaffEarlyLeave(${idx}, this.checked)" class="sr-only peer">
+                  <div class="w-4.5 h-4.5 rounded-md border-2 flex items-center justify-center transition-all ${isWantsEarly ? 'bg-[#E58A7B] border-[#E58A7B]' : 'bg-white border-[#A39696] group-hover:border-[#E58A7B]'}">
+                    <i data-lucide="check" class="w-3.5 h-3.5 text-white stroke-[3.5] ${isWantsEarly ? '' : 'hidden'}"></i>
+                  </div>
                   <span class="text-xs font-bold transition-colors ${isWantsEarly ? 'text-[#E58A7B]' : 'text-[#7E7272] group-hover:text-[#E58A7B]'}">Xong việc rời sớm</span>
                 </label>
               </div>
@@ -1618,33 +1632,7 @@ function renderSwapModalStaffUI() {
     `;
   }).join('');
 
-  let htmlLeft = '';
-  if (leftStaffItems.length > 0) {
-    htmlLeft = `
-      <div class="p-3 rounded-2xl bg-[#FFF0EB]/70 border border-[#FCDFD7] space-y-2">
-        <div class="text-[11px] font-extrabold text-[#E58A7B] uppercase tracking-wider flex items-center justify-between">
-          <span>🏃 KTV đã rời ca (${leftStaffItems.length}):</span>
-          <span class="text-[10px] font-normal text-[#7E7272]">Đã giải phóng sang trạng thái Rảnh</span>
-        </div>
-        <div class="space-y-1.5">
-          ${leftStaffItems.map(({ item, idx }) => `
-            <div class="flex justify-between items-center text-xs bg-white p-2 rounded-xl border border-[#F0EAE1]">
-              <div>
-                <span class="font-bold text-[#2D2424]">• ${item.name}</span>
-                <span class="text-[#7E7272] text-[11px]"> (Phút ${item.joined_min || 0} ➔ ${item.left_min}):</span>
-              </div>
-              <div class="flex items-center gap-2">
-                <span class="font-bold text-[#2E7D6D] font-mono">+${(item.comm_vnd || 0).toLocaleString('vi-VN')} đ (${item.pct}%)</span>
-                ${canEdit ? `<button type="button" onclick="restoreStaffInSwapModal(${idx})" class="p-1 text-[#7E7272] hover:text-[#E58A7B] text-[10px] underline cursor-pointer" title="Khôi phục lại ca nối liền do lỡ tay bấm nhầm rời sớm">Hoàn tác (bấm nhầm)</button>` : ''}
-              </div>
-            </div>
-          `).join('')}
-        </div>
-      </div>
-    `;
-  }
-
-  container.innerHTML = htmlActive + htmlLeft;
+  container.innerHTML = htmlStaffCards;
 
   if (addBtn) {
     if (!canEdit) {
