@@ -31,6 +31,7 @@ ightarrow$ Lưu `start_time` và cập nhật Firebase node `active_sessions/`.
 - **Ghi vào `tb_receipts`**: Cột C (`start_time`), Cột D (`end_time`), Cột E (`duration_min`).
 
 ## 6. Lịch Sử Thay Đổi & Lưu Vết (Audit Log)
+- `2026-09-02` (`v0.1.0.0`): Quy tắc làm tròn số phút tour đồng nhất toàn hệ thống: số giây lẻ `>= 30s` tự động làm tròn lên 1 phút.
 - `2026-09-02` (`v0.0.9.7`): Tinh gọn giao diện KTV Phụ: chỉ hiện chip thông tin và nút `Xong Việc Rời Tour Sớm`, ẩn nút `Đổi / Thêm` và `Bàn Giao`.
 - `2026-09-02` (`v0.0.9.5`): Danh sách chip KTV đang chạy trên màn hình đếm số chỉ hiển thị các KTV đang thực sự phục vụ; KTV đã rời ca được gỡ xuống và tự động giải phóng trạng thái rảnh.
 - `2026-09-02` (`v0.0.9.4`): Sửa logic lọc Firebase để KTV Phụ đã rời ca không bao giờ bị nhận lại tour đang chạy, tự động đóng đồng hồ đếm giờ và giải phóng về màn hình chính.

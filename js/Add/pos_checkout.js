@@ -1,4 +1,19 @@
 
+function onSwapStaffSelectChange(idx, phone) {
+  const users = getSortedUsersList();
+  const foundUser = users.find(u => normalizePhone(u.phone) === normalizePhone(phone));
+  if (!foundUser) return;
+
+  tempSwapStaffs[idx].phone = foundUser.phone;
+  tempSwapStaffs[idx].name = foundUser.full_name;
+  tempSwapStaffs[idx].staff_id = foundUser.staff_id;
+
+  renderSwapModalStaffUI();
+  updateSplitButtonsUI();
+  updateSwapPreviewDisplay();
+}
+
+
 function calculateLiveSessionStaffSplits(sess) {
   if (!sess || !Array.isArray(sess.staffs) || sess.staffs.length === 0) return sess;
   const users = getSortedUsersList();
@@ -3013,7 +3028,7 @@ function confirmStaffLeaveTourEarly() {
   const targetMin = currentLiveSession.duration_target_min || 50;
   
   const elapsedSec = Math.max(0, Math.floor((Date.now() - currentLiveSession.start_timestamp) / 1000));
-  const currentElapsedMin = Math.max(1, Math.min(targetMin, Math.floor(elapsedSec / 60) + (elapsedSec % 60 > 0 ? 1 : 0)));
+  const currentElapsedMin = Math.max(1, Math.min(targetMin, Math.floor(elapsedSec / 60) + (elapsedSec % 60 >= 30 ? 1 : 0)));
 
   tempSwapStaffs = (currentLiveSession.staffs || [
     { phone: currentLiveSession.staff_1_phone, name: currentLiveSession.staff_1_name, pct: 100, joined_min: 0 }
@@ -3079,7 +3094,7 @@ function confirmStaffLeaveTourEarlyFromModal() {
 function triggerEarlyLeaveInSwapModal(idx) {
   const targetMin = currentLiveSession?.duration_target_min || 50;
   const elapsedSec = Math.max(0, Math.floor((Date.now() - currentLiveSession.start_timestamp) / 1000));
-  const elapsedMin = Math.max(1, Math.floor(elapsedSec / 60));
+  const elapsedMin = Math.max(1, Math.floor(elapsedSec / 60) + (elapsedSec % 60 >= 30 ? 1 : 0));
   const targetStaff = tempSwapStaffs[idx];
   if (!targetStaff) return;
 
