@@ -1385,9 +1385,9 @@ function updateSwapPreviewDisplay() {
   const elapsedSec = Math.max(1, Math.floor((Date.now() - currentLiveSession.start_timestamp) / 1000));
   const elapsedMin = Math.floor(elapsedSec / 60);
 
-  const cUser = getCurrentUser();
-  const isAdmin = cUser && (cUser.role === 'admin' || cUser.role === 'owner');
-  const myPhone = normalizePhone(cUser?.phone || '');
+  const cUser = (typeof currentUser !== 'undefined' && currentUser) ? currentUser : null;
+  const isAdmin = cUser ? (typeof isUserOwner === 'function' ? isUserOwner(cUser) : (cUser.role === 'admin' || cUser.role === 'owner')) : false;
+  const myPhone = (cUser && cUser.phone) ? normalizePhone(cUser.phone) : '';
 
   const summaryContainer = document.getElementById('swap-summary-pct-list');
   let html = '';

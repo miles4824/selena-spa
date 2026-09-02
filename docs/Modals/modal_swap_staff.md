@@ -33,5 +33,6 @@ ightarrow$ Cập nhật mảng KTV phục vụ của ca trên Firebase.
 - **Hàm Backend GAS phụ trách**: `createReceipt(params)` ghi nhận từng dòng KTV tương ứng.
 
 ## 6. Lịch Sử Thay Đổi & Lưu Vết (Audit Log)
+- `2026-09-02` (`v0.0.7.3`): Khắc phục triệt để lỗi ReferenceError bằng cách truy cập an toàn biến toàn cục `currentUser` và hàm `isUserOwner()`.
 - `2026-09-02` (`v0.0.7.2`): Bảo mật tuyệt đối hoa hồng từng KTV (Staff chỉ thấy tiền của mình, thấy % của bạn làm chung; Admin thấy toàn bộ) và tính đúng theo tỷ lệ % hoa hồng riêng biệt của từng KTV từ `tb_users`.
 - `2026-09-01` (`v0.0.0.1`): Bóc tách thành component độc lập.
