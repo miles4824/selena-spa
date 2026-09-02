@@ -1283,7 +1283,7 @@ function renderSwapModalStaffUI() {
         <div class="flex justify-between items-center pr-7">
           <div class="text-xs font-bold text-[#2D2424] flex items-center gap-1.5 flex-wrap">
             ${isLocked ? '<i data-lucide="lock" class="w-3.5 h-3.5 text-[#E58A7B]"></i>' : ''}
-            <span class="text-[#E58A7B] font-extrabold">KTV ${idx + 1}${isFirst ? ' (Chính)' : ''}:</span>
+            <span class="text-[#E58A7B] font-extrabold">${isFirst ? 'Chính' : 'Phụ'}:</span>
             <span>${item.name || ''}</span>
           </div>
           <span class="text-[11px] font-extrabold text-[#2E7D6D] bg-[#E8F8F5] px-2 py-0.5 rounded-full font-mono" id="swap-item-comm-${idx}">...</span>
@@ -1626,7 +1626,7 @@ function updateSwapPreviewDisplay() {
           const moneyStr = (isAdmin || isMe) ? `+${s.comm_vnd.toLocaleString('vi-VN')} đ ` : '';
           return `
             <div class="flex justify-between items-center text-xs font-bold">
-              <span class="text-[#2D2424]">${s.name}${i === 0 ? ' (KTV Chính)' : ''}:</span>
+              <span class="text-[#2D2424]">${s.name} (${i === 0 ? 'Chính' : 'Phụ'}):</span>
               <span class="text-[#2E7D6D] font-extrabold font-mono">${moneyStr}(${s.pct}%)</span>
             </div>
           `;
@@ -1807,7 +1807,7 @@ function renderDynamicTipInputs() {
       <div class="p-3.5 rounded-2xl bg-[#FFF5F2] border border-[#FCDFD7] space-y-2">
         <div class="flex justify-between items-center">
           <span class="text-xs font-extrabold text-[#E58A7B] flex items-center gap-1">
-            <span class="text-[#2D2424]">KTV ${idx + 1}:</span>
+            <span class="text-[#2D2424]">${idx === 0 ? 'Chính' : 'Phụ'}:</span>
             <span>${s.name}</span>
           </span>
         </div>
@@ -1930,35 +1930,6 @@ function confirmSaveReceiptFromCheckout() {
     { phone: currentLiveSession.staff_1_phone, name: currentLiveSession.staff_1_name, pct: 100 }
   ];
 
-  const s1 = currentStaffs[0];
-  const s2 = currentStaffs[1] || null;
-  const s3 = currentStaffs[2] || null;
-
-  const staff1Obj = users.find(u => normalizePhone(u.phone) === normalizePhone(s1.phone));
-  const rate1 = (staff1Obj && parsePercentage(staff1Obj?.commission_rate) > 0) ? parsePercentage(staff1Obj?.commission_rate) : 10;
-  const comm1 = Math.round(currentLiveSession.price * (rate1 / 100) * ((s1.pct || 100) / 100));
-  const tip1 = getStaffTipAmount(s1.phone);
-
-  let comm2 = 0;
-  let tip2 = 0;
-  let staff2Obj = null;
-  if (s2) {
-    staff2Obj = users.find(u => normalizePhone(u.phone) === normalizePhone(s2.phone));
-    const rate2 = (staff2Obj && parsePercentage(staff2Obj?.commission_rate) > 0) ? parsePercentage(staff2Obj?.commission_rate) : 10;
-    comm2 = Math.round(currentLiveSession.price * (rate2 / 100) * ((s2.pct || 0) / 100));
-    tip2 = getStaffTipAmount(s2.phone);
-  }
-
-  let comm3 = 0;
-  let tip3 = 0;
-  let staff3Obj = null;
-  if (s3) {
-    staff3Obj = users.find(u => normalizePhone(u.phone) === normalizePhone(s3.phone));
-    const rate3 = (staff3Obj && parsePercentage(staff3Obj?.commission_rate) > 0) ? parsePercentage(staff3Obj?.commission_rate) : 10;
-    comm3 = Math.round(currentLiveSession.price * (rate3 / 100) * ((s3.pct || 0) / 100));
-    tip3 = getStaffTipAmount(s3.phone);
-  }
-
   let totalTip = 0;
   Object.values(staffTipMap).forEach(v => {
     totalTip += Number(v) || 0;
@@ -1967,6 +1938,30 @@ function confirmSaveReceiptFromCheckout() {
   const basePrice = currentLiveSession.use_voucher ? 0 : currentLiveSession.price;
   const grandTotal = basePrice + totalTip;
   const receiptId = 'HD' + Date.now().toString().slice(-6);
+
+  // Xử lý động N nhân sự tham gia tour
+  const mappedStaffs = currentStaffs.map((s, idx) => {
+    const staffObj = users.find(u => normalizePhone(u.phone) === normalizePhone(s.phone));
+    const rate = (staffObj && parsePercentage(staffObj?.commission_rate) > 0) ? parsePercentage(staffObj?.commission_rate) : 10;
+    const commVnd = (s.comm_vnd !== undefined && s.comm_vnd !== null)
+      ? s.comm_vnd
+      : Math.round(currentLiveSession.price * (rate / 100) * ((s.pct || Math.round(100 / currentStaffs.length)) / 100));
+    const tipVnd = getStaffTipAmount(s.phone);
+
+    return {
+      phone: s.phone || '',
+      staff_id: (staffObj && staffObj.staff_id) || s.staff_id || (idx === 0 ? 'KTV01' : `KTV0${idx + 1}`),
+      name: (staffObj && staffObj.full_name) || s.name || `KTV ${idx + 1}`,
+      pct: s.pct !== undefined ? s.pct : Math.round(100 / currentStaffs.length),
+      comm_vnd: commVnd,
+      tip_vnd: tipVnd,
+      role: idx === 0 ? 'Chính' : 'Phụ'
+    };
+  });
+
+  const s1 = mappedStaffs[0];
+  const s2 = mappedStaffs[1] || null;
+  const s3 = mappedStaffs[2] || null;
 
   const receipt = {
     receipt_id: receiptId,
@@ -1980,39 +1975,35 @@ function confirmSaveReceiptFromCheckout() {
     birth_month: currentLiveSession.birth_month || 0,
     birthday: currentLiveSession.birth_month ? Number(currentLiveSession.birth_month) : (currentLiveSession.birthday || ''),
     
-    staff_1_user_id: (staff1Obj && staff1Obj.user_id) || s1.user_id || s1.phone || '',
-    staff_1_id: (staff1Obj && staff1Obj.staff_id) || s1.staff_id || 'KTV01',
+    staff_1_user_id: s1.phone || '',
+    staff_1_id: s1.staff_id || 'KTV01',
     staff_1_phone: s1.phone || '',
-    staff_names: currentStaffs.map(s => s.name).join(', '),
-    staff_1_name: (staff1Obj && staff1Obj.full_name) || s1.name || 'KTV 1',
-    staff_1_comm: comm1,
-    staff_1_tip: tip1,
+    staff_names: mappedStaffs.map(s => s.name).join(', '),
+    staff_1_name: s1.name || 'KTV',
+    staff_1_comm: s1.comm_vnd,
+    staff_1_tip: s1.tip_vnd,
 
-    has_staff_2: Boolean(s2 && s2.phone && s2.phone !== '-'),
-    staff_2_user_id: s2 ? ((staff2Obj && staff2Obj.user_id) || s2.user_id || s2.phone) : '-',
-    staff_2_id: s2 ? ((staff2Obj && staff2Obj.staff_id) || s2.staff_id || (isUserOwner(staff2Obj) ? 'FOUNDER_01' : 'KTV02')) : '-',
+    has_staff_2: Boolean(s2),
+    staff_2_user_id: s2 ? s2.phone : '-',
+    staff_2_id: s2 ? s2.staff_id : '-',
     staff_2_phone: s2 ? s2.phone : '-',
-    staff_2_name: s2 ? ((staff2Obj && staff2Obj.full_name) || s2.name) : '-',
-    staff_2_comm: comm2,
-    staff_2_tip: tip2,
+    staff_2_name: s2 ? s2.name : '-',
+    staff_2_comm: s2 ? s2.comm_vnd : 0,
+    staff_2_tip: s2 ? s2.tip_vnd : 0,
 
-    has_staff_3: Boolean(s3 && s3.phone && s3.phone !== '-'),
-    staff_3_user_id: s3 ? ((staff3Obj && staff3Obj.user_id) || s3.user_id || s3.phone) : '-',
-    staff_3_id: s3 ? ((staff3Obj && staff3Obj.staff_id) || s3.staff_id || (isUserOwner(staff3Obj) ? 'FOUNDER_01' : 'KTV03')) : '-',
+    has_staff_3: Boolean(s3),
+    staff_3_user_id: s3 ? s3.phone : '-',
+    staff_3_id: s3 ? s3.staff_id : '-',
     staff_3_phone: s3 ? s3.phone : '-',
-    staff_3_name: s3 ? ((staff3Obj && staff3Obj.full_name) || s3.name) : '-',
-    staff_3_comm: comm3,
-    staff_3_tip: tip3,
+    staff_3_name: s3 ? s3.name : '-',
+    staff_3_comm: s3 ? s3.comm_vnd : 0,
+    staff_3_tip: s3 ? s3.tip_vnd : 0,
 
-    staff_1_pct: s1.pct !== undefined ? s1.pct : (s3 ? 34 : (s2 ? 50 : 100)),
-    staff_2_pct: s2 ? (s2.pct !== undefined ? s2.pct : (s3 ? 33 : 50)) : 0,
-    staff_3_pct: s3 ? (s3.pct !== undefined ? s3.pct : 33) : 0,
+    staff_1_pct: s1.pct,
+    staff_2_pct: s2 ? s2.pct : 0,
+    staff_3_pct: s3 ? s3.pct : 0,
 
-    staffs: [
-      { phone: s1.phone, staff_id: (staff1Obj && staff1Obj.staff_id) || s1.staff_id || 'KTV01', name: (staff1Obj && staff1Obj.full_name) || s1.name, pct: s1.pct !== undefined ? s1.pct : (s3 ? 34 : (s2 ? 50 : 100)), comm_vnd: comm1, tip_vnd: tip1, role: 'KTV 1 (Chính)' },
-      ...(s2 ? [{ phone: s2.phone, staff_id: (staff2Obj && staff2Obj.staff_id) || s2.staff_id || 'KTV02', name: (staff2Obj && staff2Obj.full_name) || s2.name, pct: s2.pct !== undefined ? s2.pct : (s3 ? 33 : 50), comm_vnd: comm2, tip_vnd: tip2, role: 'KTV 2 (Cùng làm)' }] : []),
-      ...(s3 ? [{ phone: s3.phone, staff_id: (staff3Obj && staff3Obj.staff_id) || s3.staff_id || 'KTV03', name: (staff3Obj && staff3Obj.full_name) || s3.name, pct: s3.pct !== undefined ? s3.pct : 33, comm_vnd: comm3, tip_vnd: tip3, role: 'KTV 3 (Cùng làm)' }] : [])
-    ],
+    staffs: mappedStaffs,
 
     staff_phone: s1.phone || '',
     staff_id: s1.staff_id || 'KTV01',

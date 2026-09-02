@@ -91,7 +91,7 @@ function loadOwnerReceiptsList(targetDate) {
         staffListHtml = logsForThisReceipt.map(p => `
           <div class="space-y-0.5 pl-2">
             <div class="flex justify-between items-center gap-2 min-w-0">
-              <span class="text-[#2D2424] font-medium min-w-0 truncate">• ${p.staff_name} <span class="text-[10px] text-[#A39696]">(${p.role_in_tour || 'KTV'})</span>:</span>
+              <span class="text-[#2D2424] font-medium min-w-0 truncate">• ${p.staff_name} <span class="text-[10px] text-[#A39696]">(${p.role_in_tour === 'Chính' || p.role_in_tour === 'KTV 1 (Chính)' ? 'Chính' : 'Phụ'})</span>:</span>
               <span class="text-[#2E7D6D] font-extrabold font-mono whitespace-nowrap shrink-0">+${(Number(p.commission_amount) || 0).toLocaleString('vi-VN')} đ</span>
             </div>
             ${Number(p.tip_amount || 0) > 0 ? `

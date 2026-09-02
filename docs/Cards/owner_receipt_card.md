@@ -23,6 +23,7 @@ ightarrow$ Bấm vào mở `modal_owner_customer.html` (Toàn quyền sửa).
 
 ## 6. Lịch Sử Thay Đổi & Lưu Vết (Audit Log)
 - `2026-09-02` (`v0.0.7.9`): Sắp xếp danh sách hóa đơn theo thứ tự thời gian giảm dần (Mới nhất hiển thị trên cùng).
+- `2026-09-02` (`v0.0.8.2`): Rút gọn nhãn vai trò KTV thành `(Chính)` và `(Phụ)` ngắn gọn, tinh gọn thẻ lịch sử.
 - `2026-09-02` (`v0.0.8.1`): Giữ Tên khách hàng, Hình thức thanh toán và Mã HD trên cùng 1 hàng; áp dụng truncate dấu 3 chấm (`...`) cho tên khách khi quá dài để không bao giờ bị đẩy rớt mã HD xuống dòng.
 - `2026-09-02` (`v0.0.8.0`): Tối ưu bố cục thẻ: chuyển Hình thức thanh toán xuống hàng dưới Tên khách hàng, mã `receipt_id` nằm cùng hàng bên phải; áp dụng `whitespace-nowrap shrink-0` chống tràn/rớt chữ `đ` trên số tiền.
 - `2026-09-02` (`v0.0.7.8`): Lưu chuẩn `payroll_logs` từ API sync Google Sheets và đọc 100% cột `commission_amount` từ `tb_payroll_logs` theo `receipt_id`.
