@@ -1098,6 +1098,7 @@ function renderLiveSessionUI() {
     
     const cUser = (typeof currentUser !== 'undefined' && currentUser) ? currentUser : null;
     const myPhone = (cUser && cUser.phone) ? normalizePhone(cUser.phone) : '';
+    const isAdmin = cUser ? (typeof isUserOwner === 'function' ? isUserOwner(cUser) : (cUser.role === 'admin' || cUser.role === 'owner')) : false;
 
     const isKtvChinh = staffs.length > 0 && normalizePhone(staffs[0].phone) === myPhone;
     const myStaffEntry = staffs.find(s => normalizePhone(s.phone) === myPhone);
