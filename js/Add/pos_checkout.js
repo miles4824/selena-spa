@@ -45,34 +45,30 @@ function updateStaffAvailabilityHeader() {
   const totalStaff = users.length;
   const busyCount = Object.keys(busyMap).filter(p => users.some(u => normalizePhone(u.phone) === p)).length;
   const freeCount = Math.max(0, totalStaff - busyCount);
-  const freeUsers = users.filter(u => !busyMap[normalizePhone(u.phone)]);
-
-  // Format tên sạch gọn, loại bỏ tiền tố và ngoặc đơn phụ
-  const formatShortName = (name) => {
-    return String(name || '').replace(/\([^)]*\)/g, '').replace('👑', '').replace('KTV', '').trim();
-  };
 
   if (busyCount === 0) {
     subEl.innerHTML = `
-      <span class="inline-flex items-center gap-1.5 text-xs text-[#2E7D6D] font-bold">
-        <span class="w-2 h-2 rounded-full bg-[#2E7D6D] animate-pulse"></span>
-        <span>Sẵn sàng đón khách • Tất cả ${totalStaff} KTV đều rảnh</span>
-      </span>
+      <div class="inline-flex items-center gap-2 text-xs font-bold text-[#2E7D6D]">
+        <span class="flex h-2 w-2 relative">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#2E7D6D] opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2 w-2 bg-[#2E7D6D]"></span>
+        </span>
+        <span>Sẵn sàng phục vụ (${totalStaff} nhân sự)</span>
+      </div>
     `;
   } else if (freeCount > 0) {
-    const freeNames = freeUsers.map(u => formatShortName(u.full_name)).join(', ');
     subEl.innerHTML = `
-      <span class="inline-flex items-center gap-1.5 text-xs text-[#E58A7B] font-bold">
+      <div class="inline-flex items-center gap-2 text-xs font-bold text-[#E58A7B]">
         <span class="w-2 h-2 rounded-full bg-[#E58A7B]"></span>
-        <span>Đang bận: ${busyCount}/${totalStaff} • Còn ${freeCount} KTV rảnh (${freeNames})</span>
-      </span>
+        <span>Đang phục vụ: ${busyCount}/${totalStaff} • Rảnh: ${freeCount} người</span>
+      </div>
     `;
   } else {
     subEl.innerHTML = `
-      <span class="inline-flex items-center gap-1.5 text-xs text-rose-500 font-bold">
+      <div class="inline-flex items-center gap-2 text-xs font-bold text-rose-500">
         <span class="w-2 h-2 rounded-full bg-rose-500"></span>
-        <span>Tất cả ${totalStaff} KTV đều đang bận</span>
-      </span>
+        <span>Tất cả ${totalStaff} nhân sự đều đang bận</span>
+      </div>
     `;
   }
 }
@@ -446,20 +442,7 @@ function updatePOSStaffInfo() {
     }
   }
 
-  // Cập nhật thẻ hiển thị trạng thái KTV trên tiêu đề
-  const statusEl = document.getElementById('pos-header-subtitle');
-  if (statusEl) {
-    const allStaffs = users;
-    const busyCount = allStaffs.filter(u => busyMap[normalizePhone(u.phone)]).length;
-    const freeStaffs = allStaffs.filter(u => !busyMap[normalizePhone(u.phone)]);
-    if (allStaffs.length > 0) {
-      if (freeStaffs.length === 0) {
-        statusEl.innerHTML = `<span class="text-rose-500 font-bold">🔴 Tất cả ${allStaffs.length} KTV đều đang bận ca</span>`;
-      } else {
-        statusEl.innerHTML = `<span class="text-[#D35400] font-semibold">${busyCount}/${allStaffs.length} KTV đang bận • Còn ${freeStaffs.length} KTV rảnh (${freeStaffs.map(s => s.full_name).join(', ')})</span>`;
-      }
-    }
-  }
+  updateStaffAvailabilityHeader();
 
   updateStaff1CommissionPreview();
   renderExtraStaffUI();
