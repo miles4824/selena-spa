@@ -1413,7 +1413,7 @@ function openSwapStaffModal(isLeaveEarlyMode = false) {
 
   if (isLeaveEarlyMode || isPhu) {
     if (titleTextEl) titleTextEl.innerText = 'Xác Nhận Rời Tour Sớm';
-    if (submitTextEl) submitTextEl.innerText = '✓ Xác Nhận Rời Tour';
+    if (submitTextEl) submitTextEl.innerText = 'Xác Nhận Rời Tour';
     if (submitBtn) {
       submitBtn.onclick = confirmStaffLeaveTourEarlyFromModal;
       submitBtn.className = 'w-full py-3.5 rounded-full bg-[#E58A7B] hover:bg-[#D9796A] text-white font-extrabold text-sm shadow-md shadow-[#E58A7B]/20 flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 transition';
@@ -1522,7 +1522,7 @@ function renderSwapModalStaffUI() {
 
   let htmlActive = activeStaffItems.map(({ item, idx }) => {
     const isFirst = idx === 0;
-    const isLocked = !canEdit || (isFirst && !isOwner);
+    const isMe = normalizePhone(item.phone) === myPhone;
     const busyMap = getBusyStaffPhonesMap();
     const currentTourId = currentLiveSession?.session_id;
     const usedOtherPhones = tempSwapStaffs.filter((_, i) => i !== idx).map(s => normalizePhone(s.phone));
@@ -1546,26 +1546,31 @@ function renderSwapModalStaffUI() {
 
     return `
       <div class="relative p-3 rounded-2xl bg-[#FAF6F1] border border-[#F0EAE1] space-y-2">
-        <div class="flex justify-between items-center pr-7">
+        <div class="flex justify-between items-center ${(canEdit && !isFirst) ? 'pr-7' : ''}">
           <div class="text-xs font-bold text-[#2D2424] flex items-center gap-1.5 flex-wrap">
-            ${isLocked ? '<i data-lucide="lock" class="w-3.5 h-3.5 text-[#E58A7B]"></i>' : ''}
+            ${(!canEdit || isFirst) ? '<i data-lucide="lock" class="w-3.5 h-3.5 text-[#E58A7B]"></i>' : ''}
             <span class="text-[#E58A7B] font-extrabold">${isFirst ? 'Chính' : 'Phụ'}:</span>
-            <span>${item.name || ''}</span>
+            <span class="text-sm font-bold text-[#2D2424]">${item.name || ''}</span>
           </div>
-          <span class="text-[11px] font-extrabold text-[#2E7D6D] bg-[#E8F8F5] px-2 py-0.5 rounded-full font-mono" id="swap-item-comm-${idx}">...</span>
+          ${(isOwner || isMe) ? `
+            <span class="text-[11px] font-extrabold text-[#2E7D6D] bg-[#E8F8F5] px-2 py-0.5 rounded-full font-mono" id="swap-item-comm-${idx}">...</span>
+          ` : ''}
         </div>
 
-        <select ${isLocked ? 'disabled' : ''} onchange="onSwapStaffSelectChange(${idx}, this.value)" class="w-full bg-white border border-[#EFE8DF] rounded-xl p-2.5 text-xs font-bold text-[#2D2424] focus:outline-none focus:border-[#E58A7B] ${isLocked ? 'disabled:bg-[#F7F2EC] disabled:opacity-90 cursor-not-allowed' : 'cursor-pointer'}">
-          ${selectable.map(u => `
-            <option value="${u.phone}" ${normalizePhone(u.phone) === normalizePhone(item.phone) ? 'selected' : ''}>${u.full_name}</option>
-          `).join('')}
-        </select>
+        ${(!isFirst && canEdit) ? `
+          <!-- Dropdown chỉ hiện cho KTV Phụ khi KTV Chính / Admin thao tác điều chỉnh -->
+          <select onchange="onSwapStaffSelectChange(${idx}, this.value)" class="w-full bg-white border border-[#EFE8DF] rounded-xl p-2.5 text-xs font-bold text-[#2D2424] focus:outline-none focus:border-[#E58A7B] cursor-pointer">
+            ${selectable.map(u => `
+              <option value="${u.phone}" ${normalizePhone(u.phone) === normalizePhone(item.phone) ? 'selected' : ''}>${u.full_name}</option>
+            `).join('')}
+          </select>
+        ` : ''}
 
         ${!isFirst ? `
           <!-- Tinh chỉnh thời gian tham gia của KTV phụ -->
-          <div class="pt-1.5 border-t border-[#F0EAE1]/80 space-y-2 text-[11px]">
-            ${canEdit ? `
-              <!-- Dành cho KTV Chính & Admin: Có thể chỉnh sửa và bấm cho nghỉ -->
+          ${canEdit ? `
+            <!-- Dành cho KTV Chính & Admin: Có thể chỉnh sửa và bấm cho nghỉ -->
+            <div class="pt-1.5 border-t border-[#F0EAE1]/80 space-y-2 text-[11px]">
               <div class="flex items-center justify-between gap-2 flex-wrap">
                 <div class="flex items-center gap-1.5">
                   <span class="text-[#7E7272]">⏱️ Làm từ phút:</span>
@@ -1585,8 +1590,10 @@ function renderSwapModalStaffUI() {
                 <i data-lucide="log-out" class="w-3.5 h-3.5 shrink-0"></i>
                 <span>Xong Việc Rời Tour Sớm</span>
               </button>
-            ` : `
-              <!-- Dành cho KTV Phụ: Chỉ xem cố định không cho sửa -->
+            </div>
+          ` : (isMe ? `
+            <!-- Dành cho KTV Phụ: Chỉ hiện thời gian của chính mình -->
+            <div class="pt-1.5 border-t border-[#F0EAE1]/80 space-y-2 text-[11px]">
               <div class="flex items-center gap-1.5 py-0.5">
                 <span class="text-[#7E7272]">⏱️ Làm từ phút:</span>
                 <span class="w-12 text-center bg-white border border-[#E58A7B]/40 rounded-lg p-1 text-xs font-bold font-mono text-[#2D2424] inline-block">${joinedMin}</span>
@@ -1594,10 +1601,10 @@ function renderSwapModalStaffUI() {
                 <span class="w-12 text-center bg-white border border-[#E58A7B]/40 rounded-lg p-1 text-xs font-bold font-mono text-[#E58A7B] inline-block">${leftMin}</span>
                 <span class="text-[10px] text-[#A39696] font-mono">/ ${targetMin}p</span>
               </div>
-            `}
-          </div>
+            </div>
+          ` : '')}
 
-          ${canEdit ? `
+          ${(canEdit && !isFirst) ? `
             <button type="button" onclick="removeStaffInSwapModal(${idx})" title="Xóa KTV này khỏi tour" class="absolute top-2.5 right-2.5 w-6 h-6 rounded-full bg-white border border-rose-300 text-rose-500 hover:bg-rose-500 hover:text-white flex items-center justify-center cursor-pointer active:scale-90 transition">
               <i data-lucide="minus" class="w-3.5 h-3.5 stroke-[2.5]"></i>
             </button>
@@ -1870,12 +1877,19 @@ function updateSwapPreviewDisplay() {
       tempSwapStaffs[0].pct += (100 - totalPctAssigned);
     }
 
-    // Cập nhật huy hiệu trên từng thẻ KTV
+    // Cập nhật huy hiệu trên từng thẻ KTV (Chỉ hiển thị cho chính mình hoặc Admin để bảo mật lương)
     tempSwapStaffs.forEach((s, idx) => {
       const isMe = normalizePhone(s.phone) === myPhone;
-      const badgeText = (isAdmin || isMe) ? `${s.pct}% • +${s.comm_vnd.toLocaleString('vi-VN')} đ` : `${s.pct}%`;
       const itemCommBadge = document.getElementById(`swap-item-comm-${idx}`);
-      if (itemCommBadge) itemCommBadge.innerText = badgeText;
+      if (itemCommBadge) {
+        if (isAdmin || isMe) {
+          itemCommBadge.innerText = `${s.pct}% • +${s.comm_vnd.toLocaleString('vi-VN')} đ`;
+          itemCommBadge.classList.remove('hidden');
+        } else {
+          itemCommBadge.innerText = '';
+          itemCommBadge.classList.add('hidden');
+        }
+      }
     });
 
     // Render danh sách giai đoạn
