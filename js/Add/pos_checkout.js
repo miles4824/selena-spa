@@ -1,4 +1,25 @@
 
+// Gán tường minh vào global scope window để chống ReferenceError
+window.onSwapStaffSelectChange = function(idx, phone) {
+  const users = getSortedUsersList();
+  const foundUser = users.find(u => normalizePhone(u.phone) === normalizePhone(phone));
+  if (!foundUser) return;
+
+  if (!tempSwapStaffs || !tempSwapStaffs[idx]) return;
+  tempSwapStaffs[idx].phone = foundUser.phone;
+  tempSwapStaffs[idx].name = foundUser.full_name;
+  tempSwapStaffs[idx].staff_id = foundUser.staff_id;
+
+  renderSwapModalStaffUI();
+  updateSplitButtonsUI();
+  updateSwapPreviewDisplay();
+};
+
+function onSwapStaffSelectChange(idx, phone) {
+  return window.onSwapStaffSelectChange(idx, phone);
+}
+
+
 function onSwapStaffSelectChange(idx, phone) {
   const users = getSortedUsersList();
   const foundUser = users.find(u => normalizePhone(u.phone) === normalizePhone(phone));
