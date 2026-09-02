@@ -34,4 +34,5 @@ ightarrow$ Ca này miễn phí 100% (KTV vẫn nhận đủ 10% hoa hồng theo 
 - `2026-09-01` (`v0.0.0.1`):
 - `2026-09-01` (`v0.0.4.4`):
 - `2026-09-02` (`v0.0.5.2`):
-- `2026-09-02` (`v0.0.5.3`): Đồng bộ 100% Placeholder từ bảng tb_config trên Google Sheets ('Tên khách hàng', 'Số điện thoại'), xóa bỏ triệt để toàn bộ text offline cũ. Hoàn thiện quy tắc khóa tên khách chính thức cho Staff, mở khóa cho Khách vãng lai/khách mới và toàn quyền cho Admin. Mở khóa toàn diện ô Tên Khách Hàng cho phép nhập/chỉnh sửa tên trực tiếp khi tạo tour. Bóc tách thành component độc lập.
+- `2026-09-02` (`v0.0.5.3`):
+- `2026-09-02` (`v0.0.5.5`): Đồng bộ 100% Font-family Plus Jakarta Sans thống nhất và hài hòa giữa ô Số Điện Thoại và Tên Khách Hàng. Đồng bộ 100% Placeholder từ bảng tb_config trên Google Sheets ('Tên khách hàng', 'Số điện thoại'), xóa bỏ triệt để toàn bộ text offline cũ. Hoàn thiện quy tắc khóa tên khách chính thức cho Staff, mở khóa cho Khách vãng lai/khách mới và toàn quyền cho Admin. Mở khóa toàn diện ô Tên Khách Hàng cho phép nhập/chỉnh sửa tên trực tiếp khi tạo tour. Bóc tách thành component độc lập.
