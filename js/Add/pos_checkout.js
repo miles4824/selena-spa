@@ -737,6 +737,18 @@ function onCustomerPhoneInput(val) {
   useVoucher = false;
   const vCheck = document.getElementById('pos-use-voucher');
   if (vCheck) vCheck.checked = false;
+
+  // Mở khóa ô tên và tháng sinh cho khách mới
+  const nameInput = document.getElementById('pos-customer-name');
+  if (nameInput) {
+    nameInput.disabled = false;
+    nameInput.classList.remove('bg-[#EFE8DF]', 'text-[#7E7272]', 'cursor-not-allowed', 'opacity-85', 'pointer-events-none', 'select-none');
+  }
+  const bSelect = document.getElementById('pos-birth-month');
+  if (bSelect) {
+    bSelect.disabled = false;
+    bSelect.classList.remove('bg-[#EFE8DF]', 'text-[#7E7272]', 'cursor-not-allowed', 'opacity-85', 'pointer-events-none', 'select-none');
+  }
 }
 
 function renderSuggestionsHTML(matches, currentInput = '') {
@@ -811,16 +823,31 @@ function applyCustomerData(cust) {
   const rawP = String(cust.phone_number || cust.raw_phone || '').replace(/[^0-9]/g, '');
   const cPhone = rawP.startsWith('0') ? rawP : ('0' + rawP);
 
+  const isOwner = typeof isUserOwner === 'function' ? isUserOwner(currentUser) : false;
   const nameInput = document.getElementById('pos-customer-name');
+  
   if (nameInput) {
     nameInput.value = cust.customer_name || '';
-    // Khóa hoàn toàn ô Tên nếu khách đã có hồ sơ tên chính thức trong hệ thống
-    if (cust.customer_name && cust.customer_name !== 'Khách hàng' && cust.customer_name !== 'Khách vãng lai') {
-      nameInput.disabled = false;
-      
-    } else {
+    
+    // Kiểm tra tên chính thức
+    const custNameLower = String(cust.customer_name || '').trim().toLowerCase();
+    const isGenericName = !custNameLower || custNameLower === 'khách hàng' || custNameLower === 'khách vãng lai' || custNameLower === 'khach hang' || custNameLower === 'khach vang lai';
+
+    if (isOwner) {
+      // 👑 Admin / Chủ tiệm: Toàn quyền chỉnh sửa tên
       nameInput.disabled = false;
       nameInput.classList.remove('bg-[#EFE8DF]', 'text-[#7E7272]', 'cursor-not-allowed', 'opacity-85', 'pointer-events-none', 'select-none');
+    } else {
+      // 👩‍🦰 Staff / KTV:
+      if (!isGenericName) {
+        // Khách đã có tên chính thức trong hệ thống -> Khóa không cho KTV sửa
+        nameInput.disabled = true;
+        nameInput.classList.add('bg-[#EFE8DF]', 'text-[#7E7272]', 'cursor-not-allowed', 'opacity-85', 'pointer-events-none', 'select-none');
+      } else {
+        // Khách vãng lai hoặc để trống -> Mở cho KTV gõ tên
+        nameInput.disabled = false;
+        nameInput.classList.remove('bg-[#EFE8DF]', 'text-[#7E7272]', 'cursor-not-allowed', 'opacity-85', 'pointer-events-none', 'select-none');
+      }
     }
   }
   
@@ -831,13 +858,17 @@ function applyCustomerData(cust) {
   const bSelect = document.getElementById('pos-birth-month');
   if (bSelect) {
     bSelect.value = (custMonth && custMonth >= 1 && custMonth <= 12) ? String(custMonth) : '';
-    // Khóa hoàn toàn ô Tháng sinh nếu khách đã có tháng sinh trong hệ thống
-    if (custMonth && custMonth >= 1 && custMonth <= 12) {
-      bSelect.disabled = true;
-      bSelect.classList.add('bg-[#EFE8DF]', 'text-[#7E7272]', 'cursor-not-allowed', 'opacity-85', 'pointer-events-none', 'select-none');
-    } else {
+    if (isOwner) {
       bSelect.disabled = false;
       bSelect.classList.remove('bg-[#EFE8DF]', 'text-[#7E7272]', 'cursor-not-allowed', 'opacity-85', 'pointer-events-none', 'select-none');
+    } else {
+      if (custMonth && custMonth >= 1 && custMonth <= 12) {
+        bSelect.disabled = true;
+        bSelect.classList.add('bg-[#EFE8DF]', 'text-[#7E7272]', 'cursor-not-allowed', 'opacity-85', 'pointer-events-none', 'select-none');
+      } else {
+        bSelect.disabled = false;
+        bSelect.classList.remove('bg-[#EFE8DF]', 'text-[#7E7272]', 'cursor-not-allowed', 'opacity-85', 'pointer-events-none', 'select-none');
+      }
     }
   }
 

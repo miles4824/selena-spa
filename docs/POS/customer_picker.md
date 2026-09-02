@@ -12,7 +12,8 @@
 - Gõ 2-3 số đầu $
 ightarrow$ Hiển thị dropdown gợi ý khách quen tự động.
 - 👩‍🦰 **KTV**: Thấy SĐT che `094*144`.
-- 👑 **Chủ tiệm**: Thấy đủ 10 số `0949251144`.
+- 👑 **Chủ tiệm / Admin**: Thấy đủ 10 số `0949251144` và **toàn quyền chỉnh sửa tên/thông tin khách hàng**.
+- 🔒 **Quy tắc bảo vệ tên khách hàng cho Staff**: Nếu khách đã có số điện thoại và tên chính thức trong hệ thống (khác 'Khách vãng lai' / để trống) $\rightarrow$ **Khóa ô Tên** không cho Staff chỉnh sửa. Chỉ mở khóa cho Staff nhập tên khi khách là khách mới hoặc tên đang là 'Khách vãng lai'.
 - Tự động hiện thẻ Loyalty nếu tìm thấy:
   - Thanh tiến trình: `X / 10 Lần gội` và hạn chót 60 ngày.
   - Banner sinh nhật màu vàng nếu trùng tháng sinh.
@@ -31,4 +32,5 @@ ightarrow$ Ca này miễn phí 100% (KTV vẫn nhận đủ 10% hoa hồng theo 
 
 ## 6. Lịch Sử Thay Đổi & Lưu Vết (Audit Log)
 - `2026-09-01` (`v0.0.0.1`):
-- `2026-09-01` (`v0.0.4.4`): Mở khóa toàn diện ô Tên Khách Hàng cho phép nhập/chỉnh sửa tên trực tiếp khi tạo tour. Bóc tách thành component độc lập.
+- `2026-09-01` (`v0.0.4.4`):
+- `2026-09-02` (`v0.0.5.2`): Hoàn thiện quy tắc khóa tên khách chính thức cho Staff, mở khóa cho Khách vãng lai/khách mới và toàn quyền cho Admin. Mở khóa toàn diện ô Tên Khách Hàng cho phép nhập/chỉnh sửa tên trực tiếp khi tạo tour. Bóc tách thành component độc lập.
