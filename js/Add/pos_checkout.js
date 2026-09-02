@@ -1525,16 +1525,18 @@ function renderSwapModalStaffUI() {
     const isMe = normalizePhone(item.phone) === myPhone;
     const busyMap = getBusyStaffPhonesMap();
     const currentTourId = currentLiveSession?.session_id;
-    const usedOtherPhones = tempSwapStaffs.filter((_, i) => i !== idx).map(s => normalizePhone(s.phone));
+    const usedOtherActivePhones = tempSwapStaffs.filter((s, i) => i !== idx && !s.left_early).map(s => normalizePhone(s.phone));
     
     const selectable = users.filter(u => {
       const uPhone = normalizePhone(u.phone);
-      if (usedOtherPhones.includes(uPhone)) return false;
       if (uPhone === normalizePhone(item.phone)) return true;
+      if (usedOtherActivePhones.includes(uPhone)) return false;
       const busySess = busyMap[uPhone];
       if (busySess && busySess.session_id !== currentTourId) return false;
       return true;
     });
+
+    const isDropdownDisabled = !canEdit || selectable.length <= 1;
 
     const elapsedSecNow = Math.max(0, Math.floor((Date.now() - (currentLiveSession?.start_timestamp || Date.now())) / 1000));
     const currentElapsedMinNow = Math.max(1, Math.min(targetMin, Math.floor(elapsedSecNow / 60) + (elapsedSecNow % 60 >= 30 ? 1 : 0)));
@@ -1559,7 +1561,7 @@ function renderSwapModalStaffUI() {
 
         ${(!isFirst && canEdit) ? `
           <!-- Dropdown chỉ hiện cho KTV Phụ khi KTV Chính / Admin thao tác điều chỉnh -->
-          <select onchange="onSwapStaffSelectChange(${idx}, this.value)" class="w-full bg-white border border-[#EFE8DF] rounded-xl p-2.5 text-xs font-bold text-[#2D2424] focus:outline-none focus:border-[#E58A7B] cursor-pointer">
+          <select ${isDropdownDisabled ? 'disabled' : ''} onchange="onSwapStaffSelectChange(${idx}, this.value)" class="w-full bg-white border border-[#EFE8DF] rounded-xl p-2.5 text-xs font-bold text-[#2D2424] focus:outline-none focus:border-[#E58A7B] ${isDropdownDisabled ? 'disabled:bg-[#F7F2EC] disabled:opacity-90 cursor-not-allowed' : 'cursor-pointer'}">
             ${selectable.map(u => `
               <option value="${u.phone}" ${normalizePhone(u.phone) === normalizePhone(item.phone) ? 'selected' : ''}>${u.full_name}</option>
             `).join('')}
@@ -1580,9 +1582,14 @@ function renderSwapModalStaffUI() {
                   <span class="text-[10px] text-[#A39696] font-mono">/ ${targetMin}p</span>
                 </div>
 
-                <label class="inline-flex items-center gap-1.5 cursor-pointer text-xs font-bold text-[#2D2424] hover:text-[#E58A7B] select-none py-0.5">
-                  <input type="checkbox" ${isWantsEarly ? 'checked' : ''} onchange="toggleSwapStaffEarlyLeave(${idx}, this.checked)" class="w-4 h-4 rounded-md accent-[#E58A7B] cursor-pointer">
-                  <span>Xong việc rời sớm</span>
+                <label class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl border transition-all select-none cursor-pointer ${isWantsEarly ? 'bg-[#FFF0EB] border-[#E58A7B] text-[#E58A7B] shadow-2xs' : 'bg-white border-[#E8E1D7] text-[#7E7272] hover:border-[#E58A7B]/60'}">
+                  <div class="relative flex items-center justify-center">
+                    <input type="checkbox" ${isWantsEarly ? 'checked' : ''} onchange="toggleSwapStaffEarlyLeave(${idx}, this.checked)" class="sr-only peer">
+                    <div class="w-4 h-4 rounded-md border flex items-center justify-center transition-all ${isWantsEarly ? 'bg-[#E58A7B] border-[#E58A7B]' : 'bg-white border-[#C9BCB5] peer-hover:border-[#E58A7B]'}">
+                      <i data-lucide="check" class="w-3 h-3 text-white stroke-[3] ${isWantsEarly ? '' : 'hidden'}"></i>
+                    </div>
+                  </div>
+                  <span class="text-xs font-bold">Xong việc rời sớm</span>
                 </label>
               </div>
 
@@ -1640,7 +1647,7 @@ function renderSwapModalStaffUI() {
     `;
   }
 
-  container.innerHTML = htmlActive + htmlLeft;
+  container.innerHTML = htmlLeft + htmlActive;
 
   if (addBtn) {
     if (!canEdit) {
