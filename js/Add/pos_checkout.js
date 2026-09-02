@@ -184,6 +184,19 @@ function closeCustomDropdownPopover() {
   if (chevron) chevron.classList.remove('rotate-180');
 }
 
+// =============================================================
+// CẤU HÌNH 7 DANH MỤC DỊCH VỤ TRONG DROPDOWN
+// =============================================================
+const SERVICE_CATEGORIES = [
+  { prefix: 'CB', title: '💆 Combo Gội Chính', icon: 'sparkles', iconColor: 'text-[#E58A7B]', itemIcon: '💆' },
+  { prefix: 'DV_TM', title: '🌿 Dịch Vụ Làm Thêm / Da Đầu', icon: 'plus-circle', iconColor: 'text-[#2E7D6D]', itemIcon: '🌿' },
+  { prefix: 'DV_MS', title: '💆 Massage Trị Liệu & Thư Giãn', icon: 'heart-pulse', iconColor: 'text-[#D97706]', itemIcon: '💆' },
+  { prefix: 'DV_WX', title: '✨ Dịch Vụ Waxing', icon: 'scissors', iconColor: 'text-[#9333EA]', itemIcon: '✨' },
+  { prefix: 'DV_PL', title: '🩺 Nặn Mụn & Peel Trị Liệu', icon: 'shield-check', iconColor: 'text-[#E11D48]', itemIcon: '🩺' },
+  { prefix: 'DV_DT', title: '🧪 Dịch Vụ Detox', icon: 'droplets', iconColor: 'text-[#0284C7]', itemIcon: '🧪' },
+  { prefix: 'DV_CY', title: '💎 Cấy Dưỡng Chuyên Sâu', icon: 'gem', iconColor: 'text-[#7C3AED]', itemIcon: '💎' }
+];
+
 function renderMenuDropdown() {
   const itemsContainer = document.getElementById('pos-custom-dropdown-items');
   const placeholderEl = document.getElementById('pos-dropdown-placeholder-text');
@@ -194,57 +207,63 @@ function renderMenuDropdown() {
   const customConfig = (typeof getStored === 'function' ? getStored('ui_config', {}) : {});
   const optSelectText = customConfig.opt_select_service || uiConfig.opt_select_service || '-- Chọn thêm dịch vụ / sản phẩm --';
   const optAllSelectedText = customConfig.opt_select_service_all_selected || uiConfig.opt_select_service_all_selected || '-- Tất cả dịch vụ đã được chọn --';
-  const optgroupCombosText = customConfig.optgroup_combos || uiConfig.optgroup_combos || '💆 Combo Gội Chính';
-  const optgroupAddonsText = customConfig.optgroup_addons || uiConfig.optgroup_addons || '✨ Dịch Vụ Lẻ / Làm Thêm';
 
-  // Lọc ra các món CHƯA được chọn (Món đã chọn sẽ tự động ẩn khỏi dropdown)
   const availableItems = menu.filter(m => !selectedIds.has(m.service_id));
 
   if (placeholderEl) {
-    placeholderEl.innerText = (availableItems.length === 0) ? optAllSelectedText : optSelectText;
+    placeholderEl.innerHTML = `
+      <span class="flex items-center gap-1.5 truncate">
+        <i data-lucide="plus-circle" class="w-3.5 h-3.5 text-[#E58A7B]"></i>
+        <span>${availableItems.length === 0 ? optAllSelectedText : optSelectText}</span>
+      </span>
+    `;
   }
 
   if (!itemsContainer) return;
 
   if (availableItems.length === 0) {
     itemsContainer.innerHTML = `
-      <div class="p-3 text-center text-xs text-[#A39696] italic">
+      <div class="p-4 text-center text-xs text-[#A39696] italic">
         ${optAllSelectedText}
       </div>
     `;
     return;
   }
 
-  const combos = availableItems.filter(m => String(m.service_id).startsWith('CB') || String(m.service_name || '').toLowerCase().includes('combo'));
-  const services = availableItems.filter(m => !combos.includes(m));
-
   let html = '';
 
-  if (combos.length > 0) {
-    html += `
-      <div class="px-2.5 py-1.5 text-[11px] font-black text-[#7E7272] uppercase tracking-wider bg-[#F7F2EC] rounded-xl flex items-center gap-1.5">
-        <i data-lucide="sparkles" class="w-3.5 h-3.5 text-[#E58A7B]"></i> ${optgroupCombosText}
-      </div>
-    `;
-    html += combos.map(m => `
-      <div onclick="addCartItemFromDropdown('${m.service_id}')" class="p-2.5 rounded-xl hover:bg-[#FFF0EB] hover:text-[#E58A7B] transition cursor-pointer flex justify-between items-center text-xs font-bold text-[#2D2424] group">
-        <span class="truncate flex items-center gap-2">
-          <span>💆</span> <span>${m.service_name}</span>
-        </span>
-        <span class="font-mono text-[#7E7272] group-hover:text-[#E58A7B] text-[11px] shrink-0 font-extrabold">
-          ${Number(m.price).toLocaleString('vi-VN')} đ • ${m.duration_min}p
-        </span>
-      </div>
-    `).join('');
-  }
+  SERVICE_CATEGORIES.forEach(cat => {
+    const groupItems = availableItems.filter(m => String(m.service_id).startsWith(cat.prefix));
+    if (groupItems.length > 0) {
+      html += `
+        <div class="px-2.5 py-1.5 mt-2 first:mt-0 text-[11px] font-black text-[#7E7272] uppercase tracking-wider bg-[#F7F2EC] rounded-xl flex items-center gap-1.5 sticky top-0 z-10 shadow-2xs">
+          <i data-lucide="${cat.icon}" class="w-3.5 h-3.5 ${cat.iconColor}"></i>
+          <span>${cat.title}</span>
+        </div>
+      `;
+      html += groupItems.map(m => `
+        <div onclick="addCartItemFromDropdown('${m.service_id}')" class="p-2.5 rounded-xl hover:bg-[#FFF0EB] hover:text-[#E58A7B] transition cursor-pointer flex justify-between items-center text-xs font-bold text-[#2D2424] group">
+          <span class="truncate flex items-center gap-2">
+            <span>${cat.itemIcon}</span> <span>${m.service_name}</span>
+          </span>
+          <span class="font-mono text-[#7E7272] group-hover:text-[#E58A7B] text-[11px] shrink-0 font-extrabold">
+            ${Number(m.price).toLocaleString('vi-VN')} đ • ${m.duration_min}p
+          </span>
+        </div>
+      `).join('');
+    }
+  });
 
-  if (services.length > 0) {
+  // Món khác nếu có
+  const mappedPrefixes = SERVICE_CATEGORIES.map(c => c.prefix);
+  const otherItems = availableItems.filter(m => !mappedPrefixes.some(p => String(m.service_id).startsWith(p)));
+  if (otherItems.length > 0) {
     html += `
       <div class="px-2.5 py-1.5 mt-2 text-[11px] font-black text-[#7E7272] uppercase tracking-wider bg-[#F7F2EC] rounded-xl flex items-center gap-1.5">
-        <i data-lucide="plus-circle" class="w-3.5 h-3.5 text-[#2E7D6D]"></i> ${optgroupAddonsText}
+        <i data-lucide="sparkles" class="w-3.5 h-3.5 text-[#E58A7B]"></i> <span>✨ Dịch Vụ Khác</span>
       </div>
     `;
-    html += services.map(m => `
+    html += otherItems.map(m => `
       <div onclick="addCartItemFromDropdown('${m.service_id}')" class="p-2.5 rounded-xl hover:bg-[#FFF0EB] hover:text-[#E58A7B] transition cursor-pointer flex justify-between items-center text-xs font-bold text-[#2D2424] group">
         <span class="truncate flex items-center gap-2">
           <span>✨</span> <span>${m.service_name}</span>
@@ -2318,14 +2337,8 @@ function toggleModalQuickCombo(serviceId) {
 
 function renderModalMenuDropdown() {
   const itemsContainer = document.getElementById('modal-edit-live-dropdown-items');
-  const placeholderEl = document.getElementById('modal-edit-live-placeholder-text');
   const menu = getValidatedMenu();
   const selectedIds = new Set(modalTempCartItems.map(item => item.service_id));
-
-  const uiConfig = (typeof DEFAULT_UI_CONFIG !== 'undefined' ? DEFAULT_UI_CONFIG : {});
-  const customConfig = (typeof getStored === 'function' ? getStored('ui_config', {}) : {});
-  const optgroupCombosText = customConfig.optgroup_combos || uiConfig.optgroup_combos || '💆 Combo Gội Chính';
-  const optgroupAddonsText = customConfig.optgroup_addons || uiConfig.optgroup_addons || '✨ Dịch Vụ Lẻ / Làm Thêm';
 
   const availableItems = menu.filter(m => !selectedIds.has(m.service_id));
 
@@ -2340,46 +2353,29 @@ function renderModalMenuDropdown() {
     return;
   }
 
-  const combos = availableItems.filter(m => String(m.service_id).startsWith('CB') || String(m.service_name || '').toLowerCase().includes('combo'));
-  const services = availableItems.filter(m => !combos.includes(m));
-
   let html = '';
 
-  if (combos.length > 0) {
-    html += `
-      <div class="px-2.5 py-1 text-[10px] font-black text-[#7E7272] uppercase tracking-wider bg-[#F7F2EC] rounded-xl flex items-center gap-1.5">
-        <i data-lucide="sparkles" class="w-3 h-3 text-[#E58A7B]"></i> ${optgroupCombosText}
-      </div>
-    `;
-    html += combos.map(m => `
-      <div onclick="addModalCartItemFromDropdown('${m.service_id}')" class="p-2 rounded-xl hover:bg-[#FFF0EB] hover:text-[#E58A7B] transition cursor-pointer flex justify-between items-center text-xs font-bold text-[#2D2424] group">
-        <span class="truncate flex items-center gap-1.5">
-          <span>💆</span> <span>${m.service_name}</span>
-        </span>
-        <span class="font-mono text-[#7E7272] group-hover:text-[#E58A7B] text-[11px] shrink-0 font-extrabold">
-          ${Number(m.price).toLocaleString('vi-VN')} đ • ${m.duration_min}p
-        </span>
-      </div>
-    `).join('');
-  }
-
-  if (services.length > 0) {
-    html += `
-      <div class="px-2.5 py-1 mt-1.5 text-[10px] font-black text-[#7E7272] uppercase tracking-wider bg-[#F7F2EC] rounded-xl flex items-center gap-1.5">
-        <i data-lucide="plus-circle" class="w-3 h-3 text-[#2E7D6D]"></i> ${optgroupAddonsText}
-      </div>
-    `;
-    html += services.map(m => `
-      <div onclick="addModalCartItemFromDropdown('${m.service_id}')" class="p-2 rounded-xl hover:bg-[#FFF0EB] hover:text-[#E58A7B] transition cursor-pointer flex justify-between items-center text-xs font-bold text-[#2D2424] group">
-        <span class="truncate flex items-center gap-1.5">
-          <span>✨</span> <span>${m.service_name}</span>
-        </span>
-        <span class="font-mono text-[#7E7272] group-hover:text-[#E58A7B] text-[11px] shrink-0 font-extrabold">
-          ${Number(m.price).toLocaleString('vi-VN')} đ • ${m.duration_min}p
-        </span>
-      </div>
-    `).join('');
-  }
+  SERVICE_CATEGORIES.forEach(cat => {
+    const groupItems = availableItems.filter(m => String(m.service_id).startsWith(cat.prefix));
+    if (groupItems.length > 0) {
+      html += `
+        <div class="px-2.5 py-1 text-[10px] font-black text-[#7E7272] uppercase tracking-wider bg-[#F7F2EC] rounded-xl flex items-center gap-1.5 sticky top-0 z-10 shadow-2xs">
+          <i data-lucide="${cat.icon}" class="w-3 h-3 ${cat.iconColor}"></i>
+          <span>${cat.title}</span>
+        </div>
+      `;
+      html += groupItems.map(m => `
+        <div onclick="addModalCartItemFromDropdown('${m.service_id}')" class="p-2 rounded-xl hover:bg-[#FFF0EB] hover:text-[#E58A7B] transition cursor-pointer flex justify-between items-center text-xs font-bold text-[#2D2424] group">
+          <span class="truncate flex items-center gap-1.5">
+            <span>${cat.itemIcon}</span> <span>${m.service_name}</span>
+          </span>
+          <span class="font-mono text-[#7E7272] group-hover:text-[#E58A7B] text-[11px] shrink-0 font-extrabold">
+            ${Number(m.price).toLocaleString('vi-VN')} đ • ${m.duration_min}p
+          </span>
+        </div>
+      `).join('');
+    }
+  });
 
   itemsContainer.innerHTML = html;
   if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
