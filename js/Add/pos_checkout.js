@@ -1324,7 +1324,7 @@ function renderSwapModalStaffUI() {
               <input type="number" min="0" max="${targetMin - 1}" value="${joinedMin}" onchange="onSwapStaffJoinedMinChange(${idx}, this.value)" class="w-12 text-center bg-white border border-[#E58A7B]/40 rounded-lg p-1 text-xs font-bold font-mono text-[#2D2424] focus:outline-none focus:border-[#E58A7B]">
               <span class="text-[10px] text-[#A39696] font-mono">/ ${targetMin}p</span>
             </div>
-            ${s.left_early ? `<span class="text-[10px] font-bold text-[#D35400] bg-[#FFF0EB] px-2 py-0.5 rounded-full">Đã rời ca phút ${s.left_min}</span>` : ''}
+            ${item.left_early ? `<span class="text-[10px] font-bold text-[#D35400] bg-[#FFF0EB] px-2 py-0.5 rounded-full">Đã rời ca phút ${item.left_min}</span>` : ''}
           </div>
 
           <button type="button" onclick="removeStaffInSwapModal(${idx})" title="Xóa KTV này khỏi tour" class="absolute top-2.5 right-2.5 w-6 h-6 rounded-full bg-white border border-rose-300 text-rose-500 hover:bg-rose-500 hover:text-white flex items-center justify-center cursor-pointer active:scale-90 transition">
