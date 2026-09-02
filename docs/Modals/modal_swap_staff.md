@@ -33,6 +33,7 @@ ightarrow$ Cập nhật mảng KTV phục vụ của ca trên Firebase.
 - **Hàm Backend GAS phụ trách**: `createReceipt(params)` ghi nhận từng dòng KTV tương ứng.
 
 ## 6. Lịch Sử Thay Đổi & Lưu Vết (Audit Log)
+- `2026-09-02` (`v0.0.8.8`): Lược bỏ ô nhập số kết thúc và checkbox 'Xong việc rời sớm' trong modal Điều Chỉnh KTV (chỉ giữ lại ô nhập phút bắt đầu làm); chuyển tính năng rời tour sớm ra nút bấm trực tiếp ngoài màn hình đếm giờ trực tiếp cho KTV Phụ.
 - `2026-09-02` (`v0.0.8.6`): Cố định (pin) Header và Footer của modal Điều Chỉnh KTV; cá nhân hóa mục tổng kết theo từng giai đoạn làm việc thực tế cho KTV với tiêu đề `🏆 Tổng thu nhập trong tour này:` và Tổng tiền nhận.
 - `2026-09-02` (`v0.0.8.5`): Cập nhật icon `users` hợp lệ của Lucide, gỡ bỏ đoạn mô tả dài dòng thừa, đổi tiêu đề danh sách thành `Danh Sách KTV đang làm`, và bỏ phần % thừa phía sau số tiền trong phần Dự kiến phân bổ tổng.
 - `2026-09-02` (`v0.0.8.2`): Tối giản quy ước `role_in_tour` thành 2 trạng thái gọn gàng: `Chính` (KTV đầu tiên) và `Phụ` (các KTV vào sau/cùng làm), mở rộng hỗ trợ động $N$ nhân sự không giới hạn số lượng.

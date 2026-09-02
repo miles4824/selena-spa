@@ -1096,11 +1096,31 @@ function renderLiveSessionUI() {
       { phone: currentLiveSession.staff_1_phone, name: currentLiveSession.staff_1_name, pct: 100 }
     ];
     
+    const cUser = (typeof currentUser !== 'undefined' && currentUser) ? currentUser : null;
+    const myPhone = (cUser && cUser.phone) ? normalizePhone(cUser.phone) : '';
+
+    const isKtvChinh = staffs.length > 0 && normalizePhone(staffs[0].phone) === myPhone;
+    const myStaffEntry = staffs.find(s => normalizePhone(s.phone) === myPhone);
+    const isKtvPhu = Boolean(!isKtvChinh && myStaffEntry);
+    const alreadyLeft = myStaffEntry && myStaffEntry.left_early;
+
+    const leaveEarlyBtn = document.getElementById('btn-live-leave-early');
+    if (leaveEarlyBtn) {
+      if (isKtvPhu && !alreadyLeft) {
+        leaveEarlyBtn.classList.remove('hidden');
+      } else {
+        leaveEarlyBtn.classList.add('hidden');
+      }
+    }
+
     chipsContainer.innerHTML = staffs.map((s, idx) => `
       <button type="button" onclick="openSwapStaffModal()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-[#EFE8DF] hover:border-[#E58A7B] text-xs font-bold text-[#2D2424] transition active:scale-95 cursor-pointer">
         <span class="w-2 h-2 rounded-full ${idx === 0 ? 'bg-[#2E7D6D]' : 'bg-[#E58A7B]'}"></span>
         <span>${s.name}</span>
-        <span class="text-[10px] font-extrabold text-[#7E7272] bg-[#FAF6F1] px-1.5 py-0.5 rounded-md">${s.pct || Math.round(100/staffs.length)}%</span>
+        ${s.left_early 
+          ? `<span class="text-[9px] font-bold text-[#D35400] bg-[#FFF0EB] px-1.5 py-0.5 rounded-md">Rời p.${s.left_min}</span>` 
+          : `<span class="text-[10px] font-extrabold text-[#7E7272] bg-[#FAF6F1] px-1.5 py-0.5 rounded-md">${s.pct || Math.round(100/staffs.length)}%</span>`
+        }
       </button>
     `).join('') + `
       <button type="button" onclick="openSwapStaffModal()" title="Điều chỉnh / Thêm KTV" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-[#FFF0EB] hover:bg-[#FFE5DC] text-xs font-bold text-[#E58A7B] border border-[#FCDFD7] transition active:scale-95 cursor-pointer">
@@ -1297,20 +1317,14 @@ function renderSwapModalStaffUI() {
         </select>
 
         ${!isFirst ? `
-          <!-- Tinh chỉnh thời gian tham gia của KTV phụ -->
-          <div class="pt-1.5 border-t border-[#F0EAE1]/80 flex flex-wrap items-center justify-between gap-2 text-[11px]">
-            <div class="flex items-center gap-1.5 flex-wrap">
+          <!-- Tinh chỉnh thời gian bắt đầu của KTV phụ -->
+          <div class="pt-1.5 border-t border-[#F0EAE1]/80 flex items-center justify-between gap-2 text-[11px]">
+            <div class="flex items-center gap-1.5">
               <span class="text-[#7E7272]">⏱️ Làm từ phút:</span>
               <input type="number" min="0" max="${targetMin - 1}" value="${joinedMin}" onchange="onSwapStaffJoinedMinChange(${idx}, this.value)" class="w-12 text-center bg-white border border-[#E58A7B]/40 rounded-lg p-1 text-xs font-bold font-mono text-[#2D2424] focus:outline-none focus:border-[#E58A7B]">
-              <span class="text-[#7E7272]">➔</span>
-              <input type="number" min="${joinedMin + 1}" max="${targetMin}" value="${leftMin}" onchange="onSwapStaffLeftMinChange(${idx}, this.value)" class="w-12 text-center bg-white border border-[#E58A7B]/40 rounded-lg p-1 text-xs font-bold font-mono text-[#E58A7B] focus:outline-none focus:border-[#E58A7B]">
               <span class="text-[10px] text-[#A39696] font-mono">/ ${targetMin}p</span>
             </div>
-
-            <label class="inline-flex items-center gap-1 cursor-pointer text-[11px] font-semibold text-[#7E7272] hover:text-[#E58A7B] select-none">
-              <input type="checkbox" ${isEarlyLeave ? 'checked' : ''} onchange="toggleSwapStaffEarlyLeave(${idx}, this.checked)" class="rounded text-[#E58A7B] focus:ring-0 cursor-pointer">
-              <span>Xong việc rời sớm</span>
-            </label>
+            ${s.left_early ? `<span class="text-[10px] font-bold text-[#D35400] bg-[#FFF0EB] px-2 py-0.5 rounded-full">Đã rời ca phút ${s.left_min}</span>` : ''}
           </div>
 
           <button type="button" onclick="removeStaffInSwapModal(${idx})" title="Xóa KTV này khỏi tour" class="absolute top-2.5 right-2.5 w-6 h-6 rounded-full bg-white border border-rose-300 text-rose-500 hover:bg-rose-500 hover:text-white flex items-center justify-center cursor-pointer active:scale-90 transition">
@@ -1336,8 +1350,8 @@ function onSwapStaffJoinedMinChange(idx, val) {
   const targetMin = currentLiveSession?.duration_target_min || 50;
   const minVal = Math.max(0, Math.min(targetMin - 1, parseInt(val, 10) || 0));
   tempSwapStaffs[idx].joined_min = minVal;
-  if ((tempSwapStaffs[idx].left_min || targetMin) <= minVal) {
-    tempSwapStaffs[idx].left_min = Math.min(targetMin, minVal + 5);
+  if (!tempSwapStaffs[idx].left_early) {
+    tempSwapStaffs[idx].left_min = targetMin;
   }
   tempSwapStaffs[idx].is_midway = minVal > 0;
   renderSwapModalStaffUI();
@@ -2747,5 +2761,55 @@ function saveModalEditLiveServices() {
     showToast('🎉 Đã cập nhật gói dịch vụ thành công!', 'success');
   } else {
     alert('🎉 Đã cập nhật gói dịch vụ cho ca phục vụ thành công!');
+  }
+}
+
+function confirmStaffLeaveTourEarly() {
+  if (!currentLiveSession) return;
+  const cUser = (typeof currentUser !== 'undefined' && currentUser) ? currentUser : null;
+  const myPhone = (cUser && cUser.phone) ? normalizePhone(cUser.phone) : '';
+  
+  const staffs = currentLiveSession.staffs || [
+    { phone: currentLiveSession.staff_1_phone, name: currentLiveSession.staff_1_name, pct: 100 }
+  ];
+  const myStaff = staffs.find(s => normalizePhone(s.phone) === myPhone);
+  if (!myStaff) {
+    alert('Không tìm thấy thông tin bạn trong ca gội này!');
+    return;
+  }
+
+  const elapsedSec = Math.max(0, Math.floor((Date.now() - currentLiveSession.start_timestamp) / 1000));
+  const elapsedMin = Math.max(1, Math.floor(elapsedSec / 60));
+
+  if (!confirm(`Xác nhận bạn (${myStaff.name}) đã xong phần việc và muốn rời ca tại phút thứ ${elapsedMin}?`)) {
+    return;
+  }
+
+  myStaff.left_min = elapsedMin;
+  myStaff.left_early = true;
+  myStaff.left_at_min = elapsedMin;
+  myStaff.left_timestamp = Date.now();
+
+  currentLiveSession.staffs = staffs;
+  localStorage.setItem('selena_active_live_session', JSON.stringify(currentLiveSession));
+  
+  if (typeof fbSetLiveSession === 'function') {
+    fbSetLiveSession(currentLiveSession);
+  }
+
+  if (typeof markSessionDismissed === 'function') {
+    markSessionDismissed(currentLiveSession);
+  }
+  
+  currentLiveSession = null;
+  clearInterval(liveTimerInterval);
+  renderLiveSessionUI();
+
+  alert(`🎉 Đã ghi nhận bạn (${myStaff.name}) hoàn thành phần việc lúc phút thứ ${elapsedMin}.
+
+Khi KTV chính hoàn thành và chốt ca, hoa hồng + tip sẽ được tự động tính vào ví của bạn!`);
+
+  if (typeof showView === 'function') {
+    showView('home');
   }
 }
