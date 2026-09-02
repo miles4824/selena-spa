@@ -1385,56 +1385,62 @@ function updateSwapPreviewDisplay() {
   const elapsedSec = Math.max(1, Math.floor((Date.now() - currentLiveSession.start_timestamp) / 1000));
   const elapsedMin = Math.floor(elapsedSec / 60);
 
-  const staff1User = users.find(u => normalizePhone(u.phone) === normalizePhone(tempSwapStaffs[0].phone));
-  const rate1 = (staff1User && parsePercentage(staff1User?.commission_rate) > 0) ? parsePercentage(staff1User?.commission_rate) : 10;
-  const totalComm = Math.round(currentLiveSession.price * (rate1 / 100));
+  const cUser = getCurrentUser();
+  const isAdmin = cUser && (cUser.role === 'admin' || cUser.role === 'owner');
+  const myPhone = normalizePhone(cUser?.phone || '');
 
   const summaryContainer = document.getElementById('swap-summary-pct-list');
   let html = '';
 
   if (count === 1) {
-    tempSwapStaffs[0].pct = 100;
-    tempSwapStaffs[0].comm_vnd = totalComm;
+    const s = tempSwapStaffs[0];
+    s.pct = 100;
+    const staffObj = users.find(u => normalizePhone(u.phone) === normalizePhone(s.phone));
+    const rate = (staffObj && parsePercentage(staffObj?.commission_rate) > 0) ? parsePercentage(staffObj?.commission_rate) : 10;
+    s.comm_vnd = Math.round(currentLiveSession.price * (rate / 100));
+
+    const isMe = normalizePhone(s.phone) === myPhone;
+    const badgeText = (isAdmin || isMe) ? `100% • +${s.comm_vnd.toLocaleString('vi-VN')} đ` : '100%';
+    const itemCommBadge = document.getElementById('swap-item-comm-0');
+    if (itemCommBadge) itemCommBadge.innerText = badgeText;
+
+    const moneyPart = (isAdmin || isMe) ? `+${s.comm_vnd.toLocaleString('vi-VN')} đ ` : '';
     html = `
       <div class="space-y-1">
         <div class="flex justify-between items-center text-[#2D2424] font-bold">
-          <span>${tempSwapStaffs[0].name} (100% trọn tour):</span>
-          <span class="text-[#2E7D6D] font-extrabold">+${totalComm.toLocaleString('vi-VN')} đ</span>
+          <span>${s.name} (100% trọn tour):</span>
+          <span class="text-[#2E7D6D] font-extrabold font-mono">${moneyPart}(100%)</span>
         </div>
       </div>
     `;
-    const itemCommBadge = document.getElementById('swap-item-comm-0');
-    if (itemCommBadge) itemCommBadge.innerText = `100% • +${totalComm.toLocaleString('vi-VN')} đ`;
   } else if (currentSplitMode === 'timer') {
     const midwayStaff = tempSwapStaffs.find(s => s.is_midway);
     const joinMin = Math.min(targetMin, Math.max(1, midwayStaff ? (midwayStaff.joined_min || elapsedMin) : elapsedMin));
     const remMin = Math.max(0, targetMin - joinMin);
 
-    const stage1Comm = Math.round(totalComm * (joinMin / targetMin));
-    const stage2Comm = totalComm - stage1Comm;
-
     const earlyStaffs = tempSwapStaffs.filter(s => !s.is_midway);
     const nEarly = earlyStaffs.length > 0 ? earlyStaffs.length : 1;
     const nTotal = tempSwapStaffs.length;
 
-    const earlyStage1Vnd = Math.floor(stage1Comm / nEarly);
-    const stage1Rem = stage1Comm - (earlyStage1Vnd * nEarly);
-
-    const allStage2Vnd = Math.floor(stage2Comm / nTotal);
-    const stage2Rem = stage2Comm - (allStage2Vnd * nTotal);
+    // Tính % theo thời gian thực tế tham gia
+    const earlyPct = Math.min(99, Math.max(1, Math.round(((joinMin + (remMin / nTotal)) / targetMin) * 100)));
+    const remTotalPct = Math.max(0, 100 - earlyPct);
+    const latePerPct = Math.floor(remTotalPct / (nTotal - nEarly > 0 ? (nTotal - nEarly) : 1));
 
     tempSwapStaffs.forEach((s, idx) => {
-      let comm = 0;
       if (!s.is_midway) {
-        comm = earlyStage1Vnd + allStage2Vnd + (idx === 0 ? (stage1Rem + stage2Rem) : 0);
+        s.pct = earlyPct;
       } else {
-        comm = allStage2Vnd;
+        s.pct = latePerPct;
       }
-      s.comm_vnd = comm;
-      s.pct = totalComm > 0 ? Math.round((comm / totalComm) * 100) : Math.round(100 / count);
+      const staffObj = users.find(u => normalizePhone(u.phone) === normalizePhone(s.phone));
+      const rate = (staffObj && parsePercentage(staffObj?.commission_rate) > 0) ? parsePercentage(staffObj?.commission_rate) : 10;
+      s.comm_vnd = Math.round(currentLiveSession.price * (rate / 100) * (s.pct / 100));
 
+      const isMe = normalizePhone(s.phone) === myPhone;
+      const badgeText = (isAdmin || isMe) ? `${s.pct}% • +${s.comm_vnd.toLocaleString('vi-VN')} đ` : `${s.pct}%`;
       const itemCommBadge = document.getElementById(`swap-item-comm-${idx}`);
-      if (itemCommBadge) itemCommBadge.innerText = `${s.pct}% • +${comm.toLocaleString('vi-VN')} đ`;
+      if (itemCommBadge) itemCommBadge.innerText = badgeText;
     });
 
     html = `
@@ -1442,12 +1448,11 @@ function updateSwapPreviewDisplay() {
         <div class="p-2.5 rounded-xl bg-white border border-[#F0EAE1] space-y-1">
           <div class="flex justify-between items-center text-[11px] font-bold text-[#E58A7B]">
             <span>🔹 Giai đoạn 1: ${joinMin} phút đầu (${earlyStaffs.length} KTV làm)</span>
-            <span>${stage1Comm.toLocaleString('vi-VN')} đ</span>
           </div>
-          ${earlyStaffs.map((s, i) => `
+          ${earlyStaffs.map((s) => `
             <div class="flex justify-between items-center text-[11px] text-[#7E7272] pl-2">
               <span>• ${s.name}:</span>
-              <span class="font-semibold text-[#2D2424]">+${(earlyStage1Vnd + (i === 0 ? stage1Rem : 0)).toLocaleString('vi-VN')} đ</span>
+              <span class="font-semibold text-[#2D2424]">${(isAdmin || normalizePhone(s.phone) === myPhone) ? `+${s.comm_vnd.toLocaleString('vi-VN')} đ` : `${s.pct}%`}</span>
             </div>
           `).join('')}
         </div>
@@ -1455,24 +1460,27 @@ function updateSwapPreviewDisplay() {
         <div class="p-2.5 rounded-xl bg-white border border-[#F0EAE1] space-y-1">
           <div class="flex justify-between items-center text-[11px] font-bold text-[#2E7D6D]">
             <span>🔹 Giai đoạn 2: ${remMin} phút sau (${nTotal} KTV cùng làm)</span>
-            <span>${stage2Comm.toLocaleString('vi-VN')} đ</span>
           </div>
-          ${tempSwapStaffs.map((s, i) => `
+          ${tempSwapStaffs.map((s) => `
             <div class="flex justify-between items-center text-[11px] text-[#7E7272] pl-2">
               <span>• ${s.name}${s.is_midway ? ' (Vào sau)' : ''}:</span>
-              <span class="font-semibold text-[#2D2424]">+${(allStage2Vnd + (i === 0 ? stage2Rem : 0)).toLocaleString('vi-VN')} đ</span>
+              <span class="font-semibold text-[#2D2424]">${(isAdmin || normalizePhone(s.phone) === myPhone) ? `+${s.comm_vnd.toLocaleString('vi-VN')} đ` : `${s.pct}%`}</span>
             </div>
           `).join('')}
         </div>
 
         <div class="pt-1.5 border-t border-[#F0EAE1] space-y-1">
-          <div class="text-[11px] font-extrabold text-[#2D2424] uppercase tracking-wider">🏆 Tổng Cộng Thực Nhận:</div>
-          ${tempSwapStaffs.map(s => `
-            <div class="flex justify-between items-center text-xs font-bold">
-              <span class="text-[#2D2424]">${s.name}:</span>
-              <span class="text-[#2E7D6D] font-extrabold">+${s.comm_vnd.toLocaleString('vi-VN')} đ (${s.pct}%)</span>
-            </div>
-          `).join('')}
+          <div class="text-[11px] font-extrabold text-[#2D2424] uppercase tracking-wider">🏆 Dự Kiến Phân Bổ:</div>
+          ${tempSwapStaffs.map(s => {
+            const isMe = normalizePhone(s.phone) === myPhone;
+            const moneyStr = (isAdmin || isMe) ? `+${s.comm_vnd.toLocaleString('vi-VN')} đ ` : '';
+            return `
+              <div class="flex justify-between items-center text-xs font-bold">
+                <span class="text-[#2D2424]">${s.name}:</span>
+                <span class="text-[#2E7D6D] font-extrabold font-mono">${moneyStr}(${s.pct}%)</span>
+              </div>
+            `;
+          }).join('')}
         </div>
       </div>
     `;
@@ -1480,18 +1488,20 @@ function updateSwapPreviewDisplay() {
     const timerTextEl = document.getElementById('split-timer-pct');
     if (timerTextEl) timerTextEl.innerText = `Theo giai đoạn (${joinMin}p đầu & ${remMin}p sau)`;
   } else {
-    const perStaffVnd = Math.floor(totalComm / count);
-    const remVnd = totalComm - (perStaffVnd * count);
     const equalPct = Math.floor(100 / count);
     const remPct = 100 - (equalPct * count);
 
     tempSwapStaffs.forEach((s, idx) => {
       const isFirst = idx === 0;
       s.pct = equalPct + (isFirst ? remPct : 0);
-      s.comm_vnd = perStaffVnd + (isFirst ? remVnd : 0);
+      const staffObj = users.find(u => normalizePhone(u.phone) === normalizePhone(s.phone));
+      const rate = (staffObj && parsePercentage(staffObj?.commission_rate) > 0) ? parsePercentage(staffObj?.commission_rate) : 10;
+      s.comm_vnd = Math.round(currentLiveSession.price * (rate / 100) * (s.pct / 100));
 
+      const isMe = normalizePhone(s.phone) === myPhone;
+      const badgeText = (isAdmin || isMe) ? `${s.pct}% • +${s.comm_vnd.toLocaleString('vi-VN')} đ` : `${s.pct}%`;
       const itemCommBadge = document.getElementById(`swap-item-comm-${idx}`);
-      if (itemCommBadge) itemCommBadge.innerText = `${s.pct}% • +${s.comm_vnd.toLocaleString('vi-VN')} đ`;
+      if (itemCommBadge) itemCommBadge.innerText = badgeText;
     });
 
     html = `
@@ -1499,12 +1509,16 @@ function updateSwapPreviewDisplay() {
         <div class="text-[11px] font-bold text-[#7E7272] flex items-center gap-1">
           <span>🤝 Cùng làm từ đầu (Chia đều trọn tour ${targetMin} phút):</span>
         </div>
-        ${tempSwapStaffs.map((s, i) => `
-          <div class="flex justify-between items-center text-xs font-bold">
-            <span class="text-[#2D2424]">${s.name}${i === 0 ? ' (KTV Chính)' : ''}:</span>
-            <span class="text-[#2E7D6D] font-extrabold">+${s.comm_vnd.toLocaleString('vi-VN')} đ (${s.pct}%)</span>
-          </div>
-        `).join('')}
+        ${tempSwapStaffs.map((s, i) => {
+          const isMe = normalizePhone(s.phone) === myPhone;
+          const moneyStr = (isAdmin || isMe) ? `+${s.comm_vnd.toLocaleString('vi-VN')} đ ` : '';
+          return `
+            <div class="flex justify-between items-center text-xs font-bold">
+              <span class="text-[#2D2424]">${s.name}${i === 0 ? ' (KTV Chính)' : ''}:</span>
+              <span class="text-[#2E7D6D] font-extrabold font-mono">${moneyStr}(${s.pct}%)</span>
+            </div>
+          `;
+        }).join('')}
       </div>
     `;
 

@@ -17,4 +17,5 @@
 - Ghi 2 dòng riêng biệt vào `tb_payroll_logs` cho 2 KTV tương ứng.
 
 ## 5. Lịch Sử Thay Đổi & Lưu Vết (Audit Log)
+- `2026-09-02` (`v0.0.7.2`): Tách biệt công thức tính hoa hồng theo rate cá nhân của từng KTV (người 10%, người 20%) nhân với % phân bổ ca.
 - `2026-09-01` (`v0.0.0.1`): Chuẩn hóa thuật toán chia tiền.
