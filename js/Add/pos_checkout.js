@@ -1631,7 +1631,7 @@ function renderSwapModalStaffUI() {
               </div>
               <div class="flex items-center gap-2">
                 <span class="font-bold text-[#2E7D6D] font-mono">+${(item.comm_vnd || 0).toLocaleString('vi-VN')} đ (${item.pct}%)</span>
-                ${canEdit ? `<button type="button" onclick="restoreStaffInSwapModal(${idx})" class="p-1 text-[#7E7272] hover:text-[#E58A7B] text-[10px] underline cursor-pointer" title="Phục hồi vào lại ca">Phục hồi</button>` : ''}
+                ${canEdit ? `<button type="button" onclick="restoreStaffInSwapModal(${idx})" class="p-1 text-[#7E7272] hover:text-[#E58A7B] text-[10px] underline cursor-pointer" title="Khôi phục lại ca nối liền do lỡ tay bấm nhầm rời sớm">Hoàn tác (bấm nhầm)</button>` : ''}
               </div>
             </div>
           `).join('')}
@@ -1700,10 +1700,10 @@ function addStaffInSwapModal() {
   const users = getSortedUsersList();
   const busyMap = getBusyStaffPhonesMap();
   const currentTourId = currentLiveSession?.session_id;
-  const usedPhones = tempSwapStaffs.map(s => normalizePhone(s.phone));
+  const currentlyActivePhones = tempSwapStaffs.filter(s => !s.left_early).map(s => normalizePhone(s.phone));
   const available = users.filter(u => {
     const uPhone = normalizePhone(u.phone);
-    if (usedPhones.includes(uPhone)) return false;
+    if (currentlyActivePhones.includes(uPhone)) return false;
     const busySess = busyMap[uPhone];
     if (busySess && busySess.session_id !== currentTourId) return false;
     return true;
@@ -1715,19 +1715,24 @@ function addStaffInSwapModal() {
   }
 
   const targetMin = currentLiveSession?.duration_target_min || 50;
-  const elapsedSec = Math.max(1, Math.floor((Date.now() - currentLiveSession.start_timestamp) / 1000));
-  const elapsedMin = Math.max(1, Math.min(targetMin - 1, Math.floor(elapsedSec / 60)));
+  const elapsedSec = Math.max(0, Math.floor((Date.now() - (currentLiveSession?.start_timestamp || Date.now())) / 1000));
+  const elapsedMin = Math.max(1, Math.min(targetMin - 1, Math.floor(elapsedSec / 60) + (elapsedSec % 60 >= 30 ? 1 : 0)));
 
   const next = available[0];
+  const previousSegmentsCount = tempSwapStaffs.filter(s => normalizePhone(s.phone) === normalizePhone(next.phone)).length;
+  const segmentLabel = previousSegmentsCount > 0 ? ` (Chặng ${previousSegmentsCount + 1})` : '';
+
   tempSwapStaffs.push({
     phone: next.phone,
-    name: next.full_name,
+    name: (next.full_name || 'KTV') + segmentLabel,
     user_id: next.user_id || next.phone,
     staff_id: next.staff_id || (isUserOwner(next) ? 'FOUNDER_01' : 'KTV'),
     pct: 0,
     joined_min: elapsedMin,
     left_min: targetMin,
-    is_midway: true
+    is_midway: true,
+    left_early: false,
+    wants_early_leave: false
   });
 
   currentSplitMode = 'timer';
@@ -2317,23 +2322,48 @@ function confirmSaveReceiptFromCheckout() {
   const grandTotal = basePrice + totalTip;
   const receiptId = 'HD' + Date.now().toString().slice(-6);
 
-  // Xử lý động N nhân sự tham gia tour
-  const mappedStaffs = currentStaffs.map((s, idx) => {
-    const staffObj = users.find(u => normalizePhone(u.phone) === normalizePhone(s.phone));
+  // Xử lý động N nhân sự tham gia tour (Nhóm gộp theo số điện thoại nếu 1 KTV làm nhiều chặng)
+  const groupedStaffMap = {};
+  currentStaffs.forEach((s, idx) => {
+    const pKey = normalizePhone(s.phone);
+    const staffObj = users.find(u => normalizePhone(u.phone) === pKey);
+    const staffId = (staffObj && staffObj.staff_id) || s.staff_id || (idx === 0 ? 'KTV01' : `KTV0${idx + 1}`);
+    const staffName = (staffObj && staffObj.full_name) || s.name || `KTV ${idx + 1}`;
+    const cleanName = staffName.replace(/\s*\(Chặng\s*\d+\)/gi, '');
+    const tipVnd = getStaffTipAmount(s.phone);
     const rate = (staffObj && parsePercentage(staffObj?.commission_rate) > 0) ? parsePercentage(staffObj?.commission_rate) : 10;
     const commVnd = (s.comm_vnd !== undefined && s.comm_vnd !== null)
       ? s.comm_vnd
       : Math.round(currentLiveSession.price * (rate / 100) * ((s.pct || Math.round(100 / currentStaffs.length)) / 100));
-    const tipVnd = getStaffTipAmount(s.phone);
 
+    if (!groupedStaffMap[pKey]) {
+      groupedStaffMap[pKey] = {
+        phone: s.phone || '',
+        staff_id: staffId,
+        name: cleanName,
+        pct: Number(s.pct) || 0,
+        comm_vnd: commVnd,
+        tip_vnd: tipVnd,
+        role: idx === 0 ? 'Chính' : 'Phụ',
+        segments: []
+      };
+    } else {
+      groupedStaffMap[pKey].pct += Number(s.pct) || 0;
+      groupedStaffMap[pKey].comm_vnd += commVnd;
+    }
+    if (s.joined_min !== undefined && s.left_min !== undefined) {
+      groupedStaffMap[pKey].segments.push(`${s.joined_min}➔${s.left_min}p`);
+    }
+  });
+
+  const mappedStaffs = Object.values(groupedStaffMap).map(st => {
+    let roleText = st.role;
+    if (st.segments.length > 1) {
+      roleText += ` (${st.segments.length} chặng: ${st.segments.join(', ')})`;
+    }
     return {
-      phone: s.phone || '',
-      staff_id: (staffObj && staffObj.staff_id) || s.staff_id || (idx === 0 ? 'KTV01' : `KTV0${idx + 1}`),
-      name: (staffObj && staffObj.full_name) || s.name || `KTV ${idx + 1}`,
-      pct: s.pct !== undefined ? s.pct : Math.round(100 / currentStaffs.length),
-      comm_vnd: commVnd,
-      tip_vnd: tipVnd,
-      role: idx === 0 ? 'Chính' : 'Phụ'
+      ...st,
+      role: roleText
     };
   });
 

@@ -33,6 +33,7 @@ ightarrow$ Cập nhật mảng KTV phục vụ của ca trên Firebase.
 - **Hàm Backend GAS phụ trách**: `createReceipt(params)` ghi nhận từng dòng KTV tương ứng.
 
 ## 6. Lịch Sử Thay Đổi & Lưu Vết (Audit Log)
+- `2026-09-03` (`v0.1.1.0`): Triển khai cơ chế Multi-Segment Staff (KTV làm nhiều chặng ngắt quãng trong 1 tour) với thuật toán tính hoa hồng chính xác từng chặng, không hưởng tiền khoảng trống vắng mặt; phân tách rõ ràng với nút `Hoàn tác (bấm nhầm)`.
 - `2026-09-02` (`v0.1.0.9`): Cập nhật tiêu đề `font-medium text-xl uppercase` cho cả 2 tiêu đề `Điều Chỉnh KTV Tour Này` và `Xác Nhận Rời Tour Sớm`; phóng to và làm đẹp checkbox `Xong việc rời sớm` với `accent-[#E58A7B] w-4 h-4`; đổi tên nút hành động thành `Xác nhận xong việc`.
 - `2026-09-02` (`v0.1.0.8`): Tinh gọn thẻ KTV trong modal: bỏ dropdown trên thẻ KTV Chính; ẩn số % của KTV khác để bảo mật thu nhập; trên màn hình KTV Phụ ẩn hoàn toàn dropdown và dòng thời gian của các KTV khác; đổi nhãn nút thành `Xác Nhận Rời Tour` (bỏ dấu tick ✓).
 - `2026-09-02` (`v0.1.0.6`): Tách biệt rõ ràng giữa trạng thái xem trước khi tích checkbox (`wants_early_leave`) và hành động thực thi rời ca (`left_early`); khi tích checkbox chỉ làm hiện nút `Xong Việc Rời Tour Sớm` và cập nhật xem trước, chỉ khi người dùng bấm nút thì mới chính thức hoàn tất rời ca.
