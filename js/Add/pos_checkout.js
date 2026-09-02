@@ -1384,10 +1384,19 @@ function openSwapStaffModal(isLeaveEarlyMode = false) {
   const isAdmin = cUser ? (typeof isUserOwner === 'function' ? isUserOwner(cUser) : (cUser.role === 'admin' || cUser.role === 'owner')) : false;
   const targetMin = currentLiveSession.duration_target_min || 50;
 
+  const elapsedSec = Math.max(0, Math.floor((Date.now() - (currentLiveSession?.start_timestamp || Date.now())) / 1000));
+  const currentElapsedMin = Math.max(1, Math.min(targetMin, Math.floor(elapsedSec / 60) + (elapsedSec % 60 >= 30 ? 1 : 0)));
+
   if (!tempSwapStaffs || tempSwapStaffs.length === 0 || !isLeaveEarlyMode) {
     tempSwapStaffs = (currentLiveSession.staffs || [
       { phone: currentLiveSession.staff_1_phone, name: currentLiveSession.staff_1_name, pct: 100, joined_min: 0 }
-    ]).map(s => ({ ...s }));
+    ]).map(s => {
+      const copy = { ...s };
+      if (!copy.left_early && (!copy.left_min || copy.left_min === targetMin)) {
+        copy.left_min = Math.max((copy.joined_min || 0) + 1, currentElapsedMin);
+      }
+      return copy;
+    });
   }
 
   const myId = (cUser && (cUser.staff_id || cUser.user_id)) ? String(cUser.staff_id || cUser.user_id).trim() : '';
@@ -1530,8 +1539,12 @@ function renderSwapModalStaffUI() {
       return true;
     });
 
+    const elapsedSecNow = Math.max(0, Math.floor((Date.now() - (currentLiveSession?.start_timestamp || Date.now())) / 1000));
+    const currentElapsedMinNow = Math.max(1, Math.min(targetMin, Math.floor(elapsedSecNow / 60) + (elapsedSecNow % 60 >= 30 ? 1 : 0)));
+
     const joinedMin = item.joined_min || 0;
-    const leftMin = item.left_min || targetMin;
+    const leftMin = item.left_early ? (item.left_min || currentElapsedMinNow) : (item.left_min && item.left_min < targetMin ? item.left_min : currentElapsedMinNow);
+    item.left_min = leftMin;
 
     return `
       <div class="relative p-3 rounded-2xl bg-[#FAF6F1] border border-[#F0EAE1] space-y-2">

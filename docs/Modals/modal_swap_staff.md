@@ -33,6 +33,7 @@ ightarrow$ Cập nhật mảng KTV phục vụ của ca trên Firebase.
 - **Hàm Backend GAS phụ trách**: `createReceipt(params)` ghi nhận từng dòng KTV tương ứng.
 
 ## 6. Lịch Sử Thay Đổi & Lưu Vết (Audit Log)
+- `2026-09-02` (`v0.1.0.3`): Ô số phút kết thúc `[ X ]` trong modal tự động khởi tạo bằng số phút hiện tại của tour (`currentElapsedMin`) theo thời gian thực thay vì mặc định 50 phút.
 - `2026-09-02` (`v0.1.0.2`): Tối ưu nhận diện quyền KTV Chính / Admin mở rộng theo cả phone, staff_id và active_staff; đồng bộ chính xác số phút rời ca thực tế `left_min` giữa KTV Phụ và máy KTV Chính / Admin.
 - `2026-09-02` (`v0.1.0.1`): Gán tường minh `window.onSwapStaffSelectChange` và tất cả các hàm xử lý modal vào `window` global scope, triệt tiêu hoàn toàn lỗi `ReferenceError` khi người dùng thao tác dropdown.
 - `2026-09-02` (`v0.1.0.0`): Bổ sung hàm `onSwapStaffSelectChange` xử lý đổi người trong modal; áp dụng chuẩn làm tròn thời gian thực tế: từ 30 giây trở lên (`>= 30s`) được làm tròn lên +1 phút.
