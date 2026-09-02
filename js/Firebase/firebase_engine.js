@@ -441,6 +441,7 @@ setInterval(async () => {
 
 
 // C. Lưu và đồng bộ Phiên Tour đang phục vụ (Hỗ trợ Nhiều Tour Song Song)
+window.fbSetLiveSession = function(sessionData) { return fbSaveLiveSession(sessionData); };
 async function fbSaveLiveSession(sessionData) {
   if (!sessionData || !sessionData.session_id) return false;
   try {

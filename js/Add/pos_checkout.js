@@ -1,3 +1,102 @@
+
+function calculateLiveSessionStaffSplits(sess) {
+  if (!sess || !Array.isArray(sess.staffs) || sess.staffs.length === 0) return sess;
+  const users = getSortedUsersList();
+  const count = sess.staffs.length;
+  const targetMin = sess.duration_target_min || 50;
+  const tourPrice = sess.price || 0;
+  const mode = sess.split_mode || (count > 1 ? 'timer' : 'equal');
+
+  if (count === 1) {
+    const s = sess.staffs[0];
+    s.pct = 100;
+    s.joined_min = 0;
+    s.left_min = targetMin;
+    const staffObj = users.find(u => normalizePhone(u.phone) === normalizePhone(s.phone));
+    const rate = (staffObj && parsePercentage(staffObj?.commission_rate) > 0) ? parsePercentage(staffObj?.commission_rate) : 10;
+    s.comm_vnd = Math.round(tourPrice * (rate / 100));
+    return sess;
+  }
+
+  if (mode === 'timer') {
+    sess.staffs[0].joined_min = 0;
+    if (!sess.staffs[0].left_early) sess.staffs[0].left_min = targetMin;
+
+    const boundaries = new Set([0, targetMin]);
+    sess.staffs.forEach(s => {
+      const jMin = Math.max(0, Math.min(targetMin - 1, s.joined_min || 0));
+      const lMin = Math.max(jMin + 1, Math.min(targetMin, s.left_min || targetMin));
+      s.joined_min = jMin;
+      s.left_min = lMin;
+      boundaries.add(jMin);
+      boundaries.add(lMin);
+    });
+
+    const sortedBounds = Array.from(boundaries).sort((a, b) => a - b);
+    const staffEffectiveMins = sess.staffs.map(() => 0);
+    const staffTotalEarns = sess.staffs.map(() => 0);
+
+    for (let i = 0; i < sortedBounds.length - 1; i++) {
+      const tStart = sortedBounds[i];
+      const tEnd = sortedBounds[i + 1];
+      const dur = tEnd - tStart;
+      if (dur <= 0) continue;
+
+      const activeStaffIndices = [];
+      sess.staffs.forEach((s, sIdx) => {
+        if (s.joined_min <= tStart && s.left_min >= tEnd) {
+          activeStaffIndices.push(sIdx);
+        }
+      });
+
+      const nActive = activeStaffIndices.length;
+      if (nActive > 0) {
+        const perStaffDur = dur / nActive;
+        const stageWeight = dur / targetMin;
+        const stagePrice = tourPrice * stageWeight;
+        const stageEqualPct = Math.floor(100 / nActive);
+        const stageRemPct = 100 - (stageEqualPct * nActive);
+
+        activeStaffIndices.forEach((sIdx, pos) => {
+          const s = sess.staffs[sIdx];
+          const staffObj = users.find(u => normalizePhone(u.phone) === normalizePhone(s.phone));
+          const staffRate = (staffObj && parsePercentage(staffObj?.commission_rate) > 0) ? parsePercentage(staffObj?.commission_rate) : 10;
+          const myStagePct = stageEqualPct + (pos === 0 ? stageRemPct : 0);
+          const myStageComm = Math.round(stagePrice * (staffRate / 100) * (myStagePct / 100));
+
+          staffEffectiveMins[sIdx] += perStaffDur;
+          staffTotalEarns[sIdx] += myStageComm;
+        });
+      }
+    }
+
+    let totalPctAssigned = 0;
+    sess.staffs.forEach((s, idx) => {
+      const effMin = staffEffectiveMins[idx];
+      s.pct = Math.round((effMin / targetMin) * 100);
+      s.comm_vnd = staffTotalEarns[idx];
+      totalPctAssigned += s.pct;
+    });
+
+    if (sess.staffs.length > 0 && totalPctAssigned !== 100) {
+      sess.staffs[0].pct += (100 - totalPctAssigned);
+    }
+  } else {
+    const equalPct = Math.floor(100 / count);
+    const remPct = 100 - (equalPct * count);
+    sess.staffs.forEach((s, idx) => {
+      s.pct = equalPct + (idx === 0 ? remPct : 0);
+      s.joined_min = 0;
+      s.left_min = targetMin;
+      const staffObj = users.find(u => normalizePhone(u.phone) === normalizePhone(s.phone));
+      const rate = (staffObj && parsePercentage(staffObj?.commission_rate) > 0) ? parsePercentage(staffObj?.commission_rate) : 10;
+      s.comm_vnd = Math.round(tourPrice * (rate / 100) * (s.pct / 100));
+    });
+  }
+
+  return sess;
+}
+
 // =============================================================
 // TRẠNG THÁI NHÂN LỰC THỜI GIAN THỰC & DROPDOWN THÔNG MINH
 // =============================================================
@@ -1333,16 +1432,20 @@ function renderSwapModalStaffUI() {
         </select>
 
         ${!isFirst ? `
-          <!-- Tinh chỉnh thời gian làm của KTV phụ -->
-          <div class="pt-1.5 border-t border-[#F0EAE1]/80 flex items-center justify-between gap-2 text-[11px]">
-            <div class="flex items-center gap-1.5">
+          <!-- Tinh chỉnh thời gian tham gia của KTV phụ -->
+          <div class="pt-1.5 border-t border-[#F0EAE1]/80 flex flex-wrap items-center justify-between gap-2 text-[11px]">
+            <div class="flex items-center gap-1.5 flex-wrap">
               <span class="text-[#7E7272]">⏱️ Làm từ phút:</span>
-              <input type="number" min="0" max="${targetMin - 1}" value="${joinedMin}" onchange="onSwapStaffJoinedMinChange(${idx}, this.value)" class="w-11 text-center bg-white border border-[#E58A7B]/40 rounded-lg p-1 text-xs font-bold font-mono text-[#2D2424] focus:outline-none focus:border-[#E58A7B]">
+              <input type="number" min="0" max="${targetMin - 1}" value="${joinedMin}" onchange="onSwapStaffJoinedMinChange(${idx}, this.value)" class="w-12 text-center bg-white border border-[#E58A7B]/40 rounded-lg p-1 text-xs font-bold font-mono text-[#2D2424] focus:outline-none focus:border-[#E58A7B]">
               <span class="text-[#7E7272]">➔</span>
-              <span class="w-11 text-center bg-white border border-[#E58A7B]/40 rounded-lg p-1 text-xs font-bold font-mono ${item.left_early ? 'text-[#D35400] bg-[#FFF0EB]' : 'text-[#E58A7B]'} inline-block">${leftMin}</span>
+              <input type="number" min="${joinedMin + 1}" max="${targetMin}" value="${leftMin}" onchange="onSwapStaffLeftMinChange(${idx}, this.value)" class="w-12 text-center bg-white border border-[#E58A7B]/40 rounded-lg p-1 text-xs font-bold font-mono text-[#E58A7B] focus:outline-none focus:border-[#E58A7B]">
               <span class="text-[10px] text-[#A39696] font-mono">/ ${targetMin}p</span>
             </div>
-            ${item.left_early ? `<span class="text-[10px] font-bold text-[#D35400] bg-[#FFF0EB] px-2 py-0.5 rounded-full whitespace-nowrap">Đã rời ca</span>` : ''}
+
+            <label class="inline-flex items-center gap-1 cursor-pointer text-[11px] font-semibold text-[#7E7272] hover:text-[#E58A7B] select-none">
+              <input type="checkbox" ${item.left_early || leftMin < targetMin ? 'checked' : ''} onchange="toggleSwapStaffEarlyLeave(${idx}, this.checked)" class="rounded text-[#E58A7B] focus:ring-0 cursor-pointer">
+              <span>Xong việc rời sớm</span>
+            </label>
           </div>
 
           <button type="button" onclick="removeStaffInSwapModal(${idx})" title="Xóa KTV này khỏi tour" class="absolute top-2.5 right-2.5 w-6 h-6 rounded-full bg-white border border-rose-300 text-rose-500 hover:bg-rose-500 hover:text-white flex items-center justify-center cursor-pointer active:scale-90 transition">
@@ -2808,10 +2911,16 @@ function confirmStaffLeaveTourEarly() {
   myStaff.left_at_min = elapsedMin;
   myStaff.left_timestamp = Date.now();
   currentLiveSession.split_mode = 'timer';
-
   currentLiveSession.staffs = staffs;
+
+  // Tính toán lại % và hoa hồng cho toàn bộ tour ngay lập tức!
+  calculateLiveSessionStaffSplits(currentLiveSession);
+
   localStorage.setItem('selena_active_live_session', JSON.stringify(currentLiveSession));
   
+  if (typeof fbSaveLiveSession === 'function') {
+    fbSaveLiveSession(currentLiveSession);
+  }
   if (typeof fbSetLiveSession === 'function') {
     fbSetLiveSession(currentLiveSession);
   }
