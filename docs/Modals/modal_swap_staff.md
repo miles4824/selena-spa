@@ -33,6 +33,7 @@ ightarrow$ Cập nhật mảng KTV phục vụ của ca trên Firebase.
 - **Hàm Backend GAS phụ trách**: `createReceipt(params)` ghi nhận từng dòng KTV tương ứng.
 
 ## 6. Lịch Sử Thay Đổi & Lưu Vết (Audit Log)
+- `2026-09-02` (`v0.0.7.5`): Chuẩn hóa hiển thị % minh bạch theo từng giai đoạn (1 KTV làm: 100%; 2 KTV làm: 50% mỗi người; 3 KTV làm: 33% mỗi người của đoạn đó) và chỉ hiển thị tổng % tích lũy ở phần Tổng kết.
 - `2026-09-02` (`v0.0.7.4`): Nâng cấp Động cơ Phân chia Đa giai đoạn Linh hoạt (Multi-Stage Timeline Engine): Hỗ trợ N giai đoạn tự động khi có 3+ KTV vào ở các thời điểm khác nhau, hoặc KTV phụ làm xong nhiệm vụ rời ca sớm để KTV chính tiếp tục làm đoạn còn lại.
 - `2026-09-02` (`v0.0.7.3`): Khắc phục triệt để lỗi ReferenceError bằng cách truy cập an toàn biến toàn cục `currentUser` và hàm `isUserOwner()`.
 - `2026-09-02` (`v0.0.7.2`): Bảo mật tuyệt đối hoa hồng từng KTV (Staff chỉ thấy tiền của mình, thấy % của bạn làm chung; Admin thấy toàn bộ) và tính đúng theo tỷ lệ % hoa hồng riêng biệt của từng KTV từ `tb_users`.

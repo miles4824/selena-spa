@@ -1426,6 +1426,7 @@ function updateSwapPreviewDisplay() {
   const users = getSortedUsersList();
   const count = tempSwapStaffs.length;
   const targetMin = currentLiveSession.duration_target_min || 50;
+  const tourPrice = currentLiveSession.price || 0;
 
   const cUser = (typeof currentUser !== 'undefined' && currentUser) ? currentUser : null;
   const isAdmin = cUser ? (typeof isUserOwner === 'function' ? isUserOwner(cUser) : (cUser.role === 'admin' || cUser.role === 'owner')) : false;
@@ -1441,7 +1442,7 @@ function updateSwapPreviewDisplay() {
     s.left_min = targetMin;
     const staffObj = users.find(u => normalizePhone(u.phone) === normalizePhone(s.phone));
     const rate = (staffObj && parsePercentage(staffObj?.commission_rate) > 0) ? parsePercentage(staffObj?.commission_rate) : 10;
-    s.comm_vnd = Math.round(currentLiveSession.price * (rate / 100));
+    s.comm_vnd = Math.round(tourPrice * (rate / 100));
 
     const isMe = normalizePhone(s.phone) === myPhone;
     const badgeText = (isAdmin || isMe) ? `100% • +${s.comm_vnd.toLocaleString('vi-VN')} đ` : '100%';
@@ -1475,6 +1476,7 @@ function updateSwapPreviewDisplay() {
     const sortedBounds = Array.from(boundaries).sort((a, b) => a - b);
     const stages = [];
     const staffEffectiveMins = tempSwapStaffs.map(() => 0);
+    const staffTotalEarns = tempSwapStaffs.map(() => 0);
 
     for (let i = 0; i < sortedBounds.length - 1; i++) {
       const tStart = sortedBounds[i];
@@ -1489,10 +1491,34 @@ function updateSwapPreviewDisplay() {
         }
       });
 
-      if (activeStaffIndices.length > 0) {
-        const perStaffDur = dur / activeStaffIndices.length;
-        activeStaffIndices.forEach(sIdx => {
+      const nActive = activeStaffIndices.length;
+      if (nActive > 0) {
+        const perStaffDur = dur / nActive;
+        const stageWeight = dur / targetMin; // Tỷ trọng thời gian của giai đoạn này trên tổng tour
+        const stagePrice = tourPrice * stageWeight;
+
+        // % chia đều trong nội bộ giai đoạn này
+        const stageEqualPct = Math.floor(100 / nActive);
+        const stageRemPct = 100 - (stageEqualPct * nActive);
+
+        const stageStaffDetails = activeStaffIndices.map((sIdx, pos) => {
+          const s = tempSwapStaffs[sIdx];
+          const staffObj = users.find(u => normalizePhone(u.phone) === normalizePhone(s.phone));
+          const staffRate = (staffObj && parsePercentage(staffObj?.commission_rate) > 0) ? parsePercentage(staffObj?.commission_rate) : 10;
+          
+          const myStagePct = stageEqualPct + (pos === 0 ? stageRemPct : 0);
+          const myStageComm = Math.round(stagePrice * (staffRate / 100) * (myStagePct / 100));
+
           staffEffectiveMins[sIdx] += perStaffDur;
+          staffTotalEarns[sIdx] += myStageComm;
+
+          return {
+            staff_index: sIdx,
+            staff_name: s.name,
+            staff_phone: s.phone,
+            stage_pct: myStagePct,
+            stage_comm: myStageComm
+          };
         });
 
         stages.push({
@@ -1500,16 +1526,17 @@ function updateSwapPreviewDisplay() {
           start: tStart,
           end: tEnd,
           duration: dur,
-          active_indices: activeStaffIndices
+          active_staffs: stageStaffDetails
         });
       }
     }
 
-    // Tính % và hoa hồng cho từng KTV
+    // Tính % và tổng hoa hồng chung của toàn tour
     let totalPctAssigned = 0;
     tempSwapStaffs.forEach((s, idx) => {
       const effMin = staffEffectiveMins[idx];
       s.pct = Math.round((effMin / targetMin) * 100);
+      s.comm_vnd = staffTotalEarns[idx];
       totalPctAssigned += s.pct;
     });
 
@@ -1518,37 +1545,32 @@ function updateSwapPreviewDisplay() {
       tempSwapStaffs[0].pct += (100 - totalPctAssigned);
     }
 
-    // Tính tiền theo % hoa hồng riêng của từng người từ tb_users
+    // Cập nhật huy hiệu trên từng thẻ KTV
     tempSwapStaffs.forEach((s, idx) => {
-      const staffObj = users.find(u => normalizePhone(u.phone) === normalizePhone(s.phone));
-      const rate = (staffObj && parsePercentage(staffObj?.commission_rate) > 0) ? parsePercentage(staffObj?.commission_rate) : 10;
-      s.comm_vnd = Math.round(currentLiveSession.price * (rate / 100) * (s.pct / 100));
-
       const isMe = normalizePhone(s.phone) === myPhone;
       const badgeText = (isAdmin || isMe) ? `${s.pct}% • +${s.comm_vnd.toLocaleString('vi-VN')} đ` : `${s.pct}%`;
       const itemCommBadge = document.getElementById(`swap-item-comm-${idx}`);
       if (itemCommBadge) itemCommBadge.innerText = badgeText;
     });
 
-    // Render danh sách giai đoạn
+    // Render danh sách giai đoạn hiển thị rõ % của từng giai đoạn
     const stageColors = ['#E58A7B', '#2E7D6D', '#D35400', '#6366F1', '#EC4899'];
     html = `
       <div class="space-y-2">
         ${stages.map((stg, sIdx) => {
           const color = stageColors[sIdx % stageColors.length];
-          const activeStaffs = stg.active_indices.map(idx => tempSwapStaffs[idx]);
           return `
             <div class="p-2.5 rounded-xl bg-white border border-[#F0EAE1] space-y-1">
               <div class="flex justify-between items-center text-[11px] font-bold" style="color: ${color}">
                 <span>🔹 Giai đoạn ${stg.stage_num}: Phút ${stg.start} ➔ ${stg.end} (${stg.duration} phút)</span>
-                <span class="text-[#7E7272] font-normal text-[10px] font-mono">${activeStaffs.length} KTV</span>
+                <span class="text-[#7E7272] font-normal text-[10px] font-mono">${stg.active_staffs.length} KTV</span>
               </div>
-              ${activeStaffs.map(s => {
-                const isMe = normalizePhone(s.phone) === myPhone;
+              ${stg.active_staffs.map(st => {
+                const isMe = normalizePhone(st.staff_phone) === myPhone;
                 return `
                   <div class="flex justify-between items-center text-[11px] text-[#7E7272] pl-2">
-                    <span>• ${s.name}${s.joined_min > 0 && s.joined_min === stg.start ? ' (Vào lúc này)' : ''}${s.left_min === stg.end && s.left_min < targetMin ? ' (Rời ca sau lúc này)' : ''}:</span>
-                    <span class="font-semibold text-[#2D2424] font-mono">${(isAdmin || isMe) ? `+${s.comm_vnd.toLocaleString('vi-VN')} đ` : `${s.pct}%`}</span>
+                    <span>• ${st.staff_name}:</span>
+                    <span class="font-semibold text-[#2D2424] font-mono">${(isAdmin || isMe) ? `${st.stage_pct}% (+${st.stage_comm.toLocaleString('vi-VN')} đ)` : `${st.stage_pct}%`}</span>
                   </div>
                 `;
               }).join('')}
@@ -1586,7 +1608,7 @@ function updateSwapPreviewDisplay() {
       s.left_min = targetMin;
       const staffObj = users.find(u => normalizePhone(u.phone) === normalizePhone(s.phone));
       const rate = (staffObj && parsePercentage(staffObj?.commission_rate) > 0) ? parsePercentage(staffObj?.commission_rate) : 10;
-      s.comm_vnd = Math.round(currentLiveSession.price * (rate / 100) * (s.pct / 100));
+      s.comm_vnd = Math.round(tourPrice * (rate / 100) * (s.pct / 100));
 
       const isMe = normalizePhone(s.phone) === myPhone;
       const badgeText = (isAdmin || isMe) ? `${s.pct}% • +${s.comm_vnd.toLocaleString('vi-VN')} đ` : `${s.pct}%`;
