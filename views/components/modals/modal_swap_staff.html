@@ -4,8 +4,8 @@
     
     <!-- PINNED HEADER -->
     <div class="p-5 sm:p-6 pb-3 border-b border-[#F0EAE1]/80 flex justify-between items-center bg-white shrink-0">
-      <h3 class="text-lg font-bold font-serif text-[#2D2424] flex items-center gap-2">
-        <i data-lucide="users" class="w-5 h-5 text-[#E58A7B]"></i> Điều Chỉnh KTV Tour Này
+      <h3 id="swap-modal-title" class="text-lg font-bold font-serif text-[#2D2424] flex items-center gap-2">
+        <i id="swap-modal-icon" data-lucide="users" class="w-5 h-5 text-[#E58A7B]"></i> <span id="swap-modal-title-text">Điều Chỉnh KTV Tour Này</span>
       </h3>
       <button type="button" onclick="closeSwapStaffModal()" class="p-2 rounded-full bg-[#F7F2EC] hover:bg-[#FFF0EB] text-[#7E7272] hover:text-[#E58A7B] transition cursor-pointer">
         <i data-lucide="x" class="w-5 h-5"></i>
@@ -47,8 +47,8 @@
 
     <!-- PINNED FOOTER -->
     <div class="p-5 sm:p-6 pt-3 border-t border-[#F0EAE1]/80 bg-white shrink-0">
-      <button type="button" onclick="saveSwapStaffSetting()" class="w-full py-3.5 rounded-full bg-[#E58A7B] hover:bg-[#D9796A] text-white font-extrabold text-sm shadow-md shadow-[#E58A7B]/20 flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 transition">
-        <i data-lucide="check" class="w-4 h-4"></i> Lưu Thay Đổi Phân Chia
+      <button type="button" id="btn-swap-modal-submit" onclick="saveSwapStaffSetting()" class="w-full py-3.5 rounded-full bg-[#E58A7B] hover:bg-[#D9796A] text-white font-extrabold text-sm shadow-md shadow-[#E58A7B]/20 flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 transition">
+        <i data-lucide="check" class="w-4 h-4"></i> <span id="btn-swap-modal-submit-text">Lưu Thay Đổi Phân Chia</span>
       </button>
     </div>
 

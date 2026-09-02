@@ -1247,22 +1247,28 @@ function renderLiveSessionUI() {
     }
 
     const activeStaffs = staffs.filter(s => !s.left_early);
-    chipsContainer.innerHTML = (activeStaffs.length > 0 ? activeStaffs : staffs).map((s, idx) => `
-      <button type="button" onclick="openSwapStaffModal()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-[#EFE8DF] hover:border-[#E58A7B] text-xs font-bold text-[#2D2424] transition active:scale-95 cursor-pointer">
+    let chipsHtml = (activeStaffs.length > 0 ? activeStaffs : staffs).map((s, idx) => `
+      <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-[#EFE8DF] text-xs font-bold text-[#2D2424]">
         <span class="w-2 h-2 rounded-full ${idx === 0 ? 'bg-[#2E7D6D]' : 'bg-[#E58A7B]'}"></span>
         <span>${s.name}</span>
         <span class="text-[10px] font-extrabold text-[#7E7272] bg-[#FAF6F1] px-1.5 py-0.5 rounded-md">${s.pct || Math.round(100/(activeStaffs.length || 1))}%</span>
-      </button>
-    `).join('') + `
-      <button type="button" onclick="openSwapStaffModal()" title="Điều chỉnh / Thêm KTV" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-[#FFF0EB] hover:bg-[#FFE5DC] text-xs font-bold text-[#E58A7B] border border-[#FCDFD7] transition active:scale-95 cursor-pointer">
-        <i data-lucide="user-plus" class="w-3.5 h-3.5"></i>
-        <span>Đổi / Thêm</span>
-      </button>
-      <button type="button" onclick="openHandoverModal()" title="Bàn giao tour cho bạn khác tiếp quản" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-[#E8F8F5] hover:bg-[#D2F3EB] text-xs font-bold text-[#2E7D6D] border border-[#B7EBDD] transition active:scale-95 cursor-pointer">
-        <i data-lucide="arrow-right-left" class="w-3.5 h-3.5"></i>
-        <span>Bàn Giao</span>
-      </button>
-    `;
+      </div>
+    `).join('');
+
+    // Chỉ KTV Chính & Admin mới thấy nút Đổi/Thêm và Bàn Giao
+    if (isAdmin || isKtvChinh) {
+      chipsHtml += `
+        <button type="button" onclick="openSwapStaffModal()" title="Điều chỉnh / Thêm KTV" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-[#FFF0EB] hover:bg-[#FFE5DC] text-xs font-bold text-[#E58A7B] border border-[#FCDFD7] transition active:scale-95 cursor-pointer">
+          <i data-lucide="user-plus" class="w-3.5 h-3.5"></i>
+          <span>Đổi / Thêm</span>
+        </button>
+        <button type="button" onclick="openHandoverModal()" title="Bàn giao tour cho bạn khác tiếp quản" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-[#E8F8F5] hover:bg-[#D2F3EB] text-xs font-bold text-[#2E7D6D] border border-[#B7EBDD] transition active:scale-95 cursor-pointer">
+          <i data-lucide="arrow-right-left" class="w-3.5 h-3.5"></i>
+          <span>Bàn Giao</span>
+        </button>
+      `;
+    }
+    chipsContainer.innerHTML = chipsHtml;
   }
 
   clearInterval(liveTimerInterval);
@@ -1333,20 +1339,50 @@ function restoreLiveSessionIfExists() {
 // =============================================================
 let tempSwapStaffs = [];
 
-function openSwapStaffModal() {
+function openSwapStaffModal(isLeaveEarlyMode = false) {
   setTimeout(() => { if (typeof lucide !== 'undefined') lucide.createIcons(); }, 50);
   if (!currentLiveSession) return;
   const users = getSortedUsersList();
+  const cUser = (typeof currentUser !== 'undefined' && currentUser) ? currentUser : null;
+  const myPhone = (cUser && cUser.phone) ? normalizePhone(cUser.phone) : '';
+  const isAdmin = cUser ? (typeof isUserOwner === 'function' ? isUserOwner(cUser) : (cUser.role === 'admin' || cUser.role === 'owner')) : false;
+  const targetMin = currentLiveSession.duration_target_min || 50;
 
-  tempSwapStaffs = (currentLiveSession.staffs || [
-    { phone: currentLiveSession.staff_1_phone, name: currentLiveSession.staff_1_name, pct: 100, joined_min: 0 }
-  ]).map(s => ({ ...s }));
+  if (!tempSwapStaffs || tempSwapStaffs.length === 0 || !isLeaveEarlyMode) {
+    tempSwapStaffs = (currentLiveSession.staffs || [
+      { phone: currentLiveSession.staff_1_phone, name: currentLiveSession.staff_1_name, pct: 100, joined_min: 0 }
+    ]).map(s => ({ ...s }));
+  }
+
+  const isMainStaff = tempSwapStaffs.length > 0 && normalizePhone(tempSwapStaffs[0].phone) === myPhone;
+  const isPhu = !isMainStaff && !isAdmin;
+
+  // Cập nhật giao diện Header và Nút bấm Footer
+  const titleTextEl = document.getElementById('swap-modal-title-text');
+  const submitBtn = document.getElementById('btn-swap-modal-submit');
+  const submitTextEl = document.getElementById('btn-swap-modal-submit-text');
+
+  if (isLeaveEarlyMode || isPhu) {
+    if (titleTextEl) titleTextEl.innerText = 'Xác Nhận Rời Tour Sớm';
+    if (submitTextEl) submitTextEl.innerText = '✓ Xác Nhận Rời Tour';
+    if (submitBtn) {
+      submitBtn.onclick = confirmStaffLeaveTourEarlyFromModal;
+      submitBtn.className = 'w-full py-3.5 rounded-full bg-[#E58A7B] hover:bg-[#D9796A] text-white font-extrabold text-sm shadow-md shadow-[#E58A7B]/20 flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 transition';
+    }
+  } else {
+    if (titleTextEl) titleTextEl.innerText = 'Điều Chỉnh KTV Tour Này';
+    if (submitTextEl) submitTextEl.innerText = 'Lưu Thay Đổi Phân Chia';
+    if (submitBtn) {
+      submitBtn.onclick = saveSwapStaffSetting;
+      submitBtn.className = 'w-full py-3.5 rounded-full bg-[#E58A7B] hover:bg-[#D9796A] text-white font-extrabold text-sm shadow-md shadow-[#E58A7B]/20 flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 transition';
+    }
+  }
 
   const initialCount = currentLiveSession.initial_staff_count || 1;
-  const hasEarlyLeave = tempSwapStaffs.some(s => s.left_early || (s.left_min && s.left_min < (currentLiveSession.duration_target_min || 50)));
+  const hasEarlyLeave = tempSwapStaffs.some(s => s.left_early || (s.left_min && s.left_min < targetMin));
   const hasNewMidwayStaff = tempSwapStaffs.some(s => s.is_midway);
 
-  if (hasEarlyLeave || hasNewMidwayStaff || currentLiveSession.split_mode === 'timer') {
+  if (isLeaveEarlyMode || hasEarlyLeave || hasNewMidwayStaff || currentLiveSession.split_mode === 'timer') {
     currentSplitMode = 'timer';
   } else if (initialCount >= 2) {
     currentSplitMode = 'equal';
@@ -2974,57 +3010,66 @@ function confirmStaffLeaveTourEarly() {
   if (!currentLiveSession) return;
   const cUser = (typeof currentUser !== 'undefined' && currentUser) ? currentUser : null;
   const myPhone = (cUser && cUser.phone) ? normalizePhone(cUser.phone) : '';
+  const targetMin = currentLiveSession.duration_target_min || 50;
   
-  const staffs = currentLiveSession.staffs || [
-    { phone: currentLiveSession.staff_1_phone, name: currentLiveSession.staff_1_name, pct: 100 }
-  ];
-  const myStaff = staffs.find(s => normalizePhone(s.phone) === myPhone);
+  const elapsedSec = Math.max(0, Math.floor((Date.now() - currentLiveSession.start_timestamp) / 1000));
+  const currentElapsedMin = Math.max(1, Math.min(targetMin, Math.floor(elapsedSec / 60) + (elapsedSec % 60 > 0 ? 1 : 0)));
+
+  tempSwapStaffs = (currentLiveSession.staffs || [
+    { phone: currentLiveSession.staff_1_phone, name: currentLiveSession.staff_1_name, pct: 100, joined_min: 0 }
+  ]).map(s => ({ ...s }));
+
+  const myStaff = tempSwapStaffs.find(s => normalizePhone(s.phone) === myPhone);
   if (!myStaff) {
     alert('Không tìm thấy thông tin bạn trong ca gội này!');
     return;
   }
 
-  const elapsedSec = Math.max(0, Math.floor((Date.now() - currentLiveSession.start_timestamp) / 1000));
-  const elapsedMin = Math.max(1, Math.floor(elapsedSec / 60));
+  myStaff.left_early = true;
+  myStaff.left_min = Math.max((myStaff.joined_min || 0) + 1, currentElapsedMin);
+  myStaff.left_at_min = myStaff.left_min;
 
-  if (!confirm(`Xác nhận bạn (${myStaff.name}) đã xong phần việc và muốn rời ca tại phút thứ ${elapsedMin}?`)) {
+  currentSplitMode = 'timer';
+  openSwapStaffModal(true);
+}
+
+function confirmStaffLeaveTourEarlyFromModal() {
+  if (!currentLiveSession) return;
+  const cUser = (typeof currentUser !== 'undefined' && currentUser) ? currentUser : null;
+  const myPhone = (cUser && cUser.phone) ? normalizePhone(cUser.phone) : '';
+
+  const myStaff = tempSwapStaffs.find(s => normalizePhone(s.phone) === myPhone);
+  if (!myStaff) {
+    closeSwapStaffModal();
     return;
   }
 
-  myStaff.left_min = elapsedMin;
-  myStaff.left_early = true;
-  myStaff.left_at_min = elapsedMin;
-  myStaff.left_timestamp = Date.now();
+  currentLiveSession.staffs = tempSwapStaffs.map(s => ({ ...s }));
   currentLiveSession.split_mode = 'timer';
-  currentLiveSession.staffs = staffs;
 
-  // Tính toán lại % và hoa hồng cho toàn bộ tour ngay lập tức!
   calculateLiveSessionStaffSplits(currentLiveSession);
 
   localStorage.setItem('selena_active_live_session', JSON.stringify(currentLiveSession));
-  
   if (typeof fbSaveLiveSession === 'function') {
     fbSaveLiveSession(currentLiveSession);
   }
   if (typeof fbSetLiveSession === 'function') {
     fbSetLiveSession(currentLiveSession);
   }
-
   if (typeof updateStaffAvailabilityHeader === 'function') {
     updateStaffAvailabilityHeader();
   }
-
   if (typeof markSessionDismissed === 'function') {
     markSessionDismissed(currentLiveSession);
   }
-  
+
+  closeSwapStaffModal();
+
   currentLiveSession = null;
   clearInterval(liveTimerInterval);
   renderLiveSessionUI();
 
-  alert(`🎉 Đã ghi nhận bạn (${myStaff.name}) hoàn thành phần việc lúc phút thứ ${elapsedMin}.
-
-Khi KTV chính hoàn thành và chốt ca, hoa hồng + tip sẽ được tự động tính vào ví của bạn!`);
+  alert(`🎉 Đã xác nhận bạn (${myStaff.name}) hoàn thành phần việc và rời ca lúc phút thứ ${myStaff.left_min}!`);
 
   if (typeof showView === 'function') {
     showView('home');

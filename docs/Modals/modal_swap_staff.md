@@ -33,6 +33,7 @@ ightarrow$ Cập nhật mảng KTV phục vụ của ca trên Firebase.
 - **Hàm Backend GAS phụ trách**: `createReceipt(params)` ghi nhận từng dòng KTV tương ứng.
 
 ## 6. Lịch Sử Thay Đổi & Lưu Vết (Audit Log)
+- `2026-09-02` (`v0.0.9.7`): KTV Phụ bấm `Xong Việc Rời Tour Sớm` sẽ mở modal xác nhận với số phút thực tế chính xác; ẩn các nút `Đổi / Thêm` và `Bàn Giao` trên màn hình của KTV Phụ; nút hành động chuyển thành `Xác Nhận Rời Tour`.
 - `2026-09-02` (`v0.0.9.6`): Phân quyền nghiêm ngặt trong modal: KTV Phụ chỉ xem thông tin dạng chỉ đọc (chỉ hiện 2 ô số, ẩn nút cho nghỉ và checkbox); chỉ KTV Chính/Admin mới có quyền chỉnh sửa. Đồng bộ tự động nội dung modal theo thời gian thực khi đang mở.
 - `2026-09-02` (`v0.0.9.5`): KTV Chính có thể cho KTV Phụ nghỉ ca trực tiếp từ nút trong modal; KTV đã rời ca được tự động gỡ khỏi `Danh Sách KTV Đang Làm` và chip màn hình chính, đưa vào danh sách lịch sử giai đoạn đã hoàn thành.
 - `2026-09-02` (`v0.0.9.4`): Bổ sung nút bấm trực tiếp `Xong việc rời tour sớm` bên trong từng thẻ KTV Phụ của modal Điều Chỉnh KTV; xử lý thoát hoàn toàn màn hình đếm số cho KTV Phụ sau khi rời ca thành công.
