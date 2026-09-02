@@ -36,6 +36,7 @@ ightarrow$ Lưu `start_time` và cập nhật Firebase node `active_sessions/`.
 - `2026-09-02` (`v0.0.6.1`):
 - `2026-09-02` (`v0.0.6.3`):
 - `2026-09-02` (`v0.0.6.4`):
-- `2026-09-02` (`v0.0.6.5`): Chuyển đổi font của `live-service-name` sang font Plus Jakarta Sans (`font-sans font-medium text-xl`). Cập nhật `live-service-name` thành font-medium thanh thoát và gán font-mono cho toàn bộ tiền tour & tiền tip trên thẻ timeline. Chuyển định mức thời gian (`live-target-time-text`) và toàn bộ số tiền sang font-mono JetBrains Mono. Khắc phục triệt để lỗi gán innerText null và bảo vệ toàn diện các phần tử DOM trong renderLiveSessionUI. Cập nhật tiêu đề trang động thành 'ĐANG TRONG TOUR GỘI' khi có ca chạy và thay emoji 👤 bằng SVG user icon sắc nét.
+- `2026-09-02` (`v0.0.6.5`):
+- `2026-09-02` (`v0.0.6.6`): Cập nhật `live-service-name` sang `font-bold` và tinh gọn thông báo hoàn thành thành '✨ Đã hoàn thành liệu trình' với hiệu ứng êm dịu, không giật màn hình. Chuyển đổi font của `live-service-name` sang font Plus Jakarta Sans (`font-sans font-medium text-xl`). Cập nhật `live-service-name` thành font-medium thanh thoát và gán font-mono cho toàn bộ tiền tour & tiền tip trên thẻ timeline. Chuyển định mức thời gian (`live-target-time-text`) và toàn bộ số tiền sang font-mono JetBrains Mono. Khắc phục triệt để lỗi gán innerText null và bảo vệ toàn diện các phần tử DOM trong renderLiveSessionUI. Cập nhật tiêu đề trang động thành 'ĐANG TRONG TOUR GỘI' khi có ca chạy và thay emoji 👤 bằng SVG user icon sắc nét.
 - `2026-09-01` (`v0.0.3.9`):
 - `2026-09-01` (`v0.0.4.3`): Thiết kế lại 3 cột thời gian chân đồng hồ (Bắt đầu và Định mức căn giữa dạng 2 tầng). Bổ sung tính năng đổi & thêm dịch vụ giữa ca kết nối với modal_edit_live_services. Bóc tách thành component độc lập.

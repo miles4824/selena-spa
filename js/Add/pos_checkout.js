@@ -1140,8 +1140,8 @@ function updateLiveTimerTick() {
 
   if (hintEl) {
     if (elapsedMin >= targetMin) {
-      hintEl.innerText = '🔔 Đã đạt đủ thời gian liệu trình (' + targetMin + ' phút). Bấm nút bên dưới để thanh toán!';
-      hintEl.className = 'text-xs text-[#E58A7B] font-extrabold animate-bounce';
+      hintEl.innerText = '✨ Đã hoàn thành liệu trình';
+      hintEl.className = 'text-xs text-[#2E7D6D] font-bold animate-pulse';
     } else {
       hintEl.innerText = `⏱️ Còn khoảng ${targetMin - elapsedMin} phút theo liệu trình`;
       hintEl.className = 'text-xs text-[#2E7D6D] font-medium';
