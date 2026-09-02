@@ -1787,7 +1787,7 @@ function updateCheckoutGrandTotal() {
         return `
           <div class="flex justify-between items-center text-xs font-bold text-[#7E7272]">
             <span>Tiền tip ${s.name}:</span>
-            <span class="font-mono font-bold">+${tipVnd.toLocaleString('vi-VN')} đ</span>
+            <span class="font-mono font-bold text-[#2D2424]">+${tipVnd.toLocaleString('vi-VN')} đ</span>
           </div>
         `;
       }).join('');

@@ -47,5 +47,6 @@ ightarrow$ Cột O (`commission_amount`), Cột P (`tip_amount`), Cột Q (`tota
 - `2026-09-01` (`v0.0.0.1`):
 - `2026-09-02` (`v0.0.4.7`):
 - `2026-09-02` (`v0.0.6.3`):
+- `2026-09-02` (`v0.0.6.9`): Gán tường minh `text-[#2D2424]` cho số tiền tip (`+10.000 đ`) giúp con số nổi bật sắc nét trên nền nhãn `text-[#7E7272]`.
 - `2026-09-02` (`v0.0.6.8`): Tinh chỉnh tiêu đề Ghi Nhận Tiền Tips sang `text-xl font-medium`, đổi màu dòng tip sang `text-[#7E7272]` và làm nổi bật tiêu đề Tổng khách thanh toán `text-[#2D2424]`.
 - `2026-09-02` (`v0.0.6.7`): Bảo mật tuyệt đối tiền hoa hồng KTV (ẩn huy hiệu Tour + đ và bảng ăn chia), chỉ hiển thị Tiền dịch vụ tour và Tiền tip của khách. Đồng bộ font-mono JetBrains Mono cho toàn bộ số tiền thanh toán, tiền tip, hoa hồng và nút chọn tip nhanh. Cập nhật nhãn nút bấm Pha 1 thành 'Khách Đã Thanh Toán' kèm icon mũi tên chuyển bước bên phải. Bóc tách thành component độc lập và chuẩn hóa luồng 2 pha.
