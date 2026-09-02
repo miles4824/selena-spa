@@ -24,5 +24,6 @@ ightarrow$ Ghi vào `tb_payroll_logs`.
 - `2026-09-01` (`v0.0.4.4`):
 - `2026-09-01` (`v0.0.4.6`):
 - `2026-09-02` (`v0.0.4.7`):
-- `2026-09-02` (`v0.0.4.8`): Tái thiết kế hoàn toàn UI Header Tạo Tour và huy hiệu trạng thái nhân sự siêu gọn gàng, tinh tế và loại bỏ văn bản dài dòng. Tối ưu dòng trạng thái KTV trên tiêu đề tinh gọn, tự động làm sạch tên hiển thị và chuẩn hóa màu sắc. Cho phép Admin/Chủ tiệm tham gia trực tiếp làm tour (đầy đủ trong KTV 1, KTV Phụ và đếm tổng nhân sự rảnh rỗi).
+- `2026-09-02` (`v0.0.4.8`):
+- `2026-09-02` (`v0.0.4.9`): Xóa bỏ huy hiệu POS thừa, tinh giản tiêu đề Tạo Tour Gội Mới thanh lịch và tự nhiên. Tái thiết kế hoàn toàn UI Header Tạo Tour và huy hiệu trạng thái nhân sự siêu gọn gàng, tinh tế và loại bỏ văn bản dài dòng. Tối ưu dòng trạng thái KTV trên tiêu đề tinh gọn, tự động làm sạch tên hiển thị và chuẩn hóa màu sắc. Cho phép Admin/Chủ tiệm tham gia trực tiếp làm tour (đầy đủ trong KTV 1, KTV Phụ và đếm tổng nhân sự rảnh rỗi).
 - `2026-09-01` (`v0.0.4.5`): Tối ưu cơ chế kiểm tra và tự động dọn dẹp phiên tour rác/cũ trên Firebase Realtime, đảm bảo trạng thái KTV rảnh chính xác 100%. Hoàn thiện logic khóa KTV 1 cho Staff, kích hoạt tính năng Thêm KTV Phụ và cô lập phân luồng tour Realtime chuẩn xác. Bóc tách thành component độc lập.
