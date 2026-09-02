@@ -1,7 +1,8 @@
 // =============================================================
-// CORE: THEME TOKENS & BRAND COLORS
+// CORE: THEME TOKENS, BRAND COLORS & TYPOGRAPHY
 // =============================================================
 const THEME_TOKENS = {
+  // 🎨 Brand Colors
   COLOR_PRIMARY: '#E58A7B',
   COLOR_PRIMARY_HOVER: '#D9796A',
   COLOR_ACCENT: '#2E7D6D',
@@ -14,5 +15,10 @@ const THEME_TOKENS = {
   COLOR_TEXT_MUTED: '#7E7272',
   COLOR_TEXT_LIGHT: '#A39696',
   COLOR_DISABLED: '#B8ACA2',
-  COLOR_CASH: '#D35400'
+  COLOR_CASH: '#D35400',
+
+  // 🔤 Typography Tokens (2 Font Google Fonts Chính + 1 Font Mono Chuẩn Số Học)
+  FONT_HEADING: "'Literata', serif",
+  FONT_BODY: "'Plus Jakarta Sans', sans-serif",
+  FONT_MONO: "'JetBrains Mono', monospace"
 };

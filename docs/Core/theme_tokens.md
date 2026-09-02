@@ -40,7 +40,7 @@
 ## 4. Hệ Thống Typography (Font Chữ) & Bo Góc (Border Radius)
 
 ### 4.1. Hệ Thống Font Chữ (3 Cấp Độ):
-1. **Font Tiêu Đề (`font-serif`)**: *Playfair Display*
+1. **Font Tiêu Đề (`font-serif`)**: *Literata* (đang nạp và sử dụng thực tế trong `index.html` & `css/style.css`)
    - Dùng cho: Tiêu đề trang (`Tạo Tour Gội Mới`), Tên thương hiệu `Selena Spa`, Tiêu đề Modal.
    - Đặc tính: Mang lại cảm giác sang trọng, quý phái và đẳng cấp Spa.
 2. **Font Nội Dung (`font-sans`)**: *Plus Jakarta Sans*
@@ -67,4 +67,5 @@
 ---
 
 ## 6. Lịch Sử Thay Đổi & Lưu Vết (Audit Log)
-- `2026-09-02` (`v0.0.5.0`): Khởi tạo tài liệu đặc tả chuẩn hóa Hệ thống Giao diện & Bảng mã màu thương hiệu (Theme Tokens & Design System).
+- `2026-09-02` (`v0.0.5.0`):
+- `2026-09-02` (`v0.0.5.4`): Bổ sung đầy đủ định nghĩa Font-family tokens (Literata, Plus Jakarta Sans, JetBrains Mono) vào THEME_TOKENS. Khởi tạo tài liệu đặc tả chuẩn hóa Hệ thống Giao diện & Bảng mã màu thương hiệu (Theme Tokens & Design System).
