@@ -110,14 +110,9 @@ function loadOwnerReceiptsList(targetDate) {
 
         if (staffNamesArr.length === 0) staffNamesArr.push('KTV Phục vụ');
 
-        const price = Number(r.price) || 0;
-        const tipTotal = Number(r.tip_amount) || 0;
-        const defCommPerStaff = Math.round((price * 0.1) / staffNamesArr.length);
-        const defTipPerStaff = Math.round(tipTotal / staffNamesArr.length);
-
         staffListHtml = staffNamesArr.map((sName, sIdx) => {
-          let sComm = sIdx === 0 ? (Number(r.staff_1_comm) || defCommPerStaff) : (sIdx === 1 ? (Number(r.staff_2_comm) || defCommPerStaff) : defCommPerStaff);
-          let sTip = sIdx === 0 ? (Number(r.staff_1_tip) || defTipPerStaff) : (sIdx === 1 ? (Number(r.staff_2_tip) || defTipPerStaff) : defTipPerStaff);
+          let sComm = sIdx === 0 ? (Number(r.staff_1_comm) || 0) : (sIdx === 1 ? (Number(r.staff_2_comm) || 0) : (Number(r.staff_3_comm) || 0));
+          let sTip = sIdx === 0 ? (Number(r.staff_1_tip) || 0) : (sIdx === 1 ? (Number(r.staff_2_tip) || 0) : (Number(r.staff_3_tip) || 0));
           return `
             <div class="space-y-0.5 pl-2">
               <div class="flex justify-between items-center">
