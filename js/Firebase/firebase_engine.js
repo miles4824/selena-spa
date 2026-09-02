@@ -67,15 +67,63 @@ function initFirebaseEngine() {
 function setupRealtimeListeners() {
   if (!fbDb) return;
 
-  // Lắng nghe Hóa đơn (tb_receipts) Realtime
+  // Lắng nghe Hóa đơn (tb_receipts) Realtime & Trích xuất payroll_logs tức thì
   fbDb.ref('receipts').on('value', snapshot => {
     const data = snapshot.val();
     if (data) {
       const list = Object.values(data);
       list.sort((a, b) => (typeof getReceiptSortTimestamp === 'function' ? (getReceiptSortTimestamp(b) - getReceiptSortTimestamp(a)) : ((b.created_at || '').localeCompare(a.created_at || ''))));
       setStored('receipts', list);
+
+      // Trích xuất tức thì payroll_logs cho tất cả KTV
+      const existingLogs = getStored('payroll_logs', []);
+      const existingLogMap = new Map();
+      existingLogs.forEach(p => {
+        if (p && p.log_id) existingLogMap.set(p.log_id, p);
+      });
+
+      list.forEach(r => {
+        if (Array.isArray(r.staffs) && r.staffs.length > 0) {
+          r.staffs.forEach((st, sIdx) => {
+            const logId = (r.receipt_id || '') + '_S' + (sIdx + 1);
+            if (!existingLogMap.has(logId)) {
+              existingLogMap.set(logId, {
+                log_id: logId,
+                receipt_id: r.receipt_id,
+                date: r.date,
+                time: r.end_time || r.start_time || r.time,
+                start_time: r.start_time,
+                end_time: r.end_time,
+                duration_min: r.duration_min,
+                customer_name: r.customer_name || 'Khách vãng lai',
+                customer_phone: r.customer_phone || '',
+                service_name: r.service_name,
+                price: r.price,
+                staff_name: st.name,
+                staff_phone: st.phone,
+                staff_id: st.staff_id,
+                role_in_tour: st.role || (sIdx === 0 ? 'Chính' : 'Phụ'),
+                commission_pct: st.pct,
+                commission_amount: Number(st.comm_vnd || st.comm) || 0,
+                tip_amount: Number(st.tip_vnd || st.tip) || 0,
+                total_earned: (Number(st.comm_vnd || st.comm) || 0) + (Number(st.tip_vnd || st.tip) || 0),
+                payment_method: r.payment_method,
+                created_at: r.created_at
+              });
+            }
+          });
+        }
+      });
+
+      const updatedLogs = Array.from(existingLogMap.values());
+      updatedLogs.sort((a, b) => (b.date || '').localeCompare(a.date || '') || (b.time || '').localeCompare(a.time || ''));
+      setStored('payroll_logs', updatedLogs);
+
       if (typeof refreshAllActiveViews === 'function') {
         refreshAllActiveViews();
+      }
+      if (typeof renderStaffTimelineView === 'function') {
+        renderStaffTimelineView();
       }
     }
   });
@@ -159,6 +207,13 @@ function setupRealtimeListeners() {
         localStorage.setItem('selena_active_live_session', JSON.stringify(mySession));
         if (typeof renderLiveSessionUI === 'function') {
           renderLiveSessionUI();
+        }
+        const swapModalEl = document.getElementById('modal-swap-staff');
+        if (swapModalEl && !swapModalEl.classList.contains('hidden') && typeof renderSwapModalStaffUI === 'function') {
+          tempSwapStaffs = (currentLiveSession.staffs || []).map(s => ({ ...s }));
+          renderSwapModalStaffUI();
+          if (typeof updateSplitButtonsUI === 'function') updateSplitButtonsUI();
+          if (typeof updateSwapPreviewDisplay === 'function') updateSwapPreviewDisplay();
         }
         if (isNewSession && typeof showView === 'function') {
           showView('add');

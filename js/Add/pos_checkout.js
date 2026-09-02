@@ -1408,7 +1408,11 @@ function renderSwapModalStaffUI() {
 
   const users = getSortedUsersList();
   const cUser = (typeof currentUser !== 'undefined' && currentUser) ? currentUser : null;
+  const myPhone = (cUser && cUser.phone) ? normalizePhone(cUser.phone) : '';
   const isOwner = cUser ? (typeof isUserOwner === 'function' ? isUserOwner(cUser) : (cUser.role === 'admin' || cUser.role === 'owner')) : false;
+  const isMainStaff = tempSwapStaffs.length > 0 && normalizePhone(tempSwapStaffs[0].phone) === myPhone;
+  const canEdit = isOwner || isMainStaff;
+
   const targetMin = currentLiveSession?.duration_target_min || 50;
 
   const activeStaffItems = [];
@@ -1424,7 +1428,7 @@ function renderSwapModalStaffUI() {
 
   let htmlActive = activeStaffItems.map(({ item, idx }) => {
     const isFirst = idx === 0;
-    const isLocked = isFirst && !isOwner;
+    const isLocked = !canEdit || (isFirst && !isOwner);
     const busyMap = getBusyStaffPhonesMap();
     const currentTourId = currentLiveSession?.session_id;
     const usedOtherPhones = tempSwapStaffs.filter((_, i) => i !== idx).map(s => normalizePhone(s.phone));
@@ -1461,31 +1465,44 @@ function renderSwapModalStaffUI() {
         ${!isFirst ? `
           <!-- Tinh chỉnh thời gian tham gia của KTV phụ -->
           <div class="pt-1.5 border-t border-[#F0EAE1]/80 space-y-2 text-[11px]">
-            <div class="flex items-center justify-between gap-2 flex-wrap">
-              <div class="flex items-center gap-1.5">
-                <span class="text-[#7E7272]">⏱️ Làm từ phút:</span>
-                <input type="number" min="0" max="${targetMin - 1}" value="${joinedMin}" onchange="onSwapStaffJoinedMinChange(${idx}, this.value)" class="w-12 text-center bg-white border border-[#E58A7B]/40 rounded-lg p-1 text-xs font-bold font-mono text-[#2D2424] focus:outline-none focus:border-[#E58A7B]">
-                <span class="text-[#7E7272]">➔</span>
-                <input type="number" min="${joinedMin + 1}" max="${targetMin}" value="${leftMin}" onchange="onSwapStaffLeftMinChange(${idx}, this.value)" class="w-12 text-center bg-white border border-[#E58A7B]/40 rounded-lg p-1 text-xs font-bold font-mono text-[#E58A7B] focus:outline-none focus:border-[#E58A7B]">
-                <span class="text-[10px] text-[#A39696] font-mono">/ ${targetMin}p</span>
+            ${canEdit ? `
+              <!-- Dành cho KTV Chính & Admin: Có thể chỉnh sửa và bấm cho nghỉ -->
+              <div class="flex items-center justify-between gap-2 flex-wrap">
+                <div class="flex items-center gap-1.5">
+                  <span class="text-[#7E7272]">⏱️ Làm từ phút:</span>
+                  <input type="number" min="0" max="${targetMin - 1}" value="${joinedMin}" onchange="onSwapStaffJoinedMinChange(${idx}, this.value)" class="w-12 text-center bg-white border border-[#E58A7B]/40 rounded-lg p-1 text-xs font-bold font-mono text-[#2D2424] focus:outline-none focus:border-[#E58A7B]">
+                  <span class="text-[#7E7272]">➔</span>
+                  <input type="number" min="${joinedMin + 1}" max="${targetMin}" value="${leftMin}" onchange="onSwapStaffLeftMinChange(${idx}, this.value)" class="w-12 text-center bg-white border border-[#E58A7B]/40 rounded-lg p-1 text-xs font-bold font-mono text-[#E58A7B] focus:outline-none focus:border-[#E58A7B]">
+                  <span class="text-[10px] text-[#A39696] font-mono">/ ${targetMin}p</span>
+                </div>
+
+                <label class="inline-flex items-center gap-1 cursor-pointer text-[11px] font-semibold text-[#7E7272] hover:text-[#E58A7B] select-none">
+                  <input type="checkbox" ${item.left_early || leftMin < targetMin ? 'checked' : ''} onchange="toggleSwapStaffEarlyLeave(${idx}, this.checked)" class="rounded text-[#E58A7B] focus:ring-0 cursor-pointer">
+                  <span>Xong việc rời sớm</span>
+                </label>
               </div>
 
-              <label class="inline-flex items-center gap-1 cursor-pointer text-[11px] font-semibold text-[#7E7272] hover:text-[#E58A7B] select-none">
-                <input type="checkbox" ${item.left_early || leftMin < targetMin ? 'checked' : ''} onchange="toggleSwapStaffEarlyLeave(${idx}, this.checked)" class="rounded text-[#E58A7B] focus:ring-0 cursor-pointer">
-                <span>Xong việc rời sớm</span>
-              </label>
-            </div>
-
-            <!-- Nút cho KTV này nghỉ ca trực tiếp ngay -->
-            <button type="button" onclick="triggerEarlyLeaveInSwapModal(${idx})" class="w-full py-2.5 px-3 rounded-xl border border-[#E58A7B] bg-[#FFF0EB] hover:bg-[#FFE5DC] text-[#E58A7B] font-bold text-xs flex items-center justify-center gap-1.5 transition active:scale-95 cursor-pointer">
-              <i data-lucide="log-out" class="w-3.5 h-3.5 shrink-0"></i>
-              <span>🏃 Cho KTV này xong việc rời ca ngay</span>
-            </button>
+              <button type="button" onclick="triggerEarlyLeaveInSwapModal(${idx})" class="w-full py-2.5 px-3 rounded-xl border border-[#E58A7B] bg-[#FFF0EB] hover:bg-[#FFE5DC] text-[#E58A7B] font-bold text-xs flex items-center justify-center gap-1.5 transition active:scale-95 cursor-pointer">
+                <i data-lucide="log-out" class="w-3.5 h-3.5 shrink-0"></i>
+                <span>🏃 Cho KTV này xong việc rời ca ngay</span>
+              </button>
+            ` : `
+              <!-- Dành cho KTV Phụ: Chỉ xem cố định không cho sửa -->
+              <div class="flex items-center gap-1.5 py-0.5">
+                <span class="text-[#7E7272]">⏱️ Làm từ phút:</span>
+                <span class="w-12 text-center bg-white border border-[#E58A7B]/40 rounded-lg p-1 text-xs font-bold font-mono text-[#2D2424] inline-block">${joinedMin}</span>
+                <span class="text-[#7E7272]">➔</span>
+                <span class="w-12 text-center bg-white border border-[#E58A7B]/40 rounded-lg p-1 text-xs font-bold font-mono text-[#E58A7B] inline-block">${leftMin}</span>
+                <span class="text-[10px] text-[#A39696] font-mono">/ ${targetMin}p</span>
+              </div>
+            `}
           </div>
 
-          <button type="button" onclick="removeStaffInSwapModal(${idx})" title="Xóa KTV này khỏi tour" class="absolute top-2.5 right-2.5 w-6 h-6 rounded-full bg-white border border-rose-300 text-rose-500 hover:bg-rose-500 hover:text-white flex items-center justify-center cursor-pointer active:scale-90 transition">
-            <i data-lucide="minus" class="w-3.5 h-3.5 stroke-[2.5]"></i>
-          </button>
+          ${canEdit ? `
+            <button type="button" onclick="removeStaffInSwapModal(${idx})" title="Xóa KTV này khỏi tour" class="absolute top-2.5 right-2.5 w-6 h-6 rounded-full bg-white border border-rose-300 text-rose-500 hover:bg-rose-500 hover:text-white flex items-center justify-center cursor-pointer active:scale-90 transition">
+              <i data-lucide="minus" class="w-3.5 h-3.5 stroke-[2.5]"></i>
+            </button>
+          ` : ''}
         ` : ''}
       </div>
     `;
@@ -1508,7 +1525,7 @@ function renderSwapModalStaffUI() {
               </div>
               <div class="flex items-center gap-2">
                 <span class="font-bold text-[#2E7D6D] font-mono">+${(item.comm_vnd || 0).toLocaleString('vi-VN')} đ (${item.pct}%)</span>
-                <button type="button" onclick="restoreStaffInSwapModal(${idx})" class="p-1 text-[#7E7272] hover:text-[#E58A7B] text-[10px] underline cursor-pointer" title="Phục hồi vào lại ca">Phục hồi</button>
+                ${canEdit ? `<button type="button" onclick="restoreStaffInSwapModal(${idx})" class="p-1 text-[#7E7272] hover:text-[#E58A7B] text-[10px] underline cursor-pointer" title="Phục hồi vào lại ca">Phục hồi</button>` : ''}
               </div>
             </div>
           `).join('')}
@@ -1520,11 +1537,15 @@ function renderSwapModalStaffUI() {
   container.innerHTML = htmlActive + htmlLeft;
 
   if (addBtn) {
-    const activePhones = activeStaffItems.map(x => normalizePhone(x.item.phone));
-    if (activePhones.length >= users.length) {
+    if (!canEdit) {
       addBtn.classList.add('hidden');
     } else {
-      addBtn.classList.remove('hidden');
+      const activePhones = activeStaffItems.map(x => normalizePhone(x.item.phone));
+      if (activePhones.length >= users.length) {
+        addBtn.classList.add('hidden');
+      } else {
+        addBtn.classList.remove('hidden');
+      }
     }
   }
 
