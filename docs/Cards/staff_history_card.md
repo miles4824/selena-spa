@@ -23,4 +23,5 @@ ightarrow$ Bấm vào mở `modal_staff_note.html`.
 - **Bảng Google Sheets**: `tb_payroll_logs` (19 cột).
 
 ## 6. Lịch Sử Thay Đổi & Lưu Vết (Audit Log)
-- `2026-09-01` (`v0.0.0.1`): Bóc tách thành component độc lập và phục hồi icon sửa ghi chú khách hàng.
+- `2026-09-01` (`v0.0.0.1`):
+- `2026-09-02` (`v0.0.5.9`): Chuẩn hóa tiêu đề NHẬT KÝ TOUR với font-bold font-serif uppercase tracking-wider. Bóc tách thành component độc lập và phục hồi icon sửa ghi chú khách hàng.
