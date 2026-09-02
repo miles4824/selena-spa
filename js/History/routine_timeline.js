@@ -242,22 +242,21 @@ function loadStaffHistoryList(targetDate) {
                   <span class="text-sm font-extrabold text-[#2E7D6D] whitespace-nowrap shrink-0 font-mono">+${totalEarn.toLocaleString('vi-VN')} đ</span>
                 </div>
 
-                <!-- Tên khách hàng -->
-                <div class="flex items-center gap-1.5 min-w-0 text-[11px] text-[#7E7272]">
-                  <button type="button" onclick="openStaffCustomerNoteModal('${item.customer_phone || item.raw_phone || ''}', '${item.customer_name || 'Khách vãng lai'}', '${item.receipt_id || ''}')" class="inline-flex items-center gap-1 truncate text-[#2D2424] font-medium hover:text-[#E58A7B] cursor-pointer transition group" title="Bấm để sửa ghi chú & sở thích khách hàng">
-                    <i data-lucide="user" class="w-3 h-3 text-[#A39696] group-hover:text-[#E58A7B] shrink-0"></i>
-                    <span class="truncate font-semibold text-[#2D2424] group-hover:text-[#E58A7B] underline decoration-dotted underline-offset-2">${item.customer_name || 'Khách vãng lai'}</span>
-                    <i data-lucide="edit-3" class="w-2.5 h-2.5 text-[#E58A7B] shrink-0 ml-0.5 opacity-80 group-hover:opacity-100"></i>
-                  </button>
-                </div>
-
-                <!-- Hình thức thanh toán (dưới tên khách) & Mã hóa đơn (bên phải cùng hàng) -->
-                <div class="flex justify-between items-center text-[11px] text-[#7E7272] pt-0.5">
-                  <span class="inline-flex items-center gap-1 font-semibold ${isCash ? 'text-[#D35400]' : 'text-[#2E7D6D]'}">
-                    <i data-lucide="${isCash ? 'banknote' : 'qr-code'}" class="w-3 h-3"></i>
-                    ${item.payment_method || 'Chuyển khoản'}
-                  </span>
-                  <span class="text-[10px] text-[#A39696] font-mono">${item.receipt_id}</span>
+                <!-- Hàng thông tin phụ: Tên khách • Hình thức thanh toán ... Mã hóa đơn -->
+                <div class="flex items-center justify-between gap-2 text-[11px] text-[#7E7272] min-w-0">
+                  <div class="flex items-center gap-1.5 min-w-0 flex-1 overflow-hidden">
+                    <button type="button" onclick="openStaffCustomerNoteModal('${item.customer_phone || item.raw_phone || ''}', '${item.customer_name || 'Khách vãng lai'}', '${item.receipt_id || ''}')" class="inline-flex items-center gap-1 min-w-0 text-[#2D2424] font-medium hover:text-[#E58A7B] cursor-pointer transition group shrink" title="Bấm để sửa ghi chú & sở thích khách hàng">
+                      <i data-lucide="user" class="w-3.5 h-3.5 text-[#A39696] group-hover:text-[#E58A7B] shrink-0"></i>
+                      <span class="truncate font-semibold text-[#2D2424] group-hover:text-[#E58A7B] underline decoration-dotted underline-offset-2 max-w-[95px] sm:max-w-[150px]">${item.customer_name || 'Khách vãng lai'}</span>
+                      <i data-lucide="edit-3" class="w-2.5 h-2.5 text-[#E58A7B] shrink-0 ml-0.5 opacity-80 group-hover:opacity-100"></i>
+                    </button>
+                    <span class="text-[#D4C5B9] shrink-0">•</span>
+                    <span class="inline-flex items-center gap-1 font-semibold ${isCash ? 'text-[#D35400]' : 'text-[#2E7D6D]'} shrink-0 whitespace-nowrap">
+                      <i data-lucide="${isCash ? 'banknote' : 'qr-code'}" class="w-3 h-3 shrink-0"></i>
+                      ${item.payment_method || 'Chuyển khoản'}
+                    </span>
+                  </div>
+                  <span class="text-[10px] text-[#A39696] font-mono shrink-0 ml-auto whitespace-nowrap">${item.receipt_id}</span>
                 </div>
               </div>
 
