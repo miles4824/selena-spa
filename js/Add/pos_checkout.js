@@ -1246,14 +1246,12 @@ function renderLiveSessionUI() {
       }
     }
 
-    chipsContainer.innerHTML = staffs.map((s, idx) => `
+    const activeStaffs = staffs.filter(s => !s.left_early);
+    chipsContainer.innerHTML = (activeStaffs.length > 0 ? activeStaffs : staffs).map((s, idx) => `
       <button type="button" onclick="openSwapStaffModal()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-[#EFE8DF] hover:border-[#E58A7B] text-xs font-bold text-[#2D2424] transition active:scale-95 cursor-pointer">
         <span class="w-2 h-2 rounded-full ${idx === 0 ? 'bg-[#2E7D6D]' : 'bg-[#E58A7B]'}"></span>
         <span>${s.name}</span>
-        ${s.left_early 
-          ? `<span class="text-[9px] font-bold text-[#D35400] bg-[#FFF0EB] px-1.5 py-0.5 rounded-md">Rời p.${s.left_min}</span>` 
-          : `<span class="text-[10px] font-extrabold text-[#7E7272] bg-[#FAF6F1] px-1.5 py-0.5 rounded-md">${s.pct || Math.round(100/staffs.length)}%</span>`
-        }
+        <span class="text-[10px] font-extrabold text-[#7E7272] bg-[#FAF6F1] px-1.5 py-0.5 rounded-md">${s.pct || Math.round(100/(activeStaffs.length || 1))}%</span>
       </button>
     `).join('') + `
       <button type="button" onclick="openSwapStaffModal()" title="Điều chỉnh / Thêm KTV" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-[#FFF0EB] hover:bg-[#FFE5DC] text-xs font-bold text-[#E58A7B] border border-[#FCDFD7] transition active:scale-95 cursor-pointer">
@@ -1413,7 +1411,18 @@ function renderSwapModalStaffUI() {
   const isOwner = cUser ? (typeof isUserOwner === 'function' ? isUserOwner(cUser) : (cUser.role === 'admin' || cUser.role === 'owner')) : false;
   const targetMin = currentLiveSession?.duration_target_min || 50;
 
-  container.innerHTML = tempSwapStaffs.map((item, idx) => {
+  const activeStaffItems = [];
+  const leftStaffItems = [];
+
+  tempSwapStaffs.forEach((item, idx) => {
+    if (item.left_early) {
+      leftStaffItems.push({ item, idx });
+    } else {
+      activeStaffItems.push({ item, idx });
+    }
+  });
+
+  let htmlActive = activeStaffItems.map(({ item, idx }) => {
     const isFirst = idx === 0;
     const isLocked = isFirst && !isOwner;
     const busyMap = getBusyStaffPhonesMap();
@@ -1431,7 +1440,6 @@ function renderSwapModalStaffUI() {
 
     const joinedMin = item.joined_min || 0;
     const leftMin = item.left_min || targetMin;
-    const isEarlyLeave = leftMin < targetMin;
 
     return `
       <div class="relative p-3 rounded-2xl bg-[#FAF6F1] border border-[#F0EAE1] space-y-2">
@@ -1468,10 +1476,10 @@ function renderSwapModalStaffUI() {
               </label>
             </div>
 
-            <!-- Nút bấm trực tiếp rời tour sớm trong modal -->
-            <button type="button" onclick="triggerEarlyLeaveInSwapModal(${idx})" class="w-full py-2 px-3 rounded-xl border ${item.left_early ? 'border-[#2E7D6D] bg-[#E8F8F5] text-[#2E7D6D]' : 'border-[#E58A7B] bg-[#FFF0EB] text-[#E58A7B]'} hover:opacity-90 font-bold text-xs flex items-center justify-center gap-1.5 transition active:scale-95 cursor-pointer">
-              <i data-lucide="${item.left_early ? 'check-circle' : 'log-out'}" class="w-3.5 h-3.5"></i>
-              <span>${item.left_early ? `Đã xác nhận rời ca phút thứ ${leftMin} (Bấm để hủy)` : '🏃 Bấm Xác Nhận Xong Việc Rời Ca Ngay'}</span>
+            <!-- Nút cho KTV này nghỉ ca trực tiếp ngay -->
+            <button type="button" onclick="triggerEarlyLeaveInSwapModal(${idx})" class="w-full py-2.5 px-3 rounded-xl border border-[#E58A7B] bg-[#FFF0EB] hover:bg-[#FFE5DC] text-[#E58A7B] font-bold text-xs flex items-center justify-center gap-1.5 transition active:scale-95 cursor-pointer">
+              <i data-lucide="log-out" class="w-3.5 h-3.5 shrink-0"></i>
+              <span>🏃 Cho KTV này xong việc rời ca ngay</span>
             </button>
           </div>
 
@@ -1483,8 +1491,37 @@ function renderSwapModalStaffUI() {
     `;
   }).join('');
 
+  let htmlLeft = '';
+  if (leftStaffItems.length > 0) {
+    htmlLeft = `
+      <div class="p-3 rounded-2xl bg-[#FFF0EB]/70 border border-[#FCDFD7] space-y-2">
+        <div class="text-[11px] font-extrabold text-[#E58A7B] uppercase tracking-wider flex items-center justify-between">
+          <span>🏃 KTV đã rời ca (${leftStaffItems.length}):</span>
+          <span class="text-[10px] font-normal text-[#7E7272]">Đã giải phóng sang trạng thái Rảnh</span>
+        </div>
+        <div class="space-y-1.5">
+          ${leftStaffItems.map(({ item, idx }) => `
+            <div class="flex justify-between items-center text-xs bg-white p-2 rounded-xl border border-[#F0EAE1]">
+              <div>
+                <span class="font-bold text-[#2D2424]">• ${item.name}</span>
+                <span class="text-[#7E7272] text-[11px]"> (Phút ${item.joined_min || 0} ➔ ${item.left_min}):</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="font-bold text-[#2E7D6D] font-mono">+${(item.comm_vnd || 0).toLocaleString('vi-VN')} đ (${item.pct}%)</span>
+                <button type="button" onclick="restoreStaffInSwapModal(${idx})" class="p-1 text-[#7E7272] hover:text-[#E58A7B] text-[10px] underline cursor-pointer" title="Phục hồi vào lại ca">Phục hồi</button>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  container.innerHTML = htmlActive + htmlLeft;
+
   if (addBtn) {
-    if (tempSwapStaffs.length >= users.length) {
+    const activePhones = activeStaffItems.map(x => normalizePhone(x.item.phone));
+    if (activePhones.length >= users.length) {
       addBtn.classList.add('hidden');
     } else {
       addBtn.classList.remove('hidden');
@@ -2977,17 +3014,64 @@ function triggerEarlyLeaveInSwapModal(idx) {
   const targetMin = currentLiveSession?.duration_target_min || 50;
   const elapsedSec = Math.max(0, Math.floor((Date.now() - currentLiveSession.start_timestamp) / 1000));
   const elapsedMin = Math.max(1, Math.floor(elapsedSec / 60));
+  const targetStaff = tempSwapStaffs[idx];
+  if (!targetStaff) return;
 
-  if (!tempSwapStaffs[idx].left_early) {
-    tempSwapStaffs[idx].left_early = true;
-    tempSwapStaffs[idx].left_min = Math.max((tempSwapStaffs[idx].joined_min || 0) + 1, Math.min(targetMin, elapsedMin));
-    tempSwapStaffs[idx].left_at_min = tempSwapStaffs[idx].left_min;
-  } else {
-    tempSwapStaffs[idx].left_early = false;
-    tempSwapStaffs[idx].left_min = targetMin;
+  if (!confirm(`Xác nhận cho KTV (${targetStaff.name}) hoàn thành phần việc và rời ca tại phút thứ ${elapsedMin}?`)) {
+    return;
   }
+
+  targetStaff.left_early = true;
+  targetStaff.left_min = Math.max((targetStaff.joined_min || 0) + 1, Math.min(targetMin, elapsedMin));
+  targetStaff.left_at_min = targetStaff.left_min;
+  targetStaff.left_timestamp = Date.now();
+
   currentSplitMode = 'timer';
+  currentLiveSession.staffs = tempSwapStaffs.map(s => ({ ...s }));
+  currentLiveSession.split_mode = 'timer';
+
+  calculateLiveSessionStaffSplits(currentLiveSession);
+  tempSwapStaffs = currentLiveSession.staffs.map(s => ({ ...s }));
+
+  localStorage.setItem('selena_active_live_session', JSON.stringify(currentLiveSession));
+  if (typeof fbSaveLiveSession === 'function') {
+    fbSaveLiveSession(currentLiveSession);
+  }
+  if (typeof fbSetLiveSession === 'function') {
+    fbSetLiveSession(currentLiveSession);
+  }
+  if (typeof updateStaffAvailabilityHeader === 'function') {
+    updateStaffAvailabilityHeader();
+  }
+
   renderSwapModalStaffUI();
   updateSplitButtonsUI();
   updateSwapPreviewDisplay();
+  renderLiveSessionUI();
+}
+
+function restoreStaffInSwapModal(idx) {
+  const targetMin = currentLiveSession?.duration_target_min || 50;
+  const targetStaff = tempSwapStaffs[idx];
+  if (!targetStaff) return;
+
+  targetStaff.left_early = false;
+  targetStaff.left_min = targetMin;
+
+  currentLiveSession.staffs = tempSwapStaffs.map(s => ({ ...s }));
+  calculateLiveSessionStaffSplits(currentLiveSession);
+  tempSwapStaffs = currentLiveSession.staffs.map(s => ({ ...s }));
+
+  localStorage.setItem('selena_active_live_session', JSON.stringify(currentLiveSession));
+  if (typeof fbSaveLiveSession === 'function') {
+    fbSaveLiveSession(currentLiveSession);
+  }
+  if (typeof updateStaffAvailabilityHeader === 'function') {
+    updateStaffAvailabilityHeader();
+  }
+
+  renderSwapModalStaffUI();
+  updateSplitButtonsUI();
+  updateSwapPreviewDisplay();
+  renderLiveSessionUI();
 }
