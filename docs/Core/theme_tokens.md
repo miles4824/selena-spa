@@ -67,4 +67,5 @@
 - `2026-09-02` (`v0.0.5.0`):
 - `2026-09-02` (`v0.0.5.4`):
 - `2026-09-02` (`v0.0.5.6`):
+- `2026-09-02` (`v0.0.5.8`): Xóa bỏ hoàn toàn mọi tham chiếu JetBrains Mono, tối ưu hệ thống nhẹ nhàng và minh bạch.
 - `2026-09-02` (`v0.0.5.7`): Nạp đầy đủ dải độ dày 200..900 cho Font Literata, tinh chỉnh độ đậm tiêu đề thanh thoát chuẩn Luxury Spa và áp dụng class `uppercase tracking-wider` cho các tiêu đề chính. Đính chính chính xác dự án chỉ sử dụng duy nhất 2 họ font thực tế là Literata và Plus Jakarta Sans, loại bỏ hoàn toàn tên gọi JetBrains Mono thừa. Bổ sung đầy đủ định nghĩa Font-family tokens (Literata, Plus Jakarta Sans, JetBrains Mono) vào THEME_TOKENS. Khởi tạo tài liệu đặc tả chuẩn hóa Hệ thống Giao diện & Bảng mã màu thương hiệu (Theme Tokens & Design System).

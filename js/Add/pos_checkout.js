@@ -48,7 +48,7 @@ function updateStaffAvailabilityHeader() {
 
   if (busyCount === 0) {
     subEl.innerHTML = `
-      <div class="inline-flex items-center gap-2 text-xs font-bold text-[#2E7D6D]">
+      <div class="inline-flex items-center gap-2 text-xs font-bold text-[#2E7D6D] font-mono">
         <span class="flex h-2 w-2 relative">
           <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#2E7D6D] opacity-75"></span>
           <span class="relative inline-flex rounded-full h-2 w-2 bg-[#2E7D6D]"></span>
@@ -58,14 +58,14 @@ function updateStaffAvailabilityHeader() {
     `;
   } else if (freeCount > 0) {
     subEl.innerHTML = `
-      <div class="inline-flex items-center gap-2 text-xs font-bold text-[#E58A7B]">
+      <div class="inline-flex items-center gap-2 text-xs font-bold text-[#E58A7B] font-mono">
         <span class="w-2 h-2 rounded-full bg-[#E58A7B]"></span>
         <span>Đang phục vụ: ${busyCount}/${totalStaff} • Rảnh: ${freeCount} người</span>
       </div>
     `;
   } else {
     subEl.innerHTML = `
-      <div class="inline-flex items-center gap-2 text-xs font-bold text-rose-500">
+      <div class="inline-flex items-center gap-2 text-xs font-bold text-rose-500 font-mono">
         <span class="w-2 h-2 rounded-full bg-rose-500"></span>
         <span>Tất cả ${totalStaff} nhân sự đều đang bận</span>
       </div>
