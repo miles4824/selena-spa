@@ -33,6 +33,7 @@ ightarrow$ Cập nhật mảng KTV phục vụ của ca trên Firebase.
 - **Hàm Backend GAS phụ trách**: `createReceipt(params)` ghi nhận từng dòng KTV tương ứng.
 
 ## 6. Lịch Sử Thay Đổi & Lưu Vết (Audit Log)
+- `2026-09-03` (`v0.1.1.8`): Cập nhật nút `Xác nhận xong việc` sang viền nét đứt `border-[#E58A7B]/60 border border-dashed font-bold` (loại bỏ `shadow-xs border-2 font-extrabold`); tăng khoảng đệm dọc `py-2` cho nhãn `Xong việc rời sớm`.
 - `2026-09-03` (`v0.1.1.7`): Khắc phục triệt để lỗi ReferenceError `activeStaffItems` trong hàm `renderSwapModalStaffUI` khi kiểm tra điều kiện hiển thị nút thêm KTV.
 - `2026-09-03` (`v0.1.1.6`): Hiển thị toàn bộ danh sách thẻ KTV theo đúng dòng thời gian tuần tự (Chặng 2 nằm dưới cùng sau chặng 1); checkbox sử dụng ô vuông màu `#E58A7B` với dấu checkmark màu trắng sắc nét `text-white stroke-[3.5]` theo đúng hình mẫu.
 - `2026-09-03` (`v0.1.1.5`): Sử dụng Checkbox nguyên bản chuẩn giao diện phẳng, phủ màu hồng đào thương hiệu Selena (`accent-[#E58A7B]`), tinh gọn, trực quan và tiện dụng trên mọi thiết bị.

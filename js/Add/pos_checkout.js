@@ -1594,7 +1594,7 @@ function renderSwapModalStaffUI() {
                 </div>
 
                 <!-- Checkbox Style chuẩn UI hồng đào với dấu check trắng sắc nét -->
-                <label class="inline-flex items-center gap-2 cursor-pointer select-none py-1 group">
+                <label class="inline-flex items-center gap-2 cursor-pointer select-none my-2 py-2 group">
                   <input type="checkbox" ${isWantsEarly ? 'checked' : ''} onchange="toggleSwapStaffEarlyLeave(${idx}, this.checked)" class="sr-only peer">
                   <div class="w-4.5 h-4.5 rounded-md border-2 flex items-center justify-center transition-all ${isWantsEarly ? 'bg-[#E58A7B] border-[#E58A7B]' : 'bg-white border-[#A39696] group-hover:border-[#E58A7B]'}">
                     <i data-lucide="check" class="w-3.5 h-3.5 text-white stroke-[3.5] ${isWantsEarly ? '' : 'hidden'}"></i>
@@ -1603,8 +1603,8 @@ function renderSwapModalStaffUI() {
                 </label>
               </div>
 
-              <!-- Outlined Rounded-Full Button tông hồng đào Selena theo mẫu bo tròn -->
-              <button type="button" onclick="triggerEarlyLeaveInSwapModal(${idx})" class="${isWantsEarly ? '' : 'hidden'} w-full py-2.5 px-4 rounded-full border-2 border-[#E58A7B] bg-white hover:bg-[#FFF0EB] text-[#E58A7B] font-extrabold text-xs sm:text-sm flex items-center justify-center gap-1.5 transition active:scale-95 cursor-pointer shadow-xs">
+              <!-- Outlined Rounded-Full Button tông hồng đào Selena viền nét đứt -->
+              <button type="button" onclick="triggerEarlyLeaveInSwapModal(${idx})" class="${isWantsEarly ? '' : 'hidden'} w-full py-2.5 px-4 rounded-full border border-dashed border-[#E58A7B]/60 bg-white hover:bg-[#FFF0EB] text-[#E58A7B] font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5 transition active:scale-95 cursor-pointer">
                 <i data-lucide="log-out" class="w-4 h-4 stroke-[2.5]"></i>
                 <span>Xác nhận xong việc</span>
               </button>
