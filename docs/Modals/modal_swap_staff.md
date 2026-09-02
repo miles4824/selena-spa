@@ -33,6 +33,7 @@ ightarrow$ Cập nhật mảng KTV phục vụ của ca trên Firebase.
 - **Hàm Backend GAS phụ trách**: `createReceipt(params)` ghi nhận từng dòng KTV tương ứng.
 
 ## 6. Lịch Sử Thay Đổi & Lưu Vết (Audit Log)
+- `2026-09-02` (`v0.1.0.6`): Tách biệt rõ ràng giữa trạng thái xem trước khi tích checkbox (`wants_early_leave`) và hành động thực thi rời ca (`left_early`); khi tích checkbox chỉ làm hiện nút `Xong Việc Rời Tour Sớm` và cập nhật xem trước, chỉ khi người dùng bấm nút thì mới chính thức hoàn tất rời ca.
 - `2026-09-02` (`v0.1.0.5`): Mặc định ô thời gian kết thúc là định mức tour (`[ 50 ] / 50p`); khi tích chọn checkbox `Xong việc rời sớm` thì tự động nhảy sang phút hiện tại và làm hiện nút `Xong Việc Rời Tour Sớm` để bấm rời tour ngay.
 - `2026-09-02` (`v0.1.0.4`): Sửa lỗi checkbox `Xong việc rời sớm` cho phép tích chọn / hủy chọn linh hoạt; đổi tên nút hành động thành `Xong Việc Rời Tour Sớm`.
 - `2026-09-02` (`v0.1.0.3`): Ô số phút kết thúc `[ X ]` trong modal tự động khởi tạo bằng số phút hiện tại của tour (`currentElapsedMin`) theo thời gian thực thay vì mặc định 50 phút.

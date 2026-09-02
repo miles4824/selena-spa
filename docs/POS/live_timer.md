@@ -31,6 +31,7 @@ ightarrow$ Lưu `start_time` và cập nhật Firebase node `active_sessions/`.
 - **Ghi vào `tb_receipts`**: Cột C (`start_time`), Cột D (`end_time`), Cột E (`duration_min`).
 
 ## 6. Lịch Sử Thay Đổi & Lưu Vết (Audit Log)
+- `2026-09-02` (`v0.1.0.6`): Checkbox `Xong việc rời sớm` trong modal chỉ bật xem trước và kích hoạt nút bấm; chỉ khi nhấn nút mới ghi nhận rời ca sang Firebase.
 - `2026-09-02` (`v0.1.0.5`): Nút `Xong Việc Rời Tour Sớm` trong modal chỉ hiển thị khi checkbox `Xong việc rời sớm` được tích chọn.
 - `2026-09-02` (`v0.1.0.4`): Đồng bộ nhãn nút bấm `Xong Việc Rời Tour Sớm` giữa ngoài màn hình live timer và trong modal.
 - `2026-09-02` (`v0.1.0.3`): Modal điều chỉnh phân chia tự động đồng bộ số phút trôi qua thực tế vào ô thời gian kết thúc của KTV phụ.
