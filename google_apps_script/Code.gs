@@ -663,7 +663,7 @@ function createReceipt(params) {
       durationMin = params.duration_target_min || 45;
     }
   } else {
-    durationMin = Math.round(durationMin * 10) / 10;
+    durationMin = Math.round(durationMin);
   }
 
   const phone = normalizePhone(params.customer_phone || params.phone);

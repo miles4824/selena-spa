@@ -2310,7 +2310,7 @@ function confirmSaveReceiptFromCheckout() {
 
     start_time: currentLiveSession.start_time,
     end_time: currentLiveSession.end_time || currentLiveSession.start_time,
-    duration_min: currentLiveSession.duration_actual_min || currentLiveSession.duration_target_min || 45,
+    duration_min: Math.round(Number(currentLiveSession.duration_actual_min || currentLiveSession.duration_target_min || 45)),
     time: currentLiveSession.start_time,
 
     payment_method: checkoutPaymentMethod,
