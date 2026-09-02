@@ -47,6 +47,7 @@ ightarrow$ Cột O (`commission_amount`), Cột P (`tip_amount`), Cột Q (`tota
 - `2026-09-01` (`v0.0.0.1`):
 - `2026-09-02` (`v0.0.4.7`):
 - `2026-09-02` (`v0.0.6.3`):
+- `2026-09-02` (`v0.0.8.4`): Khắc phục lỗi `comm1 is not defined` bằng cách đọc trực tiếp từ mảng `mappedStaffs` và lặp thông báo lưu đơn động cho $N$ KTV.
 - `2026-09-02` (`v0.0.7.1`): Cố định (pin) Header và Footer của modal thanh toán, chỉ cuộn nội dung ở giữa; xóa text STK trùng lặp và mở rộng ảnh QR full-width.
 - `2026-09-02` (`v0.0.6.9`): Gán tường minh `text-[#2D2424]` cho số tiền tip (`+10.000 đ`) giúp con số nổi bật sắc nét trên nền nhãn `text-[#7E7272]`.
 - `2026-09-02` (`v0.0.6.8`): Tinh chỉnh tiêu đề Ghi Nhận Tiền Tips sang `text-xl font-medium`, đổi màu dòng tip sang `text-[#7E7272]` và làm nổi bật tiêu đề Tổng khách thanh toán `text-[#2D2424]`.

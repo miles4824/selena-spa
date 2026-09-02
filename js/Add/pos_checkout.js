@@ -2008,7 +2008,7 @@ function confirmSaveReceiptFromCheckout() {
     staff_phone: s1.phone || '',
     staff_id: s1.staff_id || 'KTV01',
     staff_name: s1.name || 'KTV',
-    commission_amount: comm1 + tip1,
+    commission_amount: (s1.comm_vnd || 0) + (s1.tip_vnd || 0),
 
     start_time: currentLiveSession.start_time,
     end_time: currentLiveSession.end_time || currentLiveSession.start_time,
@@ -2081,12 +2081,11 @@ function confirmSaveReceiptFromCheckout() {
 • Khách trả: ${grandTotal.toLocaleString('vi-VN')} đ (${checkoutPaymentMethod})`;
   if (totalTip > 0) successMsg += `
 • Tổng tiền Tips: +${totalTip.toLocaleString('vi-VN')} đ`;
-  successMsg += `
-• KTV 1 (${receipt.staff_1_name}): Tour +${comm1.toLocaleString('vi-VN')} đ${tip1 > 0 ? ` + Tip +${tip1.toLocaleString('vi-VN')} đ` : ''}`;
-  if (receipt.has_staff_2) successMsg += `
-• KTV 2 (${receipt.staff_2_name}): Tour +${comm2.toLocaleString('vi-VN')} đ${tip2 > 0 ? ` + Tip +${tip2.toLocaleString('vi-VN')} đ` : ''}`;
-  if (receipt.has_staff_3) successMsg += `
-• KTV 3 (${receipt.staff_3_name}): Tour +${comm3.toLocaleString('vi-VN')} đ${tip3 > 0 ? ` + Tip +${tip3.toLocaleString('vi-VN')} đ` : ''}`;
+  
+  mappedStaffs.forEach(st => {
+    successMsg += `
+• ${st.name} (${st.role}): Tour +${(st.comm_vnd || 0).toLocaleString('vi-VN')} đ${st.tip_vnd > 0 ? ` + Tip +${st.tip_vnd.toLocaleString('vi-VN')} đ` : ''}`;
+  });
   alert(successMsg);
 
   const targetSessionId = currentLiveSession?.session_id;
