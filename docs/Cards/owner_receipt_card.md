@@ -22,6 +22,7 @@ ightarrow$ Bấm vào mở `modal_owner_customer.html` (Toàn quyền sửa).
 - **Bảng Google Sheets**: `tb_receipts` (16 cột) & `tb_payroll_logs` (19 cột).
 
 ## 6. Lịch Sử Thay Đổi & Lưu Vết (Audit Log)
+- `2026-09-02` (`v0.0.7.9`): Sắp xếp danh sách hóa đơn theo thứ tự thời gian giảm dần (Mới nhất hiển thị trên cùng).
 - `2026-09-02` (`v0.0.7.8`): Lưu chuẩn `payroll_logs` từ API sync Google Sheets và đọc 100% cột `commission_amount` từ `tb_payroll_logs` theo `receipt_id`.
 - `2026-09-02` (`v0.0.7.7`): Xóa bỏ hoàn toàn code fallback chia đều 10% cũ. Toàn bộ thông tin KTV và tiền hoa hồng hiển thị trên thẻ Lịch sử Toàn Tiệm bắt buộc đọc trực tiếp 100% từ `tb_payroll_logs` theo `receipt_id`.
 - `2026-09-02` (`v0.0.7.6`): Đồng bộ tức thì `payroll_logs` ngay khi chốt ca và khắc phục lỗi chia đều 10% mặc định trên thẻ Lịch sử Toàn Tiệm.

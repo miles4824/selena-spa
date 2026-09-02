@@ -143,6 +143,11 @@ function loadStaffHistoryList(targetDate) {
 
   dateList.forEach(dKey => {
     const dayItems = myLogs.filter(item => normalizeDateKey(item.date || item.created_at) === dKey);
+    dayItems.sort((a, b) => {
+      const timeA = String(a.end_time || a.time || a.start_time || a.created_at || '');
+      const timeB = String(b.end_time || b.time || b.start_time || b.created_at || '');
+      return timeB.localeCompare(timeA);
+    });
     const formattedDateVN = formatDateVN(dKey);
     const isTodayHeader = dKey === todayKey;
 

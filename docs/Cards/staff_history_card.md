@@ -27,6 +27,7 @@ ightarrow$ Bấm vào mở `modal_staff_note.html`.
 - `2026-09-02` (`v0.0.5.9`):
 - `2026-09-02` (`v0.0.6.0`):
 - `2026-09-02` (`v0.0.6.1`):
+- `2026-09-02` (`v0.0.7.9`): Sắp xếp danh sách thẻ lịch sử theo thứ tự thời gian giảm dần (Mới nhất hiển thị trên cùng, ca sáng sớm nằm dưới cùng).
 - `2026-09-02` (`v0.0.7.7`): Chuẩn hóa 100% nguồn dữ liệu từ `tb_payroll_logs` làm nguồn chân lý duy nhất (Single Source of Truth) cho lịch sử và thu nhập.
 - `2026-09-02` (`v0.0.7.0`): Chuyển đổi mốc giờ hiển thị trên thẻ timeline sang lấy `end_time` (giờ kết thúc/thanh toán ca) thay vì `start_time`.
 - `2026-09-02` (`v0.0.6.4`): Đồng bộ 100% font-mono JetBrains Mono cho các dòng Tiền tour (+3.200 đ) và Tiền tip (+35.000 đ) trong chi tiết ca gội.
