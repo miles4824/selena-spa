@@ -33,6 +33,7 @@ ightarrow$ Cập nhật mảng KTV phục vụ của ca trên Firebase.
 - **Hàm Backend GAS phụ trách**: `createReceipt(params)` ghi nhận từng dòng KTV tương ứng.
 
 ## 6. Lịch Sử Thay Đổi & Lưu Vết (Audit Log)
+- `2026-09-03` (`v0.1.1.3`): Khôi phục lại bảng màu cam đào / hồng san hô đặc trưng của Selena Spa (`#E58A7B` và `#FFF0EB`) cho checkbox và nút bấm `Xác nhận xong việc` dạng bo tròn `rounded-full border-2`.
 - `2026-09-03` (`v0.1.1.2`): Cập nhật UI Checkbox `Xong việc rời sớm` sang dạng thẻ bo góc viền ngọc bích `#2E7D6D` kèm ô tích vuông sắc nét; nút `Xác nhận xong việc` đổi sang dạng bo tròn `rounded-full border-2` theo đúng hình mẫu thiết kế.
 - `2026-09-03` (`v0.1.1.1`): Khắc phục lỗi dropdown trống ở KTV chặng 2; tự động disable dropdown khi không còn KTV rảnh nào khác để đổi; sắp xếp khối `KTV ĐÃ RỜI CA` lên trên các chặng đang làm theo đúng dòng thời gian; nâng cấp UI checkbox rời sớm sang dạng chip pill cao cấp với biểu tượng checkmark mượt mà.
 - `2026-09-03` (`v0.1.1.0`): Triển khai cơ chế Multi-Segment Staff (KTV làm nhiều chặng ngắt quãng trong 1 tour) với thuật toán tính hoa hồng chính xác từng chặng, không hưởng tiền khoảng trống vắng mặt; phân tách rõ ràng với nút `Hoàn tác (bấm nhầm)`.
