@@ -1684,9 +1684,6 @@ function renderDynamicTipInputs() {
             <span class="text-[#2D2424]">KTV ${idx + 1}:</span>
             <span>${s.name}</span>
           </span>
-          <span class="text-xs font-extrabold text-[#2E7D6D] bg-[#E8F8F5] px-2 py-0.5 rounded-full font-mono">
-            Tour: +${commVnd.toLocaleString('vi-VN')} đ
-          </span>
         </div>
 
         <div class="relative">
@@ -1783,19 +1780,19 @@ function updateCheckoutGrandTotal() {
       { phone: currentLiveSession.staff_1_phone, name: currentLiveSession.staff_1_name, pct: 100 }
     ];
 
-    staffSummaryEl.innerHTML = currentStaffs.map((s, idx) => {
-      const staffObj = users.find(u => normalizePhone(u.phone) === normalizePhone(s.phone));
-      const rate = (staffObj && parsePercentage(staffObj?.commission_rate) > 0) ? parsePercentage(staffObj?.commission_rate) : 10;
-      const commVnd = Math.round(currentLiveSession.price * (rate / 100) * ((s.pct || Math.round(100/currentStaffs.length)) / 100));
-      const tipVnd = getStaffTipAmount(s.phone);
+    const staffTipsList = currentStaffs
+      .filter(s => getStaffTipAmount(s.phone) > 0)
+      .map(s => {
+        const tipVnd = getStaffTipAmount(s.phone);
+        return `
+          <div class="flex justify-between items-center text-xs font-bold text-[#2D2424]">
+            <span>Tiền tip ${s.name}:</span>
+            <span class="text-[#E58A7B] font-mono font-bold">+${tipVnd.toLocaleString('vi-VN')} đ</span>
+          </div>
+        `;
+      }).join('');
 
-      return `
-        <div class="flex justify-between items-center text-xs font-bold text-[#2D2424]">
-          <span>${s.name}:</span>
-          <span class="text-[#2E7D6D] font-mono">Tour +${commVnd.toLocaleString('vi-VN')} đ ${tipVnd > 0 ? `<span class="text-[#E58A7B] font-mono">(Tip +${tipVnd.toLocaleString('vi-VN')} đ)</span>` : ''}</span>
-        </div>
-      `;
-    }).join('');
+    staffSummaryEl.innerHTML = staffTipsList;
   }
 }
 

@@ -46,4 +46,5 @@ ightarrow$ Cột O (`commission_amount`), Cột P (`tip_amount`), Cột Q (`tota
 ## 6. Lịch Sử Thay Đổi & Lưu Vết (Audit Log)
 - `2026-09-01` (`v0.0.0.1`):
 - `2026-09-02` (`v0.0.4.7`):
-- `2026-09-02` (`v0.0.6.3`): Đồng bộ font-mono JetBrains Mono cho toàn bộ số tiền thanh toán, tiền tip, hoa hồng và nút chọn tip nhanh. Cập nhật nhãn nút bấm Pha 1 thành 'Khách Đã Thanh Toán' kèm icon mũi tên chuyển bước bên phải. Bóc tách thành component độc lập và chuẩn hóa luồng 2 pha.
+- `2026-09-02` (`v0.0.6.3`):
+- `2026-09-02` (`v0.0.6.7`): Bảo mật tuyệt đối tiền hoa hồng KTV (ẩn huy hiệu Tour + đ và bảng ăn chia), chỉ hiển thị Tiền dịch vụ tour và Tiền tip của khách. Đồng bộ font-mono JetBrains Mono cho toàn bộ số tiền thanh toán, tiền tip, hoa hồng và nút chọn tip nhanh. Cập nhật nhãn nút bấm Pha 1 thành 'Khách Đã Thanh Toán' kèm icon mũi tên chuyển bước bên phải. Bóc tách thành component độc lập và chuẩn hóa luồng 2 pha.
