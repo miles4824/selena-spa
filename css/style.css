@@ -15,7 +15,7 @@ body {
 
 h1, h2, h3, .font-heading, .font-serif-luxury {
   font-family: 'Literata', serif;
-  letter-spacing: -0.01em;
+  letter-spacing: 0.02em;
 }
 
 h4, h5, h6 {

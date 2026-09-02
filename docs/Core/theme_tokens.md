@@ -10,7 +10,7 @@
 ## 2. Danh Sách File Cấu Thành (HTML, JS & CSS)
 - **File Định Nghĩa Mã Màu Core**: `js/Core/Theme/theme_tokens.js`
 - **Cấu hình Tailwind CSS & Typography**: `index.html` (Khối `<script>` Tailwind CDN)
-- **Tài Nguyên Font Chữ Trực Tuyến**: Google Fonts (*Playfair Display*, *Plus Jakarta Sans*, *JetBrains Mono*)
+- **Tài Nguyên Font Chữ Trực Tuyến**: Google Fonts (*Literata* & *Plus Jakarta Sans*)
 - **File Đặc Tả Kỹ Thuật**: `docs/Core/theme_tokens.md`
 
 ---
@@ -39,16 +39,13 @@
 
 ## 4. Hệ Thống Typography (Font Chữ) & Bo Góc (Border Radius)
 
-### 4.1. Hệ Thống Font Chữ (3 Cấp Độ):
-1. **Font Tiêu Đề (`font-serif`)**: *Literata* (đang nạp và sử dụng thực tế trong `index.html` & `css/style.css`)
-   - Dùng cho: Tiêu đề trang (`Tạo Tour Gội Mới`), Tên thương hiệu `Selena Spa`, Tiêu đề Modal.
-   - Đặc tính: Mang lại cảm giác sang trọng, quý phái và đẳng cấp Spa.
-2. **Font Nội Dung (`font-sans`)**: *Plus Jakarta Sans*
-   - Dùng cho: Tên dịch vụ, tên KTV, tên khách hàng, các dòng mô tả, nút bấm.
-   - Đặc tính: Hiện đại, tròn trịa, cực kỳ sắc nét trên màn hình điện thoại iPhone & Android.
-3. **Font Số Liệu & Tiền Bạc (`font-mono`)**: *JetBrains Mono*
-   - Dùng cho: Giá tiền (`64.000 đ`), Đồng hồ đếm giờ (`16:04`), Giờ bắt đầu (`21:59`), Số điện thoại.
-   - Đặc tính: Con số có độ rộng đồng đều (monospaced), không bị giật layout khi số nhảy.
+### 4.1. Hệ Thống Font Chữ (Chính Xác 2 Họ Font Duy Nhất):
+1. **Font Tiêu Đề (`font-serif`)**: *Literata* (Google Fonts)
+   - Áp dụng trong `css/style.css`: Cho toàn bộ thẻ tiêu đề `h1, h2, h3`, `.font-heading`, `.font-serif-luxury`.
+   - Phong cách: Sang trọng, quý phái chuẩn Spa cao cấp.
+2. **Font Nội Dung & Nhập Liệu (`font-sans`)**: *Plus Jakarta Sans* (Google Fonts)
+   - Áp dụng cho: Toàn trang (`body`), các ô input, tên khách hàng, SĐT, danh sách dịch vụ, nút bấm.
+   - Phong cách: Tròn trịa, hiện đại, sắc nét tuyệt đối trên mọi màn hình di động.
 
 ### 4.2. Hệ Thống Bo Góc (Border Radius Standards):
 - **`rounded-3xl` (24px - 28px)**: Dùng cho Thẻ Card bao ngoài lớn (`live-session-card`, `pos-form-box`, Modals).
@@ -68,4 +65,6 @@
 
 ## 6. Lịch Sử Thay Đổi & Lưu Vết (Audit Log)
 - `2026-09-02` (`v0.0.5.0`):
-- `2026-09-02` (`v0.0.5.4`): Bổ sung đầy đủ định nghĩa Font-family tokens (Literata, Plus Jakarta Sans, JetBrains Mono) vào THEME_TOKENS. Khởi tạo tài liệu đặc tả chuẩn hóa Hệ thống Giao diện & Bảng mã màu thương hiệu (Theme Tokens & Design System).
+- `2026-09-02` (`v0.0.5.4`):
+- `2026-09-02` (`v0.0.5.6`):
+- `2026-09-02` (`v0.0.5.7`): Nạp đầy đủ dải độ dày 200..900 cho Font Literata, tinh chỉnh độ đậm tiêu đề thanh thoát chuẩn Luxury Spa và áp dụng class `uppercase tracking-wider` cho các tiêu đề chính. Đính chính chính xác dự án chỉ sử dụng duy nhất 2 họ font thực tế là Literata và Plus Jakarta Sans, loại bỏ hoàn toàn tên gọi JetBrains Mono thừa. Bổ sung đầy đủ định nghĩa Font-family tokens (Literata, Plus Jakarta Sans, JetBrains Mono) vào THEME_TOKENS. Khởi tạo tài liệu đặc tả chuẩn hóa Hệ thống Giao diện & Bảng mã màu thương hiệu (Theme Tokens & Design System).
