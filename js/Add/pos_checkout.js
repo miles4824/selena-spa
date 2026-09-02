@@ -1580,15 +1580,15 @@ function renderSwapModalStaffUI() {
                   <span class="text-[10px] text-[#A39696] font-mono">/ ${targetMin}p</span>
                 </div>
 
-                <label class="inline-flex items-center gap-1 cursor-pointer text-[11px] font-semibold text-[#7E7272] hover:text-[#E58A7B] select-none">
-                  <input type="checkbox" ${isWantsEarly ? 'checked' : ''} onchange="toggleSwapStaffEarlyLeave(${idx}, this.checked)" class="rounded text-[#E58A7B] focus:ring-0 cursor-pointer">
+                <label class="inline-flex items-center gap-1.5 cursor-pointer text-xs font-bold text-[#2D2424] hover:text-[#E58A7B] select-none py-0.5">
+                  <input type="checkbox" ${isWantsEarly ? 'checked' : ''} onchange="toggleSwapStaffEarlyLeave(${idx}, this.checked)" class="w-4 h-4 rounded-md accent-[#E58A7B] cursor-pointer">
                   <span>Xong việc rời sớm</span>
                 </label>
               </div>
 
               <button type="button" onclick="triggerEarlyLeaveInSwapModal(${idx})" class="${isWantsEarly ? '' : 'hidden'} w-full py-2.5 px-3 rounded-xl border border-[#E58A7B] bg-[#FFF0EB] hover:bg-[#FFE5DC] text-[#E58A7B] font-bold text-xs flex items-center justify-center gap-1.5 transition active:scale-95 cursor-pointer">
                 <i data-lucide="log-out" class="w-3.5 h-3.5 shrink-0"></i>
-                <span>Xong Việc Rời Tour Sớm</span>
+                <span>Xác nhận xong việc</span>
               </button>
             </div>
           ` : (isMe ? `
