@@ -77,6 +77,8 @@ async function refreshDataFromGoogleSheets() {
       if (Array.isArray(payload.users) && payload.users.length > 0) setStored('users', payload.users);
       if (Array.isArray(payload.customers)) setStored('customers', payload.customers);
       if (Array.isArray(payload.receipts)) setStored('receipts', payload.receipts);
+      if (Array.isArray(payload.payroll_logs)) setStored('payroll_logs', payload.payroll_logs);
+      else if (Array.isArray(payload.tb_payroll_logs)) setStored('payroll_logs', payload.tb_payroll_logs);
       if (Array.isArray(payload.expenses)) setStored('expenses', payload.expenses);
       if (Array.isArray(payload.loyalty_cycles)) setStored('loyalty_cycles', payload.loyalty_cycles);
       if (Array.isArray(payload.vouchers)) setStored('vouchers', payload.vouchers);
