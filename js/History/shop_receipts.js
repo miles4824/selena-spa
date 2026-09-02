@@ -90,14 +90,14 @@ function loadOwnerReceiptsList(targetDate) {
       if (logsForThisReceipt.length > 0) {
         staffListHtml = logsForThisReceipt.map(p => `
           <div class="space-y-0.5 pl-2">
-            <div class="flex justify-between items-center">
-              <span class="text-[#2D2424] font-medium">• ${p.staff_name} <span class="text-[10px] text-[#A39696]">(${p.role_in_tour || 'KTV'})</span>:</span>
-              <span class="text-[#2E7D6D] font-extrabold font-mono">+${(Number(p.commission_amount) || 0).toLocaleString('vi-VN')} đ</span>
+            <div class="flex justify-between items-center gap-2 min-w-0">
+              <span class="text-[#2D2424] font-medium min-w-0 truncate">• ${p.staff_name} <span class="text-[10px] text-[#A39696]">(${p.role_in_tour || 'KTV'})</span>:</span>
+              <span class="text-[#2E7D6D] font-extrabold font-mono whitespace-nowrap shrink-0">+${(Number(p.commission_amount) || 0).toLocaleString('vi-VN')} đ</span>
             </div>
             ${Number(p.tip_amount || 0) > 0 ? `
-              <div class="flex justify-between items-center pl-3 text-[#7E7272]">
-                <span class="text-[11px] font-medium">Tip:</span>
-                <span class="text-[#E58A7B] font-extrabold text-[11px] font-mono">+${Number(p.tip_amount).toLocaleString('vi-VN')} đ</span>
+              <div class="flex justify-between items-center gap-2 pl-3 text-[#7E7272] min-w-0">
+                <span class="text-[11px] font-medium shrink-0">Tip:</span>
+                <span class="text-[#E58A7B] font-extrabold text-[11px] font-mono whitespace-nowrap shrink-0">+${Number(p.tip_amount).toLocaleString('vi-VN')} đ</span>
               </div>
             ` : ''}
           </div>
@@ -149,20 +149,22 @@ function loadOwnerReceiptsList(targetDate) {
                 <span class="text-sm font-extrabold text-[#E58A7B] whitespace-nowrap shrink-0 font-mono">${totalPaid.toLocaleString('vi-VN')} đ</span>
               </div>
 
-              <div class="flex items-center justify-between gap-1 text-[11px] text-[#7E7272] flex-wrap">
-                <div class="flex items-center gap-1.5 min-w-0">
-                  <button type="button" onclick="openOwnerCustomerEditorModal('${r.customer_phone || r.raw_phone || ''}', '${(r.customer_name || 'Khách vãng lai').replace(/'/g, "\\'")}', '${r.receipt_id || ''}')" class="inline-flex items-center gap-1 truncate text-[#2D2424] font-medium hover:text-[#E58A7B] cursor-pointer transition group" title="Bấm để chỉnh sửa thông tin khách hàng">
-                    <i data-lucide="user" class="w-3.5 h-3.5 text-[#A39696] group-hover:text-[#E58A7B] shrink-0"></i>
-                    <span class="truncate font-semibold text-[#2D2424] group-hover:text-[#E58A7B] underline decoration-dotted underline-offset-2">${r.customer_name || 'Khách vãng lai'}</span>
-                    <i data-lucide="edit-3" class="w-3 h-3 text-[#E58A7B] shrink-0 ml-0.5 opacity-80 group-hover:opacity-100"></i>
-                  </button>
-                  <span class="text-[#D4C5B9]">•</span>
-                  <span class="inline-flex items-center gap-1 font-semibold ${isCash ? 'text-[#D35400]' : 'text-[#2E7D6D]'} shrink-0">
-                    <i data-lucide="${isCash ? 'banknote' : 'qr-code'}" class="w-3 h-3"></i>
-                    ${r.payment_method || 'Chuyển khoản'}
-                  </span>
-                </div>
-                <span class="text-[10px] text-[#A39696] font-mono shrink-0 ml-auto">${r.receipt_id}</span>
+              <!-- Tên khách hàng -->
+              <div class="flex items-center gap-1.5 min-w-0 text-[11px] text-[#7E7272]">
+                <button type="button" onclick="openOwnerCustomerEditorModal('${r.customer_phone || r.raw_phone || ''}', '${(r.customer_name || 'Khách vãng lai').replace(/'/g, "\\'")}', '${r.receipt_id || ''}')" class="inline-flex items-center gap-1 truncate text-[#2D2424] font-medium hover:text-[#E58A7B] cursor-pointer transition group" title="Bấm để chỉnh sửa thông tin khách hàng">
+                  <i data-lucide="user" class="w-3.5 h-3.5 text-[#A39696] group-hover:text-[#E58A7B] shrink-0"></i>
+                  <span class="truncate font-semibold text-[#2D2424] group-hover:text-[#E58A7B] underline decoration-dotted underline-offset-2">${r.customer_name || 'Khách vãng lai'}</span>
+                  <i data-lucide="edit-3" class="w-3 h-3 text-[#E58A7B] shrink-0 ml-0.5 opacity-80 group-hover:opacity-100"></i>
+                </button>
+              </div>
+
+              <!-- Hình thức thanh toán (dưới tên khách) & Mã hóa đơn (bên phải cùng hàng) -->
+              <div class="flex justify-between items-center text-[11px] text-[#7E7272] pt-0.5">
+                <span class="inline-flex items-center gap-1 font-semibold ${isCash ? 'text-[#D35400]' : 'text-[#2E7D6D]'}">
+                  <i data-lucide="${isCash ? 'banknote' : 'qr-code'}" class="w-3 h-3"></i>
+                  ${r.payment_method || 'Chuyển khoản'}
+                </span>
+                <span class="text-[10px] text-[#A39696] font-mono">${r.receipt_id}</span>
               </div>
             </div>
 
