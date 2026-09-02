@@ -72,7 +72,7 @@ function loadOwnerReceiptsList(targetDate) {
       `;
     } else {
           html += dayReceipts.map(r => {
-      const cleanTime = formatCleanTime(r.start_time || r.time);
+      const cleanTime = formatCleanTime(r.end_time || r.start_time || r.time, r.created_at);
       const durStatus = getReceiptDurationStatus(r);
       const isCash = r.payment_method === 'Tiền mặt';
       const totalPaid = Number(r.total_paid) || ((Number(r.price) || 0) + (Number(r.tip_amount) || 0));
