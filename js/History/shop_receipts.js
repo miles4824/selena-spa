@@ -48,8 +48,8 @@ function loadOwnerReceiptsList(targetDate) {
   dateList.forEach(dKey => {
     const dayReceipts = receipts.filter(r => normalizeDateKey(r.date || r.created_at) === dKey);
     dayReceipts.sort((a, b) => {
-      const timeA = String(a.start_time || a.time || a.created_at || a.end_time || '');
-      const timeB = String(b.start_time || b.time || b.created_at || b.end_time || '');
+      const timeA = String(a.end_time || a.time || a.start_time || a.created_at || '');
+      const timeB = String(b.end_time || b.time || b.start_time || b.created_at || '');
       return timeB.localeCompare(timeA);
     });
     const formattedDateVN = formatDateVN(dKey);
