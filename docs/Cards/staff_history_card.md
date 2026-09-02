@@ -27,6 +27,7 @@ ightarrow$ Bấm vào mở `modal_staff_note.html`.
 - `2026-09-02` (`v0.0.5.9`):
 - `2026-09-02` (`v0.0.6.0`):
 - `2026-09-02` (`v0.0.6.1`):
+- `2026-09-02` (`v0.0.8.7`): Đảm bảo thứ tự KTV trong tour luôn cố định từ người nhận ca đầu tiên (Chính) đến các người phụ (Phụ).
 - `2026-09-02` (`v0.0.8.1`): Giữ Tên khách hàng, Hình thức thanh toán và Mã HD trên cùng 1 hàng với cơ chế truncate 3 chấm thông minh.
 - `2026-09-02` (`v0.0.8.0`): Tối ưu bố cục thẻ KTV: chuyển hình thức thanh toán xuống hàng riêng cùng mã HD, chống rớt chữ `đ` trên tiền tour/tip.
 - `2026-09-02` (`v0.0.7.9`): Sắp xếp danh sách thẻ lịch sử theo thứ tự thời gian giảm dần (Mới nhất hiển thị trên cùng, ca sáng sớm nằm dưới cùng).

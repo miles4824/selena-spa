@@ -2067,28 +2067,27 @@ function confirmSaveReceiptFromCheckout() {
   receipts.unshift(receipt);
   setStored('receipts', receipts);
 
-  // Tạo và lưu tức thì các bản ghi payroll_logs tương ứng vào bộ nhớ cục bộ
+  // Tạo và lưu tức thì các bản ghi payroll_logs tương ứng vào bộ nhớ cục bộ giữ nguyên thứ tự KTV
   const payrollLogs = getStored('payroll_logs', []);
-  receipt.staffs.forEach(st => {
-    payrollLogs.unshift({
-      receipt_id: receiptId,
-      date: receipt.date,
-      time: receipt.end_time || receipt.start_time,
-      customer_name: receipt.customer_name || 'Khách vãng lai',
-      customer_phone: receipt.customer_phone || '',
-      service_name: receipt.service_name,
-      staff_name: st.name,
-      staff_phone: st.phone,
-      staff_id: st.staff_id,
-      role_in_tour: st.role,
-      commission_pct: st.pct,
-      commission_amount: st.comm_vnd,
-      tip_amount: st.tip_vnd,
-      total_earned: st.comm_vnd + st.tip_vnd,
-      payment_method: receipt.payment_method,
-      created_at: receipt.created_at
-    });
-  });
+  const newReceiptLogs = receipt.staffs.map(st => ({
+    receipt_id: receiptId,
+    date: receipt.date,
+    time: receipt.end_time || receipt.start_time,
+    customer_name: receipt.customer_name || 'Khách vãng lai',
+    customer_phone: receipt.customer_phone || '',
+    service_name: receipt.service_name,
+    staff_name: st.name,
+    staff_phone: st.phone,
+    staff_id: st.staff_id,
+    role_in_tour: st.role,
+    commission_pct: st.pct,
+    commission_amount: st.comm_vnd,
+    tip_amount: st.tip_vnd,
+    total_earned: st.comm_vnd + st.tip_vnd,
+    payment_method: receipt.payment_method,
+    created_at: receipt.created_at
+  }));
+  payrollLogs.unshift(...newReceiptLogs);
   setStored('payroll_logs', payrollLogs);
 
   if (typeof fbSaveReceipt === 'function') {
