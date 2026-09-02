@@ -1543,7 +1543,7 @@ function renderSwapModalStaffUI() {
     const currentElapsedMinNow = Math.max(1, Math.min(targetMin, Math.floor(elapsedSecNow / 60) + (elapsedSecNow % 60 >= 30 ? 1 : 0)));
 
     const joinedMin = item.joined_min || 0;
-    const leftMin = item.left_early ? (item.left_min || currentElapsedMinNow) : (item.left_min && item.left_min < targetMin ? item.left_min : currentElapsedMinNow);
+    const leftMin = item.left_early ? (item.left_min || currentElapsedMinNow) : (item.left_min !== undefined ? item.left_min : targetMin);
     item.left_min = leftMin;
 
     return `
@@ -1578,14 +1578,14 @@ function renderSwapModalStaffUI() {
                 </div>
 
                 <label class="inline-flex items-center gap-1 cursor-pointer text-[11px] font-semibold text-[#7E7272] hover:text-[#E58A7B] select-none">
-                  <input type="checkbox" ${item.left_early || leftMin < targetMin ? 'checked' : ''} onchange="toggleSwapStaffEarlyLeave(${idx}, this.checked)" class="rounded text-[#E58A7B] focus:ring-0 cursor-pointer">
+                  <input type="checkbox" ${item.left_early ? 'checked' : ''} onchange="toggleSwapStaffEarlyLeave(${idx}, this.checked)" class="rounded text-[#E58A7B] focus:ring-0 cursor-pointer">
                   <span>Xong việc rời sớm</span>
                 </label>
               </div>
 
               <button type="button" onclick="triggerEarlyLeaveInSwapModal(${idx})" class="w-full py-2.5 px-3 rounded-xl border border-[#E58A7B] bg-[#FFF0EB] hover:bg-[#FFE5DC] text-[#E58A7B] font-bold text-xs flex items-center justify-center gap-1.5 transition active:scale-95 cursor-pointer">
                 <i data-lucide="log-out" class="w-3.5 h-3.5 shrink-0"></i>
-                <span>🏃 Cho KTV này xong việc rời ca ngay</span>
+                <span>Xong Việc Rời Tour Sớm</span>
               </button>
             ` : `
               <!-- Dành cho KTV Phụ: Chỉ xem cố định không cho sửa -->
@@ -1676,15 +1676,18 @@ function onSwapStaffLeftMinChange(idx, val) {
 
 function toggleSwapStaffEarlyLeave(idx, isChecked) {
   const targetMin = currentLiveSession?.duration_target_min || 50;
-  const elapsedSec = Math.max(1, Math.floor((Date.now() - currentLiveSession.start_timestamp) / 1000));
-  const elapsedMin = Math.floor(elapsedSec / 60);
+  const elapsedSec = Math.max(0, Math.floor((Date.now() - (currentLiveSession?.start_timestamp || Date.now())) / 1000));
+  const currentElapsedMin = Math.max(1, Math.min(targetMin, Math.floor(elapsedSec / 60) + (elapsedSec % 60 >= 30 ? 1 : 0)));
 
+  tempSwapStaffs[idx].left_early = isChecked;
   if (isChecked) {
-    tempSwapStaffs[idx].left_min = Math.max((tempSwapStaffs[idx].joined_min || 0) + 1, Math.min(targetMin - 1, elapsedMin));
+    tempSwapStaffs[idx].left_min = Math.max((tempSwapStaffs[idx].joined_min || 0) + 1, currentElapsedMin);
   } else {
     tempSwapStaffs[idx].left_min = targetMin;
   }
+  currentSplitMode = 'timer';
   renderSwapModalStaffUI();
+  updateSplitButtonsUI();
   updateSwapPreviewDisplay();
 }
 
