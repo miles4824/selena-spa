@@ -1582,15 +1582,13 @@ function renderSwapModalStaffUI() {
                   <span class="text-[10px] text-[#A39696] font-mono">/ ${targetMin}p</span>
                 </div>
 
-                <!-- Checkbox Style chuẩn UI hồng đào Selena -->
-                <label class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border transition-all select-none cursor-pointer ${isWantsEarly ? 'bg-[#FFF0EB] border-[#E58A7B] text-[#E58A7B] shadow-2xs' : 'bg-white border-[#E8E1D7] text-[#7E7272] hover:border-[#E58A7B]/50'}">
-                  <div class="relative flex items-center justify-center shrink-0">
+                <!-- Toggle Switch phong cách iOS sang trọng -->
+                <label class="inline-flex items-center gap-2 cursor-pointer select-none py-1">
+                  <div class="relative">
                     <input type="checkbox" ${isWantsEarly ? 'checked' : ''} onchange="toggleSwapStaffEarlyLeave(${idx}, this.checked)" class="sr-only peer">
-                    <div class="w-4 h-4 rounded border-2 flex items-center justify-center transition-all ${isWantsEarly ? 'bg-[#E58A7B] border-[#E58A7B]' : 'bg-white border-[#A39696] peer-hover:border-[#E58A7B]'}">
-                      <i data-lucide="check" class="w-3 h-3 text-white stroke-[3] ${isWantsEarly ? '' : 'hidden'}"></i>
-                    </div>
+                    <div class="w-8 h-4.5 bg-[#E8E1D7] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-3.5 peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3.5 after:w-3.5 after:transition-all peer-checked:bg-[#E58A7B] shadow-2xs"></div>
                   </div>
-                  <span class="text-xs font-bold ${isWantsEarly ? 'text-[#E58A7B]' : 'text-[#2D2424]'}">Xong việc rời sớm</span>
+                  <span class="text-xs font-bold transition-colors ${isWantsEarly ? 'text-[#E58A7B]' : 'text-[#7E7272]'}">Xong việc rời sớm</span>
                 </label>
               </div>
 
@@ -1649,7 +1647,7 @@ function renderSwapModalStaffUI() {
     `;
   }
 
-  container.innerHTML = htmlLeft + htmlActive;
+  container.innerHTML = htmlActive + htmlLeft;
 
   if (addBtn) {
     if (!canEdit) {
