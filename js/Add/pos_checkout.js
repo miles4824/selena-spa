@@ -1104,11 +1104,25 @@ function renderLiveSessionUI() {
     const isKtvPhu = Boolean(!isKtvChinh && myStaffEntry);
     const alreadyLeft = myStaffEntry && myStaffEntry.left_early;
 
+    const completeTourBtn = document.getElementById('btn-live-complete-tour');
     const leaveEarlyBtn = document.getElementById('btn-live-leave-early');
-    if (leaveEarlyBtn) {
-      if (isKtvPhu && !alreadyLeft) {
-        leaveEarlyBtn.classList.remove('hidden');
+
+    if (completeTourBtn && leaveEarlyBtn) {
+      if (isAdmin || isKtvChinh) {
+        // KTV Chính hoặc Admin: Thấy nút Hoàn Thành Tour, ẩn nút rời tour sớm
+        completeTourBtn.classList.remove('hidden');
+        leaveEarlyBtn.classList.add('hidden');
+      } else if (isKtvPhu) {
+        // KTV Phụ: Chỉ thấy nút Xong Việc Rời Tour Sớm, ẩn nút Hoàn Thành Tour
+        completeTourBtn.classList.add('hidden');
+        if (!alreadyLeft) {
+          leaveEarlyBtn.classList.remove('hidden');
+        } else {
+          leaveEarlyBtn.classList.add('hidden');
+        }
       } else {
+        // Khách hoặc nhân sự khác: Mặc định hiện nút Hoàn Thành Tour nếu có quyền
+        completeTourBtn.classList.remove('hidden');
         leaveEarlyBtn.classList.add('hidden');
       }
     }
@@ -1317,14 +1331,16 @@ function renderSwapModalStaffUI() {
         </select>
 
         ${!isFirst ? `
-          <!-- Tinh chỉnh thời gian bắt đầu của KTV phụ -->
+          <!-- Tinh chỉnh thời gian làm của KTV phụ -->
           <div class="pt-1.5 border-t border-[#F0EAE1]/80 flex items-center justify-between gap-2 text-[11px]">
             <div class="flex items-center gap-1.5">
               <span class="text-[#7E7272]">⏱️ Làm từ phút:</span>
-              <input type="number" min="0" max="${targetMin - 1}" value="${joinedMin}" onchange="onSwapStaffJoinedMinChange(${idx}, this.value)" class="w-12 text-center bg-white border border-[#E58A7B]/40 rounded-lg p-1 text-xs font-bold font-mono text-[#2D2424] focus:outline-none focus:border-[#E58A7B]">
+              <input type="number" min="0" max="${targetMin - 1}" value="${joinedMin}" onchange="onSwapStaffJoinedMinChange(${idx}, this.value)" class="w-11 text-center bg-white border border-[#E58A7B]/40 rounded-lg p-1 text-xs font-bold font-mono text-[#2D2424] focus:outline-none focus:border-[#E58A7B]">
+              <span class="text-[#7E7272]">➔</span>
+              <span class="w-11 text-center bg-white border border-[#E58A7B]/40 rounded-lg p-1 text-xs font-bold font-mono ${item.left_early ? 'text-[#D35400] bg-[#FFF0EB]' : 'text-[#E58A7B]'} inline-block">${leftMin}</span>
               <span class="text-[10px] text-[#A39696] font-mono">/ ${targetMin}p</span>
             </div>
-            ${item.left_early ? `<span class="text-[10px] font-bold text-[#D35400] bg-[#FFF0EB] px-2 py-0.5 rounded-full">Đã rời ca phút ${item.left_min}</span>` : ''}
+            ${item.left_early ? `<span class="text-[10px] font-bold text-[#D35400] bg-[#FFF0EB] px-2 py-0.5 rounded-full whitespace-nowrap">Đã rời ca</span>` : ''}
           </div>
 
           <button type="button" onclick="removeStaffInSwapModal(${idx})" title="Xóa KTV này khỏi tour" class="absolute top-2.5 right-2.5 w-6 h-6 rounded-full bg-white border border-rose-300 text-rose-500 hover:bg-rose-500 hover:text-white flex items-center justify-center cursor-pointer active:scale-90 transition">

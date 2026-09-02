@@ -31,6 +31,7 @@ ightarrow$ Lưu `start_time` và cập nhật Firebase node `active_sessions/`.
 - **Ghi vào `tb_receipts`**: Cột C (`start_time`), Cột D (`end_time`), Cột E (`duration_min`).
 
 ## 6. Lịch Sử Thay Đổi & Lưu Vết (Audit Log)
+- `2026-09-02` (`v0.0.9.0`): Phân quyền nút bấm trên màn hình đếm số: KTV Chính (hoặc Admin) thấy nút `Hoàn Thành Tour` xanh ngọc; KTV Phụ chỉ thấy nút `Xong Việc Rời Tour Sớm` màu san hô đồng bộ phong cách.
 - `2026-09-02` (`v0.0.8.8`): Bổ sung nút 'Xong việc rời tour sớm' cho KTV Phụ: tự động chốt phút rời ca, thoát màn hình đếm giờ về trang chủ và chờ KTV Chính chốt đơn tính hoa hồng + tip.
 - `2026-09-01` (`v0.0.0.1`):
 - `2026-09-02` (`v0.0.5.9`):
