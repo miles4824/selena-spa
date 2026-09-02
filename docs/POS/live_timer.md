@@ -32,6 +32,7 @@ ightarrow$ Lưu `start_time` và cập nhật Firebase node `active_sessions/`.
 
 ## 6. Lịch Sử Thay Đổi & Lưu Vết (Audit Log)
 - `2026-09-01` (`v0.0.0.1`):
-- `2026-09-02` (`v0.0.5.9`): Cập nhật tiêu đề trang động thành 'ĐANG TRONG TOUR GỘI' khi có ca chạy và thay emoji 👤 bằng SVG user icon sắc nét.
+- `2026-09-02` (`v0.0.5.9`):
+- `2026-09-02` (`v0.0.6.1`): Khắc phục triệt để lỗi gán innerText null và bảo vệ toàn diện các phần tử DOM trong renderLiveSessionUI. Cập nhật tiêu đề trang động thành 'ĐANG TRONG TOUR GỘI' khi có ca chạy và thay emoji 👤 bằng SVG user icon sắc nét.
 - `2026-09-01` (`v0.0.3.9`):
 - `2026-09-01` (`v0.0.4.3`): Thiết kế lại 3 cột thời gian chân đồng hồ (Bắt đầu và Định mức căn giữa dạng 2 tầng). Bổ sung tính năng đổi & thêm dịch vụ giữa ca kết nối với modal_edit_live_services. Bóc tách thành component độc lập.

@@ -25,4 +25,5 @@ ightarrow$ Bấm vào mở `modal_staff_note.html`.
 ## 6. Lịch Sử Thay Đổi & Lưu Vết (Audit Log)
 - `2026-09-01` (`v0.0.0.1`):
 - `2026-09-02` (`v0.0.5.9`):
-- `2026-09-02` (`v0.0.6.0`): Áp dụng chuẩn `text-2xl font-medium font-serif uppercase` cho NHẬT KÝ TOUR và ẩn nút Đồng bộ Sheet cho KTV. Chuẩn hóa tiêu đề NHẬT KÝ TOUR với font-bold font-serif uppercase tracking-wider. Bóc tách thành component độc lập và phục hồi icon sửa ghi chú khách hàng.
+- `2026-09-02` (`v0.0.6.0`):
+- `2026-09-02` (`v0.0.6.1`): Đồng bộ `font-mono` cho số phút thời lượng ca (`23p`) khớp hoàn hảo với giờ bắt đầu (`21:59`). Áp dụng chuẩn `text-2xl font-medium font-serif uppercase` cho NHẬT KÝ TOUR và ẩn nút Đồng bộ Sheet cho KTV. Chuẩn hóa tiêu đề NHẬT KÝ TOUR với font-bold font-serif uppercase tracking-wider. Bóc tách thành component độc lập và phục hồi icon sửa ghi chú khách hàng.

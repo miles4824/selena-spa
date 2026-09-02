@@ -1075,10 +1075,20 @@ function renderLiveSessionUI() {
   if (liveCard) liveCard.classList.remove('hidden');
   if (formBox) formBox.classList.add('hidden');
 
-  document.getElementById('live-service-name').innerText = currentLiveSession.service_name;
-  document.getElementById('live-customer-badge').innerText = '👤 ' + (currentLiveSession.customer_name || 'Khách vãng lai');
-  document.getElementById('live-start-time-text').innerText = currentLiveSession.start_time;
-  document.getElementById('live-target-time-text').innerText = currentLiveSession.duration_target_min + ' phút';
+  const sNameEl = document.getElementById('live-service-name');
+  if (sNameEl) sNameEl.innerText = currentLiveSession.service_name || '';
+
+  const custTextEl = document.getElementById('live-customer-name-text');
+  if (custTextEl) custTextEl.innerText = currentLiveSession.customer_name || 'Khách vãng lai';
+
+  const custBadgeEl = document.getElementById('live-customer-badge');
+  if (custBadgeEl) custBadgeEl.innerText = currentLiveSession.customer_name || 'Khách vãng lai';
+
+  const startTimeEl = document.getElementById('live-start-time-text');
+  if (startTimeEl) startTimeEl.innerText = currentLiveSession.start_time || '';
+
+  const targetTimeEl = document.getElementById('live-target-time-text');
+  if (targetTimeEl) targetTimeEl.innerText = (currentLiveSession.duration_target_min || 0) + ' phút';
 
   const chipsContainer = document.getElementById('live-staff-chips-container');
   if (chipsContainer) {
