@@ -2411,14 +2411,14 @@ function confirmSaveReceiptFromCheckout() {
     commission_amount: (s1.comm_vnd || 0) + (s1.tip_vnd || 0),
 
     start_time: currentLiveSession.start_time,
-    end_time: currentLiveSession.end_time || currentLiveSession.start_time,
+    end_time: currentLiveSession.end_time || (typeof formatCleanTime === 'function' ? formatCleanTime(new Date()) : currentLiveSession.start_time),
     duration_min: Math.round(Number(currentLiveSession.duration_actual_min || currentLiveSession.duration_target_min || 45)),
-    time: currentLiveSession.start_time,
+    time: currentLiveSession.end_time || currentLiveSession.start_time,
 
     payment_method: checkoutPaymentMethod,
     is_voucher_used: currentLiveSession.use_voucher,
-    date: currentLiveSession.date,
-    created_at: currentLiveSession.date.replace(/-/g, '/') + ' - ' + currentLiveSession.start_time
+    date: (typeof normalizeDateKey === 'function' ? normalizeDateKey(new Date()) : (currentLiveSession.date || '2026-09-03')),
+    created_at: (typeof normalizeDateKey === 'function' ? normalizeDateKey(new Date()).replace(/-/g, '/') : (currentLiveSession.date || '2026/09/03')) + ' - ' + (currentLiveSession.end_time || currentLiveSession.start_time)
   };
 
   const receipts = getStored('receipts', []);
@@ -2508,13 +2508,18 @@ function confirmSaveReceiptFromCheckout() {
   renderExtraStaffUI();
   updatePOSStaffInfo();
 
-  // Tự động chuyển ngay về tab History và làm mới toàn bộ dữ liệu
+  // Tự động chuyển ngay về tab History và làm mới toàn bộ dữ liệu tức thì không cần F5
   if (typeof showView === 'function') {
     showView('history');
   }
   if (typeof refreshAllActiveViews === 'function') {
     refreshAllActiveViews();
   }
+  setTimeout(() => {
+    if (typeof refreshAllActiveViews === 'function') refreshAllActiveViews();
+    if (typeof loadAdminReceiptsList === 'function') loadAdminReceiptsList();
+    if (typeof loadStaffHistoryList === 'function') loadStaffHistoryList();
+  }, 80);
 }
 
 
