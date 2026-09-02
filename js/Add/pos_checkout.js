@@ -1684,7 +1684,7 @@ function renderDynamicTipInputs() {
             <span class="text-[#2D2424]">KTV ${idx + 1}:</span>
             <span>${s.name}</span>
           </span>
-          <span class="text-xs font-extrabold text-[#2E7D6D] bg-[#E8F8F5] px-2 py-0.5 rounded-full">
+          <span class="text-xs font-extrabold text-[#2E7D6D] bg-[#E8F8F5] px-2 py-0.5 rounded-full font-mono">
             Tour: +${commVnd.toLocaleString('vi-VN')} đ
           </span>
         </div>
@@ -1696,7 +1696,7 @@ function renderDynamicTipInputs() {
 
         <div class="flex flex-wrap gap-1.5 pt-0.5">
           ${quickAmounts.map(amt => `
-            <button type="button" onclick="setDynamicQuickTip('${s.phone}', ${amt})" class="px-2.5 py-1 rounded-lg text-xs font-bold ${amt === 0 ? 'bg-white text-[#7E7272] border border-[#EFE8DF]' : 'bg-[#FFF0EB] text-[#E58A7B] border border-[#FCDFD7] hover:bg-[#FFE5DC]'} transition active:scale-95 cursor-pointer ">
+            <button type="button" onclick="setDynamicQuickTip('${s.phone}', ${amt})" class="px-2.5 py-1 rounded-lg text-xs font-bold font-mono ${amt === 0 ? 'bg-white text-[#7E7272] border border-[#EFE8DF]' : 'bg-[#FFF0EB] text-[#E58A7B] border border-[#FCDFD7] hover:bg-[#FFE5DC]'} transition active:scale-95 cursor-pointer ">
               ${amt === 0 ? '0 đ' : `+${amt >= 1000 ? (amt/1000) + 'k' : amt}`}
             </button>
           `).join('')}
@@ -1792,7 +1792,7 @@ function updateCheckoutGrandTotal() {
       return `
         <div class="flex justify-between items-center text-xs font-bold text-[#2D2424]">
           <span>${s.name}:</span>
-          <span class="text-[#2E7D6D]">Tour +${commVnd.toLocaleString('vi-VN')} đ ${tipVnd > 0 ? `<span class="text-[#E58A7B]">(Tip +${tipVnd.toLocaleString('vi-VN')} đ)</span>` : ''}</span>
+          <span class="text-[#2E7D6D] font-mono">Tour +${commVnd.toLocaleString('vi-VN')} đ ${tipVnd > 0 ? `<span class="text-[#E58A7B] font-mono">(Tip +${tipVnd.toLocaleString('vi-VN')} đ)</span>` : ''}</span>
         </div>
       `;
     }).join('');
