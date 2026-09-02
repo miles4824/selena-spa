@@ -1390,7 +1390,14 @@ function openSwapStaffModal(isLeaveEarlyMode = false) {
     ]).map(s => ({ ...s }));
   }
 
-  const isMainStaff = tempSwapStaffs.length > 0 && normalizePhone(tempSwapStaffs[0].phone) === myPhone;
+  const myId = (cUser && (cUser.staff_id || cUser.user_id)) ? String(cUser.staff_id || cUser.user_id).trim() : '';
+  const firstStaff = (tempSwapStaffs && tempSwapStaffs.length > 0) ? tempSwapStaffs[0] : null;
+  const isMainStaff = firstStaff && (
+    (firstStaff.phone && normalizePhone(firstStaff.phone) === myPhone) ||
+    (firstStaff.staff_id && String(firstStaff.staff_id).trim() === myId) ||
+    (currentLiveSession && currentLiveSession.staff_1_phone && normalizePhone(currentLiveSession.staff_1_phone) === myPhone) ||
+    (currentLiveSession && currentLiveSession.active_staff_phone && normalizePhone(currentLiveSession.active_staff_phone) === myPhone)
+  );
   const isPhu = !isMainStaff && !isAdmin;
 
   // Cập nhật giao diện Header và Nút bấm Footer
@@ -1481,9 +1488,18 @@ function renderSwapModalStaffUI() {
   const users = getSortedUsersList();
   const cUser = (typeof currentUser !== 'undefined' && currentUser) ? currentUser : null;
   const myPhone = (cUser && cUser.phone) ? normalizePhone(cUser.phone) : '';
-  const isOwner = cUser ? (typeof isUserOwner === 'function' ? isUserOwner(cUser) : (cUser.role === 'admin' || cUser.role === 'owner')) : false;
-  const isMainStaff = tempSwapStaffs.length > 0 && normalizePhone(tempSwapStaffs[0].phone) === myPhone;
-  const canEdit = isOwner || isMainStaff;
+  const myId = (cUser && (cUser.staff_id || cUser.user_id)) ? String(cUser.staff_id || cUser.user_id).trim() : '';
+  const isOwner = cUser ? (typeof isUserOwner === 'function' ? isUserOwner(cUser) : (cUser.role === 'admin' || cUser.role === 'owner' || cUser.role === 'chủ tiệm' || cUser.role === 'chủ sáng lập')) : false;
+
+  const firstStaff = (tempSwapStaffs && tempSwapStaffs.length > 0) ? tempSwapStaffs[0] : null;
+  const isMainStaff = firstStaff && (
+    (firstStaff.phone && normalizePhone(firstStaff.phone) === myPhone) ||
+    (firstStaff.staff_id && String(firstStaff.staff_id).trim() === myId) ||
+    (currentLiveSession && currentLiveSession.staff_1_phone && normalizePhone(currentLiveSession.staff_1_phone) === myPhone) ||
+    (currentLiveSession && currentLiveSession.active_staff_phone && normalizePhone(currentLiveSession.active_staff_phone) === myPhone)
+  );
+
+  const canEdit = Boolean(isOwner || isMainStaff);
 
   const targetMin = currentLiveSession?.duration_target_min || 50;
 
