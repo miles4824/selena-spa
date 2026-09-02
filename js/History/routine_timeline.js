@@ -208,7 +208,7 @@ function loadStaffHistoryList(targetDate) {
               ` : ''}
               <div class="flex justify-between items-center text-[#7E7272]">
                 <span>Tiền tour:</span>
-                <span class="text-[#2E7D6D] font-extrabold">+${myComm.toLocaleString('vi-VN')} đ</span>
+                <span class="text-[#2E7D6D] font-extrabold font-mono">+${myComm.toLocaleString('vi-VN')} đ</span>
               </div>
               ${myTip > 0 ? `
                 <div class="flex justify-between items-center text-[#E58A7B] font-bold pt-0.5 border-t border-[#F0EAE1]">
@@ -216,7 +216,7 @@ function loadStaffHistoryList(targetDate) {
                     <i data-lucide="gift" class="w-3.5 h-3.5 text-[#E58A7B]"></i>
                     <span>Tiền tip:</span>
                   </span>
-                  <span class="font-extrabold">+${myTip.toLocaleString('vi-VN')} đ</span>
+                  <span class="font-extrabold font-mono">+${myTip.toLocaleString('vi-VN')} đ</span>
                 </div>
               ` : ''}
             </div>

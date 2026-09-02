@@ -87,12 +87,12 @@ function loadOwnerReceiptsList(targetDate) {
           <div class="space-y-0.5 pl-2">
             <div class="flex justify-between items-center">
               <span class="text-[#2D2424] font-medium">• ${p.staff_name} <span class="text-[10px] text-[#A39696]">(${p.role_in_tour || 'KTV'})</span>:</span>
-              <span class="text-[#2E7D6D] font-extrabold">+${(Number(p.commission_amount) || 0).toLocaleString('vi-VN')} đ</span>
+              <span class="text-[#2E7D6D] font-extrabold font-mono">+${(Number(p.commission_amount) || 0).toLocaleString('vi-VN')} đ</span>
             </div>
             ${Number(p.tip_amount || 0) > 0 ? `
               <div class="flex justify-between items-center pl-3 text-[#7E7272]">
                 <span class="text-[11px] font-medium">Tip:</span>
-                <span class="text-[#E58A7B] font-extrabold text-[11px]">+${Number(p.tip_amount).toLocaleString('vi-VN')} đ</span>
+                <span class="text-[#E58A7B] font-extrabold text-[11px] font-mono">+${Number(p.tip_amount).toLocaleString('vi-VN')} đ</span>
               </div>
             ` : ''}
           </div>
@@ -122,12 +122,12 @@ function loadOwnerReceiptsList(targetDate) {
             <div class="space-y-0.5 pl-2">
               <div class="flex justify-between items-center">
                 <span class="text-[#2D2424] font-medium">• ${sName}:</span>
-                <span class="text-[#2E7D6D] font-extrabold">+${sComm.toLocaleString('vi-VN')} đ</span>
+                <span class="text-[#2E7D6D] font-extrabold font-mono">+${sComm.toLocaleString('vi-VN')} đ</span>
               </div>
               ${sTip > 0 ? `
                 <div class="flex justify-between items-center pl-3 text-[#7E7272]">
                   <span class="text-[11px] font-medium">Tip:</span>
-                  <span class="text-[#E58A7B] font-extrabold text-[11px]">+${sTip.toLocaleString('vi-VN')} đ</span>
+                  <span class="text-[#E58A7B] font-extrabold text-[11px] font-mono">+${sTip.toLocaleString('vi-VN')} đ</span>
                 </div>
               ` : ''}
             </div>
@@ -146,7 +146,7 @@ function loadOwnerReceiptsList(targetDate) {
             <div class="space-y-1">
               <div class="flex justify-between items-center gap-2">
                 <h4 class="font-bold text-[#2D2424] text-sm truncate">${r.service_name}</h4>
-                <span class="text-sm font-extrabold text-[#E58A7B] whitespace-nowrap shrink-0">${totalPaid.toLocaleString('vi-VN')} đ</span>
+                <span class="text-sm font-extrabold text-[#E58A7B] whitespace-nowrap shrink-0 font-mono">${totalPaid.toLocaleString('vi-VN')} đ</span>
               </div>
 
               <div class="flex items-center justify-between gap-1 text-[11px] text-[#7E7272] flex-wrap">
