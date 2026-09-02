@@ -22,4 +22,5 @@ ightarrow$ Bấm vào mở `modal_owner_customer.html` (Toàn quyền sửa).
 - **Bảng Google Sheets**: `tb_receipts` (16 cột) & `tb_payroll_logs` (19 cột).
 
 ## 6. Lịch Sử Thay Đổi & Lưu Vết (Audit Log)
+- `2026-09-02` (`v0.0.6.2`): Áp dụng chuẩn font-mono JetBrains Mono cho toàn bộ số tiền doanh thu và tip.
 - `2026-09-01` (`v0.0.0.1`): Gắn nút sửa thông tin khách hàng trực tiếp trên tên khách.
