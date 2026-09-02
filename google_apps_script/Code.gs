@@ -1506,7 +1506,7 @@ function syncAllData(params) {
 
   const defaultKeys = [
     ['ph_phone', '0799625591', 'Placeholder ô nhập số điện thoại'],
-    ['ph_customer_name', 'VD: Chị Ngân Ngân', 'Placeholder ô nhập tên khách hàng'],
+    ['ph_customer_name', 'Tên khách hàng', 'Placeholder ô nhập tên khách hàng'],
     ['ph_notes', 'Ghi chú chi tiết sở thích hoặc lưu ý về khách...', 'Placeholder ô ghi chú sở thích'],
     ['opt_birth_month', '-- Tháng --', 'Chữ mặc định của dropdown tháng sinh'],
     ['opt_select_service', '-- Chọn thêm dịch vụ / sản phẩm --', 'Chữ mặc định của dropdown chọn dịch vụ POS'],
@@ -1533,7 +1533,7 @@ function syncAllData(params) {
     bank_account_no: '0912345678',
     bank_account_name: 'SELENA SPA',
     ph_phone: '0799625591',
-    ph_customer_name: 'VD: Chị Ngân Ngân',
+    ph_customer_name: 'Tên khách hàng',
     ph_notes: 'Ghi chú chi tiết sở thích hoặc lưu ý về khách...',
     opt_birth_month: '-- Tháng --',
     opt_select_service: '-- Chọn thêm dịch vụ / sản phẩm --',
