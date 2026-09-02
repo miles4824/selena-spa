@@ -33,6 +33,7 @@ ightarrow$ Cập nhật mảng KTV phục vụ của ca trên Firebase.
 - **Hàm Backend GAS phụ trách**: `createReceipt(params)` ghi nhận từng dòng KTV tương ứng.
 
 ## 6. Lịch Sử Thay Đổi & Lưu Vết (Audit Log)
+- `2026-09-03` (`v0.1.1.7`): Khắc phục triệt để lỗi ReferenceError `activeStaffItems` trong hàm `renderSwapModalStaffUI` khi kiểm tra điều kiện hiển thị nút thêm KTV.
 - `2026-09-03` (`v0.1.1.6`): Hiển thị toàn bộ danh sách thẻ KTV theo đúng dòng thời gian tuần tự (Chặng 2 nằm dưới cùng sau chặng 1); checkbox sử dụng ô vuông màu `#E58A7B` với dấu checkmark màu trắng sắc nét `text-white stroke-[3.5]` theo đúng hình mẫu.
 - `2026-09-03` (`v0.1.1.5`): Sử dụng Checkbox nguyên bản chuẩn giao diện phẳng, phủ màu hồng đào thương hiệu Selena (`accent-[#E58A7B]`), tinh gọn, trực quan và tiện dụng trên mọi thiết bị.
 - `2026-09-03` (`v0.1.1.4`): Đưa danh sách KTV đang làm `htmlActive` lên đầu và khối `KTV ĐÃ RỜI CA` xuống dưới các KTV đang làm; nâng cấp nút bật tắt `Xong việc rời sớm` sang dạng Toggle Switch phong cách iOS cao cấp, mượt mà và sang trọng.

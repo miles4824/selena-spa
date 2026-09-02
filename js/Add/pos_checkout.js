@@ -1638,8 +1638,8 @@ function renderSwapModalStaffUI() {
     if (!canEdit) {
       addBtn.classList.add('hidden');
     } else {
-      const activePhones = activeStaffItems.map(x => normalizePhone(x.item.phone));
-      if (activePhones.length >= users.length) {
+      const currentlyActivePhones = tempSwapStaffs.filter(s => !s.left_early).map(s => normalizePhone(s.phone));
+      if (currentlyActivePhones.length >= users.length) {
         addBtn.classList.add('hidden');
       } else {
         addBtn.classList.remove('hidden');
