@@ -1582,13 +1582,10 @@ function renderSwapModalStaffUI() {
                   <span class="text-[10px] text-[#A39696] font-mono">/ ${targetMin}p</span>
                 </div>
 
-                <!-- Toggle Switch phong cách iOS sang trọng -->
-                <label class="inline-flex items-center gap-2 cursor-pointer select-none py-1">
-                  <div class="relative">
-                    <input type="checkbox" ${isWantsEarly ? 'checked' : ''} onchange="toggleSwapStaffEarlyLeave(${idx}, this.checked)" class="sr-only peer">
-                    <div class="w-8 h-4.5 bg-[#E8E1D7] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-3.5 peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3.5 after:w-3.5 after:transition-all peer-checked:bg-[#E58A7B] shadow-2xs"></div>
-                  </div>
-                  <span class="text-xs font-bold transition-colors ${isWantsEarly ? 'text-[#E58A7B]' : 'text-[#7E7272]'}">Xong việc rời sớm</span>
+                <!-- Checkbox chuẩn nét cao cấp Selena -->
+                <label class="inline-flex items-center gap-1.5 cursor-pointer select-none py-1 group">
+                  <input type="checkbox" ${isWantsEarly ? 'checked' : ''} onchange="toggleSwapStaffEarlyLeave(${idx}, this.checked)" class="w-4 h-4 rounded text-[#E58A7B] accent-[#E58A7B] cursor-pointer">
+                  <span class="text-xs font-bold transition-colors ${isWantsEarly ? 'text-[#E58A7B]' : 'text-[#7E7272] group-hover:text-[#E58A7B]'}">Xong việc rời sớm</span>
                 </label>
               </div>
 
