@@ -243,7 +243,8 @@ function getValidatedMenu() {
     menu = DEFAULT_MENU;
     setStored('menu', DEFAULT_MENU);
   }
-  return menu;
+  // Đảm bảo thứ tự xuất hiện đúng 100% theo dòng trên Google Sheet
+  return [...menu].sort((a, b) => (Number(a.sort_order) || 999) - (Number(b.sort_order) || 999));
 }
 
 // Helper tìm đúng combo 1, 2, 3, 4, 5 dựa theo tên hoặc ID từ Google Sheets
@@ -356,6 +357,7 @@ function getGroupedMenuItems(availableItems) {
     });
 
     if (groupItems.length > 0) {
+      groupItems.sort((a, b) => (Number(a.sort_order) || 999) - (Number(b.sort_order) || 999));
       groupItems.forEach(item => matchedItemIds.add(item.service_id));
       groupsMap.set(cat.category_id, {
         title: cat.category_name,
@@ -383,6 +385,59 @@ function getGroupedMenuItems(availableItems) {
 }
 window.getGroupedMenuItems = getGroupedMenuItems;
 
+// =============================================================
+// QUẢN LÝ TÌM KIẾM NHANH MENU DỊCH VỤ (POS & MODAL)
+// =============================================================
+let posMenuSearchQuery = '';
+let modalMenuSearchQuery = '';
+
+function normalizeSearchText(str) {
+  return String(str || '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/đ/g, 'd')
+    .trim();
+}
+
+function onPOSMenuSearchInput(val) {
+  posMenuSearchQuery = String(val || '');
+  const clearBtn = document.getElementById('btn-clear-pos-menu-search');
+  if (clearBtn) {
+    if (posMenuSearchQuery) clearBtn.classList.remove('hidden');
+    else clearBtn.classList.add('hidden');
+  }
+  renderMenuDropdown();
+}
+
+function clearPOSMenuSearch() {
+  posMenuSearchQuery = '';
+  const input = document.getElementById('pos-menu-search-input');
+  if (input) input.value = '';
+  const clearBtn = document.getElementById('btn-clear-pos-menu-search');
+  if (clearBtn) clearBtn.classList.add('hidden');
+  renderMenuDropdown();
+}
+
+function onModalMenuSearchInput(val) {
+  modalMenuSearchQuery = String(val || '');
+  const clearBtn = document.getElementById('btn-clear-modal-menu-search');
+  if (clearBtn) {
+    if (modalMenuSearchQuery) clearBtn.classList.remove('hidden');
+    else clearBtn.classList.add('hidden');
+  }
+  renderModalMenuDropdown();
+}
+
+function clearModalMenuSearch() {
+  modalMenuSearchQuery = '';
+  const input = document.getElementById('modal-menu-search-input');
+  if (input) input.value = '';
+  const clearBtn = document.getElementById('btn-clear-modal-menu-search');
+  if (clearBtn) clearBtn.classList.add('hidden');
+  renderModalMenuDropdown();
+}
+
 function renderMenuDropdown() {
   const itemsContainer = document.getElementById('pos-custom-dropdown-items');
   const placeholderEl = document.getElementById('pos-dropdown-placeholder-text');
@@ -394,7 +449,17 @@ function renderMenuDropdown() {
   const optSelectText = customConfig.opt_select_service || uiConfig.opt_select_service || '-- Chọn thêm dịch vụ / sản phẩm --';
   const optAllSelectedText = customConfig.opt_select_service_all_selected || uiConfig.opt_select_service_all_selected || '-- Tất cả dịch vụ đã được chọn --';
 
-  const availableItems = menu.filter(m => !selectedIds.has(m.service_id));
+  let availableItems = menu.filter(m => !selectedIds.has(m.service_id));
+
+  if (posMenuSearchQuery) {
+    const q = normalizeSearchText(posMenuSearchQuery);
+    availableItems = availableItems.filter(m => {
+      const name = normalizeSearchText(m.service_name);
+      const id = normalizeSearchText(m.service_id);
+      const cat = normalizeSearchText(m.category || m.category_id);
+      return name.includes(q) || id.includes(q) || cat.includes(q);
+    });
+  }
 
   if (placeholderEl) {
     placeholderEl.innerHTML = `
@@ -2985,7 +3050,17 @@ function renderModalMenuDropdown() {
   const menu = getValidatedMenu();
   const selectedIds = new Set(modalTempCartItems.map(item => item.service_id));
 
-  const availableItems = menu.filter(m => !selectedIds.has(m.service_id));
+  let availableItems = menu.filter(m => !selectedIds.has(m.service_id));
+
+  if (posMenuSearchQuery) {
+    const q = normalizeSearchText(posMenuSearchQuery);
+    availableItems = availableItems.filter(m => {
+      const name = normalizeSearchText(m.service_name);
+      const id = normalizeSearchText(m.service_id);
+      const cat = normalizeSearchText(m.category || m.category_id);
+      return name.includes(q) || id.includes(q) || cat.includes(q);
+    });
+  }
 
   if (!itemsContainer) return;
 

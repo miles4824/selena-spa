@@ -80,7 +80,7 @@ function parseBirthMonth(val) {
   return 0;
 }
 
-const APP_VERSION = 'v0.1.3.0';
+const APP_VERSION = 'v0.1.3.1';
 // =============================================================
 // SELENA SPA - GLOBAL CONFIG & CONSTANTS
 // =============================================================
@@ -104,12 +104,12 @@ const DEFAULT_USERS = [
 
 const DEFAULT_MENU = [
   // 1. Combo Gội Chính
-  { service_id: 'CB_BE', service_name: 'Combo Bé', price: 45000, duration_min: 30, cosmetics_cost: 4500, commission_type: 'fixed', commission_value: 4500, is_active: true },
-  { service_id: 'CB_01', service_name: 'Combo 1', price: 64000, duration_min: 50, cosmetics_cost: 6400, commission_type: 'fixed', commission_value: 6400, is_active: true },
-  { service_id: 'CB_02', service_name: 'Combo 2', price: 109000, duration_min: 75, cosmetics_cost: 10000, commission_type: 'fixed', commission_value: 11000, is_active: true },
-  { service_id: 'CB_03', service_name: 'Combo 3', price: 139000, duration_min: 85, cosmetics_cost: 14000, commission_type: 'fixed', commission_value: 14000, is_active: true },
-  { service_id: 'CB_04', service_name: 'Combo 4', price: 179000, duration_min: 95, cosmetics_cost: 18000, commission_type: 'fixed', commission_value: 18000, is_active: true },
-  { service_id: 'CB_05', service_name: 'Combo 5', price: 219000, duration_min: 110, cosmetics_cost: 22000, commission_type: 'fixed', commission_value: 22000, is_active: true },
+  { service_id: 'CB_BE', service_name: 'Combo Bé', sort_order: 1, price: 45000, duration_min: 30, cosmetics_cost: 4500, commission_type: 'fixed', commission_value: 4500, is_active: true },
+  { service_id: 'CB_01', service_name: 'Combo 1', sort_order: 2, price: 64000, duration_min: 50, cosmetics_cost: 6400, commission_type: 'fixed', commission_value: 6400, is_active: true },
+  { service_id: 'CB_02', service_name: 'Combo 2', sort_order: 3, price: 109000, duration_min: 75, cosmetics_cost: 10000, commission_type: 'fixed', commission_value: 11000, is_active: true },
+  { service_id: 'CB_03', service_name: 'Combo 3', sort_order: 4, price: 139000, duration_min: 85, cosmetics_cost: 14000, commission_type: 'fixed', commission_value: 14000, is_active: true },
+  { service_id: 'CB_04', service_name: 'Combo 4', sort_order: 5, price: 179000, duration_min: 95, cosmetics_cost: 18000, commission_type: 'fixed', commission_value: 18000, is_active: true },
+  { service_id: 'CB_05', service_name: 'Combo 5', sort_order: 6, price: 219000, duration_min: 110, cosmetics_cost: 22000, commission_type: 'fixed', commission_value: 22000, is_active: true },
 
   // 2. Làm Thêm / Da Đầu
   { service_id: 'DV_TM01', service_name: 'Tẩy tế bào chết da đầu', price: 30000, duration_min: 15, cosmetics_cost: 3000, commission_type: 'fixed', commission_value: 3000, is_active: true },

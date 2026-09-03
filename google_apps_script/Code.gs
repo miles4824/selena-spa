@@ -412,6 +412,7 @@ function getMenuList() {
         cosmetics_cost: cosmetics,
         commission_type: commType,
         commission_value: commVal,
+        sort_order: i,
         is_active: true
       });
     }
@@ -1304,6 +1305,7 @@ function syncAllData(params) {
         cosmetics_cost: cosmetics,
         commission_type: commType,
         commission_value: commVal,
+        sort_order: i,
         is_active: true
       });
     }

@@ -253,7 +253,9 @@ function setupRealtimeListeners() {
   fbDb.ref('menu').on('value', snapshot => {
     const data = snapshot.val();
     if (data) {
-      setStored('menu', Object.values(data));
+      const arr = Object.values(data);
+      arr.sort((a, b) => (Number(a.sort_order) || 999) - (Number(b.sort_order) || 999));
+      setStored('menu', arr);
       if (typeof initMenuUI === 'function') initMenuUI();
     }
   });
@@ -384,7 +386,12 @@ async function fbSyncAllFromSheets(payload) {
 
     if (Array.isArray(payload.menu) && payload.menu.length > 0) {
       const menuObj = {};
-      payload.menu.forEach(m => { if (m.service_id) menuObj[m.service_id] = m; });
+      payload.menu.forEach((m, idx) => {
+        if (m.service_id) {
+          if (!m.sort_order) m.sort_order = idx + 1;
+          menuObj[m.service_id] = m;
+        }
+      });
       updates['menu'] = menuObj;
     }
 

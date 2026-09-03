@@ -147,9 +147,19 @@
             </div>
           </div>
 
-          <!-- POPOVER MENU THẢ XUỐNG SANG TRỌNG -->
-          <div id="pos-custom-dropdown-popover" class="hidden absolute left-0 right-0 top-full mt-2 bg-white border border-[#EFE8DF] rounded-2xl shadow-2xl ring-1 ring-black/5 z-50 overflow-hidden max-h-64 overflow-y-auto animate-in fade-in zoom-in-95">
-            <div id="pos-custom-dropdown-items" class="p-2 space-y-1"></div>
+          <!-- POPOVER MENU THẢ XUỐNG SANG TRỌNG CÓ TÌM KIẾM -->
+          <div id="pos-custom-dropdown-popover" class="hidden absolute left-0 right-0 top-full mt-2 bg-white border border-[#EFE8DF] rounded-2xl shadow-2xl ring-1 ring-black/5 z-50 overflow-hidden flex flex-col animate-in fade-in zoom-in-95">
+            <!-- Ô TÌM KIẾM NHANH -->
+            <div class="p-2 border-b border-[#F5EFE9] bg-[#FAF6F1]/90 sticky top-0 z-20" onclick="event.stopPropagation()">
+              <div class="relative flex items-center">
+                <i data-lucide="search" class="w-3.5 h-3.5 text-[#A39696] absolute left-2.5 pointer-events-none"></i>
+                <input type="text" id="pos-menu-search-input" oninput="onPOSMenuSearchInput(this.value)" placeholder="Tìm kiếm nhanh dịch vụ, combo, mỹ phẩm..." class="w-full pl-8 pr-7 py-2 text-xs bg-white border border-[#EFE8DF] rounded-xl text-[#2D2424] placeholder:text-[#A39696] focus:outline-none focus:border-[#E58A7B] focus:ring-1 focus:ring-[#E58A7B]/30 font-medium transition" autocomplete="off" />
+                <button type="button" id="btn-clear-pos-menu-search" onclick="clearPOSMenuSearch()" class="hidden absolute right-2 text-[#A39696] hover:text-[#E58A7B] p-0.5 cursor-pointer">
+                  <i data-lucide="x" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+            </div>
+            <div id="pos-custom-dropdown-items" class="p-2 space-y-1 max-h-64 overflow-y-auto"></div>
           </div>
         </div>
 
