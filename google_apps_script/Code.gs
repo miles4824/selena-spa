@@ -308,21 +308,38 @@ function getMenuList() {
 
   for (let i = 1; i < data.length; i++) {
     let row = data[i];
-    let id = String(getCell(row, colMap, ['service_id', 'combo_id']));
-    let name = String(getCell(row, colMap, ['service_name', 'ten_combo', 'name']));
+    let id = String(getCell(row, colMap, ['service_id', 'combo_id', 'id', 'ma_dich_vu'])).trim();
+    let name = String(getCell(row, colMap, ['service_name', 'ten_combo', 'name', 'ten_dich_vu'])).trim();
     if (id && name) {
-      let price = Number(getCell(row, colMap, ['price', 'gia'], 0)) || 0;
-      let duration = Number(getCell(row, colMap, ['duration_min', 'thoi_gian'], 30)) || 30;
-      let cosmetics = Number(getCell(row, colMap, ['cosmetics_cost', 'my_pham'], 0)) || 0;
-      let commVal = Number(getCell(row, colMap, ['commission_value', 'hoa_hong'], price * 0.1)) || (price * 0.1);
+      let activeVal = getCell(row, colMap, ['is_active', 'active', 'trang_thai'], true);
+      let isActive = !(activeVal === false || String(activeVal).toLowerCase() === 'false');
+      if (!isActive) continue;
+
+      let rawPrice = String(getCell(row, colMap, ['price', 'gia'], 0));
+      let price = Number(rawPrice.replace(/[^0-9]/g, '')) || 0;
+
+      let rawDur = String(getCell(row, colMap, ['duration_min', 'thoi_gian'], 30));
+      let duration = Number(rawDur.replace(/[^0-9]/g, '')) || 30;
+
+      let rawCosmetics = String(getCell(row, colMap, ['cosmetics_cost', 'my_pham'], 0));
+      let cosmetics = Number(rawCosmetics.replace(/[^0-9]/g, '')) || 0;
+
+      let commType = String(getCell(row, colMap, ['commission_type', 'loai_hoa_hong'], 'fixed')).trim();
+      let rawCommVal = String(getCell(row, colMap, ['commission_value', 'hoa_hong'], price * 0.1));
+      let commVal = Number(rawCommVal.replace(/[^0-9]/g, '')) || (price * 0.1);
+
+      let category = String(getCell(row, colMap, ['category', 'hang_muc', 'phan_loai', 'nhom_dich_vu', 'nhom', 'loai'], '')).trim();
 
       menu.push({
         service_id: id,
         service_name: name,
+        category: category,
         price: price,
         duration_min: duration,
         cosmetics_cost: cosmetics,
-        commission_value: commVal
+        commission_type: commType,
+        commission_value: commVal,
+        is_active: true
       });
     }
   }
@@ -1189,9 +1206,12 @@ function syncAllData(params) {
       let rawCommVal = String(getCell(r, colMapM, ['commission_value', 'hoa_hong'], price * 0.1));
       let commVal = Number(rawCommVal.replace(/[^0-9]/g, '')) || (price * 0.1);
 
+      let category = String(getCell(r, colMapM, ['category', 'hang_muc', 'phan_loai', 'nhom_dich_vu', 'nhom', 'loai'], '')).trim();
+
       menu.push({
         service_id: id,
         service_name: name,
+        category: category,
         price: price,
         duration_min: duration,
         cosmetics_cost: cosmetics,
