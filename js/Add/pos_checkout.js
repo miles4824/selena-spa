@@ -642,7 +642,13 @@ function updateStaff1CommissionPreview() {
   const totalPrice = selectedCartItems.reduce((sum, item) => sum + (Number(item.price) || 0), 0);
   const totalStaffCount = 1 + (extraStaffList ? extraStaffList.length : 0);
   const staff1Pct = Math.round(100 / totalStaffCount);
-  const commValue = Math.round((totalPrice * 0.1) * (staff1Pct / 100));
+
+  const s1Phone = document.getElementById('pos-staff1-select')?.value || (currentUser?.phone);
+  const users = (typeof getSortedUsersList === 'function') ? getSortedUsersList() : [];
+  const staffObj = users.find(u => normalizePhone(u.phone) === normalizePhone(s1Phone)) || currentUser;
+  const rate = (staffObj && parsePercentage(staffObj.commission_rate) > 0) ? parsePercentage(staffObj.commission_rate) : 10;
+
+  const commValue = Math.round(totalPrice * (rate / 100) * (staff1Pct / 100));
   commEl.innerText = `+${commValue.toLocaleString('vi-VN')} đ (${staff1Pct}%)`;
 }
 
@@ -751,6 +757,10 @@ function updatePOSCalculations() {
   const totalDurationEl = document.getElementById('pos-cart-total-duration');
   if (totalPriceEl) totalPriceEl.innerText = `${totalPrice.toLocaleString('vi-VN')} đ`;
   if (totalDurationEl) totalDurationEl.innerText = `${totalDuration} phút`;
+
+  // Cập nhật ngay lập tức badge hoa hồng màu xanh của nhân viên khi thay đổi dịch vụ
+  updateStaff1CommissionPreview();
+  renderExtraStaffUI();
 }
 
 
