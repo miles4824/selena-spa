@@ -188,6 +188,7 @@ Nhằm đảm bảo giao diện thống nhất $100\%$ giữa Admin và Staff, d
      + `app_button.js`: Nút bấm hành động toàn app (`AppButton`).
      + `stat_card.js`: Thẻ số liệu & thành tích (`StatCard`).
      + `status_badge.js`: Huy hiệu trạng thái Sẵn sàng / Trong tour (`StatusBadge`).
+     + `app_title.js`: Chuẩn hóa kiểu dáng tiêu đề toàn hệ thống (`AppTitle`).
      + `role_badge.js`: Huy hiệu vai trò Chủ tiệm / KTV (`RoleBadge`).
      + `bed_card.js`: Thẻ giám sát giường trực tiếp (`BedCard`).
      + `home_banner.js`: Khung banner chào đón (`HomeBanner`).
@@ -197,10 +198,14 @@ Nhằm đảm bảo giao diện thống nhất $100\%$ giữa Admin và Staff, d
 2. **Nguyên Tắc Phân Tách Trách Nhiệm (Decoupling Giao Diện vs Dữ Liệu/Hành Động)**:
    - **Component chỉ quản lý GIAO DIỆN**: Màu sắc Tailwind 4, bo góc, hiệu ứng hover/active, bóng đổ, icon.
    - **Nơi gọi component truyền vào DỮ LIỆU & HÀNH ĐỘNG**:
-     + `text`: Câu chữ hiển thị (tiếng Việt, tiếng Anh, hoặc động từ `tb_config`).
+     + `text` hoặc `configKey`: Câu chữ hiển thị (gõ trực tiếp hoặc lấy tự động từ `tb_config` trên Google Sheets).
      + `onClick`: Hành động khi bấm (hàm chuyển tab `showView`, mở modal, thanh toán...).
-     + `variant` / `color` / `size`: Chọn biến thể hiển thị theo ngữ cảnh.
+     + `variant` / `color` / `size` / `level`: Chọn biến thể hiển thị theo ngữ cảnh.
 
 3. **Mô Hình Khung Xương & Nội Thất (Hybrid Architecture với `views/`)**:
    - Thư mục `views/` giữ các file HTML đóng vai trò **khung sườn (Layout Skeleton)** với các hộp `<div>` rỗng sạch sẽ.
    - JavaScript Component chịu trách nhiệm "bơm nội thất" chi tiết vào các hộp đó khi nạp trang.
+
+4. **Phương Thức Render Chuẩn (Cách 2 - Kẹp Chung Nguyên Khối Template Literals `${...}`)**:
+   - Toàn bộ các component con (như `${AppTitle()}`, `${StatCard()}`, `${AppButton()}`) được nhúng trực tiếp trong cùng một khối chuỗi Template Literals `${...}`.
+   - Chỉ thực hiện **1 lần ghi DOM duy nhất (Single DOM Write)** qua `innerHTML` cho cả cụm để đạt hiệu năng tối ưu (<1ms), triệt tiêu hoàn toàn hiện tượng chớp tắt (FOUC), không gây nóng máy và bảo vệ pin thiết bị di động tối đa.
