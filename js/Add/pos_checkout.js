@@ -649,7 +649,7 @@ function updateStaff1CommissionPreview() {
   const rate = (staffObj && parsePercentage(staffObj.commission_rate) > 0) ? parsePercentage(staffObj.commission_rate) : 10;
 
   const commValue = Math.round(totalPrice * (rate / 100) * (staff1Pct / 100));
-  commEl.innerText = `+${commValue.toLocaleString('vi-VN')} đ (${staff1Pct}%)`;
+  commEl.innerText = `+${commValue.toLocaleString('vi-VN')} đ`;
 }
 
 function addExtraStaff() {
@@ -720,6 +720,9 @@ function renderExtraStaffUI() {
 
   container.innerHTML = extraStaffList.map((s, idx) => {
     const ktvNum = idx + 2;
+    const staffObj = users.find(u => normalizePhone(u.phone) === normalizePhone(s.phone));
+    const rate = (staffObj && parsePercentage(staffObj.commission_rate) > 0) ? parsePercentage(staffObj.commission_rate) : 10;
+    const staffComm = Math.round(totalPrice * (rate / 100) * (eachPct / 100));
     return `
       <div class="p-3.5 rounded-2xl bg-[#FFF5F2]/80 border border-[#F5DCD5] space-y-2 animate-in fade-in zoom-in-95">
         <div class="flex justify-between items-center">
@@ -729,7 +732,7 @@ function renderExtraStaffUI() {
           </span>
           <div class="flex items-center gap-2">
             <span class="text-xs font-extrabold text-[#2E7D6D] bg-[#E8F8F5] px-2.5 py-0.5 rounded-full border border-[#B7EBDD]">
-              +${eachComm.toLocaleString('vi-VN')} đ (${eachPct}%)
+              +${staffComm.toLocaleString('vi-VN')} đ
             </span>
             <button type="button" onclick="removeExtraStaff(${idx})" class="p-1 text-[#A39696] hover:text-rose-600 hover:bg-rose-100 rounded-full transition cursor-pointer" title="Xóa KTV này">
               <i data-lucide="x" class="w-4 h-4"></i>
