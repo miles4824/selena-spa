@@ -46,6 +46,11 @@
 ---
 
 ## 3. Lịch Sử Thay Đổi & Lưu Vết (Audit Log)
+- `2026-09-03` (`v0.1.4.5`):
+  + Sửa triệt để 100% lỗi `#staff-home-status-desc` không nhận nội dung từ `tb_config`:
+    - Đưa việc cập nhật `#staff-home-status-desc` và `#home-greeting-slogan` ra khỏi phân nhánh role bị chặn, đảm bảo bất cứ khi nào element tồn tại trong DOM thì luôn luôn được gán dữ liệu mới nhất từ `tb_config` (`home_free_quote`).
+    - Đồng bộ `applyDynamicUIConfig` chuẩn xác trong `js/config.js`, `js/Home/home_dashboard.js`, `js/app.js` và `js/Firebase/firebase_engine.js`.
+    - Kết nối Firebase Realtime cho `config/ui_config` giúp thay đổi trên Sheet cập nhật tức thì (0.03s) trên giao diện.
 - `2026-09-03` (`v0.1.4.4`):
   + Cập nhật màu số tiền thu nhập: bỏ class `text-[#2E7D6D]`, chuyển sang màu đen sẫm chủ đạo `text-[#2D2424]`.
   + Khắc phục triệt để đồng bộ câu chào và câu châm ngôn từ `tb_config`:

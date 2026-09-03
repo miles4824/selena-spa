@@ -98,7 +98,31 @@ window.handleHomeGoToActiveTour = handleHomeGoToActiveTour;
 // RENDER NÚT TRẠNG THÁI BIẾN HÌNH (RẢNH -> VÀO TOUR / BẬN -> VÀO XEM NGAY)
 // -------------------------------------------------------------
 function renderHomeStatusAndActionButton() {
+  const isOwner = isUserOwner(currentUser);
   const tourInfo = checkCurrentUserRunningTour();
+
+  // 1. Luôn cập nhật câu châm ngôn rảnh nếu có element trong DOM
+  const globalDescEl = document.getElementById('staff-home-status-desc');
+  if (globalDescEl) {
+    const uiConfig = (typeof getStored === 'function') ? getStored('ui_config', {}) : {};
+    const quoteVal = uiConfig.home_free_quote || uiConfig.HOME_FREE_QUOTE || 'Mỗi tour gội là một trải nghiệm thư giãn tuyệt vời gửi gắm đến khách hàng thân yêu.';
+    if (tourInfo.isRunning) {
+      const s = tourInfo.session;
+      const custName = s?.customer_name || 'Khách vãng lai';
+      const servName = s?.service_name || 'Dịch vụ';
+      globalDescEl.innerHTML = `Bạn đang trong tour của <strong class="font-extrabold text-[#2D2424]">${custName}</strong> (<em class="italic font-bold text-[#E58A7B]">${servName}</em>). Vào tour ngay để theo dõi hoặc điều chỉnh ca.`;
+    } else {
+      globalDescEl.innerText = quoteVal;
+    }
+  }
+
+  // 2. Luôn cập nhật slogan chào mừng nếu có trong DOM
+  const globalSloganEl = document.getElementById('home-greeting-slogan');
+  if (globalSloganEl) {
+    const uiConfig = (typeof getStored === 'function') ? getStored('ui_config', {}) : {};
+    const sloganVal = uiConfig.home_greeting_slogan || uiConfig.HOME_GREETING_SLOGAN || 'hôm nay sẵn sàng tỏa sáng chưa? ✨';
+    globalSloganEl.innerText = sloganVal;
+  }
   const isAdmin = currentUser ? isUserOwner(currentUser) : false;
 
   if (isAdmin) {

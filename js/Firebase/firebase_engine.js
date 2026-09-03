@@ -161,6 +161,18 @@ function setupRealtimeListeners() {
     }
   });
 
+  // Lắng nghe Cấu hình Giao diện Realtime (tb_config / ui_config)
+  fbDb.ref('config/ui_config').on('value', snapshot => {
+    const liveConfig = snapshot.val();
+    if (liveConfig && typeof liveConfig === 'object') {
+      setStored('ui_config', liveConfig);
+      if (typeof applyDynamicUIConfig === 'function') applyDynamicUIConfig(liveConfig);
+      if (typeof renderHomeStatusAndActionButton === 'function') renderHomeStatusAndActionButton();
+      if (typeof loadKTVHomeStats === 'function' && currentTab === 'home') loadKTVHomeStats();
+      console.log('⚡ [Firebase Realtime] Đã cập nhật ui_config thời gian thực');
+    }
+  });
+
   // Lắng nghe Phiên Tour đang chạy Realtime (Hỗ trợ Nhiều Tour Song Song & Phân luồng chuẩn xác)
   fbDb.ref('live_sessions').on('value', snapshot => {
     const sessionsObj = snapshot.val();

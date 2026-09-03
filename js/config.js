@@ -80,7 +80,7 @@ function parseBirthMonth(val) {
   return 0;
 }
 
-const APP_VERSION = 'v0.1.4.4';
+const APP_VERSION = 'v0.1.4.5';
 // =============================================================
 // SELENA SPA - GLOBAL CONFIG & CONSTANTS
 // =============================================================
@@ -952,4 +952,17 @@ function applyDynamicUIConfig(customConfig) {
   if (annContent && cfg.ph_announcement) annContent.placeholder = cfg.ph_announcement;
   const giftNote = document.getElementById('modal-gift-notes');
   if (giftNote && cfg.ph_gift_voucher_note) giftNote.placeholder = cfg.ph_gift_voucher_note;
+  // 7. Home Staff Greeting Slogan & Free Quote (Cập nhật trực tiếp mọi lúc mọi nơi)
+  const sloganEl = document.getElementById('home-greeting-slogan');
+  const sloganVal = cfg.home_greeting_slogan || cfg.HOME_GREETING_SLOGAN;
+  if (sloganEl && sloganVal) sloganEl.innerText = sloganVal;
+
+  const quoteEl = document.getElementById('staff-home-status-desc');
+  const quoteVal = cfg.home_free_quote || cfg.HOME_FREE_QUOTE;
+  if (quoteEl && quoteVal) {
+    const tourInfo = (typeof checkCurrentUserRunningTour === 'function') ? checkCurrentUserRunningTour() : { isRunning: false };
+    if (!tourInfo.isRunning) {
+      quoteEl.innerText = quoteVal;
+    }
+  }
 }

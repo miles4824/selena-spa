@@ -81,6 +81,7 @@ async function showView(view) {
     }
     renderAnnouncement();
   if (typeof applyDynamicUIConfig === 'function') applyDynamicUIConfig();
+    if (typeof renderHomeStatusAndActionButton === 'function') renderHomeStatusAndActionButton();
   } else if (view === 'add') {
     targetEl = document.getElementById('view-add');
     initMenuUI();
@@ -236,6 +237,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   renderQuickAccounts();
   renderAnnouncement();
   if (typeof applyDynamicUIConfig === 'function') applyDynamicUIConfig();
+    if (typeof renderHomeStatusAndActionButton === 'function') renderHomeStatusAndActionButton();
 
   const inp = document.getElementById('setting-gas-url');
   if (inp) inp.value = getGasUrl();

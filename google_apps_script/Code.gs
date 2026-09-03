@@ -1833,17 +1833,23 @@ function pushSingleMenuToFirebase(sheet, row) {
   firebasePut(`menu/${sId}`, menuObj);
 }
 
-// Bắn thông báo nội bộ sang Firebase
+// Bắn toàn bộ cấu hình giao diện & thông báo nội bộ sang Firebase Realtime
 function pushConfigToFirebase(sheet) {
   const colMap = createHeaderMap(sheet);
   const data = sheet.getDataRange().getValues();
   let ann = '';
+  const cfg = {};
   for (let i = 1; i < data.length; i++) {
-    let k = String(getCell(data[i], colMap, ['key', 'khoa'])).trim().toLowerCase();
-    let v = String(getCell(data[i], colMap, ['value', 'gia_tri'])).trim();
-    if (k === 'announcement' || k === 'thong_bao') ann = v;
+    let k = String(getCell(data[i], colMap, ['config_key', 'key', 'khoa'])).trim().toLowerCase();
+    let v = String(getCell(data[i], colMap, ['config_value', 'value', 'gia_tri'])).trim();
+    if (k) {
+      cfg[k] = v;
+      cfg[k.toUpperCase()] = v;
+      if (k === 'announcement' || k === 'thong_bao') ann = v;
+    }
   }
-  firebasePut('config/announcement', ann);
+  if (ann) firebasePut('config/announcement', ann);
+  firebasePut('config/ui_config', cfg);
 }
 
 // Bắn 1 hóa đơn vừa sửa sang Firebase
