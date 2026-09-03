@@ -46,6 +46,10 @@
 ---
 
 ## 3. Lịch Sử Thay Đổi & Lưu Vết (Audit Log)
+- `2026-09-03` (`v0.1.4.6`):
+  + Tự động cập nhật tức thì màn hình Admin khi KTV kết thúc tour mà không cần bấm F5:
+    - Bổ sung `renderAdminLiveRunningTours()` và `renderAdminTodaySnapshot()` vào listener `live_sessions` của Firebase Realtime.
+    - Dọn sạch session cũ trên `localStorage` khi tour đã hoàn thành trên Firebase, tránh tình trạng hiện thẻ ma (Ghost Card Giường số 01).
 - `2026-09-03` (`v0.1.4.5`):
   + Sửa triệt để 100% lỗi `#staff-home-status-desc` không nhận nội dung từ `tb_config`:
     - Đưa việc cập nhật `#staff-home-status-desc` và `#home-greeting-slogan` ra khỏi phân nhánh role bị chặn, đảm bảo bất cứ khi nào element tồn tại trong DOM thì luôn luôn được gán dữ liệu mới nhất từ `tb_config` (`home_free_quote`).

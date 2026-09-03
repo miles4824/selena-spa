@@ -247,6 +247,12 @@ function setupRealtimeListeners() {
       localStorage.removeItem('selena_active_live_session');
       if (typeof renderLiveSessionUI === 'function') renderLiveSessionUI();
     }
+
+    // TỰ ĐỘNG CẬP NHẬT TỨC THÌ CHO MÀN HÌNH ADMIN VÀ STAFF KHÔNG CẦN F5
+    if (typeof renderAdminLiveRunningTours === 'function') renderAdminLiveRunningTours();
+    if (typeof renderAdminTodaySnapshot === 'function') renderAdminTodaySnapshot();
+    if (typeof renderHomeStatusAndActionButton === 'function') renderHomeStatusAndActionButton();
+    if (typeof loadKTVHomeStats === 'function' && currentTab === 'home') loadKTVHomeStats();
   });
 
   // Lắng nghe Danh mục Hạng mục (tb_categories)

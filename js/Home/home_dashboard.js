@@ -356,13 +356,20 @@ function renderAdminLiveRunningTours() {
   const validSessions = [];
   const seenIds = new Set();
 
-  // Kiểm tra thêm session lưu cục bộ trên máy
+  // Kiểm tra thêm session lưu cục bộ trên máy (chỉ lấy nếu còn tồn tại trên Firebase hoặc mới tạo)
   try {
     const saved = localStorage.getItem('selena_active_live_session');
     if (saved) {
       const parsed = JSON.parse(saved);
       if (parsed && parsed.session_id) {
-        allSessions.unshift(parsed);
+        const stillInFb = allSessions.some(s => s.session_id === parsed.session_id);
+        if (stillInFb) {
+          // đã có
+        } else if ((now - Number(parsed.start_timestamp || 0)) < 15000) {
+          allSessions.unshift(parsed);
+        } else {
+          localStorage.removeItem('selena_active_live_session');
+        }
       }
     }
   } catch (e) {}
