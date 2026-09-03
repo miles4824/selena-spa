@@ -46,6 +46,7 @@
 ---
 
 ## 3. Lịch Sử Thay Đổi & Lưu Vết (Audit Log)
+- `2026-09-03` (`v0.1.4.3`): Cập nhật class CSS cho `#staff-home-status-desc`: bỏ `text-xs sm:text-sm`, đặt cố định `text-sm` giúp kích thước chữ mô tả trạng thái tour rõ ràng, dễ đọc trên cả màn hình di động lẫn máy tính để bàn.
 - `2026-09-03` (`v0.1.4.2`): Tinh chỉnh trải nghiệm Trang Home KTV theo góp ý:
   + Ghi nhớ trạng thái ẩn/hiện tiền trong phiên bằng localStorage (`selena_staff_home_comm_masked`): khi người dùng mở xem tiền, chuyển tab và quay lại Trang Home vẫn giữ nguyên trạng thái hiển thị, không bị tự động ẩn lại.
   + Bỏ class `justify-end` ở huy hiệu trạng thái banner KTV để căn trái tự nhiên.
