@@ -243,8 +243,8 @@ function getValidatedMenu() {
     menu = DEFAULT_MENU;
     setStored('menu', DEFAULT_MENU);
   }
-  // Đảm bảo thứ tự xuất hiện đúng 100% theo dòng trên Google Sheet
-  return [...menu].sort((a, b) => (Number(a.sort_order) || 999) - (Number(b.sort_order) || 999));
+  // Sắp xếp chuẩn hóa theo mã service_id tăng dần
+  return [...menu].sort((a, b) => String(a.service_id || '').localeCompare(String(b.service_id || ''), undefined, { numeric: true, sensitivity: 'base' }));
 }
 
 // Helper tìm đúng combo 1, 2, 3, 4, 5 dựa theo tên hoặc ID từ Google Sheets
@@ -357,7 +357,7 @@ function getGroupedMenuItems(availableItems) {
     });
 
     if (groupItems.length > 0) {
-      groupItems.sort((a, b) => (Number(a.sort_order) || 999) - (Number(b.sort_order) || 999));
+      groupItems.sort((a, b) => String(a.service_id || '').localeCompare(String(b.service_id || ''), undefined, { numeric: true, sensitivity: 'base' }));
       groupItems.forEach(item => matchedItemIds.add(item.service_id));
       groupsMap.set(cat.category_id, {
         title: cat.category_name,
@@ -487,7 +487,7 @@ function renderMenuDropdown() {
 
   groups.forEach(group => {
     html += `
-      <div class="px-2.5 py-1.5 mt-2 first:mt-0 text-[11px] font-black text-[#7E7272] uppercase tracking-wider bg-[#F7F2EC] rounded-xl flex items-center gap-1.5 sticky top-0 z-10 shadow-2xs">
+      <div class="px-3 py-2 -mx-2 sticky top-0 z-10 bg-[#FAF6F1] border-b border-[#EFE8DF] shadow-xs flex items-center gap-2 font-black text-[11px] text-[#7E7272] uppercase tracking-wider">
         <i data-lucide="${group.icon}" class="w-3.5 h-3.5 ${group.iconColor}"></i>
         <span>${group.title}</span>
       </div>
@@ -3078,7 +3078,7 @@ function renderModalMenuDropdown() {
 
   groups.forEach(group => {
     html += `
-      <div class="px-2.5 py-1 text-[10px] font-black text-[#7E7272] uppercase tracking-wider bg-[#F7F2EC] rounded-xl flex items-center gap-1.5 sticky top-0 z-10 shadow-2xs">
+      <div class="px-3 py-1.5 -mx-2 sticky top-0 z-10 bg-[#FAF6F1] border-b border-[#EFE8DF] shadow-xs flex items-center gap-2 font-black text-[10px] text-[#7E7272] uppercase tracking-wider">
         <i data-lucide="${group.icon}" class="w-3 h-3 ${group.iconColor}"></i>
         <span>${group.title}</span>
       </div>
