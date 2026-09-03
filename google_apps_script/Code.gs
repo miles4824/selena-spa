@@ -391,12 +391,22 @@ function getMenuList() {
       let rawCommVal = String(getCell(row, colMap, ['commission_value', 'hoa_hong'], price * 0.1));
       let commVal = Number(rawCommVal.replace(/[^0-9]/g, '')) || (price * 0.1);
 
-      let category = String(getCell(row, colMap, ['category', 'hang_muc', 'phan_loai', 'nhom_dich_vu', 'nhom', 'loai'], '')).trim();
+      let categoryId = String(getCell(row, colMap, ['category_id', 'category', 'hang_muc', 'phan_loai', 'nhom_dich_vu', 'nhom', 'loai'], '')).trim();
+      if (!categoryId && id) {
+        const catPrefixes = ['DV_TL', 'DV_TM', 'DV_MS', 'DV_WX', 'DV_PL', 'DV_DT', 'DV_CY', 'CB', 'MP', 'NL'];
+        for (let p of catPrefixes) {
+          if (id.startsWith(p)) {
+            categoryId = p;
+            break;
+          }
+        }
+      }
 
       menu.push({
         service_id: id,
         service_name: name,
-        category: category,
+        category_id: categoryId,
+        category: categoryId,
         price: price,
         duration_min: duration,
         cosmetics_cost: cosmetics,
@@ -1273,12 +1283,22 @@ function syncAllData(params) {
       let rawCommVal = String(getCell(r, colMapM, ['commission_value', 'hoa_hong'], price * 0.1));
       let commVal = Number(rawCommVal.replace(/[^0-9]/g, '')) || (price * 0.1);
 
-      let category = String(getCell(r, colMapM, ['category', 'hang_muc', 'phan_loai', 'nhom_dich_vu', 'nhom', 'loai'], '')).trim();
+      let categoryId = String(getCell(r, colMapM, ['category_id', 'category', 'hang_muc', 'phan_loai', 'nhom_dich_vu', 'nhom', 'loai'], '')).trim();
+      if (!categoryId && id) {
+        const catPrefixes = ['DV_TL', 'DV_TM', 'DV_MS', 'DV_WX', 'DV_PL', 'DV_DT', 'DV_CY', 'CB', 'MP', 'NL'];
+        for (let p of catPrefixes) {
+          if (id.startsWith(p)) {
+            categoryId = p;
+            break;
+          }
+        }
+      }
 
       menu.push({
         service_id: id,
         service_name: name,
-        category: category,
+        category_id: categoryId,
+        category: categoryId,
         price: price,
         duration_min: duration,
         cosmetics_cost: cosmetics,
