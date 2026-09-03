@@ -313,30 +313,46 @@ function loadKTVHomeStats() {
   }
 
   const totalToday = todayComm + todayTips;
-  const statsContainer = document.getElementById('staff-home-stats-container');
-  if (statsContainer && typeof StatCard === 'function') {
+  const statsBlock = document.getElementById('staff-home-stats-block') || document.getElementById('staff-home-stats-container');
+  if (statsBlock && typeof StatCard === 'function') {
     const formattedComm = isStaffHomeCommMasked ? '•••• đ' : `${totalToday.toLocaleString('vi-VN')} đ`;
-    statsContainer.innerHTML = `
-      ${StatCard({
-        id: 'home-today-tours',
-        title: 'Tour hôm nay',
-        value: todayTours + ' tour',
-        subtitle: 'Phục vụ trong ngày',
-        color: 'blue'
-      })}
-      ${StatCard({
-        id: 'home-today-comm',
-        title: 'Thu nhập hôm nay',
-        value: formattedComm,
-        subtitle: 'Hoa hồng + Tip tích lũy',
-        color: 'mint',
-        isPrivacy: true,
-        privacyEyeId: 'staff-home-comm-eye',
-        onPrivacyToggle: 'toggleStaffHomeCommPrivacy()'
-      })}
+    const todayDateStr = (typeof formatDateDisplayVN === 'function') ? formatDateDisplayVN(new Date()) : 'Hôm nay';
+
+    // RENDER NGUYÊN KHỐI CHUẨN CÁCH 2: 1 LẦN GHI DOM DUY NHẤT (<1ms, KHÔNG CHỚP TẮT)
+    statsBlock.innerHTML = `
+      ${(typeof AppTitle === 'function') ? AppTitle({
+        configKey: 'title_staff_today_stats',
+        defaultText: 'Thành Tích Của Bạn Hôm Nay',
+        icon: 'award',
+        iconColor: 'text-[#E58A7B]',
+        level: 'section',
+        rightText: todayDateStr,
+        id: 'staff-home-today-title'
+      }) : ''}
+
+      <div class="grid grid-cols-2 gap-3 sm:gap-4">
+        ${StatCard({
+          id: 'home-today-tours',
+          title: 'Tour hôm nay',
+          value: todayTours + ' tour',
+          subtitle: 'Phục vụ trong ngày',
+          color: 'blue'
+        })}
+        ${StatCard({
+          id: 'home-today-comm',
+          title: 'Thu nhập hôm nay',
+          value: formattedComm,
+          subtitle: 'Hoa hồng + Tip tích lũy',
+          color: 'mint',
+          isPrivacy: true,
+          privacyEyeId: 'staff-home-comm-eye',
+          onPrivacyToggle: 'toggleStaffHomeCommPrivacy()'
+        })}
+      </div>
     `;
     const eyeEl = document.getElementById('staff-home-comm-eye');
     if (eyeEl) eyeEl.setAttribute('data-lucide', isStaffHomeCommMasked ? 'eye-off' : 'eye');
+    if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
   } else {
     const toursEl = document.getElementById('home-today-tours');
     const commEl = document.getElementById('home-today-comm');

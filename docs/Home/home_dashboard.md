@@ -46,7 +46,11 @@
 ---
 
 ## 3. Lịch Sử Thay Đổi & Lưu Vết (Audit Log)
-- `2026-09-03` (`v0.0.0.0` (Reset mốc phiên bản nâng cấp UI Component)):
+- `2026-09-03` (`v0.0.0.1`):
+  + Tích hợp component tiêu đề chuẩn `AppTitle` (`js/Core/Components/app_title.js`).
+  + Áp dụng phương thức Render Cách 2 (Template Literals nguyên khối) cho cả Staff Home và Admin Home.
+  + Ghi 1 lần DOM duy nhất, triệt tiêu 100% hiện tượng chớp giật chữ và tối ưu hiệu năng thiết bị.
+- `2026-09-03` (`v0.0.0.0`): (Reset mốc phiên bản nâng cấp UI Component)):
   + Triển khai Giai đoạn 1 Hệ Thống UI Component System (Tailwind 4 Modular) theo Điều 15 `PROJECT_RULES.md`:
     - Tích hợp 3 component cốt lõi `AppButton`, `StatCard`, `StatusBadge` vào `js/Core/Components/`.
     - Tinh gọn `views/staff/home.html` và `views/owner/home.html` thành khung layout rỗng sạch sẽ.

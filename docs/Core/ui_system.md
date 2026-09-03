@@ -70,7 +70,7 @@
 
 ---
 
-## 6. Lịch Sử Thay Đổi & Lưu Vết (Audit Log)
+## 7. Lịch Sử Thay Đổi & Lưu Vết (Audit Log)
 - 2026-09-03 (0.1.5.0):
   + Thiết lập chính thức kiến trúc Hệ Thống UI Component System (Tailwind 4 Modular) theo Điều 15 PROJECT_RULES.md.
   + Tách nhỏ thành các module độc lập trong js/Core/Components/: pp_button.js, stat_card.js, status_badge.js...

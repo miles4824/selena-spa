@@ -209,3 +209,8 @@ Nhằm đảm bảo giao diện thống nhất $100\%$ giữa Admin và Staff, d
 4. **Phương Thức Render Chuẩn (Cách 2 - Kẹp Chung Nguyên Khối Template Literals `${...}`)**:
    - Toàn bộ các component con (như `${AppTitle()}`, `${StatCard()}`, `${AppButton()}`) được nhúng trực tiếp trong cùng một khối chuỗi Template Literals `${...}`.
    - Chỉ thực hiện **1 lần ghi DOM duy nhất (Single DOM Write)** qua `innerHTML` cho cả cụm để đạt hiệu năng tối ưu (<1ms), triệt tiêu hoàn toàn hiện tượng chớp tắt (FOUC), không gây nóng máy và bảo vệ pin thiết bị di động tối đa.
+
+5. **Quy Chuẩn Chống Nóng Máy, Tràn RAM & Tối Ưu Hóa DOM (DOM & Memory Optimization Rules)**:
+   - **Tuyệt đối không nhồi nhét dữ liệu lớn vào thuộc tính DOM**: Thẻ HTML chỉ lưu trữ ID định danh ngắn (như `sessionId`, `receiptId`), không bao giờ nhét cả chuỗi JSON dữ liệu lớn vào thuộc tính `data-*` gây phình to cây DOM và rò rỉ bảo mật.
+   - **Chống rò rỉ bộ nhớ (Memory Leaks)**: Sử dụng cơ chế hành động ủy quyền hoặc gọi hàm trực tiếp (`onclick="handleFunc()"`) thay vì gán `addEventListener` vô tội vạ trong các hàm render lặp lại làm tràn RAM thiết bị.
+   - **Cập nhật trúng đích cục bộ (Targeted DOM Mutation)**: Khi dữ liệu từ Google Sheets (`tb_config`) hoặc Firebase Realtime bắn về, hệ thống chỉ cập nhật chính xác phần tử DOM cần đổi (bằng `innerText` hoặc `textContent`), tuyệt đối không xóa đi vẽ lại toàn bộ trang web gây giật lag hoặc hao pin.
