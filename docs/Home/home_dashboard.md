@@ -46,6 +46,12 @@
 ---
 
 ## 3. Lịch Sử Thay Đổi & Lưu Vết (Audit Log)
+- `2026-09-03` (`v0.1.4.8`):
+  + Tinh chỉnh cụm thành tích hôm nay của KTV đồng bộ 100% với giao diện Admin (Hình 2):
+    - Bỏ `text-center`, canh lề trái dồn về 1 bên chuẩn chỉ.
+    - Đổi màu sắc thẻ và viền y hệt Admin: Thẻ Thu Nhập màu xanh ngọc mint `#E8F8F5` / viền `#B7EBDD`, Thẻ Tour màu xanh dương pastel `#EBF5FB` / viền `#D4E6F1`.
+    - Bỏ dấu `+` trước số tiền thu nhập (`40.844 đ` thay vì `+40.844 đ`, khi che là `•••• đ`).
+    - Cập nhật ghi chú "Trong ngày" thành "Phục vụ trong ngày".
 - `2026-09-03` (`v0.1.4.7`):
   + Đồng bộ 100% phong cách thẻ Wellness Banner sang trọng từ Staff sang Admin:
     - Bọc cụm chào mừng của Admin trong Card Luxury Bo góc 28px viền #F0EAE1 và nền gradient ấm áp `#FFF0EB` -> `#FAF6F1`.

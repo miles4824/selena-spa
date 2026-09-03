@@ -320,10 +320,10 @@ function loadKTVHomeStats() {
   if (toursEl) toursEl.innerText = todayTours + ' tour';
   if (commEl) {
     if (isStaffHomeCommMasked) {
-      commEl.innerText = '+•••• đ';
+      commEl.innerText = '•••• đ';
       if (eyeEl) eyeEl.setAttribute('data-lucide', 'eye-off');
     } else {
-      commEl.innerText = `+${totalToday.toLocaleString('vi-VN')} đ`;
+      commEl.innerText = `${totalToday.toLocaleString('vi-VN')} đ`;
       if (eyeEl) eyeEl.setAttribute('data-lucide', 'eye');
     }
   }

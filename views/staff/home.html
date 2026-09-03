@@ -53,23 +53,23 @@
     </div>
 
     <div class="grid grid-cols-2 gap-3 sm:gap-4">
-      <!-- 1. Số tour hôm nay -->
-      <div class="bg-white rounded-3xl border border-[#F0EAE1] p-4 sm:p-5 text-center space-y-1.5 bg-[#EBF5FB] border-[#D4E6F1] shadow-2xs">
-        <span class="text-xs sm:text-sm font-bold text-[#2980B9] uppercase tracking-wider block">Tour hôm nay</span>
-        <div class="text-2xl sm:text-3xl font-black text-[#2D2424]" id="home-today-tours">0 tour</div>
-        <span class="text-[11px] text-[#2980B9]/80 block font-medium">Trong ngày</span>
-      </div>
-
-      <!-- 2. Thu nhập hôm nay (Hoa hồng + Tiền Tip, kèm con mắt che/hiện) -->
-      <div class="bg-white rounded-3xl border border-[#F0EAE1] p-4 sm:p-5 text-center space-y-1.5 bg-[#E8F8F5] border-[#B7EBDD] shadow-2xs">
-        <div class="flex items-center justify-center gap-1.5">
-          <span class="text-xs sm:text-sm font-bold text-[#2E7D6D] uppercase tracking-wider block">Thu nhập hôm nay</span>
+      <!-- 1. Thu nhập hôm nay (Màu xanh ngọc mint giống Admin hình 2, dồn về bên trái) -->
+      <div class="p-4 sm:p-5 rounded-3xl bg-[#E8F8F5] border border-[#B7EBDD] space-y-1 shadow-xs">
+        <div class="flex items-center gap-1.5">
+          <span class="text-xs font-bold text-[#2E7D6D] uppercase tracking-wider block">Thu nhập hôm nay</span>
           <button type="button" onclick="toggleStaffHomeCommPrivacy()" class="text-[#2E7D6D]/70 hover:text-[#2E7D6D] p-0.5 cursor-pointer transition" title="Bấm để ẩn/hiện số tiền">
-            <i id="staff-home-comm-eye" data-lucide="eye-off" class="w-4 h-4"></i>
+            <i id="staff-home-comm-eye" data-lucide="eye-off" class="w-3.5 h-3.5"></i>
           </button>
         </div>
-        <div onclick="toggleStaffHomeCommPrivacy()" class="text-2xl sm:text-3xl font-black font-mono text-[#2D2424] tracking-tight cursor-pointer select-none" id="home-today-comm">+•••• đ</div>
-        <span class="text-[11px] text-[#2E7D6D]/80 block font-medium">Hoa hồng + Tip tích lũy</span>
+        <div onclick="toggleStaffHomeCommPrivacy()" class="text-2xl sm:text-3xl font-extrabold font-mono text-[#2D2424] tracking-tight cursor-pointer select-none" id="home-today-comm">•••• đ</div>
+        <span class="text-xs text-[#2E7D6D] font-medium block">Hoa hồng + Tip tích lũy</span>
+      </div>
+
+      <!-- 2. Tour hôm nay (Màu xanh dương pastel giống Admin hình 2, dồn về bên trái) -->
+      <div class="p-4 sm:p-5 rounded-3xl bg-[#EBF5FB] border border-[#D4E6F1] space-y-1 shadow-xs">
+        <span class="text-xs font-bold text-[#2980B9] uppercase tracking-wider block">Tour hôm nay</span>
+        <div class="text-2xl sm:text-3xl font-extrabold text-[#2D2424]" id="home-today-tours">0 tour</div>
+        <span class="text-xs text-[#2980B9] font-medium block">Phục vụ trong ngày</span>
       </div>
     </div>
   </div>
