@@ -636,19 +636,38 @@ function onStaff1SelectChange() {
   renderExtraStaffUI();
 }
 
+// =============================================================
+// TÍNH HOA HỒNG DỊCH VỤ THEO FLOWCHART (OVERRIDE commission_value -> FALLBACK % KTV)
+// =============================================================
+function calculateItemCommission(serviceItem, staffUser) {
+  if (!serviceItem) return 0;
+  const fixedComm = Number(serviceItem.commission_value) || 0;
+  if (fixedComm > 0) return fixedComm;
+
+  const rate = (staffUser && parsePercentage(staffUser.commission_rate) > 0) ? parsePercentage(staffUser.commission_rate) : 10;
+  const price = Number(serviceItem.price) || 0;
+  return Math.round(price * (rate / 100));
+}
+
+function calculateCartCommission(cartItems, staffUser, pctShare = 100) {
+  if (!Array.isArray(cartItems) || cartItems.length === 0) return 0;
+  const totalBaseComm = cartItems.reduce((sum, item) => sum + calculateItemCommission(item, staffUser), 0);
+  return Math.round(totalBaseComm * (pctShare / 100));
+}
+window.calculateItemCommission = calculateItemCommission;
+window.calculateCartCommission = calculateCartCommission;
+
 function updateStaff1CommissionPreview() {
   const commEl = document.getElementById('pos-staff1-comm-preview');
   if (!commEl) return;
-  const totalPrice = selectedCartItems.reduce((sum, item) => sum + (Number(item.price) || 0), 0);
   const totalStaffCount = 1 + (extraStaffList ? extraStaffList.length : 0);
   const staff1Pct = Math.round(100 / totalStaffCount);
 
   const s1Phone = document.getElementById('pos-staff1-select')?.value || (currentUser?.phone);
   const users = (typeof getSortedUsersList === 'function') ? getSortedUsersList() : [];
   const staffObj = users.find(u => normalizePhone(u.phone) === normalizePhone(s1Phone)) || currentUser;
-  const rate = (staffObj && parsePercentage(staffObj.commission_rate) > 0) ? parsePercentage(staffObj.commission_rate) : 10;
 
-  const commValue = Math.round(totalPrice * (rate / 100) * (staff1Pct / 100));
+  const commValue = calculateCartCommission(selectedCartItems, staffObj, staff1Pct);
   commEl.innerText = `+${commValue.toLocaleString('vi-VN')} đ`;
 }
 
@@ -721,8 +740,7 @@ function renderExtraStaffUI() {
   container.innerHTML = extraStaffList.map((s, idx) => {
     const ktvNum = idx + 2;
     const staffObj = users.find(u => normalizePhone(u.phone) === normalizePhone(s.phone));
-    const rate = (staffObj && parsePercentage(staffObj.commission_rate) > 0) ? parsePercentage(staffObj.commission_rate) : 10;
-    const staffComm = Math.round(totalPrice * (rate / 100) * (eachPct / 100));
+    const staffComm = calculateCartCommission(selectedCartItems, staffObj, eachPct);
     return `
       <div class="p-3.5 rounded-2xl bg-[#FFF5F2]/80 border border-[#F5DCD5] space-y-2 animate-in fade-in zoom-in-95">
         <div class="flex justify-between items-center">
@@ -2366,9 +2384,11 @@ function confirmSaveReceiptFromCheckout() {
     const cleanName = staffName.replace(/\s*\(Chặng\s*\d+\)/gi, '');
     const tipVnd = getStaffTipAmount(s.phone);
     const rate = (staffObj && parsePercentage(staffObj?.commission_rate) > 0) ? parsePercentage(staffObj?.commission_rate) : 10;
+    const items = currentLiveSession.selected_items || [{ price: currentLiveSession.price, service_id: currentLiveSession.service_id }];
+    const staffPct = Number(s.pct) || Math.round(100 / currentStaffs.length);
     const commVnd = (s.comm_vnd !== undefined && s.comm_vnd !== null)
       ? s.comm_vnd
-      : Math.round(currentLiveSession.price * (rate / 100) * ((s.pct || Math.round(100 / currentStaffs.length)) / 100));
+      : calculateCartCommission(items, staffObj, staffPct);
 
     if (!groupedStaffMap[pKey]) {
       groupedStaffMap[pKey] = {
