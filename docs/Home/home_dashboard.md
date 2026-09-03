@@ -46,6 +46,12 @@
 ---
 
 ## 3. Lịch Sử Thay Đổi & Lưu Vết (Audit Log)
+- `2026-09-03` (`v0.1.4.2`): Tinh chỉnh trải nghiệm Trang Home KTV theo góp ý:
+  + Ghi nhớ trạng thái ẩn/hiện tiền trong phiên bằng localStorage (`selena_staff_home_comm_masked`): khi người dùng mở xem tiền, chuyển tab và quay lại Trang Home vẫn giữ nguyên trạng thái hiển thị, không bị tự động ẩn lại.
+  + Bỏ class `justify-end` ở huy hiệu trạng thái banner KTV để căn trái tự nhiên.
+  + Gom chung "Hoa hồng" và "Tiền Tip" thành một thẻ duy nhất: **"Thu nhập hôm nay"**, hiển thị tổng tiền `Hoa hồng + Tip`, kèm nút con mắt che/hiện và font mono sắc nét. Layout chuyển thành 2 cột cân đối: `Tour hôm nay` (2 tour) và `Thu nhập hôm nay` (+•••• đ).
+  + Chuyển câu slogan chào đón (`home_greeting_slogan`: "hôm nay sẵn sàng tỏa sáng chưa? ✨") và câu châm ngôn khi rảnh (`home_free_quote`: "Mỗi tour gội là một trải nghiệm thư giãn tuyệt vời gửi gắm đến khách hàng thân yêu.") sang đọc trực tiếp từ `tb_config` (Google Sheet) để chủ tiệm có thể sửa bất cứ lúc nào.
+  + Câu mô tả khi có ca bận: Không dùng dấu ngoặc vuông `[]`, in đậm tên khách (`font-extrabold text-[#2D2424]`), in nghiêng gói combo màu cam san hô (`italic font-bold text-[#E58A7B]`) để phân biệt trực quan.
 - `2026-09-03` (`v0.1.4.1`): Tinh chỉnh chi tiết Trang Home KTV:
   + Bỏ huy hiệu "Selena Spa & Wellness".
   + Đổi "🟢 Sẵn sàng phục vụ • Đang rảnh" -> "Sẵn sàng phục vụ".

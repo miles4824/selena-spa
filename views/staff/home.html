@@ -2,13 +2,13 @@
   <!-- CỤM 1: WELLNESS BANNER CHÀO ĐÓN & NÚT TRẠNG THÁI BIẾN HÌNH -->
   <div class="bg-white rounded-[28px] border border-[#F0EAE1] shadow-[0_10px_30px_-5px_rgba(229,138,123,0.05),0_4px_12px_rgba(0,0,0,0.02)] p-6 sm:p-7 relative overflow-hidden bg-gradient-to-br from-[#FFF0EB] via-[#FFFFFF] to-[#FAF6F1]">
     <div class="relative z-10 space-y-3.5">
-      <div class="flex items-center justify-end">
+      <div class="flex items-center">
         <!-- Huy hiệu trạng thái: Sẵn sàng phục vụ hoặc Đang trong tour -->
         <div id="staff-home-status-badge" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold"></div>
       </div>
 
       <h2 class="text-2xl font-medium font-serif text-[#2D2424]">
-        Chào <span id="home-greeting-name" class="text-[#E58A7B]">Mai Lan</span>, hôm nay sẵn sàng tỏa sáng chưa? ✨
+        Chào <span id="home-greeting-name" class="text-[#E58A7B]">Mai Lan</span>, <span id="home-greeting-slogan">hôm nay sẵn sàng tỏa sáng chưa? ✨</span>
       </h2>
       <p class="text-[#7E7272] text-xs sm:text-sm max-w-md leading-relaxed" id="staff-home-status-desc">
         Mỗi tour gội là một trải nghiệm thư giãn tuyệt vời gửi gắm đến khách hàng thân yêu.
@@ -52,36 +52,24 @@
       <span class="text-[11px] text-[#A39696] font-medium" id="staff-home-today-date">Hôm nay</span>
     </div>
 
-    <div class="grid grid-cols-3 gap-2.5 sm:gap-3.5">
+    <div class="grid grid-cols-2 gap-3 sm:gap-4">
       <!-- 1. Số tour hôm nay -->
-      <div class="bg-white rounded-2xl border border-[#F0EAE1] p-3.5 sm:p-4 text-center space-y-1 bg-[#EBF5FB] border-[#D4E6F1] shadow-2xs">
-        <span class="text-[11px] sm:text-xs font-bold text-[#2980B9] uppercase tracking-wider block">Tour hôm nay</span>
-        <div class="text-xl sm:text-2xl font-black text-[#2D2424]" id="home-today-tours">0 tour</div>
-        <span class="text-[10px] text-[#2980B9]/80 block font-medium">Trong ngày</span>
+      <div class="bg-white rounded-3xl border border-[#F0EAE1] p-4 sm:p-5 text-center space-y-1.5 bg-[#EBF5FB] border-[#D4E6F1] shadow-2xs">
+        <span class="text-xs sm:text-sm font-bold text-[#2980B9] uppercase tracking-wider block">Tour hôm nay</span>
+        <div class="text-2xl sm:text-3xl font-black text-[#2D2424]" id="home-today-tours">0 tour</div>
+        <span class="text-[11px] text-[#2980B9]/80 block font-medium">Trong ngày</span>
       </div>
 
-      <!-- 2. Hoa hồng tích lũy hôm nay (kèm con mắt che/hiện) -->
-      <div class="bg-white rounded-2xl border border-[#F0EAE1] p-3.5 sm:p-4 text-center space-y-1 bg-[#E8F8F5] border-[#B7EBDD] shadow-2xs">
-        <div class="flex items-center justify-center gap-1">
-          <span class="text-[11px] sm:text-xs font-bold text-[#2E7D6D] uppercase tracking-wider block">Hoa hồng</span>
+      <!-- 2. Thu nhập hôm nay (Hoa hồng + Tiền Tip, kèm con mắt che/hiện) -->
+      <div class="bg-white rounded-3xl border border-[#F0EAE1] p-4 sm:p-5 text-center space-y-1.5 bg-[#E8F8F5] border-[#B7EBDD] shadow-2xs">
+        <div class="flex items-center justify-center gap-1.5">
+          <span class="text-xs sm:text-sm font-bold text-[#2E7D6D] uppercase tracking-wider block">Thu nhập hôm nay</span>
           <button type="button" onclick="toggleStaffHomeCommPrivacy()" class="text-[#2E7D6D]/70 hover:text-[#2E7D6D] p-0.5 cursor-pointer transition" title="Bấm để ẩn/hiện số tiền">
-            <i id="staff-home-comm-eye" data-lucide="eye-off" class="w-3.5 h-3.5"></i>
+            <i id="staff-home-comm-eye" data-lucide="eye-off" class="w-4 h-4"></i>
           </button>
         </div>
-        <div onclick="toggleStaffHomeCommPrivacy()" class="text-xl sm:text-2xl font-black font-mono text-[#2E7D6D] tracking-tight cursor-pointer select-none" id="home-today-comm">+•••• đ</div>
-        <span class="text-[10px] text-[#2E7D6D]/80 block font-medium">Tích lũy hôm nay</span>
-      </div>
-
-      <!-- 3. Tiền tip hôm nay -->
-      <div class="bg-white rounded-2xl border border-[#F0EAE1] p-3.5 sm:p-4 text-center space-y-1 bg-[#FFF0EB] border-[#FCDFD7] shadow-2xs">
-        <div class="flex items-center justify-center gap-1">
-          <span class="text-[11px] sm:text-xs font-bold text-[#D35400] uppercase tracking-wider block">Tiền Tip</span>
-          <button type="button" onclick="toggleStaffHomeCommPrivacy()" class="text-[#D35400]/70 hover:text-[#D35400] p-0.5 cursor-pointer transition" title="Bấm để ẩn/hiện số tiền">
-            <i id="staff-home-tips-eye" data-lucide="eye-off" class="w-3.5 h-3.5"></i>
-          </button>
-        </div>
-        <div onclick="toggleStaffHomeCommPrivacy()" class="text-xl sm:text-2xl font-black font-mono text-[#D35400] tracking-tight cursor-pointer select-none" id="home-today-tips">+•••• đ</div>
-        <span class="text-[10px] text-[#D35400]/80 block font-medium">Khách gửi tặng</span>
+        <div onclick="toggleStaffHomeCommPrivacy()" class="text-2xl sm:text-3xl font-black font-mono text-[#2E7D6D] tracking-tight cursor-pointer select-none" id="home-today-comm">+•••• đ</div>
+        <span class="text-[11px] text-[#2E7D6D]/80 block font-medium">Hoa hồng + Tip tích lũy</span>
       </div>
     </div>
   </div>

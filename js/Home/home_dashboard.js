@@ -4,10 +4,14 @@
 // Giám sát giường realtime toàn tiệm, Chỉ số nhanh hôm nay & Che mắt hoa hồng
 // =============================================================
 
-let isStaffHomeCommMasked = true; // Mặc định luôn che "+•••• đ" chuẩn ngân hàng
+// Ghi nhớ trạng thái ẩn/hiện hoa hồng: Mặc định là true, nhưng nếu người dùng đã mở xem thì giữ nguyên khi chuyển tab
+let isStaffHomeCommMasked = localStorage.getItem('selena_staff_home_comm_masked') === 'false' ? false : true;
 
 function toggleStaffHomeCommPrivacy() {
   isStaffHomeCommMasked = !isStaffHomeCommMasked;
+  try {
+    localStorage.setItem('selena_staff_home_comm_masked', String(isStaffHomeCommMasked));
+  } catch (e) {}
   if (typeof loadKTVHomeStats === 'function') loadKTVHomeStats();
 }
 window.toggleStaffHomeCommPrivacy = toggleStaffHomeCommPrivacy;
@@ -140,7 +144,9 @@ function renderHomeStatusAndActionButton() {
         badgeEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-[#E58A7B] animate-pulse"></span><span>Đang trong tour (${tourInfo.elapsedMin}/${tourInfo.targetMin}p)</span>`;
       }
       if (descEl) {
-        descEl.innerText = `Bạn đang trong tour của [${s?.customer_name || 'Khách vãng lai'}] (${s?.service_name || 'Dịch vụ'}). Vào tour ngay để theo dõi hoặc điều chỉnh ca.`;
+        const custName = s?.customer_name || 'Khách vãng lai';
+        const servName = s?.service_name || 'Dịch vụ';
+        descEl.innerHTML = `Bạn đang trong tour của <strong class="font-extrabold text-[#2D2424]">${custName}</strong> (<em class="italic font-bold text-[#E58A7B]">${servName}</em>). Vào tour ngay để theo dõi hoặc điều chỉnh ca.`;
       }
       if (btnContainer) {
         btnContainer.innerHTML = `
@@ -156,7 +162,8 @@ function renderHomeStatusAndActionButton() {
         badgeEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-[#2E7D6D]"></span><span>Sẵn sàng phục vụ</span>`;
       }
       if (descEl) {
-        descEl.innerText = `Mỗi tour gội là một trải nghiệm thư giãn tuyệt vời gửi gắm đến khách hàng thân yêu.`;
+        const uiConfig = (typeof getStored === 'function') ? getStored('ui_config', {}) : {};
+        descEl.innerText = uiConfig.home_free_quote || 'Mỗi tour gội là một trải nghiệm thư giãn tuyệt vời gửi gắm đến khách hàng thân yêu.';
       }
       if (btnContainer) {
         btnContainer.innerHTML = `
@@ -272,11 +279,17 @@ function loadKTVHomeStats() {
     });
   }
 
+  // Lấy câu slogan chào mừng từ tb_config
+  const uiConfig = (typeof getStored === 'function') ? getStored('ui_config', {}) : {};
+  const sloganEl = document.getElementById('home-greeting-slogan');
+  if (sloganEl) {
+    sloganEl.innerText = uiConfig.home_greeting_slogan || 'hôm nay sẵn sàng tỏa sáng chưa? ✨';
+  }
+
   const toursEl = document.getElementById('home-today-tours');
   const commEl = document.getElementById('home-today-comm');
-  const tipsEl = document.getElementById('home-today-tips');
   const eyeEl = document.getElementById('staff-home-comm-eye');
-  const tipsEyeEl = document.getElementById('staff-home-tips-eye');
+  const totalToday = todayComm + todayTips;
 
   if (toursEl) toursEl.innerText = todayTours + ' tour';
   if (commEl) {
@@ -284,17 +297,8 @@ function loadKTVHomeStats() {
       commEl.innerText = '+•••• đ';
       if (eyeEl) eyeEl.setAttribute('data-lucide', 'eye-off');
     } else {
-      commEl.innerText = `+${todayComm.toLocaleString('vi-VN')} đ`;
+      commEl.innerText = `+${totalToday.toLocaleString('vi-VN')} đ`;
       if (eyeEl) eyeEl.setAttribute('data-lucide', 'eye');
-    }
-  }
-  if (tipsEl) {
-    if (isStaffHomeCommMasked) {
-      tipsEl.innerText = '+•••• đ';
-      if (tipsEyeEl) tipsEyeEl.setAttribute('data-lucide', 'eye-off');
-    } else {
-      tipsEl.innerText = `+${todayTips.toLocaleString('vi-VN')} đ`;
-      if (tipsEyeEl) tipsEyeEl.setAttribute('data-lucide', 'eye');
     }
   }
 

@@ -1642,6 +1642,8 @@ function syncAllData(params) {
     ['ph_add_exp_note', 'Ghi chú chi tiết...', 'Placeholder ô ghi chú thêm chi phí'],
     ['ph_announcement', 'Nhập thông báo gửi đến toàn thể kỹ thuật viên...', 'Placeholder ô soạn thông báo'],
     ['ph_gift_voucher_note', 'VD: Khách VIP, Quà tri ân...', 'Placeholder ô ghi chú tặng voucher'],
+    ['home_greeting_slogan', 'hôm nay sẵn sàng tỏa sáng chưa? ✨', 'Câu slogan chào đón KTV trang Home'],
+    ['home_free_quote', 'Mỗi tour gội là một trải nghiệm thư giãn tuyệt vời gửi gắm đến khách hàng thân yêu.', 'Câu châm ngôn truyền cảm hứng khi KTV đang rảnh'],
     ['announcement', 'Chào mừng bạn đến với Selena Spa!', 'Thông báo nội bộ từ chủ tiệm'],
     ['bank_name', 'MBBank', 'Tên ngân hàng nhận thanh toán VietQR'],
     ['bank_account_no', '0912345678', 'Số tài khoản ngân hàng VietQR'],
@@ -1661,7 +1663,9 @@ function syncAllData(params) {
     opt_select_service: '-- Chọn thêm dịch vụ / sản phẩm --',
     opt_select_service_all_selected: '-- Tất cả dịch vụ đã được chọn --',
     optgroup_combos: '💆 Combo Gội Chính',
-    optgroup_addons: '✨ Dịch Vụ Lẻ / Làm Thêm'
+    optgroup_addons: '✨ Dịch Vụ Lẻ / Làm Thêm',
+    home_greeting_slogan: 'hôm nay sẵn sàng tỏa sáng chưa? ✨',
+    home_free_quote: 'Mỗi tour gội là một trải nghiệm thư giãn tuyệt vời gửi gắm đến khách hàng thân yêu.'
   };
 
   const colMapCf = createHeaderMap(sheetConfig);
