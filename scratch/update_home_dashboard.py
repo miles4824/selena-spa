@@ -1,4 +1,16 @@
-// =============================================================
+# -*- coding: utf-8 -*-
+import os
+import re
+
+BASE_DIR = r"c:\Users\Miles\Downloads\Selena"
+NEW_VERSION = "v0.1.4.0"
+
+# =========================================================================
+# 1. UPDATE js/Home/home_dashboard.js
+# =========================================================================
+home_dash_path = os.path.join(BASE_DIR, "js", "Home", "home_dashboard.js")
+
+new_home_code = '''// =============================================================
 // TAB 1: HOME - DASHBOARD & STATS CONTROLLER (ADMIN & STAFF)
 // Chuẩn hóa 100% theo Flowchart: Trạng thái bận/rảnh biến hình,
 // Giám sát giường realtime toàn tiệm, Chỉ số nhanh hôm nay & Che mắt hoa hồng
@@ -585,7 +597,7 @@ function loadAdminCustomersList() {
 
     let bMonth = Number(c.birth_month) || 0;
     if (!bMonth && c.birthday) {
-      let m = String(c.birthday).match(/(\d{4})[/\-](\d{1,2})[/\-](\d{1,2})/);
+      let m = String(c.birthday).match(/(\\d{4})[/\\-](\\d{1,2})[/\\-](\\d{1,2})/);
       if (m) bMonth = Number(m[2]);
     }
     const isBirthMonth = (bMonth === currentMonth);
@@ -632,10 +644,10 @@ function loadAdminCustomersList() {
 
         <!-- Nút Hành Động -->
         <div class="flex gap-2 pt-1">
-          <button type="button" onclick="openOwnerCustomerEditorModal('${rawP}', '${(c.customer_name || 'Khách').replace(/'/g, "\\'")}')" class="flex-1 py-2 px-3 rounded-full bg-white hover:bg-[#FFF0EB] text-[#7E7272] hover:text-[#E58A7B] border border-[#F0EAE1] text-xs font-bold transition flex items-center justify-center gap-1 cursor-pointer">
+          <button type="button" onclick="openOwnerCustomerEditorModal('${rawP}', '${(c.customer_name || 'Khách').replace(/'/g, "\\\\'")}')" class="flex-1 py-2 px-3 rounded-full bg-white hover:bg-[#FFF0EB] text-[#7E7272] hover:text-[#E58A7B] border border-[#F0EAE1] text-xs font-bold transition flex items-center justify-center gap-1 cursor-pointer">
             <i data-lucide="edit-3" class="w-3.5 h-3.5"></i> Sửa Info
           </button>
-          <button type="button" onclick="openGiftVoucherModal('${rawP}', '${(c.customer_name || 'Khách').replace(/'/g, "\\'")}')" class="flex-1 py-2 px-3 rounded-full bg-[#E8F8F5] hover:bg-[#D1F2EB] text-[#2E7D6D] border border-[#B7EBDD] text-xs font-extrabold transition flex items-center justify-center gap-1 cursor-pointer">
+          <button type="button" onclick="openGiftVoucherModal('${rawP}', '${(c.customer_name || 'Khách').replace(/'/g, "\\\\'")}')" class="flex-1 py-2 px-3 rounded-full bg-[#E8F8F5] hover:bg-[#D1F2EB] text-[#2E7D6D] border border-[#B7EBDD] text-xs font-extrabold transition flex items-center justify-center gap-1 cursor-pointer">
             <i data-lucide="gift" class="w-3.5 h-3.5"></i> Tặng Voucher
           </button>
         </div>
@@ -736,3 +748,34 @@ function handleSaveGiftVoucher(e) {
   alert(`🎁 Đã tặng thành công Voucher cho ${name}!`);
   loadAdminCustomersList();
 }
+'''
+
+with open(home_dash_path, "w", encoding="utf-8") as f:
+    f.write(new_home_code)
+
+# =========================================================================
+# 2. BUMP VERSION ACROSS APP
+# =========================================================================
+idx_file = os.path.join(BASE_DIR, "index.html")
+with open(idx_file, "r", encoding="utf-8") as f:
+    html = f.read()
+html = re.sub(r"\?v=\d+\.\d+\.\d+\.\d+(\.\d+)?", f"?v={NEW_VERSION}", html)
+html = re.sub(r"\?v=v\d+\.\d+\.\d+\.\d+(\.\d+)?", f"?v={NEW_VERSION}", html)
+with open(idx_file, "w", encoding="utf-8") as f:
+    f.write(html)
+
+cfg_file = os.path.join(BASE_DIR, "js", "config.js")
+with open(cfg_file, "r", encoding="utf-8") as f:
+    cfg = f.read()
+cfg = re.sub(r"const APP_VERSION = '[^']+';", f"const APP_VERSION = '{NEW_VERSION}';", cfg)
+with open(cfg_file, "w", encoding="utf-8") as f:
+    f.write(cfg)
+
+login_file = os.path.join(BASE_DIR, "views", "login.html")
+with open(login_file, "r", encoding="utf-8") as f:
+    l_html = f.read()
+l_html = re.sub(r"v\d+\.\d+\.\d+\.\d+(\.\d+)? • Selena Spa[^<]*", f"{NEW_VERSION} • Selena Spa", l_html)
+with open(login_file, "w", encoding="utf-8") as f:
+    f.write(l_html)
+
+print("DONE v0.1.4.0!")
