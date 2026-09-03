@@ -722,6 +722,18 @@ function calculateCartCommission(cartItems, staffUser, pctShare = 100) {
 window.calculateItemCommission = calculateItemCommission;
 window.calculateCartCommission = calculateCartCommission;
 
+// =============================================================
+// QUẢN LÝ ẨN/HIỆN TIỀN HOA HỒNG KTV (BẢO MẬT GIỐNG APP NGÂN HÀNG)
+// =============================================================
+let isStaffCommMasked = true; // Mặc định luôn che "+•••• đ"
+
+function toggleStaffCommPrivacy() {
+  isStaffCommMasked = !isStaffCommMasked;
+  updateStaff1CommissionPreview();
+  renderExtraStaffUI();
+}
+window.toggleStaffCommPrivacy = toggleStaffCommPrivacy;
+
 function updateStaff1CommissionPreview() {
   const commEl = document.getElementById('pos-staff1-comm-preview');
   if (!commEl) return;
@@ -733,7 +745,16 @@ function updateStaff1CommissionPreview() {
   const staffObj = users.find(u => normalizePhone(u.phone) === normalizePhone(s1Phone)) || currentUser;
 
   const commValue = calculateCartCommission(selectedCartItems, staffObj, staff1Pct);
-  commEl.innerText = `+${commValue.toLocaleString('vi-VN')} đ`;
+  const eyeEl = document.getElementById('pos-staff1-comm-eye');
+
+  if (isStaffCommMasked) {
+    commEl.innerText = '+•••• đ';
+    if (eyeEl) eyeEl.setAttribute('data-lucide', 'eye-off');
+  } else {
+    commEl.innerText = `+${commValue.toLocaleString('vi-VN')} đ`;
+    if (eyeEl) eyeEl.setAttribute('data-lucide', 'eye');
+  }
+  if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
 }
 
 function addExtraStaff() {
@@ -814,9 +835,14 @@ function renderExtraStaffUI() {
             <span class="font-extrabold text-[#2D2424]">KTV ${ktvNum} (Phụ):</span>
           </span>
           <div class="flex items-center gap-2">
-            <span class="text-xs font-extrabold text-[#2E7D6D] bg-[#E8F8F5] px-2.5 py-0.5 rounded-full border border-[#B7EBDD]">
-              +${staffComm.toLocaleString('vi-VN')} đ
-            </span>
+            <div onclick="toggleStaffCommPrivacy()" class="flex items-center gap-1.5 cursor-pointer select-none group" title="Bấm để ẩn/hiện hoa hồng">
+              <span class="text-xs font-extrabold text-[#2E7D6D] bg-[#E8F8F5] px-2.5 py-0.5 rounded-full border border-[#B7EBDD]/60 tracking-wider">
+                ${isStaffCommMasked ? '+•••• đ' : `+${staffComm.toLocaleString('vi-VN')} đ`}
+              </span>
+              <span class="text-[#A39696] group-hover:text-[#2E7D6D] transition p-0.5">
+                <i data-lucide="${isStaffCommMasked ? 'eye-off' : 'eye'}" class="w-3.5 h-3.5"></i>
+              </span>
+            </div>
             <button type="button" onclick="removeExtraStaff(${idx})" class="p-1 text-[#A39696] hover:text-rose-600 hover:bg-rose-100 rounded-full transition cursor-pointer" title="Xóa KTV này">
               <i data-lucide="x" class="w-4 h-4"></i>
             </button>

@@ -201,7 +201,14 @@
               <span id="pos-staff1-lock-icon" class="text-[#E58A7B]"><i data-lucide="lock" class="w-3.5 h-3.5"></i></span>
               <span class="font-extrabold text-[#2D2424]">KTV 1 (Chính):</span>
             </span>
-            <span id="pos-staff1-comm-preview" class="text-xs font-extrabold text-[#2E7D6D] bg-[#E8F8F5] px-2.5 py-0.5 rounded-full">+6.400 đ</span>
+            <div onclick="toggleStaffCommPrivacy()" class="flex items-center gap-1.5 cursor-pointer select-none group" title="Bấm để ẩn/hiện hoa hồng">
+              <span id="pos-staff1-comm-preview" class="text-xs font-extrabold text-[#2E7D6D] bg-[#E8F8F5] px-2.5 py-0.5 rounded-full border border-[#B7EBDD]/60 tracking-wider">
+                +•••• đ
+              </span>
+              <span class="text-[#A39696] group-hover:text-[#2E7D6D] transition p-0.5">
+                <i id="pos-staff1-comm-eye" data-lucide="eye-off" class="w-3.5 h-3.5"></i>
+              </span>
+            </div>
           </div>
           
           <select id="pos-staff1-select" onchange="onStaff1SelectChange()" class="w-full bg-white border border-[#EFE8DF] rounded-xl p-3 text-[#2D2424] font-bold text-sm focus:outline-none focus:border-[#E58A7B] disabled:opacity-80 disabled:bg-[#F7F2EC] cursor-pointer"></select>
