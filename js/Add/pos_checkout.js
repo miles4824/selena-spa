@@ -1331,7 +1331,7 @@ function startLiveSession() {
   } else {
     // Nếu Admin phân công cho KTV khác -> Màn hình Admin giữ form trống để tiếp tục đón khách mới
     const assignedNames = allStaffs.map(s => s.name).join(' & ');
-    alert(`✅ ĐÃ PHÂN CÔNG TOUR THÀNH CÔNG!\n\n• Dịch vụ: ${service.service_name}\n• Khách hàng: ${name}\n• KTV phục vụ: ${assignedNames}\n\nTour đã được gửi đến điện thoại của KTV để bắt đầu phục vụ.`);
+    alert(`✅ ĐÃ PHÂN CÔNG TOUR THÀNH CÔNG!\n\n• Dịch vụ: ${serviceDisplayName}\n• Khách hàng: ${name}\n• KTV phục vụ: ${assignedNames}\n\nTour đã được gửi đến điện thoại của KTV để bắt đầu phục vụ.`);
     
     currentLiveSession = null;
     localStorage.removeItem('selena_active_live_session');
