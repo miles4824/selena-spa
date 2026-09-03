@@ -303,6 +303,11 @@ function getCategoriesList() {
   let sheet = ss.getSheetByName('tb_categories');
   if (!sheet) {
     sheet = ss.insertSheet('tb_categories');
+  }
+
+  let data = sheet.getDataRange().getValues();
+  if (data.length <= 1 || (data.length === 1 && !data[0][0])) {
+    sheet.clear();
     sheet.appendRow(['category_id', 'category_name', 'icon', 'icon_color', 'item_icon', 'sort_order', 'is_active']);
     sheet.getRange(1, 1, 1, 7).setFontWeight('bold').setBackground('#FFF0EB');
     const defaultCats = [
@@ -317,10 +322,10 @@ function getCategoriesList() {
       ['MP', 'Mỹ Phẩm Bán Lẻ', 'shopping-bag', 'text-[#F59E0B]', '💄', 9, 'TRUE']
     ];
     defaultCats.forEach(function(row) { sheet.appendRow(row); });
+    data = sheet.getDataRange().getValues();
   }
 
   const colMap = createHeaderMap(sheet);
-  let data = sheet.getDataRange().getValues();
   let categories = [];
 
   for (let i = 1; i < data.length; i++) {
