@@ -46,6 +46,11 @@
 ---
 
 ## 3. Lịch Sử Thay Đổi & Lưu Vết (Audit Log)
+- `2026-09-03` (`v0.1.5.0`):
+  + Triển khai Giai đoạn 1 Hệ Thống UI Component System (Tailwind 4 Modular) theo Điều 15 `PROJECT_RULES.md`:
+    - Tích hợp 3 component cốt lõi `AppButton`, `StatCard`, `StatusBadge` vào `js/Core/Components/`.
+    - Tinh gọn `views/staff/home.html` và `views/owner/home.html` thành khung layout rỗng sạch sẽ.
+    - Chuyển đổi toàn bộ nút bấm hành động và thẻ chỉ số thành tích trên cả Staff và Admin sang Component.
 - `2026-09-03` (`v0.1.4.9`):
   + Đảo vị trí 2 thẻ thành tích hôm nay của KTV: Thẻ 'Tour hôm nay' (Xanh dương) nằm bên trái, Thẻ 'Thu nhập hôm nay' (Xanh mint) nằm bên phải.
 - `2026-09-03` (`v0.1.4.8`):

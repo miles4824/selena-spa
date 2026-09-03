@@ -49,35 +49,7 @@
       <i data-lucide="trending-up" class="w-4 h-4 text-[#2E7D6D]"></i> Chỉ Số Nhanh Hôm Nay (Today Snapshot)
     </span>
 
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-      <!-- 1. Doanh thu hôm nay -->
-      <div class="p-5 rounded-3xl bg-[#E8F8F5] border border-[#B7EBDD] space-y-1 shadow-xs">
-        <span class="text-xs font-bold text-[#2E7D6D] uppercase tracking-wider block">Doanh Thu Hôm Nay</span>
-        <div class="text-2xl sm:text-3xl font-extrabold text-[#2D2424]" id="admin-today-revenue">0 đ</div>
-        <span class="text-xs text-[#2E7D6D] font-medium block" id="admin-today-tour-count">0 ca hoàn thành</span>
-      </div>
-
-      <!-- 2. Số lượt khách / tour hôm nay -->
-      <div class="p-5 rounded-3xl bg-[#EBF5FB] border border-[#D4E6F1] space-y-1 shadow-xs">
-        <span class="text-xs font-bold text-[#2980B9] uppercase tracking-wider block">Lượt Khách / Tour</span>
-        <div class="text-2xl sm:text-3xl font-extrabold text-[#2D2424]" id="admin-today-guest-count">0 lượt</div>
-        <span class="text-xs text-[#2980B9] font-medium block">Phục vụ trong ngày</span>
-      </div>
-
-      <!-- 3. Lương KTV phát sinh hôm nay -->
-      <div class="p-5 rounded-3xl bg-[#F5EEF8] border border-[#E8DAEF] space-y-1 shadow-xs">
-        <span class="text-xs font-bold text-[#8E44AD] uppercase tracking-wider block">Lương KTV Phát Sinh</span>
-        <div class="text-2xl sm:text-3xl font-extrabold text-[#2D2424]" id="admin-today-salaries">0 đ</div>
-        <span class="text-xs text-[#8E44AD] font-medium block">Hoa hồng + tips</span>
-      </div>
-
-      <!-- 4. Lợi nhuận tạm tính hôm nay -->
-      <div class="p-5 rounded-3xl bg-[#E58A7B] text-white space-y-1 shadow-lg shadow-[#E58A7B]/20 col-span-2 sm:col-span-1">
-        <span class="text-xs font-extrabold text-white/90 uppercase tracking-wider block">LỢI NHUẬN TẠM TÍNH</span>
-        <div class="text-2xl sm:text-3xl font-extrabold text-white" id="admin-today-profit">0 đ</div>
-        <span class="text-xs text-white/90 font-medium block">Doanh thu - Lương - Chi phí</span>
-      </div>
-    </div>
+    <div id="admin-today-snapshot-container" class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4"></div>
   </div>
 
   <!-- CỤM 4: THÔNG BÁO ĐANG PHÁT CHO KTV -->

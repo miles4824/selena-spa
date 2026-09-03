@@ -312,19 +312,39 @@ function loadKTVHomeStats() {
     sloganEl.innerText = sloganVal;
   }
 
-  const toursEl = document.getElementById('home-today-tours');
-  const commEl = document.getElementById('home-today-comm');
-  const eyeEl = document.getElementById('staff-home-comm-eye');
   const totalToday = todayComm + todayTips;
-
-  if (toursEl) toursEl.innerText = todayTours + ' tour';
-  if (commEl) {
-    if (isStaffHomeCommMasked) {
-      commEl.innerText = '•••• đ';
-      if (eyeEl) eyeEl.setAttribute('data-lucide', 'eye-off');
-    } else {
-      commEl.innerText = `${totalToday.toLocaleString('vi-VN')} đ`;
-      if (eyeEl) eyeEl.setAttribute('data-lucide', 'eye');
+  const statsContainer = document.getElementById('staff-home-stats-container');
+  if (statsContainer && typeof StatCard === 'function') {
+    const formattedComm = isStaffHomeCommMasked ? '•••• đ' : `${totalToday.toLocaleString('vi-VN')} đ`;
+    statsContainer.innerHTML = `
+      ${StatCard({
+        id: 'home-today-tours',
+        title: 'Tour hôm nay',
+        value: todayTours + ' tour',
+        subtitle: 'Phục vụ trong ngày',
+        color: 'blue'
+      })}
+      ${StatCard({
+        id: 'home-today-comm',
+        title: 'Thu nhập hôm nay',
+        value: formattedComm,
+        subtitle: 'Hoa hồng + Tip tích lũy',
+        color: 'mint',
+        isPrivacy: true,
+        privacyEyeId: 'staff-home-comm-eye',
+        onPrivacyToggle: 'toggleStaffHomeCommPrivacy()'
+      })}
+    `;
+    const eyeEl = document.getElementById('staff-home-comm-eye');
+    if (eyeEl) eyeEl.setAttribute('data-lucide', isStaffHomeCommMasked ? 'eye-off' : 'eye');
+  } else {
+    const toursEl = document.getElementById('home-today-tours');
+    const commEl = document.getElementById('home-today-comm');
+    const eyeEl = document.getElementById('staff-home-comm-eye');
+    if (toursEl) toursEl.innerText = todayTours + ' tour';
+    if (commEl) {
+      commEl.innerText = isStaffHomeCommMasked ? '•••• đ' : `${totalToday.toLocaleString('vi-VN')} đ`;
+      if (eyeEl) eyeEl.setAttribute('data-lucide', isStaffHomeCommMasked ? 'eye-off' : 'eye');
     }
   }
 
