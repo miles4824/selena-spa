@@ -80,7 +80,7 @@ function parseBirthMonth(val) {
   return 0;
 }
 
-const APP_VERSION = 'v0.1.4.3';
+const APP_VERSION = 'v0.1.4.4';
 // =============================================================
 // SELENA SPA - GLOBAL CONFIG & CONSTANTS
 // =============================================================
@@ -895,7 +895,9 @@ const DEFAULT_UI_CONFIG = {
   ph_add_exp_amount: 'Ví dụ: 350000',
   ph_add_exp_note: 'Ghi chú chi tiết...',
   ph_announcement: 'Nhập thông báo gửi đến toàn thể kỹ thuật viên...',
-  ph_gift_voucher_note: 'VD: Khách VIP, Quà tri ân...'
+  ph_gift_voucher_note: 'VD: Khách VIP, Quà tri ân...',
+  home_greeting_slogan: 'hôm nay sẵn sàng tỏa sáng chưa? ✨',
+  home_free_quote: 'Mỗi tour gội là một trải nghiệm thư giãn tuyệt vời gửi gắm đến khách hàng thân yêu.'
 };
 
 function applyDynamicUIConfig(customConfig) {

@@ -80,6 +80,7 @@ async function showView(view) {
       loadKTVHomeStats();
     }
     renderAnnouncement();
+  if (typeof applyDynamicUIConfig === 'function') applyDynamicUIConfig();
   } else if (view === 'add') {
     targetEl = document.getElementById('view-add');
     initMenuUI();
@@ -234,6 +235,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   initMenuUI();
   renderQuickAccounts();
   renderAnnouncement();
+  if (typeof applyDynamicUIConfig === 'function') applyDynamicUIConfig();
 
   const inp = document.getElementById('setting-gas-url');
   if (inp) inp.value = getGasUrl();

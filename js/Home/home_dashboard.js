@@ -163,7 +163,8 @@ function renderHomeStatusAndActionButton() {
       }
       if (descEl) {
         const uiConfig = (typeof getStored === 'function') ? getStored('ui_config', {}) : {};
-        descEl.innerText = uiConfig.home_free_quote || 'Mỗi tour gội là một trải nghiệm thư giãn tuyệt vời gửi gắm đến khách hàng thân yêu.';
+        const quoteVal = uiConfig.home_free_quote || uiConfig.HOME_FREE_QUOTE || 'Mỗi tour gội là một trải nghiệm thư giãn tuyệt vời gửi gắm đến khách hàng thân yêu.';
+        descEl.innerText = quoteVal;
       }
       if (btnContainer) {
         btnContainer.innerHTML = `
@@ -283,7 +284,8 @@ function loadKTVHomeStats() {
   const uiConfig = (typeof getStored === 'function') ? getStored('ui_config', {}) : {};
   const sloganEl = document.getElementById('home-greeting-slogan');
   if (sloganEl) {
-    sloganEl.innerText = uiConfig.home_greeting_slogan || 'hôm nay sẵn sàng tỏa sáng chưa? ✨';
+    const sloganVal = uiConfig.home_greeting_slogan || uiConfig.HOME_GREETING_SLOGAN || 'hôm nay sẵn sàng tỏa sáng chưa? ✨';
+    sloganEl.innerText = sloganVal;
   }
 
   const toursEl = document.getElementById('home-today-tours');

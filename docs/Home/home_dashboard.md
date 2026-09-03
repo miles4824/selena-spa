@@ -46,6 +46,12 @@
 ---
 
 ## 3. Lịch Sử Thay Đổi & Lưu Vết (Audit Log)
+- `2026-09-03` (`v0.1.4.4`):
+  + Cập nhật màu số tiền thu nhập: bỏ class `text-[#2E7D6D]`, chuyển sang màu đen sẫm chủ đạo `text-[#2D2424]`.
+  + Khắc phục triệt để đồng bộ câu chào và câu châm ngôn từ `tb_config`:
+    - Thêm `home_greeting_slogan` và `home_free_quote` vào `DEFAULT_UI_CONFIG` và hàm `applyDynamicUIConfig()`.
+    - Hỗ trợ cả key chữ thường và chữ hoa (`home_greeting_slogan` & `HOME_GREETING_SLOGAN`).
+    - Kích hoạt `applyDynamicUIConfig()` ngay khi tải trang và mỗi khi đồng bộ từ Google Sheets.
 - `2026-09-03` (`v0.1.4.3`): Cập nhật class CSS cho `#staff-home-status-desc`: bỏ `text-xs sm:text-sm`, đặt cố định `text-sm` giúp kích thước chữ mô tả trạng thái tour rõ ràng, dễ đọc trên cả màn hình di động lẫn máy tính để bàn.
 - `2026-09-03` (`v0.1.4.2`): Tinh chỉnh trải nghiệm Trang Home KTV theo góp ý:
   + Ghi nhớ trạng thái ẩn/hiện tiền trong phiên bằng localStorage (`selena_staff_home_comm_masked`): khi người dùng mở xem tiền, chuyển tab và quay lại Trang Home vẫn giữ nguyên trạng thái hiển thị, không bị tự động ẩn lại.
