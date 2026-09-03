@@ -52,8 +52,15 @@
       <span class="text-[11px] text-[#A39696] font-medium" id="staff-home-today-date">Hôm nay</span>
     </div>
 
-    <div class="grid grid-cols-2 gap-3 sm:gap-4">
-      <!-- 1. Thu nhập hôm nay (Màu xanh ngọc mint giống Admin hình 2, dồn về bên trái) -->
+        <div class="grid grid-cols-2 gap-3 sm:gap-4">
+      <!-- 1. Tour hôm nay (Màu xanh dương pastel) -->
+      <div class="p-4 sm:p-5 rounded-3xl bg-[#EBF5FB] border border-[#D4E6F1] space-y-1 shadow-xs">
+        <span class="text-xs font-bold text-[#2980B9] uppercase tracking-wider block">Tour hôm nay</span>
+        <div class="text-2xl sm:text-3xl font-extrabold text-[#2D2424]" id="home-today-tours">0 tour</div>
+        <span class="text-xs text-[#2980B9] font-medium block">Phục vụ trong ngày</span>
+      </div>
+
+      <!-- 2. Thu nhập hôm nay (Màu xanh ngọc mint) -->
       <div class="p-4 sm:p-5 rounded-3xl bg-[#E8F8F5] border border-[#B7EBDD] space-y-1 shadow-xs">
         <div class="flex items-center gap-1.5">
           <span class="text-xs font-bold text-[#2E7D6D] uppercase tracking-wider block">Thu nhập hôm nay</span>
@@ -63,13 +70,6 @@
         </div>
         <div onclick="toggleStaffHomeCommPrivacy()" class="text-2xl sm:text-3xl font-extrabold font-mono text-[#2D2424] tracking-tight cursor-pointer select-none" id="home-today-comm">•••• đ</div>
         <span class="text-xs text-[#2E7D6D] font-medium block">Hoa hồng + Tip tích lũy</span>
-      </div>
-
-      <!-- 2. Tour hôm nay (Màu xanh dương pastel giống Admin hình 2, dồn về bên trái) -->
-      <div class="p-4 sm:p-5 rounded-3xl bg-[#EBF5FB] border border-[#D4E6F1] space-y-1 shadow-xs">
-        <span class="text-xs font-bold text-[#2980B9] uppercase tracking-wider block">Tour hôm nay</span>
-        <div class="text-2xl sm:text-3xl font-extrabold text-[#2D2424]" id="home-today-tours">0 tour</div>
-        <span class="text-xs text-[#2980B9] font-medium block">Phục vụ trong ngày</span>
       </div>
     </div>
   </div>

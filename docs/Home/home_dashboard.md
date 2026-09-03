@@ -46,6 +46,8 @@
 ---
 
 ## 3. Lịch Sử Thay Đổi & Lưu Vết (Audit Log)
+- `2026-09-03` (`v0.1.4.9`):
+  + Đảo vị trí 2 thẻ thành tích hôm nay của KTV: Thẻ 'Tour hôm nay' (Xanh dương) nằm bên trái, Thẻ 'Thu nhập hôm nay' (Xanh mint) nằm bên phải.
 - `2026-09-03` (`v0.1.4.8`):
   + Tinh chỉnh cụm thành tích hôm nay của KTV đồng bộ 100% với giao diện Admin (Hình 2):
     - Bỏ `text-center`, canh lề trái dồn về 1 bên chuẩn chỉ.
