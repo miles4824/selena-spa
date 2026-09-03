@@ -337,6 +337,52 @@ const SERVICE_CATEGORIES = [
   { prefix: 'DV_CY', title: '💎 Cấy Dưỡng Chuyên Sâu', icon: 'gem', iconColor: 'text-[#7C3AED]', itemIcon: '💎' }
 ];
 
+// =============================================================
+// HELPER GOM NHÓM DANH MỤC DỊCH VỤ HOÀN TOÀN ĐỘNG TỪ TB_CATEGORIES & CATEGORY_ID
+// =============================================================
+function getGroupedMenuItems(availableItems) {
+  const categories = (typeof getStored === 'function' ? getStored('categories', (typeof DEFAULT_CATEGORIES !== 'undefined' ? DEFAULT_CATEGORIES : [])) : (typeof DEFAULT_CATEGORIES !== 'undefined' ? DEFAULT_CATEGORIES : [])).filter(c => c && c.is_active !== false);
+  categories.sort((a, b) => (Number(a.sort_order) || 99) - (Number(b.sort_order) || 99));
+
+  const groupsMap = new Map();
+  const matchedItemIds = new Set();
+
+  categories.forEach(cat => {
+    const groupItems = availableItems.filter(item => {
+      const itemCatId = String(item.category_id || item.category || '').trim();
+      const sId = String(item.service_id || '').trim();
+      return (itemCatId && (itemCatId === cat.category_id || itemCatId.toLowerCase() === String(cat.category_name || '').toLowerCase())) ||
+             (!itemCatId && sId.startsWith(cat.category_id));
+    });
+
+    if (groupItems.length > 0) {
+      groupItems.forEach(item => matchedItemIds.add(item.service_id));
+      groupsMap.set(cat.category_id, {
+        title: cat.category_name,
+        icon: cat.icon || 'sparkles',
+        iconColor: cat.icon_color || 'text-[#E58A7B]',
+        itemIcon: cat.item_icon || '✨',
+        items: groupItems
+      });
+    }
+  });
+
+  // Gom các món chưa được phân loại vào nhóm Dịch Vụ Khác ở dưới cùng
+  const unclassifiedItems = availableItems.filter(item => !matchedItemIds.has(item.service_id));
+  if (unclassifiedItems.length > 0) {
+    groupsMap.set('OTHER', {
+      title: '✨ Dịch Vụ Khác',
+      icon: 'sparkles',
+      iconColor: 'text-[#E58A7B]',
+      itemIcon: '✨',
+      items: unclassifiedItems
+    });
+  }
+
+  return Array.from(groupsMap.values());
+}
+window.getGroupedMenuItems = getGroupedMenuItems;
+
 function renderMenuDropdown() {
   const itemsContainer = document.getElementById('pos-custom-dropdown-items');
   const placeholderEl = document.getElementById('pos-dropdown-placeholder-text');
@@ -372,48 +418,26 @@ function renderMenuDropdown() {
 
   let html = '';
 
-  SERVICE_CATEGORIES.forEach(cat => {
-    const groupItems = availableItems.filter(m => String(m.service_id).startsWith(cat.prefix));
-    if (groupItems.length > 0) {
-      html += `
-        <div class="px-2.5 py-1.5 mt-2 first:mt-0 text-[11px] font-black text-[#7E7272] uppercase tracking-wider bg-[#F7F2EC] rounded-xl flex items-center gap-1.5 sticky top-0 z-10 shadow-2xs">
-          <i data-lucide="${cat.icon}" class="w-3.5 h-3.5 ${cat.iconColor}"></i>
-          <span>${cat.title}</span>
-        </div>
-      `;
-      html += groupItems.map(m => `
-        <div onclick="addCartItemFromDropdown('${m.service_id}')" class="p-2.5 rounded-xl hover:bg-[#FFF0EB] hover:text-[#E58A7B] transition cursor-pointer flex justify-between items-center text-xs font-bold text-[#2D2424] group">
-          <span class="truncate flex items-center gap-2">
-            <span>${cat.itemIcon}</span> <span>${m.service_name}</span>
-          </span>
-          <span class="font-mono text-[#7E7272] group-hover:text-[#E58A7B] text-[11px] shrink-0 font-extrabold">
-            ${Number(m.price).toLocaleString('vi-VN')} đ • ${m.duration_min}p
-          </span>
-        </div>
-      `).join('');
-    }
-  });
+  const groups = getGroupedMenuItems(availableItems);
 
-  // Món khác nếu có
-  const mappedPrefixes = SERVICE_CATEGORIES.map(c => c.prefix);
-  const otherItems = availableItems.filter(m => !mappedPrefixes.some(p => String(m.service_id).startsWith(p)));
-  if (otherItems.length > 0) {
+  groups.forEach(group => {
     html += `
-      <div class="px-2.5 py-1.5 mt-2 text-[11px] font-black text-[#7E7272] uppercase tracking-wider bg-[#F7F2EC] rounded-xl flex items-center gap-1.5">
-        <i data-lucide="sparkles" class="w-3.5 h-3.5 text-[#E58A7B]"></i> <span>✨ Dịch Vụ Khác</span>
+      <div class="px-2.5 py-1.5 mt-2 first:mt-0 text-[11px] font-black text-[#7E7272] uppercase tracking-wider bg-[#F7F2EC] rounded-xl flex items-center gap-1.5 sticky top-0 z-10 shadow-2xs">
+        <i data-lucide="${group.icon}" class="w-3.5 h-3.5 ${group.iconColor}"></i>
+        <span>${group.title}</span>
       </div>
     `;
-    html += otherItems.map(m => `
+    html += group.items.map(m => `
       <div onclick="addCartItemFromDropdown('${m.service_id}')" class="p-2.5 rounded-xl hover:bg-[#FFF0EB] hover:text-[#E58A7B] transition cursor-pointer flex justify-between items-center text-xs font-bold text-[#2D2424] group">
         <span class="truncate flex items-center gap-2">
-          <span>✨</span> <span>${m.service_name}</span>
+          <span>${group.itemIcon}</span> <span>${m.service_name}</span>
         </span>
         <span class="font-mono text-[#7E7272] group-hover:text-[#E58A7B] text-[11px] shrink-0 font-extrabold">
           ${Number(m.price).toLocaleString('vi-VN')} đ • ${m.duration_min}p
         </span>
       </div>
     `).join('');
-  }
+  });
 
   itemsContainer.innerHTML = html;
   if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
