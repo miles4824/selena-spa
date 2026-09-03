@@ -177,3 +177,30 @@ Mỗi khi người dùng yêu cầu gửi mã dữ liệu / dữ liệu mẫu / 
 3. **Quy Tắc Khi Tạo Dữ Liệu Mẫu / Test Data**:
    - Chỉ được phép tạo dữ liệu mẫu khi có **lệnh yêu cầu trực tiếp bằng văn bản từ người dùng**.
    - Ngay cả khi tạo dữ liệu mẫu để test, **BẮT BUỘC PHẢI DỰA 100% VÀO CẤU TRÚC TIÊU ĐỀ (HEADER COLUMNS) THỰC TẾ CỦA GOOGLE SHEETS**, tuyệt đối không được tự ý đổi tên cột, thiếu cột hoặc chế thêm cột lạ làm sai lệch hệ thống.
+
+---
+
+## 🧩 15. NGUYÊN TẮC HỆ THỐNG UI SYSTEM & REUSABLE COMPONENTS (TAILWIND 4 COMPONENT-DRIVEN)
+Nhằm đảm bảo giao diện thống nhất $100\%$ giữa Admin và Staff, dễ dàng tùy biến giao diện bằng **Tailwind 4** mà **chỉ cần sửa đúng 1 nơi duy nhất**, toàn bộ dự án tuân thủ các quy chuẩn sau:
+
+1. **Kiến Trúc Module Tách Biệt Theo File Độc Lập (`js/Core/Components/`)**:
+   - Mỗi loại thành phần giao diện được đặt trong **1 file riêng biệt** mang tên thành phần đó (theo chuẩn snake_case):
+     + `app_button.js`: Nút bấm hành động toàn app (`AppButton`).
+     + `stat_card.js`: Thẻ số liệu & thành tích (`StatCard`).
+     + `status_badge.js`: Huy hiệu trạng thái Sẵn sàng / Trong tour (`StatusBadge`).
+     + `role_badge.js`: Huy hiệu vai trò Chủ tiệm / KTV (`RoleBadge`).
+     + `bed_card.js`: Thẻ giám sát giường trực tiếp (`BedCard`).
+     + `home_banner.js`: Khung banner chào đón (`HomeBanner`).
+     + `modal_shell.js`: Khung nền popup chuẩn (`ModalShell`).
+   - Tuyệt đối không gộp chung toàn bộ component vào 1 file khổng lồ khó quản lý.
+
+2. **Nguyên Tắc Phân Tách Trách Nhiệm (Decoupling Giao Diện vs Dữ Liệu/Hành Động)**:
+   - **Component chỉ quản lý GIAO DIỆN**: Màu sắc Tailwind 4, bo góc, hiệu ứng hover/active, bóng đổ, icon.
+   - **Nơi gọi component truyền vào DỮ LIỆU & HÀNH ĐỘNG**:
+     + `text`: Câu chữ hiển thị (tiếng Việt, tiếng Anh, hoặc động từ `tb_config`).
+     + `onClick`: Hành động khi bấm (hàm chuyển tab `showView`, mở modal, thanh toán...).
+     + `variant` / `color` / `size`: Chọn biến thể hiển thị theo ngữ cảnh.
+
+3. **Mô Hình Khung Xương & Nội Thất (Hybrid Architecture với `views/`)**:
+   - Thư mục `views/` giữ các file HTML đóng vai trò **khung sườn (Layout Skeleton)** với các hộp `<div>` rỗng sạch sẽ.
+   - JavaScript Component chịu trách nhiệm "bơm nội thất" chi tiết vào các hộp đó khi nạp trang.
