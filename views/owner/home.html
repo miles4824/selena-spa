@@ -1,18 +1,21 @@
 <main id="view-home" class="flex-1 p-4 sm:p-6 max-w-5xl w-full mx-auto space-y-6 pb-28">
-  <!-- CỤM 1: HEADER & TRẠNG THÁI NHÂN SỰ -->
-  <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-    <div>
-      <h2 class="text-2xl sm:text-3xl font-extrabold text-[#2D2424] flex items-center gap-2.5">
-        <span>👑 Chào chủ sáng lập</span>
-        <span class="text-[#E58A7B] text-xl sm:text-2xl font-serif font-medium">(Hi Miles ✨)</span>
+  <!-- CỤM 1: WELLNESS BANNER CHỦ SÁNG LẬP & NÚT TRẠNG THÁI BIẾN HÌNH (CHUẨN LUXURY NHƯ STAFF) -->
+  <div class="bg-white rounded-[28px] border border-[#F0EAE1] shadow-[0_10px_30px_-5px_rgba(229,138,123,0.05),0_4px_12px_rgba(0,0,0,0.02)] p-6 sm:p-7 relative overflow-hidden bg-gradient-to-br from-[#FFF0EB] via-[#FFFFFF] to-[#FAF6F1]">
+    <div class="relative z-10 space-y-3.5">
+      <div class="flex items-center">
+        <!-- Huy hiệu trạng thái: Sẵn sàng phục vụ hoặc Đang trong tour -->
+        <div id="admin-home-status-badge" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold"></div>
+      </div>
+
+      <h2 class="text-2xl font-medium font-serif text-[#2D2424]">
+        Chào <span id="admin-greeting-name" class="text-[#E58A7B]">Chủ sáng lập (Miles)</span>, <span id="admin-greeting-slogan">hôm nay tiệm vận hành tuyệt vời chứ? ✨</span>
       </h2>
-      <p class="text-xs sm:text-sm text-[#7E7272] mt-0.5">Kiểm soát vận hành trực tiếp & thống kê tài chính thời gian thực</p>
-    </div>
-    
-    <!-- Thanh trạng thái & Nút hành động của Admin (nếu trực tiếp vào ca) -->
-    <div class="flex items-center gap-2.5 w-full sm:w-auto justify-between sm:justify-end">
-      <div id="admin-home-status-badge" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold"></div>
-      <div id="admin-home-action-btn-container"></div>
+      <p class="text-[#7E7272] text-sm max-w-md leading-relaxed" id="admin-home-status-desc">
+        Kiểm soát vận hành các giường trực tiếp & theo dõi chỉ số tài chính thời gian thực.
+      </p>
+
+      <!-- Nút hành động biến hình chuẩn pill: [💆 VÀO TOUR NGAY] hoặc [⏱️ VÀO XEM NGAY] -->
+      <div class="pt-2" id="admin-home-action-btn-container"></div>
     </div>
   </div>
 

@@ -46,6 +46,10 @@
 ---
 
 ## 3. Lịch Sử Thay Đổi & Lưu Vết (Audit Log)
+- `2026-09-03` (`v0.1.4.7`):
+  + Đồng bộ 100% phong cách thẻ Wellness Banner sang trọng từ Staff sang Admin:
+    - Bọc cụm chào mừng của Admin trong Card Luxury Bo góc 28px viền #F0EAE1 và nền gradient ấm áp `#FFF0EB` -> `#FAF6F1`.
+    - Thống nhất kích thước nút hành động tròn bo cong pill, chữ to rõ ràng `VÀO TOUR NGAY` / `VÀO XEM NGAY`.
 - `2026-09-03` (`v0.1.4.6`):
   + Tự động cập nhật tức thì màn hình Admin khi KTV kết thúc tour mà không cần bấm F5:
     - Bổ sung `renderAdminLiveRunningTours()` và `renderAdminTodaySnapshot()` vào listener `live_sessions` của Firebase Realtime.

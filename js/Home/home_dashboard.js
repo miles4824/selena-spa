@@ -149,9 +149,9 @@ function renderHomeStatusAndActionButton() {
       }
       if (btnContainer) {
         btnContainer.innerHTML = `
-          <button onclick="showView('add')" class="px-4 py-2 rounded-2xl bg-[#E58A7B] hover:bg-[#D9796A] text-white font-extrabold text-xs sm:text-sm shadow-md shadow-[#E58A7B]/20 transition flex items-center gap-2 cursor-pointer active:scale-95">
-            <i data-lucide="plus-circle" class="w-4 h-4"></i>
-            <span>Vào Tour Ngay</span>
+          <button onclick="showView('add')" class="w-full sm:w-auto px-7 py-3.5 rounded-full bg-gradient-to-r from-[#E58A7B] to-[#F09A8D] hover:opacity-95 text-white font-extrabold text-sm sm:text-base shadow-lg shadow-[#E58A7B]/25 transition flex items-center justify-center gap-2.5 cursor-pointer active:scale-95">
+            <i data-lucide="plus-circle" class="w-5 h-5"></i>
+            <span>VÀO TOUR NGAY</span>
           </button>
         `;
       }
