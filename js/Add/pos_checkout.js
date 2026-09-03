@@ -288,9 +288,14 @@ function handleOutsideClickDropdown(e) {
   const container = document.getElementById('pos-tag-container');
   if (!popover || popover.classList.contains('hidden')) return;
 
-  if (!popover.contains(e.target) && !container.contains(e.target)) {
-    closeCustomDropdownPopover();
-  }
+  const path = (e.composedPath && e.composedPath()) || [];
+  if (path.includes(popover) || path.includes(container)) return;
+  if (e.target && !e.target.isConnected) return; // Nếu phần tử vừa được render lại trong lượt click này thì không đóng
+
+  if (container && container.contains(e.target)) return;
+  if (popover && popover.contains(e.target)) return;
+
+  closeCustomDropdownPopover();
 }
 
 function toggleCustomDropdownPopover(e) {
@@ -2938,9 +2943,11 @@ function renderModalMenuDropdown() {
 
   let html = '';
 
+  const matchedModalServiceIds = new Set();
   SERVICE_CATEGORIES.forEach(cat => {
     const groupItems = availableItems.filter(m => String(m.service_id).startsWith(cat.prefix));
     if (groupItems.length > 0) {
+      groupItems.forEach(m => matchedModalServiceIds.add(m.service_id));
       html += `
         <div class="px-2.5 py-1 text-[10px] font-black text-[#7E7272] uppercase tracking-wider bg-[#F7F2EC] rounded-xl flex items-center gap-1.5 sticky top-0 z-10 shadow-2xs">
           <i data-lucide="${cat.icon}" class="w-3 h-3 ${cat.iconColor}"></i>
@@ -2959,6 +2966,27 @@ function renderModalMenuDropdown() {
       `).join('');
     }
   });
+
+  // Tự động gom nhóm cho tất cả các dịch vụ mới thêm từ Google Sheets
+  const otherModalItems = availableItems.filter(m => !matchedModalServiceIds.has(m.service_id));
+  if (otherModalItems.length > 0) {
+    html += `
+      <div class="px-2.5 py-1 text-[10px] font-black text-[#7E7272] uppercase tracking-wider bg-[#F7F2EC] rounded-xl flex items-center gap-1.5 sticky top-0 z-10 shadow-2xs">
+        <i data-lucide="sparkles" class="w-3 h-3 text-[#E58A7B]"></i>
+        <span>✨ Dịch Vụ Khác / Mới Thêm</span>
+      </div>
+    `;
+    html += otherModalItems.map(m => `
+      <div onclick="addModalCartItemFromDropdown('${m.service_id}')" class="p-2 rounded-xl hover:bg-[#FFF0EB] hover:text-[#E58A7B] transition cursor-pointer flex justify-between items-center text-xs font-bold text-[#2D2424] group">
+        <span class="truncate flex items-center gap-1.5">
+          <span>✨</span> <span>${m.service_name}</span>
+        </span>
+        <span class="font-mono text-[#7E7272] group-hover:text-[#E58A7B] text-[11px] shrink-0 font-extrabold">
+          ${Number(m.price).toLocaleString('vi-VN')} đ • ${m.duration_min}p
+        </span>
+      </div>
+    `).join('');
+  }
 
   itemsContainer.innerHTML = html;
   if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
