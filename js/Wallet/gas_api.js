@@ -73,6 +73,7 @@ async function refreshDataFromGoogleSheets() {
     const result = await callGasApi('sync_all_data');
     if (result && (result.status === 'success' || result.success === true)) {
       const payload = result.data || result;
+      if (Array.isArray(payload.categories) && payload.categories.length > 0) setStored('categories', payload.categories);
       if (Array.isArray(payload.menu) && payload.menu.length > 0) setStored('menu', payload.menu);
       if (Array.isArray(payload.users) && payload.users.length > 0) setStored('users', payload.users);
       if (Array.isArray(payload.customers)) setStored('customers', payload.customers);

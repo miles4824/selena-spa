@@ -237,6 +237,18 @@ function setupRealtimeListeners() {
     }
   });
 
+  // Lắng nghe Danh mục Hạng mục (tb_categories)
+  fbDb.ref('categories').on('value', snapshot => {
+    const data = snapshot.val();
+    if (data) {
+      const list = Object.values(data);
+      list.sort((a, b) => (Number(a.sort_order) || 99) - (Number(b.sort_order) || 99));
+      setStored('categories', list);
+      if (typeof renderMenuDropdown === 'function') renderMenuDropdown();
+      if (typeof renderModalMenuDropdown === 'function') renderModalMenuDropdown();
+    }
+  });
+
   // Lắng nghe Menu dịch vụ
   fbDb.ref('menu').on('value', snapshot => {
     const data = snapshot.val();
@@ -363,6 +375,12 @@ async function fbSyncAllFromSheets(payload) {
   if (!fbDb || !payload) return;
   try {
     const updates = {};
+
+        if (Array.isArray(payload.categories) && payload.categories.length > 0) {
+      const catObj = {};
+      payload.categories.forEach(c => { if (c.category_id) catObj[c.category_id] = c; });
+      updates['categories'] = catObj;
+    }
 
     if (Array.isArray(payload.menu) && payload.menu.length > 0) {
       const menuObj = {};

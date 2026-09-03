@@ -80,10 +80,22 @@ function parseBirthMonth(val) {
   return 0;
 }
 
-const APP_VERSION = 'v0.1.2.3';
+const APP_VERSION = 'v0.1.2.4';
 // =============================================================
 // SELENA SPA - GLOBAL CONFIG & CONSTANTS
 // =============================================================
+const DEFAULT_CATEGORIES = [
+  { category_id: 'CB', category_name: 'Combo Gội Chính', icon: 'sparkles', icon_color: 'text-[#E58A7B]', item_icon: '💆', sort_order: 1, is_active: true },
+  { category_id: 'DV_TL', category_name: 'Dịch Vụ Triệt Lông', icon: 'sparkles', icon_color: 'text-[#E58A7B]', item_icon: '✨', sort_order: 2, is_active: true },
+  { category_id: 'DV_TM', category_name: 'Dịch Vụ Làm Thêm / Da Đầu', icon: 'plus-circle', icon_color: 'text-[#2E7D6D]', item_icon: '🌿', sort_order: 3, is_active: true },
+  { category_id: 'DV_MS', category_name: 'Massage Trị Liệu & Thư Giãn', icon: 'heart-pulse', icon_color: 'text-[#D97706]', item_icon: '💆', sort_order: 4, is_active: true },
+  { category_id: 'DV_WX', category_name: 'Dịch Vụ Waxing', icon: 'scissors', icon_color: 'text-[#9333EA]', item_icon: '✨', sort_order: 5, is_active: true },
+  { category_id: 'DV_PL', category_name: 'Nặn Mụn & Peel Trị Liệu', icon: 'shield-check', icon_color: 'text-[#E11D48]', item_icon: '🩺', sort_order: 6, is_active: true },
+  { category_id: 'DV_DT', category_name: 'Dịch Vụ Detox', icon: 'droplets', icon_color: 'text-[#0284C7]', item_icon: '🧪', sort_order: 7, is_active: true },
+  { category_id: 'DV_CY', category_name: 'Cấy Dưỡng Chuyên Sâu', icon: 'gem', icon_color: 'text-[#7C3AED]', item_icon: '💎', sort_order: 8, is_active: true },
+  { category_id: 'MP', category_name: 'Mỹ Phẩm Bán Lẻ', icon: 'shopping-bag', icon_color: 'text-[#F59E0B]', item_icon: '💄', sort_order: 9, is_active: true }
+];
+
 const DEFAULT_USERS = [
   { user_id: '0949251144', staff_id: 'FOUNDER_01', phone: '0949251144', password: '123', full_name: 'Miles', role: 'admin', salary_type: 'owner', commission_rate: 0, base_salary: 0, bank_name: 'MBBank', bank_account_no: '0949251144', bank_account_name: 'NGUYEN TIEN DUY' },
   { user_id: '0799625591', staff_id: 'KTV01', phone: '0799625591', password: '123', full_name: 'Thu Ngân', role: 'staff', salary_type: 'fixed', commission_rate: 10, base_salary: 2000000, bank_name: 'MBBank', bank_account_no: '0799625591', bank_account_name: 'NGUYEN THI THU NGAN' },

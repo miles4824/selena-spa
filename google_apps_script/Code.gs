@@ -295,6 +295,64 @@ function handleLogin(params) {
 }
 
 // -------------------------------------------------------------
+// -------------------------------------------------------------
+// 2A. LẤY DANH MỤC HẠNG MỤC DỊCH VỤ (TB_CATEGORIES)
+// -------------------------------------------------------------
+function getCategoriesList() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName('tb_categories');
+  if (!sheet) {
+    sheet = ss.insertSheet('tb_categories');
+    sheet.appendRow(['category_id', 'category_name', 'icon', 'icon_color', 'item_icon', 'sort_order', 'is_active']);
+    sheet.getRange(1, 1, 1, 7).setFontWeight('bold').setBackground('#FFF0EB');
+    const defaultCats = [
+      ['CB', 'Combo Gội Chính', 'sparkles', 'text-[#E58A7B]', '💆', 1, 'TRUE'],
+      ['DV_TL', 'Dịch Vụ Triệt Lông', 'sparkles', 'text-[#E58A7B]', '✨', 2, 'TRUE'],
+      ['DV_TM', 'Dịch Vụ Làm Thêm / Da Đầu', 'plus-circle', 'text-[#2E7D6D]', '🌿', 3, 'TRUE'],
+      ['DV_MS', 'Massage Trị Liệu & Thư Giãn', 'heart-pulse', 'text-[#D97706]', '💆', 4, 'TRUE'],
+      ['DV_WX', 'Dịch Vụ Waxing', 'scissors', 'text-[#9333EA]', '✨', 5, 'TRUE'],
+      ['DV_PL', 'Nặn Mụn & Peel Trị Liệu', 'shield-check', 'text-[#E11D48]', '🩺', 6, 'TRUE'],
+      ['DV_DT', 'Dịch Vụ Detox', 'droplets', 'text-[#0284C7]', '🧪', 7, 'TRUE'],
+      ['DV_CY', 'Cấy Dưỡng Chuyên Sâu', 'gem', 'text-[#7C3AED]', '💎', 8, 'TRUE'],
+      ['MP', 'Mỹ Phẩm Bán Lẻ', 'shopping-bag', 'text-[#F59E0B]', '💄', 9, 'TRUE']
+    ];
+    defaultCats.forEach(function(row) { sheet.appendRow(row); });
+  }
+
+  const colMap = createHeaderMap(sheet);
+  let data = sheet.getDataRange().getValues();
+  let categories = [];
+
+  for (let i = 1; i < data.length; i++) {
+    let row = data[i];
+    let catId = String(getCell(row, colMap, ['category_id', 'id', 'prefix', 'ma_hang_muc', 'ma_nhom'])).trim();
+    let catName = String(getCell(row, colMap, ['category_name', 'name', 'ten_hang_muc', 'ten_nhom'])).trim();
+    if (catId && catName) {
+      let activeVal = getCell(row, colMap, ['is_active', 'active', 'trang_thai'], true);
+      let isActive = !(activeVal === false || String(activeVal).toLowerCase() === 'false');
+      if (!isActive) continue;
+
+      let icon = String(getCell(row, colMap, ['icon', 'bieu_tuong'], 'sparkles')).trim() || 'sparkles';
+      let iconColor = String(getCell(row, colMap, ['icon_color', 'mau_icon'], 'text-[#E58A7B]')).trim() || 'text-[#E58A7B]';
+      let itemIcon = String(getCell(row, colMap, ['item_icon', 'emoji'], '✨')).trim() || '✨';
+      let sortOrder = Number(getCell(row, colMap, ['sort_order', 'thu_tu', 'stt'], i)) || i;
+
+      categories.push({
+        category_id: catId,
+        category_name: catName,
+        icon: icon,
+        icon_color: iconColor,
+        item_icon: itemIcon,
+        sort_order: sortOrder,
+        is_active: true
+      });
+    }
+  }
+
+  categories.sort(function(a, b) { return a.sort_order - b.sort_order; });
+  return { success: true, categories: categories };
+}
+
 // 2. LẤY BẢNG GIÁ COMBO (MENU)
 // -------------------------------------------------------------
 function getMenuList() {
@@ -1157,7 +1215,11 @@ function syncAllData(params) {
 
   const isOwner = isOwnerCheck(clientRole, clientPhone, clientStaffId);
 
-    // 1. Menu (Đọc chuẩn 8 cột theo đúng cấu trúc dữ liệu thực tế của tiệm)
+      // 1A. Categories (Đọc bảng tb_categories)
+  const catRes = getCategoriesList();
+  const categories = catRes.categories || [];
+
+  // 1B. Menu (Đọc chuẩn các cột theo đúng cấu trúc dữ liệu thực tế của tiệm)
   let sheetMenu = ss.getSheetByName('tb_menu');
   if (!sheetMenu) {
     sheetMenu = ss.insertSheet('tb_menu');
@@ -1602,7 +1664,8 @@ function syncAllData(params) {
   return {
     success: true,
     is_owner: isOwner,
-    menu: menu,
+    categories: categories,
+      menu: menu,
     users: users,
     customers: customers,
     loyalty_cycles: isOwner ? loyaltyCycles : [],

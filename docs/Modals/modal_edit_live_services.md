@@ -75,6 +75,7 @@
 ---
 
 ## 6. Lịch Sử Thay Đổi & Lưu Vết (Audit Log)
+- `2026-09-03` (`v0.1.2.4`): Triển khai hoàn chỉnh chuẩn quản lý danh mục qua bảng `tb_categories` và liên kết `category_id` (kèm auto-fallback tiền tố). Hỗ trợ chủ tiệm tự đặt tiêu đề, icon, emoji và sắp xếp thứ tự `sort_order` từ Google Sheets.
 - `2026-09-03` (`v0.1.2.3`): Hỗ trợ cơ chế gom nhóm danh mục menu hoàn toàn động `getGroupedMenuItems` đọc từ cột `category` / `phan_loai` / `hang_muc` trên Google Sheets `tb_menu`, cho phép chủ tiệm tự đặt tên và thêm không giới hạn danh mục dịch vụ mà không cần sửa code.
 - `2026-09-03` (`v0.1.2.2`): Khắc phục triệt để lỗi không bấm mở được dropdown khi click vào chữ / khoảng trống (nhờ xử lý `composedPath` và chống đóng popover do re-render); hỗ trợ gom nhóm tự động cho mọi dịch vụ mới thêm từ Google Sheets.
 - `2026-09-02` (`v0.1.0.7`): Nâng z-index lên `z-[999]` che phủ hoàn toàn thanh bottom navigation; đổi tiêu đề thành `Điều chỉnh dịch vụ` với định dạng `font-medium text-xl uppercase` (xóa `sm:text-base`) và bỏ `font-semibold` ở dòng thông tin khách/KTV.
