@@ -46,4 +46,12 @@
 ---
 
 ## 3. Lịch Sử Thay Đổi & Lưu Vết (Audit Log)
+- `2026-09-03` (`v0.1.4.1`): Tinh chỉnh chi tiết Trang Home KTV:
+  + Bỏ huy hiệu "Selena Spa & Wellness".
+  + Đổi "🟢 Sẵn sàng phục vụ • Đang rảnh" -> "Sẵn sàng phục vụ".
+  + Đổi "⏱️ Đang trong tour (0/50p)" -> "Đang trong tour (0/50p)".
+  + Đổi mô tả tour bận thành "Bạn đang trong tour của [Tên khách] (Tên dịch vụ). Vào tour ngay để theo dõi hoặc điều chỉnh ca.".
+  + Đổi nút "VÀO XEM NGAY (Xp)" -> "VÀO XEM NGAY".
+  + Đổi nhãn "Tour đã làm" -> "Tour hôm nay" và đơn vị "X ca" -> "X tour".
+  + Thêm tính năng che mắt bảo mật cho cả "Tiền Tip" đồng bộ với "Hoa hồng", kèm font monospace font-mono.
 - `2026-09-03` (`v0.1.4.0`): Tái cấu trúc toàn diện màn hình Trang Chủ (Home) cho cả Admin và Staff theo chuẩn Flowchart. Tích hợp nút vào ca biến hình thông minh (Rảnh -> Vào tour ngay / Bận -> Vào xem ngay), khu vực giám sát các giường chạy giờ realtime toàn tiệm cho Admin, và thành tích hôm nay kèm che mắt hoa hồng cho KTV.

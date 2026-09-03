@@ -104,7 +104,7 @@ function renderHomeStatusAndActionButton() {
     if (tourInfo.isRunning) {
       if (badgeEl) {
         badgeEl.className = 'inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#FFF0EB] text-[#E58A7B] border border-[#FCDFD7] shadow-2xs';
-        badgeEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-[#E58A7B] animate-pulse"></span><span>⏱️ Đang trực tiếp làm ca (${tourInfo.elapsedMin}p)</span>`;
+        badgeEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-[#E58A7B] animate-pulse"></span><span>Đang trong tour (${tourInfo.elapsedMin}/${tourInfo.targetMin}p)</span>`;
       }
       if (btnContainer) {
         btnContainer.innerHTML = `
@@ -117,7 +117,7 @@ function renderHomeStatusAndActionButton() {
     } else {
       if (badgeEl) {
         badgeEl.className = 'inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#E8F8F5] text-[#2E7D6D] border border-[#B7EBDD] shadow-2xs';
-        badgeEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-[#2E7D6D]"></span><span>🟢 Đang rảnh sẵn sàng</span>`;
+        badgeEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-[#2E7D6D]"></span><span>Sẵn sàng phục vụ</span>`;
       }
       if (btnContainer) {
         btnContainer.innerHTML = `
@@ -137,23 +137,23 @@ function renderHomeStatusAndActionButton() {
       const s = tourInfo.session;
       if (badgeEl) {
         badgeEl.className = 'inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#FFF0EB] text-[#E58A7B] border border-[#FCDFD7] shadow-2xs';
-        badgeEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-[#E58A7B] animate-pulse"></span><span>⏱️ Đang trong tour (${tourInfo.elapsedMin}/${tourInfo.targetMin}p)</span>`;
+        badgeEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-[#E58A7B] animate-pulse"></span><span>Đang trong tour (${tourInfo.elapsedMin}/${tourInfo.targetMin}p)</span>`;
       }
       if (descEl) {
-        descEl.innerText = `Bạn đang phục vụ tour cho khách ${s?.customer_name || 'Khách'} (${s?.service_name || 'Dịch vụ'}). Bấm nút dưới để theo dõi hoặc điều chỉnh ca.`;
+        descEl.innerText = `Bạn đang trong tour của [${s?.customer_name || 'Khách vãng lai'}] (${s?.service_name || 'Dịch vụ'}). Vào tour ngay để theo dõi hoặc điều chỉnh ca.`;
       }
       if (btnContainer) {
         btnContainer.innerHTML = `
           <button onclick="handleHomeGoToActiveTour()" class="w-full sm:w-auto px-7 py-3.5 rounded-full bg-gradient-to-r from-[#2E7D6D] to-[#3B9E8B] hover:opacity-95 text-white font-extrabold text-sm sm:text-base shadow-lg shadow-[#2E7D6D]/25 transition flex items-center justify-center gap-2.5 cursor-pointer active:scale-95">
             <i data-lucide="timer" class="w-5 h-5"></i>
-            <span>VÀO XEM NGAY (${tourInfo.elapsedMin}p)</span>
+            <span>VÀO XEM NGAY</span>
           </button>
         `;
       }
     } else {
       if (badgeEl) {
         badgeEl.className = 'inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#E8F8F5] text-[#2E7D6D] border border-[#B7EBDD] shadow-2xs';
-        badgeEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-[#2E7D6D]"></span><span>🟢 Sẵn sàng phục vụ • Đang rảnh</span>`;
+        badgeEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-[#2E7D6D]"></span><span>Sẵn sàng phục vụ</span>`;
       }
       if (descEl) {
         descEl.innerText = `Mỗi tour gội là một trải nghiệm thư giãn tuyệt vời gửi gắm đến khách hàng thân yêu.`;
@@ -276,8 +276,9 @@ function loadKTVHomeStats() {
   const commEl = document.getElementById('home-today-comm');
   const tipsEl = document.getElementById('home-today-tips');
   const eyeEl = document.getElementById('staff-home-comm-eye');
+  const tipsEyeEl = document.getElementById('staff-home-tips-eye');
 
-  if (toursEl) toursEl.innerText = todayTours + ' ca';
+  if (toursEl) toursEl.innerText = todayTours + ' tour';
   if (commEl) {
     if (isStaffHomeCommMasked) {
       commEl.innerText = '+•••• đ';
@@ -287,7 +288,15 @@ function loadKTVHomeStats() {
       if (eyeEl) eyeEl.setAttribute('data-lucide', 'eye');
     }
   }
-  if (tipsEl) tipsEl.innerText = `+${todayTips.toLocaleString('vi-VN')} đ`;
+  if (tipsEl) {
+    if (isStaffHomeCommMasked) {
+      tipsEl.innerText = '+•••• đ';
+      if (tipsEyeEl) tipsEyeEl.setAttribute('data-lucide', 'eye-off');
+    } else {
+      tipsEl.innerText = `+${todayTips.toLocaleString('vi-VN')} đ`;
+      if (tipsEyeEl) tipsEyeEl.setAttribute('data-lucide', 'eye');
+    }
+  }
 
   renderHomeStatusAndActionButton();
   if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
