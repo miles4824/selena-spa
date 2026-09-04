@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
@@ -33,5 +33,31 @@
 <body class="min-h-screen bg-[#FAF6F1] text-[#2D2424] font-sans selection:bg-[#E58A7B]/20">
   <!-- APP ROOT CONTAINER -->
   <div id="app" class="min-h-screen"></div>
+
+  <!-- 1. CORE UI COMPONENTS (TAILWIND 4) -->
+  <script src="js/Core/Components/app_button.js"></script>
+  <script src="js/Core/Components/app_title.js"></script>
+  <script src="js/Core/Components/app_card.js"></script>
+  <script src="js/Core/Components/stat_card.js"></script>
+  <script src="js/Core/Components/status_badge.js"></script>
+  <script src="js/Core/Components/role_badge.js"></script>
+  <script src="js/Core/Components/bed_card.js"></script>
+  <script src="js/Core/Components/modal_shell.js"></script>
+
+  <!-- 2. CORE SERVICES -->
+  <script src="js/Services/phone_service.js"></script>
+
+  <!-- 3. ENGINE & STORAGE -->
+  <script src="js/Engine/config.js"></script>
+
+  <!-- 4. SCREENS -->
+  <script src="js/Screens/login_screen.js"></script>
+
+  <!-- APP INITIALIZER -->
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      initLogin();
+    });
+  </script>
 </body>
 </html>
