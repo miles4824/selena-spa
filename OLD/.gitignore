@@ -1,0 +1,4 @@
+﻿selena-spa-app/node_modules
+selena-spa-app/dist
+.DS_Store
+*.log
