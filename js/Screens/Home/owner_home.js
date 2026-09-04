@@ -8,33 +8,43 @@
  * @returns {string} Chuỗi HTML của giao diện Owner Home
  */
 function renderOwnerHome(user) {
-  if (!user) return '';
+  if (!user) return "";
 
-  const snapshot = (typeof HomeService !== 'undefined')
-    ? HomeService.getOwnerTodaySnapshot()
-    : { todayRevenue: 0, formattedRevenue: '0 đ', todayCustomers: 0, activeBedsCount: 0, totalBedsCount: 6 };
+  const snapshot =
+    typeof HomeService !== "undefined"
+      ? HomeService.getOwnerTodaySnapshot()
+      : {
+          todayRevenue: 0,
+          formattedRevenue: "0 đ",
+          todayCustomers: 0,
+          activeBedsCount: 0,
+          totalBedsCount: 6,
+        };
 
-  const liveTours = (typeof HomeService !== 'undefined')
-    ? HomeService.getLiveRunningTours()
-    : [];
+  const liveTours =
+    typeof HomeService !== "undefined" ? HomeService.getLiveRunningTours() : [];
 
-  const announcement = (typeof HomeService !== 'undefined')
-    ? HomeService.getHomeAnnouncement()
-    : '✨ Chúc các bạn một ngày làm việc tuyệt vời!';
+  const announcement =
+    typeof HomeService !== "undefined"
+      ? HomeService.getHomeAnnouncement()
+      : "✨ Chúc các bạn một ngày làm việc tuyệt vời!";
 
   // 1. CỤM BANNER CHỦ SÁNG LẬP & NÚT HÀNH ĐỘNG
-  const actionBtnHtml = (typeof AppButton === 'function') ? AppButton({
-    text: 'LẬP PHIẾU TOUR MỚI',
-    icon: 'plus-circle',
-    iconPosition: 'left',
-    variant: 'primary',
-    size: 'lg',
-    onClick: "navigateTab('pos')",
-    customClass: 'w-full sm:w-auto shadow-glow-brand'
-  }) : '';
+  const actionBtnHtml =
+    typeof AppButton === "function"
+      ? AppButton({
+          text: "LẬP PHIẾU TOUR MỚI",
+          icon: "plus-circle",
+          iconPosition: "left",
+          variant: "primary",
+          size: "lg",
+          onClick: "navigateTab('pos')",
+          customClass: "w-full sm:w-auto shadow-glow-brand",
+        })
+      : "";
 
   // 2. CỤM DANH SÁCH GIƯỜNG ĐANG CHẠY GIỜ REALTIME
-  let liveBedsListHtml = '';
+  let liveBedsListHtml = "";
   if (liveTours.length === 0) {
     liveBedsListHtml = `
       <div class="p-6 rounded-3xl bg-spa-bg/50 dark:bg-white/5 border border-dashed border-spa-border text-center space-y-2 col-span-full">
@@ -48,53 +58,66 @@ function renderOwnerHome(user) {
       </div>
     `;
   } else {
-    liveBedsListHtml = liveTours.map((t, idx) => {
-      if (typeof BedCard === 'function') {
-        return BedCard({
-          sess: t,
-          bedIndex: t.bedIndex || (idx + 1),
-          elapsedMin: t.elapsedMin,
-          targetMin: t.targetMin,
-          progressPct: t.progressPct,
-          isOverdue: t.isOverdue,
-          staffNames: t.staffNames
-        });
-      }
-      return '';
-    }).join('');
+    liveBedsListHtml = liveTours
+      .map((t, idx) => {
+        if (typeof BedCard === "function") {
+          return BedCard({
+            sess: t,
+            bedIndex: t.bedIndex || idx + 1,
+            elapsedMin: t.elapsedMin,
+            targetMin: t.targetMin,
+            progressPct: t.progressPct,
+            isOverdue: t.isOverdue,
+            staffNames: t.staffNames,
+          });
+        }
+        return "";
+      })
+      .join("");
   }
 
   // 3. CỤM THẺ CHỈ SỐ TODAY SNAPSHOT
-  const revCardHtml = (typeof StatCard === 'function') ? StatCard({
-    id: 'owner-today-revenue',
-    title: 'Doanh Thu Hôm Nay',
-    value: snapshot.formattedRevenue,
-    subtitle: 'Thực thu toàn tiệm',
-    color: 'coral'
-  }) : '';
+  const revCardHtml =
+    typeof StatCard === "function"
+      ? StatCard({
+          id: "owner-today-revenue",
+          title: "Doanh Thu Hôm Nay",
+          value: snapshot.formattedRevenue,
+          subtitle: "Thực thu toàn tiệm",
+          color: "coral",
+        })
+      : "";
 
-  const custCardHtml = (typeof StatCard === 'function') ? StatCard({
-    id: 'owner-today-customers',
-    title: 'Lượt Khách Đến',
-    value: String(snapshot.todayCustomers),
-    subtitle: 'Hóa đơn đã thanh toán',
-    color: 'mint'
-  }) : '';
+  const custCardHtml =
+    typeof StatCard === "function"
+      ? StatCard({
+          id: "owner-today-customers",
+          title: "Lượt Khách Đến",
+          value: String(snapshot.todayCustomers),
+          subtitle: "Hóa đơn đã thanh toán",
+          color: "mint",
+        })
+      : "";
 
-  const bedsCardHtml = (typeof StatCard === 'function') ? StatCard({
-    id: 'owner-today-beds-stat',
-    title: 'Giường Đang Chạy',
-    value: `${snapshot.activeBedsCount}/${snapshot.totalBedsCount}`,
-    subtitle: 'Công suất phòng gội',
-    color: 'purple'
-  }) : '';
+  const bedsCardHtml =
+    typeof StatCard === "function"
+      ? StatCard({
+          id: "owner-today-beds-stat",
+          title: "Giường Đang Chạy",
+          value: `${snapshot.activeBedsCount}/${snapshot.totalBedsCount}`,
+          subtitle: "Công suất phòng gội",
+          color: "purple",
+        })
+      : "";
 
   return `
     <div id="owner-home-container" class="space-y-6 animate-fade-in">
       <!-- CỤM 1: WELLNESS BANNER CHỦ SÁNG LẬP -->
-      ${typeof AppCard === 'function' ? AppCard({
-        variant: 'mindora',
-        content: `
+      ${
+        typeof AppCard === "function"
+          ? AppCard({
+              variant: "mindora",
+              content: `
           <!-- Ambient Glow Spheres (Bộ 5 màu) -->
           <div class="absolute -top-10 -right-10 w-44 h-44 rounded-full bg-[#E8AEB7]/20 dark:bg-[#E8AEB7]/10 blur-3xl pointer-events-none"></div>
           <div class="absolute -bottom-10 -left-10 w-44 h-44 rounded-full bg-[#5E887E]/20 dark:bg-[#5E887E]/10 blur-3xl pointer-events-none"></div>
@@ -108,12 +131,12 @@ function renderOwnerHome(user) {
               </span>
               <div class="flex items-center gap-2">
                 <span class="text-xs text-spa-muted dark:text-white/60 font-medium">Hôm nay</span>
-                ${typeof ThemeToggle === 'function' ? ThemeToggle({ customClass: 'w-8 h-8 !p-1.5 bg-white/70 dark:bg-white/10 hover:bg-white dark:hover:bg-white/20 border border-spa-border dark:border-white/15 shadow-2xs' }) : ''}
+                ${typeof ThemeToggle === "function" ? ThemeToggle({ customClass: "w-8 h-8 !p-1.5 bg-white/70 dark:bg-white/10 hover:bg-white dark:hover:bg-white/20 border border-spa-border dark:border-white/15 shadow-2xs" }) : ""}
               </div>
             </div>
 
             <h2 class="text-2xl sm:text-3xl font-medium font-serif theme-heading tracking-tight">
-              Chào <span class="text-spa-brand font-bold">${user.full_name || 'Miles'}</span>, <span class="font-normal theme-subtext">hôm nay tiệm vận hành tuyệt vời chứ? ✨</span>
+              Chào <span class="text-spa-brand font-bold">${user.full_name || "Miles"}</span>, <span class="font-normal theme-subtext">hôm nay tiệm vận hành tuyệt vời chứ? ✨</span>
             </h2>
 
             <p class="theme-subtext text-sm max-w-md leading-relaxed">
@@ -124,15 +147,19 @@ function renderOwnerHome(user) {
               ${actionBtnHtml}
             </div>
           </div>
-        `
-      }) : ''}
+        `,
+            })
+          : ""
+      }
 
       <!-- CỤM 2: CÁC TOUR ĐANG PHỤC VỤ TRỰC TIẾP (LIVE RUNNING TOURS REALTIME) -->
-      ${typeof AppCard === 'function' ? AppCard({
-        variant: 'surface',
-        padding: 'p-5 sm:p-6',
-        customClass: 'space-y-4',
-        content: `
+      ${
+        typeof AppCard === "function"
+          ? AppCard({
+              variant: "surface",
+              padding: "p-5 sm:p-6",
+              customClass: "space-y-4",
+              content: `
           <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 pb-3 border-b border-spa-border dark:border-white/10">
             <div class="flex items-center gap-2.5">
               <span class="flex h-3 w-3 relative">
@@ -157,8 +184,10 @@ function renderOwnerHome(user) {
           <div id="owner-live-beds-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
             ${liveBedsListHtml}
           </div>
-        `
-      }) : ''}
+        `,
+            })
+          : ""
+      }
 
       <!-- CỤM 3: CHỈ SỐ NHANH HÔM NAY (TODAY SNAPSHOT) -->
       <div class="space-y-3">
@@ -177,11 +206,13 @@ function renderOwnerHome(user) {
       </div>
 
       <!-- CỤM 4: THÔNG BÁO ĐANG PHÁT CHO TOÀN BỘ KTV -->
-      ${typeof AppCard === 'function' ? AppCard({
-        variant: 'peach',
-        padding: 'p-5',
-        customClass: 'space-y-3',
-        content: `
+      ${
+        typeof AppCard === "function"
+          ? AppCard({
+              variant: "peach",
+              padding: "p-5",
+              customClass: "space-y-3",
+              content: `
           <div class="flex items-center justify-between">
             <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-spa-brand/15 text-spa-brand text-xs font-bold border border-spa-brand/25">
               <i data-lucide="megaphone" class="w-3.5 h-3.5"></i>
@@ -196,8 +227,10 @@ function renderOwnerHome(user) {
           <div class="text-sm font-semibold theme-heading leading-relaxed" id="owner-announcement-display">
             ${announcement}
           </div>
-        `
-      }) : ''}
+        `,
+            })
+          : ""
+      }
     </div>
   `;
 }
@@ -206,12 +239,12 @@ function renderOwnerHome(user) {
  * Làm mới nhanh danh sách giường đang chạy mà không tải lại cả trang
  */
 function refreshLiveBeds() {
-  const grid = document.getElementById('owner-live-beds-grid');
-  if (!grid || typeof HomeService === 'undefined') return;
+  const grid = document.getElementById("owner-live-beds-grid");
+  if (!grid || typeof HomeService === "undefined") return;
 
   const liveTours = HomeService.getLiveRunningTours();
   if (liveTours.length === 0) {
-    grid.className = 'w-full';
+    grid.className = "w-full";
     grid.innerHTML = `
       <div class="p-6 rounded-3xl bg-spa-bg/50 dark:bg-white/5 border border-dashed border-spa-border text-center space-y-2">
         <div class="w-10 h-10 rounded-2xl bg-spa-sage/15 text-spa-sage mx-auto flex items-center justify-center">
@@ -224,41 +257,49 @@ function refreshLiveBeds() {
       </div>
     `;
   } else {
-    grid.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5';
-    grid.innerHTML = liveTours.map((t, idx) => {
-      if (typeof BedCard === 'function') {
-        return BedCard({
-          sess: t,
-          bedIndex: t.bedIndex || (idx + 1),
-          elapsedMin: t.elapsedMin,
-          targetMin: t.targetMin,
-          progressPct: t.progressPct,
-          isOverdue: t.isOverdue,
-          staffNames: t.staffNames
-        });
-      }
-      return '';
-    }).join('');
+    grid.className = "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5";
+    grid.innerHTML = liveTours
+      .map((t, idx) => {
+        if (typeof BedCard === "function") {
+          return BedCard({
+            sess: t,
+            bedIndex: t.bedIndex || idx + 1,
+            elapsedMin: t.elapsedMin,
+            targetMin: t.targetMin,
+            progressPct: t.progressPct,
+            isOverdue: t.isOverdue,
+            staffNames: t.staffNames,
+          });
+        }
+        return "";
+      })
+      .join("");
   }
 
-  if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+  if (typeof lucide !== "undefined" && lucide.createIcons) lucide.createIcons();
 }
 
 /**
  * Xử lý khi Chủ tiệm bấm "Xem / Chăm sóc ca này" trên thẻ BedCard
  */
 function handleAdminInspectSession(sessionId) {
-  const allSessions = (typeof getStored === 'function') ? getStored('live_sessions_cache', []) : [];
-  const target = allSessions.find(s => String(s.session_id) === String(sessionId));
+  const allSessions =
+    typeof getStored === "function" ? getStored("live_sessions_cache", []) : [];
+  const target = allSessions.find(
+    (s) => String(s.session_id) === String(sessionId),
+  );
   if (target) {
     try {
-      localStorage.setItem('selena_active_live_session', JSON.stringify(target));
+      localStorage.setItem(
+        "selena_active_live_session",
+        JSON.stringify(target),
+      );
     } catch (e) {}
   }
-  if (typeof navigateTab === 'function') {
-    navigateTab('pos');
-  } else if (typeof showScreen === 'function') {
-    showScreen('pos');
+  if (typeof navigateTab === "function") {
+    navigateTab("pos");
+  } else if (typeof showScreen === "function") {
+    showScreen("pos");
   }
 }
 
@@ -266,19 +307,23 @@ function handleAdminInspectSession(sessionId) {
  * Hộp thoại sửa nhanh thông báo phát cho KTV
  */
 function promptEditAnnouncement() {
-  const current = (typeof HomeService !== 'undefined') ? HomeService.getHomeAnnouncement() : '';
-  const newMsg = prompt('Nhập thông báo truyền cảm hứng mới cho toàn bộ KTV:', current);
+  const current =
+    typeof HomeService !== "undefined" ? HomeService.getHomeAnnouncement() : "";
+  const newMsg = prompt(
+    "Nhập thông báo truyền cảm hứng mới cho toàn bộ KTV:",
+    current,
+  );
   if (newMsg && newMsg.trim()) {
-    if (typeof HomeService !== 'undefined') {
+    if (typeof HomeService !== "undefined") {
       HomeService.saveHomeAnnouncement(newMsg.trim());
     }
-    const displayEl = document.getElementById('owner-announcement-display');
+    const displayEl = document.getElementById("owner-announcement-display");
     if (displayEl) displayEl.innerText = newMsg.trim();
   }
 }
 
 // Xuất ra phạm vi toàn cục
-if (typeof window !== 'undefined') {
+if (typeof window !== "undefined") {
   window.renderOwnerHome = renderOwnerHome;
   window.refreshLiveBeds = refreshLiveBeds;
   window.handleAdminInspectSession = handleAdminInspectSession;

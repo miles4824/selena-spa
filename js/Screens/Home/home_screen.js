@@ -26,9 +26,9 @@ function renderHomeScreen() {
     ? (typeof renderOwnerHome === 'function' ? renderOwnerHome(currentUser) : '')
     : (typeof renderStaffHome === 'function' ? renderStaffHome(currentUser) : '');
 
-  // 3. Render trực tiếp vào container-home (Không có Header giả tạo)
+  // 3. Render trực tiếp vào container-home (Có Safe Area né Tai thỏ / Dynamic Island)
   container.innerHTML = `
-    <main id="view-home" class="p-4 sm:p-6 max-w-5xl mx-auto space-y-6 view-enter-active">
+    <main id="view-home" class="p-4 sm:p-6 max-w-5xl mx-auto space-y-6 view-enter-active safe-area-top" style="padding-top: calc(env(safe-area-inset-top, 20px) + 12px);">
       ${homeContentHtml}
     </main>
   `;

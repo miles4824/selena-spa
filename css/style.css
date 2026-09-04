@@ -7,46 +7,46 @@
    5. #E8AEB7 (Dusty Rose Blossom - Hồng phấn đằm thắm, nút chính)
    ============================================================= */
 @theme {
-  --color-spa-bg: #F1F5F4;
-  --color-spa-card: #FFFFFF;
-  --color-spa-dark: #2F3E46;
-  --color-spa-brand: #E8AEB7;
-  --color-spa-brand-hover: #DF9CA6;
-  --color-spa-sage: #5E887E;
-  --color-spa-sage-light: #EBF2F0;
-  --color-spa-mist: #A7C7E7;
-  --color-spa-muted: #6D7E84;
-  --color-spa-hint: #9AAEB5;
-  --color-spa-border: #E2E8E6;
-  --color-spa-input: #FFFFFF;
-  --color-spa-teal: #5E887E;
-  --color-spa-teal-light: #EBF2F0;
-  --color-spa-teal-border: #C8DBD6;
-  --color-spa-peach-light: #FBF0F2;
-  --color-spa-peach-border: #F5D3D8;
+  --color-spa-bg: #f1f5f4;
+  --color-spa-card: #ffffff;
+  --color-spa-dark: #2f3e46;
+  --color-spa-brand: #e8aeb7;
+  --color-spa-brand-hover: #df9ca6;
+  --color-spa-sage: #5e887e;
+  --color-spa-sage-light: #ebf2f0;
+  --color-spa-mist: #a7c7e7;
+  --color-spa-muted: #6d7e84;
+  --color-spa-hint: #9aaeb5;
+  --color-spa-border: #e2e8e6;
+  --color-spa-input: #ffffff;
+  --color-spa-teal: #5e887e;
+  --color-spa-teal-light: #ebf2f0;
+  --color-spa-teal-border: #c8dbd6;
+  --color-spa-peach-light: #fbf0f2;
+  --color-spa-peach-border: #f5d3d8;
 }
 
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *, .dark, .dark *));
 
 :root {
   --sticky-date-offset: 130px;
-  --color-spa-bg: #F1F5F4;
-  --color-spa-card: #FFFFFF;
-  --color-spa-dark: #2F3E46;
-  --color-spa-brand: #E8AEB7;
-  --color-spa-brand-hover: #DF9CA6;
-  --color-spa-sage: #5E887E;
-  --color-spa-sage-light: #EBF2F0;
-  --color-spa-mist: #A7C7E7;
-  --color-spa-muted: #6D7E84;
-  --color-spa-hint: #9AAEB5;
-  --color-spa-border: #E2E8E6;
-  --color-spa-input: #FFFFFF;
-  --color-spa-teal: #5E887E;
-  --color-spa-teal-light: #EBF2F0;
-  --color-spa-teal-border: #C8DBD6;
-  --color-spa-peach-light: #FBF0F2;
-  --color-spa-peach-border: #F5D3D8;
+  --color-spa-bg: #f1f5f4;
+  --color-spa-card: #ffffff;
+  --color-spa-dark: #2f3e46;
+  --color-spa-brand: #e8aeb7;
+  --color-spa-brand-hover: #df9ca6;
+  --color-spa-sage: #5e887e;
+  --color-spa-sage-light: #ebf2f0;
+  --color-spa-mist: #a7c7e7;
+  --color-spa-muted: #6d7e84;
+  --color-spa-hint: #9aaeb5;
+  --color-spa-border: #e2e8e6;
+  --color-spa-input: #ffffff;
+  --color-spa-teal: #5e887e;
+  --color-spa-teal-light: #ebf2f0;
+  --color-spa-teal-border: #c8dbd6;
+  --color-spa-peach-light: #fbf0f2;
+  --color-spa-peach-border: #f5d3d8;
   color-scheme: light;
 }
 
@@ -56,57 +56,104 @@ html[data-theme="dark"],
 body.dark,
 body[data-theme="dark"],
 .dark {
-  --color-spa-bg: #1C2428 !important;
-  --color-spa-card: #2F3E46 !important;
-  --color-spa-dark: #F1F5F4 !important;
-  --color-spa-brand: #E8AEB7 !important;
-  --color-spa-brand-hover: #F0BCC4 !important;
-  --color-spa-sage: #5E887E !important;
+  --color-spa-bg: #1c2428 !important;
+  --color-spa-card: #2f3e46 !important;
+  --color-spa-dark: #f1f5f4 !important;
+  --color-spa-brand: #e8aeb7 !important;
+  --color-spa-brand-hover: #f0bcc4 !important;
+  --color-spa-sage: #5e887e !important;
   --color-spa-sage-light: #243533 !important;
-  --color-spa-mist: #A7C7E7 !important;
-  --color-spa-muted: #9AAEB5 !important;
+  --color-spa-mist: #a7c7e7 !important;
+  --color-spa-muted: #9aaeb5 !important;
   --color-spa-hint: #637780 !important;
-  --color-spa-border: #3D4E56 !important;
+  --color-spa-border: #3d4e56 !important;
   --color-spa-input: #243238 !important;
-  --color-spa-teal: #5E887E !important;
+  --color-spa-teal: #5e887e !important;
   --color-spa-teal-light: #243533 !important;
-  --color-spa-teal-border: #3E544E !important;
-  --color-spa-peach-light: #3D2D31 !important;
-  --color-spa-peach-border: #5A3E45 !important;
+  --color-spa-teal-border: #3e544e !important;
+  --color-spa-peach-light: #3d2d31 !important;
+  --color-spa-peach-border: #5a3e45 !important;
   color-scheme: dark;
 }
 
 html.dark body,
 body.dark,
 html[data-theme="dark"] body {
-  background-color: #1C2428 !important;
-  color: #F1F5F4 !important;
+  background-color: #1c2428 !important;
+  color: #f1f5f4 !important;
 }
 
 /* Semantic Classes */
-.bg-spa-bg { background-color: var(--color-spa-bg); }
-.bg-spa-card { background-color: var(--color-spa-card); }
-.text-spa-dark { color: var(--color-spa-dark); }
-.text-spa-brand { color: var(--color-spa-brand); }
-.bg-spa-brand { background-color: var(--color-spa-brand); }
-.text-spa-sage { color: var(--color-spa-sage); }
-.bg-spa-sage { background-color: var(--color-spa-sage); }
-.bg-spa-sage-light { background-color: var(--color-spa-sage-light); }
-.text-spa-muted { color: var(--color-spa-muted); }
-.text-spa-hint { color: var(--color-spa-hint); }
-.border-spa-border { border-color: var(--color-spa-border); }
-.bg-spa-input { background-color: var(--color-spa-input); }
-.text-spa-teal { color: var(--color-spa-teal); }
-.bg-spa-teal { background-color: var(--color-spa-teal); }
-.bg-spa-peach-light { background-color: var(--color-spa-peach-light); }
-.border-spa-peach-border { border-color: var(--color-spa-peach-border); }
+.bg-spa-bg {
+  background-color: var(--color-spa-bg);
+}
+.bg-spa-card {
+  background-color: var(--color-spa-card);
+}
+.text-spa-dark {
+  color: var(--color-spa-dark);
+}
+.text-spa-brand {
+  color: var(--color-spa-brand);
+}
+.bg-spa-brand {
+  background-color: var(--color-spa-brand);
+}
+.text-spa-sage {
+  color: var(--color-spa-sage);
+}
+.bg-spa-sage {
+  background-color: var(--color-spa-sage);
+}
+.bg-spa-sage-light {
+  background-color: var(--color-spa-sage-light);
+}
+.text-spa-muted {
+  color: var(--color-spa-muted);
+}
+.text-spa-hint {
+  color: var(--color-spa-hint);
+}
+.border-spa-border {
+  border-color: var(--color-spa-border);
+}
+.bg-spa-input {
+  background-color: var(--color-spa-input);
+}
+.text-spa-teal {
+  color: var(--color-spa-teal);
+}
+.bg-spa-teal {
+  background-color: var(--color-spa-teal);
+}
+.bg-spa-peach-light {
+  background-color: var(--color-spa-peach-light);
+}
+.border-spa-peach-border {
+  border-color: var(--color-spa-peach-border);
+}
 
 /* Force dark semantic overrides */
-html.dark .bg-spa-bg, html[data-theme="dark"] .bg-spa-bg { background-color: #1C2428 !important; }
-html.dark .bg-spa-card, html[data-theme="dark"] .bg-spa-card { background-color: #2F3E46 !important; }
-html.dark .text-spa-dark, html[data-theme="dark"] .text-spa-dark { color: #F1F5F4 !important; }
-html.dark .text-spa-muted, html[data-theme="dark"] .text-spa-muted { color: #9AAEB5 !important; }
-html.dark .border-spa-border, html[data-theme="dark"] .border-spa-border { border-color: #3D4E56 !important; }
+html.dark .bg-spa-bg,
+html[data-theme="dark"] .bg-spa-bg {
+  background-color: #1c2428 !important;
+}
+html.dark .bg-spa-card,
+html[data-theme="dark"] .bg-spa-card {
+  background-color: #2f3e46 !important;
+}
+html.dark .text-spa-dark,
+html[data-theme="dark"] .text-spa-dark {
+  color: #f1f5f4 !important;
+}
+html.dark .text-spa-muted,
+html[data-theme="dark"] .text-spa-muted {
+  color: #9aaeb5 !important;
+}
+html.dark .border-spa-border,
+html[data-theme="dark"] .border-spa-border {
+  border-color: #3d4e56 !important;
+}
 
 /* =========================================================================
    ROBUST CLASS-BASED THEME ADAPTATIONS FOR APPCARD & UI COMPONENTS
@@ -114,46 +161,85 @@ html.dark .border-spa-border, html[data-theme="dark"] .border-spa-border { borde
 
 /* 1. Base / Light Mode Card Styles (Hoàn toàn trắng / hồng đào sáng khi Light Mode) */
 .app-card-mindora {
-  background: linear-gradient(135deg, #FBF0F2 0%, #FFFFFF 50%, #EBF2F0 100%) !important;
-  border-color: rgba(232, 174, 183, 0.45) !important;
-  box-shadow: 0 12px 32px -6px rgba(232, 174, 183, 0.20), 0 4px 12px rgba(0, 0, 0, 0.03) !important;
+  background: linear-gradient(
+    135deg,
+    #f1f5f4 0%,
+    #ffffff 50%,
+    #ebf2f0 100%
+  ) !important;
+  /* border-color: rgba(232, 174, 183, 0.45) !important; */
+  border-color: rgba(94, 139, 126, 0.25) !important;
+  box-shadow:
+    0 12px 32px -6px rgba(232, 174, 183, 0.2),
+    0 4px 12px rgba(0, 0, 0, 0.03) !important;
 }
 
 .app-card-zen {
-  background: linear-gradient(135deg, #EBF2F0 0%, #FFFFFF 50%, #F1F5F4 100%) !important;
+  background: linear-gradient(
+    135deg,
+    #ebf2f0 0%,
+    #ffffff 50%,
+    #f1f5f4 100%
+  ) !important;
   border-color: rgba(94, 136, 126, 0.35) !important;
-  box-shadow: 0 12px 32px -6px rgba(94, 136, 126, 0.15), 0 4px 12px rgba(0, 0, 0, 0.03) !important;
+  box-shadow:
+    0 12px 32px -6px rgba(94, 136, 126, 0.15),
+    0 4px 12px rgba(0, 0, 0, 0.03) !important;
 }
 
 .app-card-banner,
 .app-card-banner-classic {
-  background: linear-gradient(135deg, #FFF0EB 0%, #FFFFFF 50%, #FAF6F1 100%) !important;
-  border-color: #F0EAE1 !important;
-  box-shadow: 0 10px 30px -5px rgba(229, 138, 123, 0.05), 0 4px 12px rgba(0, 0, 0, 0.02) !important;
+  background: linear-gradient(
+    135deg,
+    #fff0eb 0%,
+    #ffffff 50%,
+    #faf6f1 100%
+  ) !important;
+  border-color: #f0eae1 !important;
+  box-shadow:
+    0 10px 30px -5px rgba(229, 138, 123, 0.05),
+    0 4px 12px rgba(0, 0, 0, 0.02) !important;
 }
 
 .app-card-surface {
-  background: #FFFFFF !important;
-  border-color: #E2E8E6 !important;
-  box-shadow: 0 10px 30px -5px rgba(229, 138, 123, 0.05), 0 4px 12px rgba(0, 0, 0, 0.02) !important;
+  background: #ffffff !important;
+  border-color: #e2e8e6 !important;
+  box-shadow:
+    0 10px 30px -5px rgba(229, 138, 123, 0.05),
+    0 4px 12px rgba(0, 0, 0, 0.02) !important;
 }
 
 .app-card-peach {
-  background: linear-gradient(135deg, #FBF0F2 0%, #FFFFFF 50%, #FAF6F1 100%) !important;
+  background: linear-gradient(
+    135deg,
+    #fbf0f2 0%,
+    #ffffff 50%,
+    #faf6f1 100%
+  ) !important;
   border-color: rgba(232, 174, 183, 0.4) !important;
 }
 
 /* 2. Dark Mode Overrides (Chỉ kích hoạt khi html có class .dark hoặc data-theme="dark") */
 html.dark .app-card-mindora,
 html[data-theme="dark"] .app-card-mindora {
-  background: linear-gradient(135deg, #2F3E46 0%, #263339 50%, #1C2428 100%) !important;
+  background: linear-gradient(
+    135deg,
+    #2f3e46 0%,
+    #263339 50%,
+    #1c2428 100%
+  ) !important;
   border-color: rgba(94, 136, 126, 0.35) !important;
   box-shadow: 0 12px 32px -6px rgba(0, 0, 0, 0.5) !important;
 }
 
 html.dark .app-card-zen,
 html[data-theme="dark"] .app-card-zen {
-  background: linear-gradient(135deg, #26343A 0%, #222E33 50%, #1C2428 100%) !important;
+  background: linear-gradient(
+    135deg,
+    #26343a 0%,
+    #222e33 50%,
+    #1c2428 100%
+  ) !important;
   border-color: rgba(94, 136, 126, 0.35) !important;
   box-shadow: 0 12px 32px -6px rgba(0, 0, 0, 0.5) !important;
 }
@@ -162,34 +248,44 @@ html.dark .app-card-banner,
 html.dark .app-card-banner-classic,
 html[data-theme="dark"] .app-card-banner,
 html[data-theme="dark"] .app-card-banner-classic {
-  background: linear-gradient(135deg, #2F3E46 0%, #263339 50%, #1C2428 100%) !important;
-  border-color: #3D4E56 !important;
+  background: linear-gradient(
+    135deg,
+    #2f3e46 0%,
+    #263339 50%,
+    #1c2428 100%
+  ) !important;
+  border-color: #3d4e56 !important;
   box-shadow: 0 12px 32px -6px rgba(0, 0, 0, 0.5) !important;
 }
 
 html.dark .app-card-surface,
 html[data-theme="dark"] .app-card-surface {
-  background: #2F3E46 !important;
-  border-color: #3D4E56 !important;
+  background: #2f3e46 !important;
+  border-color: #3d4e56 !important;
   box-shadow: none !important;
 }
 
 html.dark .app-card-peach,
 html[data-theme="dark"] .app-card-peach {
-  background: linear-gradient(135deg, #35272B 0%, #2F3E46 50%, #222D33 100%) !important;
+  background: linear-gradient(
+    135deg,
+    #35272b 0%,
+    #2f3e46 50%,
+    #222d33 100%
+  ) !important;
   border-color: rgba(232, 174, 183, 0.25) !important;
 }
 
 /* 3. Typography Adaptations */
 .theme-heading {
-  color: #2F3E46 !important;
+  color: #2f3e46 !important;
 }
 .theme-subtext {
-  color: #6D7E84 !important;
+  color: #6d7e84 !important;
 }
 html.dark .theme-heading,
 html[data-theme="dark"] .theme-heading {
-  color: #FFFFFF !important;
+  color: #ffffff !important;
 }
 html.dark .theme-subtext,
 html[data-theme="dark"] .theme-subtext {
@@ -198,50 +294,60 @@ html[data-theme="dark"] .theme-subtext {
 
 /* 4. Stat Cards Theme Adaptations */
 html.dark .stat-card-theme-mint {
-  background: #2F3E46 !important;
+  background: #2f3e46 !important;
   border-color: rgba(94, 136, 126, 0.4) !important;
 }
 html.dark .stat-card-theme-blue {
-  background: #2F3E46 !important;
+  background: #2f3e46 !important;
   border-color: rgba(167, 199, 231, 0.4) !important;
 }
 html.dark .stat-card-theme-purple {
-  background: #2F3E46 !important;
+  background: #2f3e46 !important;
   border-color: rgba(232, 174, 183, 0.4) !important;
 }
 html.dark .stat-card-theme-coral {
-  background: #2F3E46 !important;
+  background: #2f3e46 !important;
   border-color: rgba(232, 174, 183, 0.45) !important;
 }
 html.dark .stat-card-val {
-  color: #FFFFFF !important;
+  color: #ffffff !important;
 }
 
 body {
   background-color: var(--color-spa-bg);
   color: var(--color-spa-dark);
-  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   -webkit-tap-highlight-color: transparent;
   overscroll-behavior-y: contain;
-  transition: background-color 0.3s linear, color 0.3s linear;
+  transition:
+    background-color 0.3s linear,
+    color 0.3s linear;
 }
 
-h1, h2, h3, .font-heading, .font-serif-luxury {
-  font-family: 'Playfair Display', serif;
+h1,
+h2,
+h3,
+.font-heading,
+.font-serif-luxury {
+  font-family: "Playfair Display", serif;
   letter-spacing: 0.02em;
 }
 
-h4, h5, h6 {
-  font-family: 'Plus Jakarta Sans', sans-serif;
+h4,
+h5,
+h6 {
+  font-family: "Plus Jakarta Sans", sans-serif;
   letter-spacing: -0.01em;
 }
 
-.font-sans, [class*="font-sans"] {
-  font-family: 'Plus Jakarta Sans', sans-serif !important;
+.font-sans,
+[class*="font-sans"] {
+  font-family: "Plus Jakarta Sans", sans-serif !important;
 }
 
-.font-mono, [class*="font-mono"] {
-  font-family: 'JetBrains Mono', monospace !important;
+.font-mono,
+[class*="font-mono"] {
+  font-family: "JetBrains Mono", monospace !important;
 }
 
 /* Luxury View Transition Animation */
@@ -264,51 +370,73 @@ h4, h5, h6 {
 .card-banner {
   border-radius: 28px;
   border: 1px solid var(--color-spa-border);
-  box-shadow: 0 10px 30px -5px rgba(47, 62, 70, 0.05), 0 4px 12px rgba(47, 62, 70, 0.02);
-  background-image: linear-gradient(to bottom right, var(--color-spa-sage-light), var(--color-spa-card), var(--color-spa-bg));
+  box-shadow:
+    0 10px 30px -5px rgba(47, 62, 70, 0.05),
+    0 4px 12px rgba(47, 62, 70, 0.02);
+  background-image: linear-gradient(
+    to bottom right,
+    var(--color-spa-sage-light),
+    var(--color-spa-card),
+    var(--color-spa-bg)
+  );
   position: relative;
   overflow: hidden;
-  transition: background 0.3s linear, border-color 0.3s linear;
+  transition:
+    background 0.3s linear,
+    border-color 0.3s linear;
 }
 
 .card-surface {
   background-color: var(--color-spa-card);
   border-radius: 28px;
   border: 1px solid var(--color-spa-border);
-  box-shadow: 0 10px 30px -5px rgba(47, 62, 70, 0.05), 0 4px 12px rgba(47, 62, 70, 0.02);
+  box-shadow:
+    0 10px 30px -5px rgba(47, 62, 70, 0.05),
+    0 4px 12px rgba(47, 62, 70, 0.02);
   position: relative;
   overflow: hidden;
-  transition: background-color 0.3s linear, border-color 0.3s linear;
+  transition:
+    background-color 0.3s linear,
+    border-color 0.3s linear;
 }
 
 /* Luxury Ambient Glow Shadows for Buttons (Đồng màu với nền nút) */
 .shadow-glow-brand {
-  box-shadow: 0 12px 28px -6px color-mix(in srgb, var(--color-spa-brand) 50%, transparent),
-              0 6px 12px -4px color-mix(in srgb, var(--color-spa-brand) 28%, transparent);
+  box-shadow:
+    0 12px 28px -6px color-mix(in srgb, var(--color-spa-brand) 50%, transparent),
+    0 6px 12px -4px color-mix(in srgb, var(--color-spa-brand) 28%, transparent);
 }
 .shadow-glow-brand:hover {
-  box-shadow: 0 16px 32px -6px color-mix(in srgb, var(--color-spa-brand) 65%, transparent),
-              0 8px 16px -4px color-mix(in srgb, var(--color-spa-brand) 35%, transparent);
+  box-shadow:
+    0 16px 32px -6px color-mix(in srgb, var(--color-spa-brand) 65%, transparent),
+    0 8px 16px -4px color-mix(in srgb, var(--color-spa-brand) 35%, transparent);
 }
 .shadow-glow-sage {
-  box-shadow: 0 12px 28px -6px color-mix(in srgb, var(--color-spa-sage) 45%, transparent),
-              0 6px 12px -4px color-mix(in srgb, var(--color-spa-sage) 25%, transparent);
+  box-shadow:
+    0 12px 28px -6px color-mix(in srgb, var(--color-spa-sage) 45%, transparent),
+    0 6px 12px -4px color-mix(in srgb, var(--color-spa-sage) 25%, transparent);
 }
 .shadow-glow-sage:hover {
-  box-shadow: 0 16px 32px -6px color-mix(in srgb, var(--color-spa-sage) 55%, transparent),
-              0 8px 16px -4px color-mix(in srgb, var(--color-spa-sage) 30%, transparent);
+  box-shadow:
+    0 16px 32px -6px color-mix(in srgb, var(--color-spa-sage) 55%, transparent),
+    0 8px 16px -4px color-mix(in srgb, var(--color-spa-sage) 30%, transparent);
 }
 
 /* =============================================================
    LIQUID GLASS (KÍNH LỎNG SIÊU THỰC - VISIONOS & LUXURY ZEN STYLE)
    ============================================================= */
 .liquid-glass {
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.08) 40%, rgba(0, 0, 0, 0.08) 100%);
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.25) 0%,
+    rgba(255, 255, 255, 0.08) 40%,
+    rgba(0, 0, 0, 0.08) 100%
+  );
   backdrop-filter: blur(18px) saturate(160%);
   -webkit-backdrop-filter: blur(18px) saturate(160%);
   border: 1px solid rgba(255, 255, 255, 0.45);
   border-radius: 36px;
-  box-shadow: 
+  box-shadow:
     0 20px 50px -10px rgba(0, 0, 0, 0.35),
     inset 0 1px 1px 0 rgba(255, 255, 255, 0.65);
   position: relative;
@@ -316,10 +444,16 @@ h4, h5, h6 {
   isolation: isolate;
 }
 
-[data-theme="dark"] .liquid-glass, .dark .liquid-glass {
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.03) 40%, rgba(0, 0, 0, 0.35) 100%);
+[data-theme="dark"] .liquid-glass,
+.dark .liquid-glass {
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.14) 0%,
+    rgba(255, 255, 255, 0.03) 40%,
+    rgba(0, 0, 0, 0.35) 100%
+  );
   border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 
+  box-shadow:
     0 25px 60px -10px rgba(0, 0, 0, 0.6),
     inset 0 1px 1px 0 rgba(255, 255, 255, 0.4);
 }
@@ -369,7 +503,7 @@ h4, h5, h6 {
 
 [data-theme="dark"] .app-input-group:focus-within .app-input-icon,
 .dark .app-input-group:focus-within .app-input-icon {
-  color: #FFFFFF !important;
+  color: #ffffff !important;
 }
 
 /* =============================================================
@@ -379,8 +513,13 @@ h4, h5, h6 {
 .bg-spa-brand span,
 .bg-spa-brand i,
 .bg-spa-brand svg {
-  color: #FFFFFF !important;
+  color: #ffffff !important;
 }
 
-
+/* =============================================================
+   SAFE AREA HELPERS (CHO TAI THỎ / DYNAMIC ISLAND & BOTTOM BAR)
+   ============================================================= */
+.safe-area-top {
+  padding-top: calc(env(safe-area-inset-top, 20px) + 12px) !important;
+}
 
