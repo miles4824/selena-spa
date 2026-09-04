@@ -80,7 +80,7 @@ function parseBirthMonth(val) {
   return 0;
 }
 
-const APP_VERSION = 'v0.0.0.9';
+const APP_VERSION = 'v0.0.1.0';
 // =============================================================
 // SELENA SPA - GLOBAL CONFIG & CONSTANTS
 // =============================================================
@@ -878,6 +878,53 @@ window.alert = function(msg) {
 };
 
 // =============================================================
+// =============================================================
+// CENTRALIZED UI TITLES REGISTRY (TỪ ĐIỂN TIÊU ĐỀ TỪNG CỤM TOÀN HỆ THỐNG)
+// =============================================================
+const DEFAULT_UI_TITLES = {
+  // 1. HOME SCREEN (MÀN CHÍNH)
+  title_home_slogan: 'hôm nay sẵn sàng tỏa sáng chưa? ✨',
+  title_home_free_quote: 'Mỗi tour gội là một trải nghiệm thư giãn tuyệt vời gửi gắm đến khách hàng thân yêu.',
+  title_staff_announcement: 'BẢNG TIN NỘI BỘ TỪ CHỦ TIỆM',
+  title_staff_today_stats: 'THÀNH TÍCH CỦA RIÊNG BẠN HÔM NAY',
+  title_admin_live_tours: 'CÁC TOUR ĐANG PHỤC VỤ TRỰC TIẾP',
+  title_admin_today_snapshot: 'CHỈ SỐ NHANH HÔM NAY',
+  title_admin_announcement: 'THÔNG BÁO ĐANG PHÁT CHO KTV',
+  title_admin_quick_actions: 'LỐI TẮT THAO TÁC NHANH',
+
+  // 2. HISTORY SCREEN (LỊCH SỬ)
+  title_admin_history: 'LỊCH SỬ TOÀN TIỆM',
+  subtitle_admin_history: 'Tất cả tour toàn tiệm',
+  title_staff_history: 'LỊCH SỬ TOUR CỦA TÔI',
+  subtitle_staff_history: 'Hành trình các ca phục vụ của riêng bạn',
+
+  // 3. WALLET / EXPENSES SCREEN (THU NHẬP & CHI PHÍ)
+  title_admin_wallet: 'QUẢN LÝ CHI PHÍ TIỆM',
+  subtitle_admin_wallet: 'Kiểm soát chi phí cố định & biến phí vận hành',
+  title_admin_expenses_list: 'DANH SÁCH CHI PHÍ VẬN HÀNH',
+  subtitle_admin_expenses_list: 'Điện sấy, nước sạch, internet, mặt bằng, mỹ phẩm',
+  title_staff_wallet: 'THU NHẬP CỦA TÔI',
+  subtitle_staff_wallet: 'Chi tiết lương ngày công & hoa hồng tour',
+  title_staff_payroll_card: 'TỔNG THU NHẬP THÁNG TẠM TÍNH',
+
+  // 4. ADD SCREEN (TẠO CA / VÀO TOUR)
+  title_pos_select_staff: 'CHỌN KỸ THUẬT VIÊN TIẾP NHẬN',
+  title_pos_customer_info: 'THÔNG TIN KHÁCH HÀNG',
+  title_pos_service_menu: 'MENU DỊCH VỤ & COMBO',
+
+  // 5. MODALS (TIÊU ĐỀ POPUP)
+  title_modal_checkout: 'XÁC NHẬN THANH TOÁN',
+  title_modal_swap_staff: 'CHUYỂN KTV TIẾP NHẬN',
+  title_modal_handover: 'BÀN GIAO TOUR GỘI',
+  title_modal_add_expense: 'NHẬP CHI PHÍ VẬN HÀNH',
+  title_modal_announcement: 'CẬP NHẬT BẢNG TIN NỘI BỘ',
+  title_modal_month_picker: 'CHỌN THÁNG THỐNG KÊ',
+  title_modal_staff_note: 'GHI CHÚ KHÁCH HÀNG',
+  title_modal_owner_customer: 'HỒ SƠ KHÁCH HÀNG',
+  title_modal_gift_voucher: 'TẶNG VOUCHER TRI ÂN',
+  title_modal_edit_live_services: 'ĐIỀU CHỈNH DỊCH VỤ TOUR'
+};
+
 // DYNAMIC UI CONFIGURATION (ĐỒNG BỘ ĐỘNG TỪ GOOGLE SHEETS TB_CONFIG)
 // =============================================================
 const DEFAULT_UI_CONFIG = {

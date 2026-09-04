@@ -17,7 +17,8 @@ function AppTitle({
   let titleContent = text;
   if (configKey) {
     const uiConfig = (typeof getStored === 'function') ? getStored('ui_config', {}) : {};
-    titleContent = uiConfig[configKey] || uiConfig[configKey.toUpperCase()] || defaultText || text;
+    const defaultTitles = (typeof DEFAULT_UI_TITLES !== 'undefined') ? DEFAULT_UI_TITLES : {};
+    titleContent = uiConfig[configKey] || uiConfig[configKey.toUpperCase()] || defaultTitles[configKey] || defaultText || text;
   }
   if (!titleContent && defaultText) titleContent = defaultText;
 

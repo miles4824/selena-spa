@@ -90,3 +90,21 @@
   + Thiết lập chính thức kiến trúc Hệ Thống UI Component System (Tailwind 4 Modular) theo Điều 15 PROJECT_RULES.md.
   + Tách nhỏ thành các module độc lập trong js/Core/Components/: pp_button.js, stat_card.js, status_badge.js...
   + Áp dụng Giai đoạn 1 cho màn hình Home của Staff và Admin.
+
+### 8. `AppCard` (`js/Core/Components/app_card.js`)
+- **Mục đích**: Chuẩn hóa nền thẻ Luxury Banner (Hero Greeting chào đón KTV & Chủ) và Surface White tiêu chuẩn toàn hệ thống.
+- **Tham số**:
+  ```javascript
+  AppCard({
+    variant: 'banner', // 'banner' (peach-cream gradient) | 'surface' (white) | 'peach' | 'mint'
+    content: '',        // Nội dung HTML bên trong
+    padding: 'p-6 sm:p-7',
+    customClass: '',
+    id: ''
+  })
+  ```
+- **CSS Utility tương ứng trong `css/style.css`**: `.card-banner`, `.card-surface`.
+
+### 9. Từ Điển Tiêu Đề Tập Trung `DEFAULT_UI_TITLES` (`js/config.js`)
+- **Mục đích**: Lưu trữ và quản lý tập trung toàn bộ tiêu đề (Title & Subtitle) của từng cụm/khối trên toàn bộ 4 màn hình chính và các Modal.
+- Cho phép tra cứu trực tiếp hoặc ghi đè tự động qua Google Sheets `tb_config`.
