@@ -41,24 +41,45 @@ function renderLoginScreen() {
 
   return `
     <div id="screen-login" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-spa-bg/95 backdrop-blur-xl animate-in fade-in duration-300">
-      <div class="w-full max-w-md bg-spa-card/95 backdrop-blur-2xl rounded-[32px] border border-spa-border/90 shadow-[0_25px_60px_-15px_rgba(28,36,40,0.35)] p-7 sm:p-9 text-center relative space-y-5 transition-colors duration-300 my-auto">
+      <div class="w-full max-w-md rounded-[32px] border border-white/20 shadow-[0_25px_60px_-15px_rgba(28,36,40,0.35)] p-7 sm:p-9 text-center relative space-y-5 transition-colors duration-300 my-auto overflow-hidden bg-[#4A645D]" style="--color-spa-dark: #FFFFFF; --color-spa-muted: rgba(255,255,255,0.75); --color-spa-hint: rgba(255,255,255,0.6); --color-spa-border: rgba(255,255,255,0.2); --color-spa-bg: rgba(255,255,255,0.12); --color-spa-card: #3A4E47; --color-spa-sage: #A7C7E7; --color-spa-sage-light: rgba(255,255,255,0.15);">
+        
+        <!-- LỚP NỀN XANH THIỀN ĐỊNH SÁNG TỐI BLUR TRONG CARD (MINDORA AMBIENT LIGHT MESH) -->
+        <div class="absolute inset-0 -z-10 pointer-events-none select-none overflow-hidden bg-[#4A645D]">
+          <!-- Nền dải màu xanh rêu sâu lắng -->
+          <div class="absolute inset-0 bg-gradient-to-b from-[#55756C] via-[#48625B] to-[#364943]"></div>
+          
+          <!-- Vầng sáng mặt trời buổi sớm góc trên trái (Sun Glow Orb) -->
+          <div class="absolute -top-16 -left-16 w-52 h-52 rounded-full bg-white/25 blur-[50px]"></div>
+          
+          <!-- Vầng sáng xanh sương mai góc trên phải (Blue Mist Orb) -->
+          <div class="absolute top-1/4 -right-12 w-48 h-48 rounded-full bg-[#A7C7E7]/25 blur-[45px]"></div>
+          
+          <!-- Vầng sáng hồng phấn nhẹ góc giữa bên trái (Dusty Rose Ambient Orb) -->
+          <div class="absolute top-2/3 -left-10 w-44 h-44 rounded-full bg-[#E8AEB7]/20 blur-[45px]"></div>
+
+          <!-- Vầng tối sâu thẳm của rừng thông góc dưới phải (Deep Pine Shadow Orb) -->
+          <div class="absolute -bottom-20 -right-12 w-60 h-60 rounded-full bg-[#1C2428]/60 blur-[60px]"></div>
+          
+          <!-- Lớp phủ ánh sáng tự nhiên mờ ảo -->
+          <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-white/10 via-transparent to-black/25"></div>
+        </div>
         
         <!-- Nút Công Tắc Bật Tắt Sáng / Tối (ThemeToggle Component) -->
         ${ThemeToggle({ customClass: "absolute top-5 right-5" })}
 
         <!-- Logo & Thương Hiệu (Mindora Zen Style) -->
-        <div class="inline-flex p-4 rounded-3xl bg-spa-sage-light border border-spa-teal-border/40">
-          <i data-lucide="sparkles" class="w-8 h-8 text-spa-sage"></i>
+        <div class="inline-flex p-4 rounded-3xl bg-white/10 border border-white/20">
+          <i data-lucide="sparkles" class="w-8 h-8 text-spa-brand"></i>
         </div>
         
         <div class="space-y-1">
-          <h1 id="login-brand-name" class="brand-spa-name text-2xl sm:text-3xl font-extrabold text-spa-dark tracking-tight font-serif">${getConfig("spa_brand_name")}</h1>
-          <p id="login-brand-slogan" class="brand-spa-slogan text-xs sm:text-sm text-spa-muted font-medium">${getConfig("spa_brand_slogan")}</p>
+          <h1 id="login-brand-name" class="brand-spa-name text-2xl sm:text-3xl font-extrabold text-white tracking-tight font-serif">${getConfig("spa_brand_name")}</h1>
+          <p id="login-brand-slogan" class="brand-spa-slogan text-xs sm:text-sm text-white/80 font-medium">${getConfig("spa_brand_slogan")}</p>
         </div>
 
         <div class="flex items-center justify-center">
-          <span class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-spa-sage-light border border-spa-teal-border/40 text-spa-sage text-xs font-semibold font-mono">
-            <i data-lucide="leaf" class="w-3.5 h-3.5"></i> ${APP_VERSION} • ${getConfig("spa_brand_name")}
+          <span class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-white/10 border border-white/20 text-white/90 text-xs font-semibold font-mono">
+            <i data-lucide="leaf" class="w-3.5 h-3.5 text-spa-brand"></i> ${APP_VERSION} • ${getConfig("spa_brand_name")}
           </span>
         </div>
 
