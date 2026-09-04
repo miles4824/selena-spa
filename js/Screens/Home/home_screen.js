@@ -32,6 +32,9 @@ function renderHomeScreen() {
   // NẾU APP SHELL ĐÃ CÓ (Không xóa app.innerHTML để giữ nguyên Bottom Nav & hiệu ứng trượt)
   if (screenHome && mainScroll) {
     mainScroll.innerHTML = homeContentHtml;
+    mainScroll.classList.remove('view-enter-active');
+    void mainScroll.offsetWidth; // Kích hoạt Luxury View Transition
+    mainScroll.classList.add('view-enter-active');
     if (typeof updateNavSlidingPill === 'function') {
       updateNavSlidingPill('home');
     }
@@ -74,7 +77,7 @@ function renderHomeScreen() {
       </header>
 
       <!-- KHỐI NỘI DUNG CUỘN CHÍNH CỦA TRANG HOME -->
-      <main id="home-main-scroll" class="p-4 sm:p-6 max-w-5xl mx-auto">
+      <main id="home-main-scroll" class="p-4 sm:p-6 max-w-5xl mx-auto view-enter-active">
         ${homeContentHtml}
       </main>
     </div>

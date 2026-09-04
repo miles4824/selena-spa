@@ -30,7 +30,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
   <!-- CUSTOM STYLES -->
-  <link rel="stylesheet" href="css/style.css?v=v0.0.3.0">
+  <link rel="stylesheet" href="css/style.css?v=v0.0.3.1">
   
   <!-- EARLY THEME INITIALIZATION (Ngăn chặn chớp giao diện và lệch màu) -->
   <script>
@@ -95,6 +95,9 @@
       } else {
         const mainEl = document.getElementById('home-main-scroll');
         if (mainEl) {
+          mainEl.classList.remove('view-enter-active');
+          void mainEl.offsetWidth; // Kích hoạt Luxury View Transition
+          mainEl.classList.add('view-enter-active');
           const titles = { pos: 'Tạo Ca / Vé Mới (POS)', history: 'Lịch Sử Tour', income: 'Báo Cáo & Thu Nhập' };
           mainEl.innerHTML = `
             <div class="p-8 rounded-3xl bg-spa-card border border-spa-border text-center space-y-4 shadow-xs">

@@ -119,15 +119,17 @@ h4, h5, h6 {
 
 /* Luxury View Transition Animation */
 .view-enter-active {
-  animation: luxuryFadeIn 0.25s linear forwards;
+  animation: luxuryFadeSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-@keyframes luxuryFadeIn {
+@keyframes luxuryFadeSlideIn {
   0% {
     opacity: 0;
+    transform: translateY(12px) scale(0.99);
   }
   100% {
     opacity: 1;
+    transform: translateY(0) scale(1);
   }
 }
 
