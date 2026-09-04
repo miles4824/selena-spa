@@ -4,23 +4,23 @@
 function AppButton({
   text = '',
   icon = '',
-  variant = 'primary', // 'primary' | 'teal' | 'secondary' | 'danger'
-  size = 'lg',        // 'lg' (Home) | 'md' (POS/Modal) | 'sm' (List/Table)
+  variant = 'primary', // 'primary' (Dusty Rose #E8AEB7) | 'teal' (Sage #5E887E) | 'secondary' | 'danger'
+  size = 'lg',        // 'lg' (Home/Login) | 'md' (POS/Modal) | 'sm' (List/Table)
   onClick = '',
   customClass = '',
   id = ''
 } = {}) {
   const variantStyles = {
-    primary: 'bg-gradient-to-r from-[#E58A7B] to-[#F09A8D] hover:opacity-95 text-white shadow-lg shadow-[#E58A7B]/25',
-    teal: 'bg-gradient-to-r from-[#2E7D6D] to-[#3B9E8B] hover:opacity-95 text-white shadow-lg shadow-[#2E7D6D]/25',
-    secondary: 'bg-[#FAF6F1] hover:bg-[#FFF0EB] text-[#2D2424] border border-[#EFE8DF]',
-    danger: 'bg-rose-50 text-rose-600 hover:bg-rose-100 border border-rose-200'
+    primary: 'bg-[#E8AEB7] hover:bg-[#DF9CA6] text-white shadow-lg shadow-[#E8AEB7]/25 font-bold',
+    teal: 'bg-[#5E887E] hover:bg-[#4F756C] text-white shadow-lg shadow-[#5E887E]/25 font-bold',
+    secondary: 'bg-spa-bg hover:bg-spa-sage-light text-spa-dark border border-spa-border font-semibold',
+    danger: 'bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 hover:bg-rose-100 border border-rose-200 dark:border-rose-900/50 font-bold'
   };
 
   const sizeStyles = {
-    sm: 'px-3.5 py-1.5 text-xs rounded-xl gap-1.5 font-bold',
-    md: 'px-5 py-2.5 text-xs sm:text-sm rounded-2xl gap-2 font-bold',
-    lg: 'w-full sm:w-auto px-7 py-3.5 text-sm sm:text-base rounded-full gap-2.5 font-extrabold'
+    sm: 'px-3.5 py-1.5 text-xs rounded-xl gap-1.5',
+    md: 'px-5 py-2.5 text-xs sm:text-sm rounded-2xl gap-2',
+    lg: 'w-full sm:w-auto px-7 py-3.5 text-sm sm:text-base rounded-full gap-2.5'
   };
 
   const idAttr = id ? `id="${id}"` : '';

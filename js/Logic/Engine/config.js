@@ -77,16 +77,15 @@ function isUserOwner(u) {
   const phone = (typeof PhoneService !== 'undefined') ? PhoneService.normalize(u.phone) : String(u.phone || '').trim();
   return (role === 'admin' || role === 'chủ tiệm' || role === 'chủ sáng lập' || role === 'owner' || phone === '0949251144');
 }
-// 4. Quản lý Chế độ Sáng / Tối (Tự động theo thời gian thực: 6h - 18h Sáng, 18h - 6h Tối)
+
+// 4. Quản lý Chế độ Sáng / Tối (Theme Manager - Light & Dark Mode)
 function getTheme() {
-  // 1. Ưu tiên lựa chọn người dùng đã tự tay bấm công tắc
   const saved = localStorage.getItem('selena_theme');
   if (saved === 'dark' || saved === 'light') return saved;
 
-  // 2. Mặc định tự động theo THỜI GIAN THỰC TẾ TRONG NGÀY
+  // Mặc định tự động theo giờ thực tế: 6h - 18h là Light Mode, 18h - 6h là Dark Mode
   const currentHour = new Date().getHours();
-  const isNight = currentHour < 6 || currentHour >= 18; // Trước 6h sáng hoặc sau 18h tối là ban đêm
-  return isNight ? 'dark' : 'light';
+  return (currentHour < 6 || currentHour >= 18) ? 'dark' : 'light';
 }
 
 function setTheme(theme) {
@@ -108,6 +107,11 @@ function toggleTheme() {
 }
 
 function initTheme() {
+  // Tự động dọn cache cũ nếu trước đó bị kẹt dark do auto-read OS
+  if (localStorage.getItem('selena_palette_version') !== 'mindora_v1') {
+    localStorage.removeItem('selena_theme');
+    localStorage.setItem('selena_palette_version', 'mindora_v1');
+  }
   setTheme(getTheme());
 }
 

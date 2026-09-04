@@ -1,69 +1,84 @@
-﻿/* =============================================================
-   SELENA SPA - MASTER THEME TOKENS (LIGHT & DARK MODE LUXURY)
+/* =============================================================
+   SELENA SPA - MINDORA LUXURY PALETTE (INSPIRED BY REFERENCE)
+   1. #5E887E (Muted Sage Green - Tĩnh lặng, an yên)
+   2. #A7C7E7 (Soft Sky Blue Mist - Xanh sương mai)
+   3. #2F3E46 (Deep Slate Pine - Đen thông sang trọng, chữ chính)
+   4. #F1F5F4 (Pale Off-White Mint - Nền sáng êm dịu, mượt mà)
+   5. #E8AEB7 (Dusty Rose Blossom - Hồng phấn đằm thắm, nút chính)
    ============================================================= */
 @theme {
-  --color-spa-bg: #FAF6F1;
+  --color-spa-bg: #F1F5F4;
   --color-spa-card: #FFFFFF;
-  --color-spa-dark: #2D2424;
-  --color-spa-brand: #E58A7B;
-  --color-spa-brand-hover: #D9796A;
-  --color-spa-muted: #7E7272;
-  --color-spa-hint: #A39696;
-  --color-spa-border: #F0EAE1;
-  --color-spa-input: #F7F2EC;
-  --color-spa-teal: #2E7D6D;
-  --color-spa-teal-light: #E8F8F5;
-  --color-spa-teal-border: #B7EBDD;
-  --color-spa-peach-light: #FFF0EB;
-  --color-spa-peach-border: #FCDFD7;
+  --color-spa-dark: #2F3E46;
+  --color-spa-brand: #E8AEB7;
+  --color-spa-brand-hover: #DF9CA6;
+  --color-spa-sage: #5E887E;
+  --color-spa-sage-light: #EBF2F0;
+  --color-spa-mist: #A7C7E7;
+  --color-spa-muted: #6D7E84;
+  --color-spa-hint: #9AAEB5;
+  --color-spa-border: #E2E8E6;
+  --color-spa-input: #FFFFFF;
+  --color-spa-teal: #5E887E;
+  --color-spa-teal-light: #EBF2F0;
+  --color-spa-teal-border: #C8DBD6;
+  --color-spa-peach-light: #FBF0F2;
+  --color-spa-peach-border: #F5D3D8;
 }
 
 :root {
   --sticky-date-offset: 130px;
-  --color-spa-bg: #FAF6F1;
+  --color-spa-bg: #F1F5F4;
   --color-spa-card: #FFFFFF;
-  --color-spa-dark: #2D2424;
-  --color-spa-brand: #E58A7B;
-  --color-spa-brand-hover: #D9796A;
-  --color-spa-muted: #7E7272;
-  --color-spa-hint: #A39696;
-  --color-spa-border: #F0EAE1;
-  --color-spa-input: #F7F2EC;
-  --color-spa-teal: #2E7D6D;
-  --color-spa-teal-light: #E8F8F5;
-  --color-spa-teal-border: #B7EBDD;
-  --color-spa-peach-light: #FFF0EB;
-  --color-spa-peach-border: #FCDFD7;
+  --color-spa-dark: #2F3E46;
+  --color-spa-brand: #E8AEB7;
+  --color-spa-brand-hover: #DF9CA6;
+  --color-spa-sage: #5E887E;
+  --color-spa-sage-light: #EBF2F0;
+  --color-spa-mist: #A7C7E7;
+  --color-spa-muted: #6D7E84;
+  --color-spa-hint: #9AAEB5;
+  --color-spa-border: #E2E8E6;
+  --color-spa-input: #FFFFFF;
+  --color-spa-teal: #5E887E;
+  --color-spa-teal-light: #EBF2F0;
+  --color-spa-teal-border: #C8DBD6;
+  --color-spa-peach-light: #FBF0F2;
+  --color-spa-peach-border: #F5D3D8;
   color-scheme: light;
 }
 
-/* =============================================================
-   CHẾ ĐỘ BAN ĐÊM (DARK MODE LUXURY - DỊU MẮT & SANG TRỌNG)
-   ============================================================= */
+/* GIAO DIỆN BAN ĐÊM (DARK MODE SLATE PINE - SANG TRỌNG NHƯ MOCKUP) */
 [data-theme="dark"], .dark {
-  --color-spa-bg: #141110;
-  --color-spa-card: #1F1B19;
-  --color-spa-dark: #FAF6F1;
-  --color-spa-brand: #F2A396;
-  --color-spa-brand-hover: #E58A7B;
-  --color-spa-muted: #A89F91;
-  --color-spa-hint: #786F69;
-  --color-spa-border: #332B28;
-  --color-spa-input: #26211E;
-  --color-spa-teal: #3FB99F;
-  --color-spa-teal-light: #162B26;
-  --color-spa-teal-border: #24473F;
-  --color-spa-peach-light: #2D1E1B;
-  --color-spa-peach-border: #4D332E;
+  --color-spa-bg: #1C2428;
+  --color-spa-card: #28343B;
+  --color-spa-dark: #F1F5F4;
+  --color-spa-brand: #E8AEB7;
+  --color-spa-brand-hover: #F0BCC4;
+  --color-spa-sage: #7BA69C;
+  --color-spa-sage-light: #243533;
+  --color-spa-mist: #A7C7E7;
+  --color-spa-muted: #9AAEB5;
+  --color-spa-hint: #637780;
+  --color-spa-border: #3A4A52;
+  --color-spa-input: #202A2F;
+  --color-spa-teal: #7BA69C;
+  --color-spa-teal-light: #243533;
+  --color-spa-teal-border: #38524D;
+  --color-spa-peach-light: #3D2D31;
+  --color-spa-peach-border: #5A3E45;
   color-scheme: dark;
 }
 
-/* Fallback Semantic Utility Classes */
+/* Semantic Classes */
 .bg-spa-bg { background-color: var(--color-spa-bg); }
 .bg-spa-card { background-color: var(--color-spa-card); }
 .text-spa-dark { color: var(--color-spa-dark); }
 .text-spa-brand { color: var(--color-spa-brand); }
 .bg-spa-brand { background-color: var(--color-spa-brand); }
+.text-spa-sage { color: var(--color-spa-sage); }
+.bg-spa-sage { background-color: var(--color-spa-sage); }
+.bg-spa-sage-light { background-color: var(--color-spa-sage-light); }
 .text-spa-muted { color: var(--color-spa-muted); }
 .text-spa-hint { color: var(--color-spa-hint); }
 .border-spa-border { border-color: var(--color-spa-border); }
@@ -116,12 +131,12 @@ h4, h5, h6 {
   }
 }
 
-/* Luxury Reusable Cards (Chuẩn Tailwind 4 & Mobile Performance) */
+/* Luxury Reusable Cards */
 .card-banner {
   border-radius: 28px;
   border: 1px solid var(--color-spa-border);
-  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.02);
-  background-image: linear-gradient(to bottom right, var(--color-spa-peach-light), var(--color-spa-card), var(--color-spa-bg));
+  box-shadow: 0 10px 30px -5px rgba(47, 62, 70, 0.05), 0 4px 12px rgba(47, 62, 70, 0.02);
+  background-image: linear-gradient(to bottom right, var(--color-spa-sage-light), var(--color-spa-card), var(--color-spa-bg));
   position: relative;
   overflow: hidden;
   transition: background 0.3s ease, border-color 0.3s ease;
@@ -131,7 +146,7 @@ h4, h5, h6 {
   background-color: var(--color-spa-card);
   border-radius: 28px;
   border: 1px solid var(--color-spa-border);
-  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.02);
+  box-shadow: 0 10px 30px -5px rgba(47, 62, 70, 0.05), 0 4px 12px rgba(47, 62, 70, 0.02);
   position: relative;
   overflow: hidden;
   transition: background-color 0.3s ease, border-color 0.3s ease;
