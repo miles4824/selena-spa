@@ -1,4 +1,4 @@
-﻿// =============================================================
+// =============================================================
 // SCREEN: LOGIN (MÀN HÌNH ĐĂNG NHẬP - PURE COMPONENT DRIVEN)
 // Hỗ trợ 100% Theme Tokens & Chế độ Sáng / Tối (Light & Dark Mode)
 // =============================================================
@@ -31,10 +31,8 @@ function renderLoginScreen() {
     <div id="screen-login" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-spa-bg/95 backdrop-blur-xl animate-in fade-in duration-300">
       <div class="w-full max-w-md bg-spa-card rounded-[28px] border border-spa-border shadow-[0_10px_30px_-5px_rgba(0,0,0,0.06),0_4px_12px_rgba(0,0,0,0.02)] p-6 sm:p-8 text-center relative space-y-4 transition-colors duration-300">
         
-        <!-- Nút Công Tắc Bật Tắt Sáng / Tối (Dark Mode Toggle) -->
-        <button type="button" onclick="toggleTheme()" title="Chuyển chế độ Sáng / Tối" class="absolute top-5 right-5 p-2 rounded-full bg-spa-bg hover:bg-spa-peach-light text-spa-muted hover:text-spa-brand border border-spa-border transition cursor-pointer active:scale-90">
-          <i data-lucide="${isDark ? 'sun' : 'moon'}" class="w-4 h-4 theme-toggle-icon"></i>
-        </button>
+        <!-- Nút Công Tắc Bật Tắt Sáng / Tối (ThemeToggle Component) -->
+        ${(typeof ThemeToggle === 'function') ? ThemeToggle({ customClass: 'absolute top-5 right-5' }) : ''}
 
         <!-- Logo & Thương Hiệu -->
         <div class="inline-flex p-4 rounded-3xl bg-spa-peach-light border border-spa-peach-border">
