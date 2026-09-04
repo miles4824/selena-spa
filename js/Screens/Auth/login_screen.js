@@ -40,7 +40,7 @@ function renderLoginScreen() {
     .join("");
 
   return `
-    <div id="screen-login" class="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto relative animate-in fade-in duration-300">
+    <div id="screen-login" class="fixed inset-0 z-50 overflow-y-auto animate-in fade-in duration-300">
       <!-- LỚP HÌNH NỀN TOÀN TRANG: HỒ SEN VÀ CON THUYỀN (ZEN LOTUS POND BACKGROUND) -->
       <div class="fixed inset-0 -z-20 pointer-events-none select-none overflow-hidden">
         <img 
@@ -52,8 +52,10 @@ function renderLoginScreen() {
         <div class="absolute inset-0 bg-black/30 backdrop-blur-[2px]"></div>
       </div>
 
-      <!-- CARD ĐĂNG NHẬP: KÍNH MỜ XANH THIỀN ĐỊNH TRONG SUỐT (FROSTED GLASS LOOKING DOWN TO BG) -->
-      <div class="w-full max-w-md rounded-[32px] border border-white/30 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.5)] backdrop-blur-2xl p-7 sm:p-9 text-center relative space-y-5 transition-colors duration-300 my-auto overflow-hidden text-white" style="--color-spa-dark: #FFFFFF; --color-spa-muted: rgba(255,255,255,0.8); --color-spa-hint: rgba(255,255,255,0.65); --color-spa-border: rgba(255,255,255,0.25); --color-spa-bg: rgba(255,255,255,0.15); --color-spa-card: rgba(40,58,52,0.6); --color-spa-sage: #A7C7E7; --color-spa-sage-light: rgba(255,255,255,0.2);">
+      <!-- KHỐI CĂN CHÍNH GIỮA MÀN HÌNH (DEAD CENTER HORIZONTAL & VERTICAL) -->
+      <div class="min-h-full w-full flex items-center justify-center p-4 sm:p-6 py-8">
+        <!-- CARD ĐĂNG NHẬP: KÍNH MỜ XANH THIỀN ĐỊNH TRONG SUỐT (FROSTED GLASS LOOKING DOWN TO BG) -->
+        <div class="w-full max-w-md rounded-[32px] border border-white/30 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.5)] backdrop-blur-2xl p-7 sm:p-9 text-center relative space-y-5 transition-colors duration-300 overflow-hidden text-white" style="--color-spa-dark: #FFFFFF; --color-spa-muted: rgba(255,255,255,0.8); --color-spa-hint: rgba(255,255,255,0.65); --color-spa-border: rgba(255,255,255,0.25); --color-spa-bg: rgba(255,255,255,0.15); --color-spa-card: rgba(40,58,52,0.6); --color-spa-sage: #A7C7E7; --color-spa-sage-light: rgba(255,255,255,0.2);">
         
         <!-- LỚP NỀN XANH HƠI TRONG SUỐT KÈM SÁNG TỐI BLUR (AMBIENT LIGHT MESH TRONG CARD) -->
         <div class="absolute inset-0 -z-10 pointer-events-none select-none overflow-hidden bg-[#3D544C]/75 backdrop-blur-2xl">
@@ -160,6 +162,7 @@ function renderLoginScreen() {
           </div>
         </div>
 
+        </div>
       </div>
     </div>
   `;
