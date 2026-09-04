@@ -157,7 +157,23 @@ html[data-theme="dark"] .border-spa-border {
 
 /* =========================================================================
    ROBUST CLASS-BASED THEME ADAPTATIONS FOR APPCARD & UI COMPONENTS
+/* =========================================================================
+   APP CARD & SYSTEM CARDS: WEBKIT BORDER RADIUS CLIPPING FIX
+   Khắc phục triệt để lỗi WebKit / Safari bo viền bị lệch / cạnh bo cạnh vuông
    ========================================================================= */
+[class*="app-card-"] {
+  border-radius: 28px !important;
+  -webkit-border-radius: 28px !important;
+  overflow: hidden !important;
+  position: relative !important;
+  isolation: isolate !important;
+  -webkit-mask-image: -webkit-radial-gradient(white, black) !important;
+  mask-image: radial-gradient(white, black) !important;
+  -webkit-transform: translateZ(0) !important;
+  transform: translateZ(0) !important;
+  -webkit-backface-visibility: hidden !important;
+  backface-visibility: hidden !important;
+}
 
 /* 1. Base / Light Mode Card Styles (Hoàn toàn trắng / hồng đào sáng khi Light Mode) */
 .app-card-mindora {

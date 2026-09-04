@@ -16,7 +16,7 @@ function BedCard({
   const bedNumberStr = String(bedIndex).padStart(2, '0');
 
   return `
-    <div class="p-4 rounded-3xl bg-[#FAF6F1] dark:bg-[#263339] border border-[#F0EAE1] dark:border-[#384850] space-y-3 shadow-xs hover:border-[#E8AEB7]/50 dark:hover:border-[#E8AEB7]/50 transition group ${customClass}">
+    <div class="p-4 rounded-3xl bg-[#FAF6F1] dark:bg-[#263339] border border-[#F0EAE1] dark:border-[#384850] space-y-3 shadow-xs hover:border-[#E8AEB7]/50 dark:hover:border-[#E8AEB7]/50 transition group ${customClass}" style="-webkit-mask-image: -webkit-radial-gradient(white, black); border-radius: 24px; -webkit-border-radius: 24px; isolation: isolate; transform: translateZ(0);">
       <div class="flex justify-between items-start">
         <div>
           <div class="text-[11px] font-black text-[#E8AEB7] uppercase tracking-wider flex items-center gap-1.5">

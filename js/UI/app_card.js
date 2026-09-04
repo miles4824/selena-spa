@@ -31,14 +31,14 @@ function AppCard({
       "app-card-peach rounded-[28px] border relative overflow-hidden transition-all duration-300",
 
     // 6. Mint Accent (Khối điểm nhấn thành tích ngọc bích)
-    mint: "bg-[#E8F8F5]/60 dark:bg-[#5E887E]/15 rounded-[28px] border border-[#B7EBDD] dark:border-[#5E887E]/30 relative overflow-hidden transition-all duration-300",
+    mint: "app-card-mint bg-[#E8F8F5]/60 dark:bg-[#5E887E]/15 rounded-[28px] border border-[#B7EBDD] dark:border-[#5E887E]/30 relative overflow-hidden transition-all duration-300",
   };
 
   const chosenStyle = variantStyles[variant] || variantStyles.banner;
   const idAttr = id ? `id="${id}"` : "";
 
   return `
-    <div ${idAttr} class="${chosenStyle} ${padding} ${customClass}">
+    <div ${idAttr} class="${chosenStyle} ${padding} ${customClass}" style="-webkit-mask-image: -webkit-radial-gradient(white, black); border-radius: 28px; -webkit-border-radius: 28px; isolation: isolate; transform: translateZ(0);">
       ${content}
     </div>
   `;

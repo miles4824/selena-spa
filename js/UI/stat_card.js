@@ -50,7 +50,7 @@ function StatCard({
   const subColor = isCoral ? 'text-white/90 dark:text-white/70' : `${c.text} dark:text-white/70`;
 
   return `
-    <div class="p-4 sm:p-5 rounded-3xl ${c.bg} border ${c.border} stat-card-theme-${color} space-y-1 shadow-xs transition-all duration-300 ${customClass}">
+    <div class="p-4 sm:p-5 rounded-3xl ${c.bg} border ${c.border} stat-card-theme-${color} space-y-1 shadow-xs transition-all duration-300 ${customClass}" style="-webkit-mask-image: -webkit-radial-gradient(white, black); border-radius: 24px; -webkit-border-radius: 24px; isolation: isolate; transform: translateZ(0);">
       <div class="flex items-center gap-1.5">
         <span class="text-xs font-bold ${c.text} uppercase tracking-wider block">${title}</span>
         ${eyeBtn}
