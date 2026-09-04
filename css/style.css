@@ -1,10 +1,56 @@
-:root {
-  --sticky-date-offset: 130px;
+﻿/* =============================================================
+   SELENA SPA - MASTER THEME TOKENS (ĐỔI 1 NƠI - TOÀN APP ĐỔI THEO)
+   ============================================================= */
+@theme {
+  --color-spa-bg: #FAF6F1;
+  --color-spa-dark: #2D2424;
+  --color-spa-brand: #E58A7B;
+  --color-spa-brand-hover: #D9796A;
+  --color-spa-muted: #7E7272;
+  --color-spa-hint: #A39696;
+  --color-spa-border: #F0EAE1;
+  --color-spa-input: #F7F2EC;
+  --color-spa-teal: #2E7D6D;
+  --color-spa-teal-light: #E8F8F5;
+  --color-spa-teal-border: #B7EBDD;
+  --color-spa-peach-light: #FFF0EB;
+  --color-spa-peach-border: #FCDFD7;
 }
 
+:root {
+  --sticky-date-offset: 130px;
+  --color-spa-bg: #FAF6F1;
+  --color-spa-dark: #2D2424;
+  --color-spa-brand: #E58A7B;
+  --color-spa-brand-hover: #D9796A;
+  --color-spa-muted: #7E7272;
+  --color-spa-hint: #A39696;
+  --color-spa-border: #F0EAE1;
+  --color-spa-input: #F7F2EC;
+  --color-spa-teal: #2E7D6D;
+  --color-spa-teal-light: #E8F8F5;
+  --color-spa-teal-border: #B7EBDD;
+  --color-spa-peach-light: #FFF0EB;
+  --color-spa-peach-border: #FCDFD7;
+}
+
+/* Fallback Semantic Utility Classes */
+.bg-spa-bg { background-color: var(--color-spa-bg); }
+.text-spa-dark { color: var(--color-spa-dark); }
+.text-spa-brand { color: var(--color-spa-brand); }
+.bg-spa-brand { background-color: var(--color-spa-brand); }
+.text-spa-muted { color: var(--color-spa-muted); }
+.text-spa-hint { color: var(--color-spa-hint); }
+.border-spa-border { border-color: var(--color-spa-border); }
+.bg-spa-input { background-color: var(--color-spa-input); }
+.text-spa-teal { color: var(--color-spa-teal); }
+.bg-spa-teal { background-color: var(--color-spa-teal); }
+.bg-spa-peach-light { background-color: var(--color-spa-peach-light); }
+.border-spa-peach-border { border-color: var(--color-spa-peach-border); }
+
 body {
-  background-color: #FAF6F1;
-  color: #2D2424;
+  background-color: var(--color-spa-bg);
+  color: var(--color-spa-dark);
   font-family: 'Plus Jakarta Sans', sans-serif;
   -webkit-tap-highlight-color: transparent;
   overscroll-behavior-y: contain;
@@ -47,9 +93,9 @@ h4, h5, h6 {
 /* Luxury Reusable Cards (Chuẩn Tailwind 4 & Mobile Performance) */
 .card-banner {
   border-radius: 28px;
-  border: 1px solid #F0EAE1;
+  border: 1px solid var(--color-spa-border);
   box-shadow: 0 10px 30px -5px rgba(229, 138, 123, 0.05), 0 4px 12px rgba(0, 0, 0, 0.02);
-  background-image: linear-gradient(to bottom right, #FFF0EB, #FFFFFF, #FAF6F1);
+  background-image: linear-gradient(to bottom right, var(--color-spa-peach-light), #FFFFFF, var(--color-spa-bg));
   position: relative;
   overflow: hidden;
 }
@@ -57,7 +103,7 @@ h4, h5, h6 {
 .card-surface {
   background-color: #ffffff;
   border-radius: 28px;
-  border: 1px solid #F0EAE1;
+  border: 1px solid var(--color-spa-border);
   box-shadow: 0 10px 30px -5px rgba(229, 138, 123, 0.05), 0 4px 12px rgba(0, 0, 0, 0.02);
   position: relative;
   overflow: hidden;
