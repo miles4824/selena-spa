@@ -68,12 +68,12 @@ function renderLoginScreen() {
       <!-- KHỐI CUỘN NỘI DUNG (SCROLL CONTAINER ĐỘC LẬP - NỀN KHÔNG BỊ CUỘN THEO) -->
       <div id="login-scroll-container" class="absolute inset-0 overflow-y-auto overflow-x-hidden" style="z-index: 2; overscroll-behavior-y: contain;">
         <!-- KHỐI CĂN CHÍNH GIỮA MÀN HÌNH (SẼ TRƯỢT XUỐNG KHI KÉO RELOAD) -->
-        <div id="login-content-wrapper" class="min-h-full w-full flex items-center justify-center p-4 sm:p-6 py-8">
+        <div id="login-content-wrapper" class="min-h-full w-full flex items-center justify-center p-4 sm:p-6" style="padding-top: calc(env(safe-area-inset-top, 24px) + 14px); padding-bottom: calc(env(safe-area-inset-bottom, 20px) + 18px);">
           <!-- CARD ĐĂNG NHẬP: PHONG CÁCH LIQUID GLASS (KÍNH LỎNG SIÊU THỰC) -->
-          <div class="liquid-glass w-full max-w-md rounded-[36px] p-7 sm:p-9 text-center relative space-y-5 transition-colors duration-300 overflow-hidden text-spa-dark dark:text-white" style="--color-spa-border: rgba(255,255,255,0.45); --color-spa-bg: rgba(255,255,255,0.35); --color-spa-card: rgba(255,255,255,0.4); -webkit-mask-image: -webkit-radial-gradient(white, black); border-radius: 36px;">
+          <div class="liquid-glass w-full max-w-md rounded-[36px] p-7 sm:p-9 text-center relative space-y-5 transition-colors duration-300 overflow-hidden text-spa-dark dark:text-white" style="--color-spa-border: rgba(255,255,255,0.45); --color-spa-bg: rgba(255,255,255,0.35); --color-spa-card: rgba(255,255,255,0.4); border-radius: 36px;">
         
         <!-- LỚP NỀN XANH THỦY TINH LỎNG KÈM QUẦNG SÁNG KHÚC XẠ (LIQUID GLASS AMBIENT CORE) -->
-        <div class="absolute inset-0 m-0 -z-10 pointer-events-none select-none overflow-hidden rounded-[36px] transition-colors duration-300" style="-webkit-mask-image: -webkit-radial-gradient(white, black); border-radius: 36px;">
+        <div class="absolute inset-0 m-0 -z-10 pointer-events-none select-none overflow-hidden rounded-[36px] transition-colors duration-300" style="border-radius: 36px;">
           <!-- Dải gradient khúc xạ ánh sáng lỏng (Liquid Refraction Gradient) -->
           <div class="absolute inset-0 rounded-[36px] bg-gradient-to-br from-[#5E887E]/25 via-white/10 to-[#1F2D27]/30 dark:from-[#5E887E]/30 dark:via-[#3D544C]/40 dark:to-[#1F2D27]/60"></div>
           
