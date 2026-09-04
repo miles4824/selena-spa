@@ -1,0 +1,8 @@
+{
+  "liveServer.settings.ignoreFiles": [
+    ".git/**",
+    ".vscode/**",
+    "OLD/**",
+    "google_apps_script/**"
+  ]
+}
