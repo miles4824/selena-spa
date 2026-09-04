@@ -48,6 +48,7 @@ function BottomNav({ activeTab = 'home' } = {}) {
  */
 function updateNavSlidingPill(activeTab = 'home') {
   const tabName = (activeTab === 'add') ? 'pos' : activeTab;
+  currentActiveNavTab = tabName;
   const tabs = ['home', 'pos', 'history', 'income'];
   const pill = document.getElementById('nav-sliding-indicator');
   const activeBtn = document.getElementById('nav-btn-' + tabName);
