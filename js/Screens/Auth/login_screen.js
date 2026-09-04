@@ -166,6 +166,7 @@ function renderLoginScreen() {
             ${AppButton({
               text: "ĐĂNG NHẬP NGAY",
               icon: "log-in",
+              iconPosition: "right",
               variant: "primary",
               size: "lg",
               onClick: "handlePhoneLogin(event)",
@@ -311,14 +312,19 @@ function initLogin() {
     fetchLiveConfigFromSheet();
 
   // Ngăn chặn trình duyệt tự động nhảy con trỏ / bật bàn phím ảo trên mobile khi F5 hoặc mở app
-  if (document.activeElement && typeof document.activeElement.blur === "function") {
+  if (
+    document.activeElement &&
+    typeof document.activeElement.blur === "function"
+  ) {
     document.activeElement.blur();
   }
   setTimeout(() => {
     const active = document.activeElement;
-    if (active && (active.tagName === "INPUT" || active.tagName === "TEXTAREA")) {
+    if (
+      active &&
+      (active.tagName === "INPUT" || active.tagName === "TEXTAREA")
+    ) {
       active.blur();
     }
   }, 60);
 }
-
