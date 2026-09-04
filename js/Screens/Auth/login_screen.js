@@ -40,28 +40,40 @@ function renderLoginScreen() {
     .join("");
 
   return `
-    <div id="screen-login" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-spa-bg/95 backdrop-blur-xl animate-in fade-in duration-300">
-      <div class="w-full max-w-md rounded-[32px] border border-white/20 shadow-[0_25px_60px_-15px_rgba(28,36,40,0.35)] p-7 sm:p-9 text-center relative space-y-5 transition-colors duration-300 my-auto overflow-hidden bg-[#4A645D]" style="--color-spa-dark: #FFFFFF; --color-spa-muted: rgba(255,255,255,0.75); --color-spa-hint: rgba(255,255,255,0.6); --color-spa-border: rgba(255,255,255,0.2); --color-spa-bg: rgba(255,255,255,0.12); --color-spa-card: #3A4E47; --color-spa-sage: #A7C7E7; --color-spa-sage-light: rgba(255,255,255,0.15);">
+    <div id="screen-login" class="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto relative animate-in fade-in duration-300">
+      <!-- LỚP HÌNH NỀN TOÀN TRANG: HỒ SEN VÀ CON THUYỀN (ZEN LOTUS POND BACKGROUND) -->
+      <div class="fixed inset-0 -z-20 pointer-events-none select-none overflow-hidden">
+        <img 
+          src="assets/images/lotus_boat_bg.jpg?v=${APP_VERSION}" 
+          alt="Zen Lotus Pond" 
+          class="w-full h-full object-cover object-center scale-105 transition-transform duration-1000"
+        />
+        <!-- Lớp phủ sẫm nhẹ tạo chiều sâu để tôn card kính lên -->
+        <div class="absolute inset-0 bg-black/30 backdrop-blur-[2px]"></div>
+      </div>
+
+      <!-- CARD ĐĂNG NHẬP: KÍNH MỜ XANH THIỀN ĐỊNH TRONG SUỐT (FROSTED GLASS LOOKING DOWN TO BG) -->
+      <div class="w-full max-w-md rounded-[32px] border border-white/30 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.5)] backdrop-blur-2xl p-7 sm:p-9 text-center relative space-y-5 transition-colors duration-300 my-auto overflow-hidden text-white" style="--color-spa-dark: #FFFFFF; --color-spa-muted: rgba(255,255,255,0.8); --color-spa-hint: rgba(255,255,255,0.65); --color-spa-border: rgba(255,255,255,0.25); --color-spa-bg: rgba(255,255,255,0.15); --color-spa-card: rgba(40,58,52,0.6); --color-spa-sage: #A7C7E7; --color-spa-sage-light: rgba(255,255,255,0.2);">
         
-        <!-- LỚP NỀN XANH THIỀN ĐỊNH SÁNG TỐI BLUR TRONG CARD (MINDORA AMBIENT LIGHT MESH) -->
-        <div class="absolute inset-0 -z-10 pointer-events-none select-none overflow-hidden bg-[#4A645D]">
-          <!-- Nền dải màu xanh rêu sâu lắng -->
-          <div class="absolute inset-0 bg-gradient-to-b from-[#55756C] via-[#48625B] to-[#364943]"></div>
+        <!-- LỚP NỀN XANH HƠI TRONG SUỐT KÈM SÁNG TỐI BLUR (AMBIENT LIGHT MESH TRONG CARD) -->
+        <div class="absolute inset-0 -z-10 pointer-events-none select-none overflow-hidden bg-[#3D544C]/75 backdrop-blur-2xl">
+          <!-- Gradient nền xanh rêu trong suốt -->
+          <div class="absolute inset-0 bg-gradient-to-b from-[#4A675E]/60 via-[#3D544C]/65 to-[#263731]/75"></div>
           
           <!-- Vầng sáng mặt trời buổi sớm góc trên trái (Sun Glow Orb) -->
-          <div class="absolute -top-16 -left-16 w-52 h-52 rounded-full bg-white/25 blur-[50px]"></div>
+          <div class="absolute -top-16 -left-16 w-52 h-52 rounded-full bg-white/20 blur-[50px]"></div>
           
           <!-- Vầng sáng xanh sương mai góc trên phải (Blue Mist Orb) -->
-          <div class="absolute top-1/4 -right-12 w-48 h-48 rounded-full bg-[#A7C7E7]/25 blur-[45px]"></div>
+          <div class="absolute top-1/4 -right-12 w-48 h-48 rounded-full bg-[#A7C7E7]/20 blur-[45px]"></div>
           
-          <!-- Vầng sáng hồng phấn nhẹ góc giữa bên trái (Dusty Rose Ambient Orb) -->
-          <div class="absolute top-2/3 -left-10 w-44 h-44 rounded-full bg-[#E8AEB7]/20 blur-[45px]"></div>
+          <!-- Vầng sáng hồng phấn nhẹ góc giữa bên trái (Dusty Rose / Lotus Petal Orb) -->
+          <div class="absolute top-2/3 -left-10 w-44 h-44 rounded-full bg-[#E8AEB7]/25 blur-[45px]"></div>
 
-          <!-- Vầng tối sâu thẳm của rừng thông góc dưới phải (Deep Pine Shadow Orb) -->
-          <div class="absolute -bottom-20 -right-12 w-60 h-60 rounded-full bg-[#1C2428]/60 blur-[60px]"></div>
+          <!-- Vầng tối sâu thẳm góc dưới phải (Deep Shadow Orb) -->
+          <div class="absolute -bottom-20 -right-12 w-60 h-60 rounded-full bg-[#121B18]/50 blur-[60px]"></div>
           
           <!-- Lớp phủ ánh sáng tự nhiên mờ ảo -->
-          <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-white/10 via-transparent to-black/25"></div>
+          <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-white/15 via-transparent to-black/30"></div>
         </div>
         
         <!-- Nút Công Tắc Bật Tắt Sáng / Tối (ThemeToggle Component) -->
