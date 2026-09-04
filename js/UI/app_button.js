@@ -11,7 +11,7 @@ function AppButton({
   id = ''
 } = {}) {
   const variantStyles = {
-    primary: 'bg-spa-brand hover:bg-spa-brand-hover text-white shadow-glow-brand font-bold',
+    primary: 'bg-spa-brand hover:bg-spa-brand-hover text-spa-dark dark:text-white shadow-glow-brand font-bold',
     teal: 'bg-spa-sage hover:bg-spa-sage/90 text-white shadow-glow-sage font-bold',
     secondary: 'bg-spa-bg hover:bg-spa-sage-light text-spa-dark border border-spa-border font-semibold',
     danger: 'bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 hover:bg-rose-100 border border-rose-200 dark:border-rose-900/50 font-bold'
@@ -24,7 +24,7 @@ function AppButton({
   };
 
   const idAttr = id ? `id="${id}"` : '';
-  const iconHtml = icon ? `<i data-lucide="${icon}" class="w-4 h-4 sm:w-5 sm:h-5"></i>` : '';
+  const iconHtml = icon ? `<i data-lucide="${icon}" class="w-4 h-4 sm:w-5 sm:h-5 text-spa-dark dark:text-white"></i>` : '';
 
   return `
     <button ${idAttr} onclick="${onClick}" class="transition flex items-center justify-center cursor-pointer active:scale-95 ${variantStyles[variant] || variantStyles.primary} ${sizeStyles[size] || sizeStyles.lg} ${customClass}">

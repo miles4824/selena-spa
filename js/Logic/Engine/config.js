@@ -1,7 +1,7 @@
 // =============================================================
 // SELENA SPA - ENGINE CONFIG & LOCAL STORAGE (SINGLE SOURCE OF TRUTH)
 // =============================================================
-const APP_VERSION = 'v0.0.1.1';
+const APP_VERSION = 'v0.0.1.2';
 
 // 1. Danh sách người dùng mặc định ban đầu
 const DEFAULT_USERS = [
@@ -207,18 +207,27 @@ function isUserOwner(u) {
   return (role === 'admin' || role === 'chủ tiệm' || role === 'chủ sáng lập' || role === 'owner' || phone === '0949251144');
 }
 
-// 4. Quản lý Chế độ Sáng / Tối (Theme Manager - Light & Dark Mode)
-function getTheme() {
-  const saved = localStorage.getItem('selena_theme');
-  if (saved === 'dark' || saved === 'light') return saved;
-
-  // Mặc định tự động theo giờ thực tế: 6h - 18h là Light Mode, 18h - 6h là Dark Mode
+// 4. Quản lý Chế độ Sáng / Tối (Theme Manager - Tự Động Theo Thời Gian Thực)
+// Ban ngày (6:00 - 17:59): Light Mode (bg_login_light.png)
+// Ban đêm (18:00 - 5:59): Dark Mode (bg_login_dark.png)
+function getTimeBasedTheme() {
   const currentHour = new Date().getHours();
-  return (currentHour < 6 || currentHour >= 18) ? 'dark' : 'light';
+  return (currentHour >= 6 && currentHour < 18) ? 'light' : 'dark';
 }
 
-function setTheme(theme) {
-  localStorage.setItem('selena_theme', theme);
+let userManualTheme = null;
+
+function getTheme() {
+  if (userManualTheme === 'dark' || userManualTheme === 'light') {
+    return userManualTheme;
+  }
+  return getTimeBasedTheme();
+}
+
+function setTheme(theme, isManual = false) {
+  if (isManual) {
+    userManualTheme = theme;
+  }
   if (theme === 'dark') {
     document.documentElement.classList.add('dark');
     document.documentElement.setAttribute('data-theme', 'dark');
@@ -230,24 +239,36 @@ function setTheme(theme) {
 }
 
 function toggleTheme() {
-  const current = getTheme();
+  const current = (document.documentElement.getAttribute('data-theme') === 'dark') ? 'dark' : 'light';
   const next = current === 'dark' ? 'light' : 'dark';
-  setTheme(next);
+  setTheme(next, true);
 }
 
 function initTheme() {
-  // Tự động dọn cache cũ nếu trước đó bị kẹt dark do auto-read OS
-  if (localStorage.getItem('selena_palette_version') !== 'mindora_v1') {
-    localStorage.removeItem('selena_theme');
-    localStorage.setItem('selena_palette_version', 'mindora_v1');
-  }
-  setTheme(getTheme());
+  // Luôn tự động đồng bộ theo thời gian thực tế khi tải trang hoặc bấm F5
+  localStorage.removeItem('selena_theme');
+  userManualTheme = null;
+  setTheme(getTimeBasedTheme(), false);
 }
 
 function updateThemeToggleIcons() {
-  const isDark = getTheme() === 'dark';
+  const isDark = (document.documentElement.getAttribute('data-theme') === 'dark');
   document.querySelectorAll('.theme-toggle-icon').forEach(el => {
     el.setAttribute('data-lucide', isDark ? 'sun' : 'moon');
   });
   if (typeof lucide !== 'undefined') lucide.createIcons();
 }
+
+// Tự động kiểm tra thời gian mỗi 30 giây để chuyển giao mượt mà giữa sáng & tối
+if (typeof window !== 'undefined') {
+  setInterval(() => {
+    if (!userManualTheme) {
+      const correctTheme = getTimeBasedTheme();
+      const currentTheme = document.documentElement.getAttribute('data-theme');
+      if (correctTheme !== currentTheme) {
+        setTheme(correctTheme, false);
+      }
+    }
+  }, 30000);
+}
+

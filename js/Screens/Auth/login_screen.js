@@ -27,20 +27,20 @@ function renderLoginScreen() {
           : u.phone;
 
       return `
-      <button type="button" onclick="quickFillLogin('${displayPhone}', '${u.password || "123"}')" class="w-full p-3 rounded-2xl bg-spa-bg/80 hover:bg-spa-sage-light text-spa-dark hover:text-spa-sage text-xs sm:text-sm font-semibold transition flex items-center justify-between cursor-pointer border border-spa-border active:scale-98">
+      <button type="button" onclick="quickFillLogin('${displayPhone}', '${u.password || "123"}')" class="w-full p-3 rounded-2xl bg-white/60 dark:bg-white/10 hover:bg-white/90 dark:hover:bg-white/20 text-spa-dark dark:text-white text-xs sm:text-sm font-semibold transition flex items-center justify-between cursor-pointer border border-white/60 dark:border-white/15 active:scale-98">
         <span class="flex items-center gap-2">
           <span>${roleIcon}</span>
           <span class="font-bold">${u.full_name}</span>
-          <span class="text-[11px] text-spa-muted font-normal">(${roleLabel})</span>
+          <span class="text-[11px] text-spa-muted dark:text-white/70 font-normal">(${roleLabel})</span>
         </span>
-        <span class="text-xs text-spa-sage font-mono font-bold">${displayPhone}</span>
+        <span class="text-xs text-spa-sage dark:text-spa-brand font-mono font-bold">${displayPhone}</span>
       </button>
     `;
     })
     .join("");
 
   return `
-    <div id="screen-login" class="fixed inset-0 z-50 overflow-y-auto animate-in fade-in duration-300">
+    <div id="screen-login" class="fixed inset-0 z-50 overflow-y-auto">
       <!-- LỚP HÌNH NỀN TOÀN TRANG: TỰ ĐỘNG CHUYỂN ĐỔI THEO THEME SÁNG / TỐI -->
       <div class="fixed inset-0 -z-20 pointer-events-none select-none overflow-hidden">
         <!-- Nền Sáng (bg_login_light.png) -->
@@ -48,64 +48,68 @@ function renderLoginScreen() {
           id="bg-login-light"
           src="images/bg_login_light.png?v=${APP_VERSION}" 
           alt="Zen Spa Light Background" 
-          class="bg-theme-light absolute inset-0 w-full h-full object-cover object-center"
+          loading="eager"
+          decoding="async"
+          class="bg-theme-light"
         />
         <!-- Nền Tối (bg_login_dark.png) -->
         <img 
           id="bg-login-dark"
           src="images/bg_login_dark.png?v=${APP_VERSION}" 
           alt="Zen Spa Dark Background" 
-          class="bg-theme-dark absolute inset-0 w-full h-full object-cover object-center"
+          loading="eager"
+          decoding="async"
+          class="bg-theme-dark"
         />
         <!-- Lớp phủ sẫm nhẹ tạo chiều sâu cho tấm kính Liquid Glass -->
-        <div class="absolute inset-0 bg-black/15 dark:bg-black/45 backdrop-blur-[1px] transition-colors duration-700"></div>
+        <div class="absolute inset-0 bg-black/10 dark:bg-black/40 backdrop-blur-[1px] transition-colors duration-500"></div>
       </div>
 
       <!-- KHỐI CĂN CHÍNH GIỮA MÀN HÌNH (DEAD CENTER HORIZONTAL & VERTICAL) -->
       <div class="min-h-full w-full flex items-center justify-center p-4 sm:p-6 py-8">
         <!-- CARD ĐĂNG NHẬP: PHONG CÁCH LIQUID GLASS (KÍNH LỎNG SIÊU THỰC) -->
-        <div class="liquid-glass w-full max-w-md rounded-[36px] p-7 sm:p-9 text-center relative space-y-5 transition-all duration-500 overflow-hidden text-white" style="--color-spa-dark: #FFFFFF; --color-spa-muted: rgba(255,255,255,0.82); --color-spa-hint: rgba(255,255,255,0.68); --color-spa-border: rgba(255,255,255,0.28); --color-spa-bg: rgba(255,255,255,0.14); --color-spa-card: rgba(40,58,52,0.5); --color-spa-sage: #A7C7E7; --color-spa-sage-light: rgba(255,255,255,0.22);">
+        <div class="liquid-glass w-full max-w-md rounded-[36px] p-7 sm:p-9 text-center relative space-y-5 transition-colors duration-300 overflow-hidden text-spa-dark dark:text-white" style="--color-spa-border: rgba(255,255,255,0.45); --color-spa-bg: rgba(255,255,255,0.35); --color-spa-card: rgba(255,255,255,0.4);">
         
         <!-- LỚP NỀN XANH THỦY TINH LỎNG KÈM QUẦNG SÁNG KHÚC XẠ (LIQUID GLASS AMBIENT CORE) -->
-        <div class="absolute inset-0 m-0 -z-10 pointer-events-none select-none overflow-hidden bg-[#3D544C]/65 dark:bg-[#1E2E28]/75 backdrop-blur-3xl transition-colors duration-500">
+        <div class="absolute inset-0 m-0 -z-10 pointer-events-none select-none overflow-hidden bg-white/20 dark:bg-[#1E2E28]/75 transition-colors duration-500">
           <!-- Dải gradient khúc xạ ánh sáng lỏng (Liquid Refraction Gradient) -->
-          <div class="absolute inset-0 bg-gradient-to-br from-[#5E887E]/35 via-[#3D544C]/45 to-[#1F2D27]/65"></div>
+          <div class="absolute inset-0 bg-gradient-to-br from-[#5E887E]/25 via-white/10 to-[#1F2D27]/30 dark:from-[#5E887E]/30 dark:via-[#3D544C]/40 dark:to-[#1F2D27]/60"></div>
           
           <!-- Vệt sáng bóng kính cong phía trên (Liquid Curved Specular Reflection) -->
-          <div class="absolute -top-1/2 left-0 right-0 h-full bg-[radial-gradient(ellipse_at_top,_rgba(255,255,255,0.25)_0%,_rgba(255,255,255,0.04)_50%,_transparent_75%)]"></div>
+          <div class="absolute -top-1/2 left-0 right-0 h-full bg-[radial-gradient(ellipse_at_top,_rgba(255,255,255,0.35)_0%,_rgba(255,255,255,0.05)_50%,_transparent_75%)]"></div>
 
           <!-- Vầng sáng mặt trời khúc xạ góc trên trái (Sun Glow Caustic) -->
-          <div class="absolute -top-16 -left-16 w-52 h-52 rounded-full bg-white/25 blur-[50px]"></div>
+          <div class="absolute -top-16 -left-16 w-52 h-52 rounded-full bg-white/30 blur-[50px]"></div>
           
           <!-- Vầng sáng sương mai góc trên phải (Blue Mist Caustic) -->
-          <div class="absolute top-1/4 -right-12 w-48 h-48 rounded-full bg-[#A7C7E7]/25 blur-[45px]"></div>
+          <div class="absolute top-1/4 -right-12 w-48 h-48 rounded-full bg-[#A7C7E7]/30 blur-[45px]"></div>
           
           <!-- Vầng sáng cánh sen hồng phấn góc giữa bên trái (Lotus Petal Caustic) -->
           <div class="absolute top-2/3 -left-10 w-44 h-44 rounded-full bg-[#E8AEB7]/30 blur-[45px]"></div>
 
           <!-- Vầng bóng sâu thẳm góc dưới phải (Deep Caustic Shadow) -->
-          <div class="absolute -bottom-20 -right-12 w-60 h-60 rounded-full bg-[#0D1512]/60 blur-[60px]"></div>
+          <div class="absolute -bottom-20 -right-12 w-60 h-60 rounded-full bg-spa-dark/20 dark:bg-[#0D1512]/60 blur-[60px]"></div>
           
           <!-- Lớp phủ ánh sáng tự nhiên mờ ảo -->
-          <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-white/20 via-transparent to-black/35"></div>
+          <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-white/20 via-transparent to-black/25"></div>
         </div>
         
         <!-- Nút Công Tắc Bật Tắt Sáng / Tối (ThemeToggle Component) -->
         ${ThemeToggle({ customClass: "absolute top-5 right-5" })}
 
         <!-- Logo & Thương Hiệu (Mindora Zen Style) -->
-        <div class="inline-flex p-4 rounded-3xl bg-white/10 border border-white/20">
-          <i data-lucide="sparkles" class="w-8 h-8 text-spa-brand"></i>
+        <div class="inline-flex p-4 rounded-3xl bg-white/40 dark:bg-white/10 border border-white/60 dark:border-white/20 shadow-sm">
+          <i data-lucide="sparkles" class="w-8 h-8 text-spa-sage dark:text-spa-brand"></i>
         </div>
         
         <div class="space-y-1">
-          <h1 id="login-brand-name" class="brand-spa-name text-2xl sm:text-3xl font-extrabold text-white tracking-tight font-serif">${getConfig("spa_brand_name")}</h1>
-          <p id="login-brand-slogan" class="brand-spa-slogan text-xs sm:text-sm text-white/80 font-medium">${getConfig("spa_brand_slogan")}</p>
+          <h1 id="login-brand-name" class="brand-spa-name text-2xl sm:text-3xl font-extrabold text-spa-dark dark:text-white tracking-tight font-serif">${getConfig("spa_brand_name")}</h1>
+          <p id="login-brand-slogan" class="brand-spa-slogan text-xs sm:text-sm text-spa-muted dark:text-white/80 font-medium">${getConfig("spa_brand_slogan")}</p>
         </div>
 
         <div class="flex items-center justify-center">
-          <span class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-white/10 border border-white/20 text-white/90 text-xs font-semibold font-mono">
-            <i data-lucide="leaf" class="w-3.5 h-3.5 text-spa-brand"></i> ${APP_VERSION} • ${getConfig("spa_brand_name")}
+          <span class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-white/40 dark:bg-white/10 border border-white/60 dark:border-white/20 text-spa-sage dark:text-white/90 text-xs font-semibold font-mono">
+            <i data-lucide="leaf" class="w-3.5 h-3.5 text-spa-sage dark:text-spa-brand"></i> ${APP_VERSION} • ${getConfig("spa_brand_name")}
           </span>
         </div>
 
@@ -167,8 +171,8 @@ function renderLoginScreen() {
         </form>
 
         <!-- Tài khoản mẫu đăng nhập nhanh -->
-        <div class="mt-5 pt-4 border-t border-spa-border space-y-2">
-          <div class="text-xs text-spa-muted font-medium">Tài khoản nhân sự (Bấm để đăng nhập thử nhanh):</div>
+        <div class="mt-5 pt-4 border-t border-white/40 dark:border-white/15 space-y-2">
+          <div class="text-xs text-spa-muted dark:text-white/70 font-medium">Tài khoản nhân sự (Bấm để đăng nhập thử nhanh):</div>
           <div id="login-quick-accounts" class="flex flex-col gap-2">
             ${quickAccountsHtml}
           </div>
