@@ -220,3 +220,11 @@ Nhằm đảm bảo giao diện thống nhất $100\%$ giữa Admin và Staff, d
    - **Body cuộn tự do ở giữa (Scrollable Center)**: Cuộn mượt mà với `overflow-y-auto overscroll-contain flex-1`.
    - **Footer ghim chặt dưới đáy (Sticky Bottom)**: Luôn hiển thị sẵn các nút bấm hành động (`AppButton` Lưu / Hủy / Xác nhận) để người dùng bấm ngay mà không cần phải cuộn chuột xuống đáy.
    - **Chiều cao tối đa thông minh**: Giới hạn trong khoảng `max-h-[calc(100dvh-48px)]` trừ khoảng đệm trên dưới vừa mắt, bo góc cong chuẩn `rounded-[28px]` và lớp phủ mờ `backdrop-blur-sm`.
+
+7. **Quy Định Bắt Buộc Áp Dụng `ModalShell` & `AppTitle` Cho Mọi Popup**:
+   - Mọi Popup Modal trong toàn bộ hệ thống (dù viết qua JS Component hay template HTML) **BẮT BUỘC $100\%$ PHẢI TUÂN THỦ CẤU TRÚC 3 TẦNG CỦA `ModalShell`**:
+     + **Header Pinned**: Tiêu đề chuẩn `${AppTitle({ level: 'modal' })}` (font serif sang trọng) và nút đóng tròn ✕ cố định trên đỉnh.
+     + **Body Scrollable**: Nội dung cuộn tự do ở giữa với `overflow-y-auto overscroll-contain flex-1`.
+     + **Footer Pinned**: Các nút bấm hành động chuẩn `${AppButton()}` ghim chặt dưới đáy, không bị trôi khi cuộn.
+     + **Chiều cao tối đa**: Luôn giới hạn `max-h-[calc(100dvh-48px)]` và bo góc cong `rounded-[28px]`.
+   - Tuyệt đối cấm viết mã HTML modal tự do làm lệch chuẩn giao diện giữa các tính năng.

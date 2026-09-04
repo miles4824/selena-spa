@@ -1,128 +1,129 @@
-<!-- COMPONENT: MODAL GHI CHÚ DÀNH CHO KTV (STAFF) -->
-<div id="modal-staff-customer-note" class="hidden fixed inset-0 z-[999] flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs" onclick="if(event.target === this) closeStaffCustomerNoteModal()">
-  <div class="w-full max-w-md bg-white rounded-[32px] border border-[#F0EAE1] shadow-[0_25px_50px_-12px_rgba(45,36,36,0.15)] p-6 space-y-4 relative my-auto animate-in fade-in zoom-in-95">
-    <div class="flex justify-between items-center">
+<!-- COMPONENT: MODAL GHI CHÚ DÀNH CHO KTV (STAFF - CHUẨN MODALSHELL & APPTITLE) -->
+<div id="modal-staff-customer-note" class="hidden fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-sm transition-all duration-300" onclick="if(event.target === this) closeStaffCustomerNoteModal()">
+  <div class="w-full max-w-md max-h-[calc(100dvh-48px)] bg-white rounded-[28px] border border-[#F0EAE1] shadow-2xl flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+    
+    <!-- 1. HEADER (PIN CHẶT TRÊN ĐỈNH VỚI APPTITLE LEVEL MODAL) -->
+    <div class="flex items-center justify-between px-6 py-4.5 border-b border-[#F0EAE1] bg-[#FAF6F1]/90 backdrop-blur-md shrink-0 select-none">
       <div class="flex items-center gap-2.5">
-        <div class="w-9 h-9 rounded-2xl bg-[#FFF0EB] flex items-center justify-center text-[#E58A7B]">
-          <i data-lucide="edit-3" class="w-4.5 h-4.5"></i>
-        </div>
+        <i data-lucide="edit-3" class="w-5 h-5 text-[#E58A7B]"></i>
         <div>
-          <h3 class="text-base font-extrabold text-[#2D2424]" id="modal-staff-note-name">Ghi Chú Khách Hàng</h3>
-          <p class="text-xs text-[#7E7272] font-mono" id="modal-staff-note-phone">094*144</p>
+          <h3 class="text-base sm:text-lg font-bold text-[#2D2424] font-serif tracking-tight" id="modal-staff-note-name">Ghi Chú Khách Hàng</h3>
+          <p class="text-[11px] text-[#7E7272] font-mono" id="modal-staff-note-phone">094*144</p>
         </div>
       </div>
-      <button type="button" onclick="closeStaffCustomerNoteModal()" class="p-2 rounded-xl hover:bg-[#FAF6F1] text-[#7E7272] hover:text-[#E58A7B] transition cursor-pointer">
+      <button type="button" onclick="closeStaffCustomerNoteModal()" class="w-8 h-8 rounded-full bg-white hover:bg-[#FFF0EB] text-[#7E7272] hover:text-[#E58A7B] border border-[#EFE8DF] flex items-center justify-center transition cursor-pointer active:scale-90 shadow-2xs" title="Đóng">
         <i data-lucide="x" class="w-4 h-4"></i>
       </button>
     </div>
 
-    <form onsubmit="handleSaveStaffCustomerNote(event)" class="space-y-3.5">
-      <input type="hidden" id="modal-staff-note-raw-phone">
-      <input type="hidden" id="modal-staff-note-receipt-id">
-      <input type="hidden" id="modal-staff-note-is-guest" value="0">
-      
-      <!-- CỤM KHUNG GOM BỔ SUNG THÔNG TIN KHÁCH (CHỈ HIỆN KHI LÀ KHÁCH VÃNG LAI) -->
-      <div id="modal-staff-note-guest-inputs" class="hidden space-y-3 bg-[#FAF6F1] p-3.5 rounded-2xl border border-[#FCDFD7]">
-        <div class="text-xs font-bold text-[#E58A7B] flex items-center justify-between">
-          <span class="flex items-center gap-1.5"><i data-lucide="user-plus" class="w-4 h-4 text-[#E58A7B]"></i> Bổ Sung Thông Tin Khách:</span>
-          <span id="modal-staff-note-lookup-badge" class="text-[10px] px-2 py-0.5 rounded-full bg-white font-semibold text-[#7E7272] border border-[#F0EAE1]">Nhập SĐT để dò tìm</span>
-        </div>
+    <!-- 2. BODY (CUỘN TỰ DO Ở GIỮA) -->
+    <div class="p-6 overflow-y-auto space-y-4 overscroll-contain flex-1 text-sm text-[#2D2424]">
+      <form id="form-staff-customer-note" onsubmit="handleSaveStaffCustomerNote(event)" class="space-y-3.5">
+        <input type="hidden" id="modal-staff-note-raw-phone">
+        <input type="hidden" id="modal-staff-note-receipt-id">
+        <input type="hidden" id="modal-staff-note-is-guest" value="0">
+        
+        <!-- CỤM KHUNG GOM BỔ SUNG THÔNG TIN KHÁCH (CHỈ HIỆN KHI LÀ KHÁCH VÃNG LAI) -->
+        <div id="modal-staff-note-guest-inputs" class="hidden space-y-3 bg-[#FAF6F1] p-3.5 rounded-2xl border border-[#FCDFD7]">
+          <div class="text-xs font-bold text-[#E58A7B] flex items-center justify-between">
+            <span class="flex items-center gap-1.5"><i data-lucide="user-plus" class="w-4 h-4 text-[#E58A7B]"></i> Bổ Sung Thông Tin Khách:</span>
+            <span id="modal-staff-note-lookup-badge" class="text-[10px] px-2 py-0.5 rounded-full bg-white font-semibold text-[#7E7272] border border-[#F0EAE1]">Nhập SĐT để dò tìm</span>
+          </div>
 
-        <!-- HÀNG 1: SỐ ĐIỆN THOẠI & DROPDOWN GỢI Ý CHUẨN POS -->
-        <div class="relative">
-          <label class="block text-xs font-bold text-[#2D2424] mb-1 flex items-center gap-1.5">
-            <i data-lucide="phone" class="w-3.5 h-3.5 text-[#E58A7B]"></i> Số Điện Thoại:
-          </label>
+          <!-- HÀNG 1: SỐ ĐIỆN THOẠI & DROPDOWN GỢI Ý CHUẨN POS -->
           <div class="relative">
-            <input type="tel" id="modal-staff-note-guest-phone" oninput="onStaffGuestPhoneInput(this.value)" onfocus="onStaffGuestPhoneInput(this.value)" autocomplete="off" placeholder="Số điện thoại" class="w-full bg-white border border-[#EFE8DF] rounded-xl p-2.5 text-xs sm:text-sm text-[#2D2424] font-bold focus:outline-none focus:border-[#E58A7B] transition">
+            <label class="block text-xs font-bold text-[#2D2424] mb-1 flex items-center gap-1.5">
+              <i data-lucide="phone" class="w-3.5 h-3.5 text-[#E58A7B]"></i> Số Điện Thoại:
+            </label>
+            <div class="relative">
+              <input type="tel" id="modal-staff-note-guest-phone" oninput="onStaffGuestPhoneInput(this.value)" onfocus="onStaffGuestPhoneInput(this.value)" autocomplete="off" placeholder="Số điện thoại" class="w-full bg-white border border-[#EFE8DF] rounded-xl p-2.5 text-xs sm:text-sm text-[#2D2424] font-bold focus:outline-none focus:border-[#E58A7B] transition">
+            </div>
+            <!-- BẢNG SỔ XUỐNG GỢI Ý CHUẨN POS -->
+            <div id="modal-staff-note-suggestions" class="hidden absolute left-0 right-0 top-full mt-1 bg-white border border-[#EFE8DF] rounded-2xl shadow-2xl z-[999] max-h-52 overflow-y-auto divide-y divide-[#FAF6F1]"></div>
+            <p id="modal-staff-note-phone-hint" class="text-[11px] text-[#A39696] mt-1 italic hidden"></p>
           </div>
-          <!-- BẢNG SỔ XUỐNG GỢI Ý CHUẨN POS -->
-          <div id="modal-staff-note-suggestions" class="hidden absolute left-0 right-0 top-full mt-1 bg-white border border-[#EFE8DF] rounded-2xl shadow-2xl z-[999] max-h-52 overflow-y-auto divide-y divide-[#FAF6F1]"></div>
-          <p id="modal-staff-note-phone-hint" class="text-[11px] text-[#A39696] mt-1 italic hidden"></p>
+
+          <!-- HÀNG 2: [TÊN KHÁCH HÀNG] [SINH NHẬT] (GRID 2 CỘT) -->
+          <div class="grid grid-cols-2 gap-2.5">
+            <div>
+              <label class="block text-xs font-bold text-[#2D2424] mb-1 flex items-center gap-1.5">
+                <i data-lucide="user" class="w-3.5 h-3.5 text-[#E58A7B]"></i> Tên Khách Hàng:
+              </label>
+              <input type="text" id="modal-staff-note-guest-name" placeholder="Tên khách hàng" class="w-full bg-white border border-[#EFE8DF] rounded-xl p-2.5 text-xs sm:text-sm text-[#2D2424] font-medium focus:outline-none focus:border-[#E58A7B] transition">
+            </div>
+
+            <div id="modal-staff-note-guest-month-container">
+              <label class="block text-xs font-bold text-[#2D2424] mb-1 flex items-center gap-1.5">
+                <i data-lucide="cake" class="w-3.5 h-3.5 text-[#E58A7B]"></i> Sinh Nhật:
+              </label>
+              <select id="modal-staff-note-guest-birth-month" onchange="this.style.color = this.value ? '#2D2424' : '#A39696'" style="color: #A39696;" class="w-full bg-white border border-[#EFE8DF] rounded-xl p-2.5 text-xs sm:text-sm font-bold focus:outline-none focus:border-[#E58A7B] transition cursor-pointer">
+                <option value="">-- Tháng --</option>
+                <option value="1">Tháng 1</option>
+                <option value="2">Tháng 2</option>
+                <option value="3">Tháng 3</option>
+                <option value="4">Tháng 4</option>
+                <option value="5">Tháng 5</option>
+                <option value="6">Tháng 6</option>
+                <option value="7">Tháng 7</option>
+                <option value="8">Tháng 8</option>
+                <option value="9">Tháng 9</option>
+                <option value="10">Tháng 10</option>
+                <option value="11">Tháng 11</option>
+                <option value="12">Tháng 12</option>
+              </select>
+            </div>
+          </div>
         </div>
 
-        <!-- HÀNG 2: [TÊN KHÁCH HÀNG] [SINH NHẬT] (GRID 2 CỘT) -->
-        <div class="grid grid-cols-2 gap-2.5">
-          <div>
-            <label class="block text-xs font-bold text-[#2D2424] mb-1 flex items-center gap-1.5">
-              <i data-lucide="user" class="w-3.5 h-3.5 text-[#E58A7B]"></i> Tên Khách Hàng:
-            </label>
-            <input type="text" id="modal-staff-note-guest-name" placeholder="Tên khách hàng" class="w-full bg-white border border-[#EFE8DF] rounded-xl p-2.5 text-xs sm:text-sm text-[#2D2424] font-medium focus:outline-none focus:border-[#E58A7B] transition">
-          </div>
-
-          <div id="modal-staff-note-guest-month-container">
-            <label class="block text-xs font-bold text-[#2D2424] mb-1 flex items-center gap-1.5">
-              <i data-lucide="cake" class="w-3.5 h-3.5 text-[#E58A7B]"></i> Sinh Nhật:
-            </label>
-            <select id="modal-staff-note-guest-birth-month" onchange="this.style.color = this.value ? '#2D2424' : '#A39696'" style="color: #A39696;" class="w-full bg-white border border-[#EFE8DF] rounded-xl p-2.5 text-xs sm:text-sm font-bold focus:outline-none focus:border-[#E58A7B] transition cursor-pointer">
-              <option value="">-- Tháng --</option>
-              <option value="1">Tháng 1</option>
-              <option value="2">Tháng 2</option>
-              <option value="3">Tháng 3</option>
-              <option value="4">Tháng 4</option>
-              <option value="5">Tháng 5</option>
-              <option value="6">Tháng 6</option>
-              <option value="7">Tháng 7</option>
-              <option value="8">Tháng 8</option>
-              <option value="9">Tháng 9</option>
-              <option value="10">Tháng 10</option>
-              <option value="11">Tháng 11</option>
-              <option value="12">Tháng 12</option>
-            </select>
-          </div>
-
-          <div id="modal-staff-note-guest-month-fixed" class="hidden text-xs font-bold text-[#2E7D6D] bg-[#E8F8F5] p-2.5 rounded-xl border border-[#B7EBDD] flex items-center gap-1.5">
-            <i data-lucide="cake" class="w-4 h-4 text-[#2E7D6D]"></i>
-            <span id="modal-staff-note-guest-month-fixed-text">Tháng --</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- MỤC THÁNG SINH NHẬT DÀNH CHO KHÁCH QUEN (KHI GUEST INPUTS ĐANG ẨN) -->
-      <div id="modal-staff-note-regular-month-section" class="space-y-1">
-        <!-- 1. Ô CHỌN THÁNG CHO KHÁCH QUEN CHƯA CÓ THÁNG SINH -->
-        <div id="modal-staff-note-regular-month-container">
-          <label class="block text-xs font-bold text-[#2D2424] mb-1 flex items-center gap-1.5">
-            <i data-lucide="cake" class="w-3.5 h-3.5 text-[#E58A7B]"></i> Sinh Nhật:
+        <!-- CỤM CHECKBOX SỞ THÍCH GỘI NHANH -->
+        <div>
+          <label class="block text-xs font-bold text-[#2D2424] mb-2 flex items-center gap-1.5">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-[#E58A7B]"></i> Sở Thích / Yêu Cầu Phục Vụ:
           </label>
-          <select id="modal-staff-note-regular-birth-month" onchange="this.style.color = this.value ? '#2D2424' : '#A39696'" style="color: #A39696;" class="w-full bg-[#F7F2EC] border border-[#EFE8DF] rounded-2xl p-3 text-xs sm:text-sm font-bold focus:outline-none focus:border-[#E58A7B] focus:bg-white transition cursor-pointer">
-            <option value="">-- Tháng --</option>
-            <option value="1">Tháng 1</option>
-            <option value="2">Tháng 2</option>
-            <option value="3">Tháng 3</option>
-            <option value="4">Tháng 4</option>
-            <option value="5">Tháng 5</option>
-            <option value="6">Tháng 6</option>
-            <option value="7">Tháng 7</option>
-            <option value="8">Tháng 8</option>
-            <option value="9">Tháng 9</option>
-            <option value="10">Tháng 10</option>
-            <option value="11">Tháng 11</option>
-            <option value="12">Tháng 12</option>
-          </select>
+          <div class="grid grid-cols-2 gap-2 text-xs">
+            <label class="flex items-center gap-2 p-2.5 rounded-xl bg-[#FAF6F1] border border-[#F0EAE1] hover:border-[#E58A7B]/40 transition cursor-pointer">
+              <input type="checkbox" name="staff-pref-tag" value="Gội mạnh tay" class="accent-[#E58A7B] rounded">
+              <span>Gội mạnh tay</span>
+            </label>
+            <label class="flex items-center gap-2 p-2.5 rounded-xl bg-[#FAF6F1] border border-[#F0EAE1] hover:border-[#E58A7B]/40 transition cursor-pointer">
+              <input type="checkbox" name="staff-pref-tag" value="Gãi nhẹ nhàng" class="accent-[#E58A7B] rounded">
+              <span>Gãi nhẹ nhàng</span>
+            </label>
+            <label class="flex items-center gap-2 p-2.5 rounded-xl bg-[#FAF6F1] border border-[#F0EAE1] hover:border-[#E58A7B]/40 transition cursor-pointer">
+              <input type="checkbox" name="staff-pref-tag" value="Thích bấm huyệt" class="accent-[#E58A7B] rounded">
+              <span>Thích bấm huyệt</span>
+            </label>
+            <label class="flex items-center gap-2 p-2.5 rounded-xl bg-[#FAF6F1] border border-[#F0EAE1] hover:border-[#E58A7B]/40 transition cursor-pointer">
+              <input type="checkbox" name="staff-pref-tag" value="Thích nói chuyện" class="accent-[#E58A7B] rounded">
+              <span>Thích nói chuyện</span>
+            </label>
+            <label class="flex items-center gap-2 p-2.5 rounded-xl bg-[#FAF6F1] border border-[#F0EAE1] hover:border-[#E58A7B]/40 transition cursor-pointer">
+              <input type="checkbox" name="staff-pref-tag" value="Thích yên tĩnh" class="accent-[#E58A7B] rounded">
+              <span>Thích yên tĩnh</span>
+            </label>
+            <label class="flex items-center gap-2 p-2.5 rounded-xl bg-[#FAF6F1] border border-[#F0EAE1] hover:border-[#E58A7B]/40 transition cursor-pointer">
+              <input type="checkbox" name="staff-pref-tag" value="Nước ấm vừa" class="accent-[#E58A7B] rounded">
+              <span>Nước ấm vừa</span>
+            </label>
+          </div>
         </div>
 
-        <!-- 2. THÔNG BÁO CHO KHÁCH QUEN ĐÃ CÓ THÁNG SINH (KHÓA CỐ ĐỊNH) -->
-        <div id="modal-staff-note-regular-month-fixed" class="hidden text-xs font-bold text-[#2E7D6D] bg-[#E8F8F5] p-3 rounded-2xl border border-[#B7EBDD] flex items-center gap-2">
-          <i data-lucide="cake" class="w-4 h-4 text-[#2E7D6D]"></i>
-          <span id="modal-staff-note-regular-month-fixed-text">Sinh nhật: Tháng --</span>
+        <div>
+          <label class="block text-xs font-bold text-[#2D2424] mb-1.5 flex items-center gap-1.5">
+            <i data-lucide="file-text" class="w-3.5 h-3.5 text-[#E58A7B]"></i> Ghi Chú Chi Tiết Khác:
+          </label>
+          <textarea id="modal-staff-note-text" rows="3" placeholder="Ví dụ: Khách hay mỏi vai gáy, thích tinh dầu bưởi..." class="w-full bg-[#F7F2EC] border border-[#EFE8DF] rounded-2xl p-3 text-xs sm:text-sm text-[#2D2424] focus:outline-none focus:border-[#E58A7B] focus:bg-white transition leading-relaxed"></textarea>
         </div>
-      </div>
+      </form>
+    </div>
 
-      <!-- MỤC GHI CHÚ SỞ THÍCH -->
-      <div>
-        <label class="block text-xs font-bold text-[#2D2424] mb-1 flex items-center gap-1.5">
-          <i data-lucide="file-text" class="w-3.5 h-3.5 text-[#E58A7B]"></i> Ghi Chú Sở Thích / Lưu Ý Khi Phục Vụ:
-        </label>
-        <textarea id="modal-staff-note-content" rows="3" placeholder="Ghi chú chi tiết sở thích hoặc lưu ý về khách..." class="w-full bg-[#F7F2EC] border border-[#EFE8DF] rounded-2xl p-3 text-xs sm:text-sm text-[#2D2424] focus:outline-none focus:border-[#E58A7B] focus:bg-white transition leading-relaxed"></textarea>
-      </div>
+    <!-- 3. FOOTER (PIN CHẶT DƯỚI ĐÁY VỚI APPBUTTON) -->
+    <div class="px-6 py-4 border-t border-[#F0EAE1] bg-[#FAF6F1]/90 backdrop-blur-md shrink-0 flex items-center justify-end gap-3">
+      <button type="button" onclick="closeStaffCustomerNoteModal()" class="px-5 py-2.5 rounded-full text-xs font-bold text-[#7E7272] bg-[#FAF6F1] hover:bg-[#FFF0EB] border border-[#EFE8DF] transition active:scale-95 cursor-pointer">Đóng</button>
+      <button type="submit" form="form-staff-customer-note" class="px-6 py-2.5 rounded-full text-xs font-bold text-white bg-gradient-to-r from-[#E58A7B] to-[#D9796A] hover:opacity-95 shadow-md shadow-[#E58A7B]/20 transition active:scale-95 cursor-pointer flex items-center gap-1.5">
+        <i data-lucide="check" class="w-4 h-4"></i> Lưu Ghi Chú
+      </button>
+    </div>
 
-      <div class="flex gap-2 pt-2">
-        <button type="button" onclick="closeStaffCustomerNoteModal()" class="flex-1 py-3 rounded-full bg-[#F7F2EC] hover:bg-[#EFE8DF] text-[#7E7272] font-bold text-xs sm:text-sm cursor-pointer">Đóng</button>
-        <button type="submit" id="btn-save-staff-customer-note" class="flex-1 py-3 rounded-full bg-[#E58A7B] hover:bg-[#D9796A] text-white font-bold text-xs sm:text-sm shadow-md shadow-[#E58A7B]/20 flex items-center justify-center gap-1.5 cursor-pointer">
-          <i data-lucide="check" class="w-4 h-4"></i> Lưu Thông Tin
-        </button>
-      </div>
-    </form>
   </div>
 </div>
