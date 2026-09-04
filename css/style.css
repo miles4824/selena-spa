@@ -520,6 +520,12 @@ h6 {
    SAFE AREA HELPERS (CHO TAI THỎ / DYNAMIC ISLAND & BOTTOM BAR)
    ============================================================= */
 .safe-area-top {
-  padding-top: calc(env(safe-area-inset-top, 20px) + 12px) !important;
+  padding-top: max(54px, calc(env(safe-area-inset-top, 0px) + 12px)) !important;
+}
+
+@media (min-width: 768px) {
+  .safe-area-top {
+    padding-top: 1.5rem !important;
+  }
 }
 

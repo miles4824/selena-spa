@@ -28,7 +28,7 @@ function renderHomeScreen() {
 
   // 3. Render trực tiếp vào container-home (Có Safe Area né Tai thỏ / Dynamic Island)
   container.innerHTML = `
-    <main id="view-home" class="p-4 sm:p-6 max-w-5xl mx-auto space-y-6 view-enter-active safe-area-top" style="padding-top: calc(env(safe-area-inset-top, 20px) + 12px);">
+    <main id="view-home" class="p-4 sm:p-6 max-w-5xl mx-auto space-y-6 safe-area-top" style="padding-top: max(54px, calc(env(safe-area-inset-top, 0px) + 12px));">
       ${homeContentHtml}
     </main>
   `;

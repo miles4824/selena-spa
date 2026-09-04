@@ -1,4 +1,4 @@
-﻿// =========================================================================
+// =========================================================================
 // APPLICATION CONTROLLER & MULTI-CONTAINER ROUTER: APP.JS
 // Nhạc trưởng điều phối toàn bộ ứng dụng Selena Spa (Chuẩn kiến trúc Đa Container)
 // =========================================================================
@@ -82,7 +82,7 @@ function showScreen(screenName) {
 function renderPlaceholderTab(screenName, title) {
   const isOwner = (typeof isUserOwner === 'function' && typeof currentUser !== 'undefined') ? isUserOwner(currentUser) : false;
   return `
-    <main class="p-4 sm:p-6 max-w-5xl mx-auto space-y-5">
+    <main class="p-4 sm:p-6 max-w-5xl mx-auto space-y-5 safe-area-top">
       ${screenName === 'income' ? `
         <!-- Header Báo cáo & Tài khoản (Chỉ xuất hiện ở tab Báo cáo/Thu nhập theo bản gốc) -->
         <div class="p-4 sm:p-5 rounded-3xl bg-spa-card border border-spa-border shadow-xs flex items-center justify-between">

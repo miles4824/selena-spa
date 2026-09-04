@@ -68,7 +68,7 @@ function renderLoginScreen() {
       <!-- KHỐI CUỘN NỘI DUNG (SCROLL CONTAINER ĐỘC LẬP - NỀN KHÔNG BỊ CUỘN THEO) -->
       <div id="login-scroll-container" class="absolute inset-0 overflow-y-auto overflow-x-hidden" style="z-index: 2; overscroll-behavior-y: contain;">
         <!-- KHỐI CĂN CHÍNH GIỮA MÀN HÌNH (SẼ TRƯỢT XUỐNG KHI KÉO RELOAD) -->
-        <div id="login-content-wrapper" class="min-h-full w-full flex items-center justify-center p-4 sm:p-6" style="padding-top: calc(env(safe-area-inset-top, 24px) + 14px); padding-bottom: calc(env(safe-area-inset-bottom, 20px) + 18px);">
+        <div id="login-content-wrapper" class="min-h-full w-full flex items-center justify-center p-4 sm:p-6" style="padding-top: max(54px, calc(env(safe-area-inset-top, 0px) + 14px)); padding-bottom: max(20px, calc(env(safe-area-inset-bottom, 0px) + 18px));">
           <!-- CARD ĐĂNG NHẬP: PHONG CÁCH LIQUID GLASS (KÍNH LỎNG SIÊU THỰC) -->
           <div class="liquid-glass w-full max-w-md rounded-[36px] p-7 sm:p-9 text-center relative space-y-5 transition-colors duration-300 overflow-hidden text-spa-dark dark:text-white" style="--color-spa-border: rgba(255,255,255,0.45); --color-spa-bg: rgba(255,255,255,0.35); --color-spa-card: rgba(255,255,255,0.4); border-radius: 36px;">
         
