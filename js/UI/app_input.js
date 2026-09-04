@@ -18,6 +18,7 @@ function AppInput({
   inputClass = "",
   disabled = false,
   readOnly = false,
+  preventAutofocus = false,
   onInput = "",
   onChange = "",
   autoComplete = "off",
@@ -27,7 +28,10 @@ function AppInput({
   const paddingRight = rightAction ? "pr-12" : "pr-4";
   const requiredAttr = required ? "required" : "";
   const disabledAttr = disabled ? "disabled" : "";
-  const readOnlyAttr = readOnly ? "readonly" : "";
+  const readOnlyAttr = readOnly || preventAutofocus ? "readonly" : "";
+  const preventFocusEvents = preventAutofocus
+    ? 'onfocus="this.removeAttribute(\'readonly\'); this.readOnly=false;" onpointerdown="this.removeAttribute(\'readonly\'); this.readOnly=false;" ontouchstart="this.removeAttribute(\'readonly\'); this.readOnly=false;"'
+    : "";
   const onInputAttr = onInput ? `oninput="${onInput}"` : "";
   const onChangeAttr = onChange ? `onchange="${onChange}"` : "";
   const valAttr = value !== "" ? `value="${value}"` : "";
@@ -56,6 +60,7 @@ function AppInput({
           ${requiredAttr} 
           ${disabledAttr} 
           ${readOnlyAttr}
+          ${preventFocusEvents}
           ${onInputAttr}
           ${onChangeAttr}
           autocomplete="${autoComplete}"

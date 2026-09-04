@@ -115,8 +115,8 @@ function renderLoginScreen() {
           </span>
         </div>
 
-        <!-- Form Đăng Nhập -->
-        <form onsubmit="event.preventDefault(); handlePhoneLogin(event); return false;" class="mt-4 space-y-3.5 text-left">
+        <!-- Khối Đăng Nhập (div role=form để tránh Safari/Keychain auto-focus khi reload) -->
+        <div role="form" onkeydown="if(event.key==='Enter'){event.preventDefault();handlePhoneLogin(event);}" class="mt-4 space-y-3.5 text-left">
           <!-- Ô nhập Số điện thoại (AppInput Component) -->
           ${AppInput({
             id: "login-phone",
@@ -127,6 +127,7 @@ function renderLoginScreen() {
             required: true,
             isMono: true,
             autoComplete: "off",
+            preventAutofocus: true,
           })}
 
           <!-- Ô nhập Mật khẩu (AppInput Component) -->
@@ -137,7 +138,8 @@ function renderLoginScreen() {
             placeholder: getConfig("ph_login_password", "••••••"),
             icon: "lock",
             required: true,
-            autoComplete: "off",
+            autoComplete: "new-password",
+            preventAutofocus: true,
             rightAction: `
               <button type="button" onclick="togglePasswordVisibility()" class="text-spa-hint group-focus-within:text-spa-dark dark:group-focus-within:text-white hover:text-spa-dark p-1 cursor-pointer transition">
                 <i data-lucide="eye" id="login-eye-icon" class="w-5 h-5"></i>
@@ -170,7 +172,7 @@ function renderLoginScreen() {
               customClass: "w-full uppercase tracking-wider",
             })}
           </div>
-        </form>
+        </div>
 
         <!-- Tài khoản mẫu đăng nhập nhanh -->
         <div class="mt-5 pt-4 border-t border-white/40 dark:border-white/15 space-y-2">

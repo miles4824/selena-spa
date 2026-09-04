@@ -253,3 +253,35 @@ h4, h5, h6 {
 .dark .app-input-group:focus-within .app-input-icon {
   color: #FFFFFF !important;
 }
+
+/* =============================================================
+   IPHONE NOTCH GRADIENT BLUR (LÀM MỜ TRONG SUỐT XUỐNG DƯỚI)
+   ============================================================= */
+.ios-notch-gradient-blur {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: calc(env(safe-area-inset-top, 44px) + 14px);
+  min-height: 54px;
+  pointer-events: none;
+  z-index: 40;
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  mask-image: linear-gradient(to bottom, black 45%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black 45%, transparent 100%);
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0) 100%);
+  transition: background 0.35s linear;
+}
+
+[data-theme="dark"] .ios-notch-gradient-blur,
+.dark .ios-notch-gradient-blur {
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.35) 0%, rgba(0, 0, 0, 0) 100%);
+}
+
+@media (min-width: 1024px) {
+  .ios-notch-gradient-blur {
+    display: none !important;
+  }
+}
+
