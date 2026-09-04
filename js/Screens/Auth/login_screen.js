@@ -51,24 +51,58 @@ function renderLoginScreen() {
 
         <!-- Form Đăng Nhập -->
         <form onsubmit="event.preventDefault(); handlePhoneLogin(event); return false;" class="mt-4 space-y-3.5 text-left">
-          <div>
-            <label class="block text-xs sm:text-sm font-bold text-spa-dark mb-1">Số điện thoại / Tài khoản:</label>
-            <div class="relative">
-              <input type="tel" id="login-phone" placeholder="0949251144" required class="w-full bg-spa-bg border border-spa-border rounded-2xl p-3.5 pl-11 text-spa-dark text-sm sm:text-base font-bold font-mono focus:outline-none focus:border-spa-sage focus:bg-spa-card transition">
-              <i data-lucide="phone" class="w-5 h-5 text-spa-hint absolute left-3.5 top-1/2 -translate-y-1/2"></i>
-            </div>
-          </div>
+          <!-- Ô nhập Số điện thoại (AppInput Component) -->
+          ${(typeof AppInput === 'function') 
+            ? AppInput({
+                id: 'login-phone',
+                label: 'Số điện thoại / Tài khoản:',
+                type: 'tel',
+                placeholder: (typeof getConfig === 'function') ? getConfig('ph_login_phone', '0949251144') : '0949251144',
+                icon: 'phone',
+                required: true,
+                isMono: true,
+                autoComplete: 'username'
+              })
+            : `
+              <div>
+                <label for="login-phone" class="block text-xs sm:text-sm font-bold text-spa-dark mb-1">Số điện thoại / Tài khoản:</label>
+                <div class="relative">
+                  <input type="tel" id="login-phone" placeholder="0949251144" required class="w-full bg-spa-bg border border-spa-border rounded-2xl p-3.5 pl-11 text-spa-dark text-sm sm:text-base font-bold font-mono focus:outline-none focus:border-spa-sage focus:bg-spa-card transition">
+                  <i data-lucide="phone" class="w-5 h-5 text-spa-hint absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+                </div>
+              </div>
+            `
+          }
 
-          <div>
-            <label class="block text-xs sm:text-sm font-bold text-spa-dark mb-1">Mật khẩu:</label>
-            <div class="relative">
-              <input type="password" id="login-password" placeholder="••••••" required class="w-full bg-spa-bg border border-spa-border rounded-2xl p-3.5 pl-11 pr-11 text-spa-dark text-sm sm:text-base font-bold focus:outline-none focus:border-spa-sage focus:bg-spa-card transition">
-              <i data-lucide="lock" class="w-5 h-5 text-spa-hint absolute left-3.5 top-1/2 -translate-y-1/2"></i>
-              <button type="button" onclick="togglePasswordVisibility()" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-spa-hint hover:text-spa-dark p-1 cursor-pointer">
-                <i data-lucide="eye" id="login-eye-icon" class="w-5 h-5"></i>
-              </button>
-            </div>
-          </div>
+          <!-- Ô nhập Mật khẩu (AppInput Component) -->
+          ${(typeof AppInput === 'function') 
+            ? AppInput({
+                id: 'login-password',
+                label: 'Mật khẩu:',
+                type: 'password',
+                placeholder: (typeof getConfig === 'function') ? getConfig('ph_login_password', '••••••') : '••••••',
+                icon: 'lock',
+                required: true,
+                autoComplete: 'current-password',
+                rightAction: `
+                  <button type="button" onclick="togglePasswordVisibility()" class="text-spa-hint hover:text-spa-dark p-1 cursor-pointer transition">
+                    <i data-lucide="eye" id="login-eye-icon" class="w-5 h-5"></i>
+                  </button>
+                `
+              })
+            : `
+              <div>
+                <label for="login-password" class="block text-xs sm:text-sm font-bold text-spa-dark mb-1">Mật khẩu:</label>
+                <div class="relative">
+                  <input type="password" id="login-password" placeholder="••••••" required class="w-full bg-spa-bg border border-spa-border rounded-2xl p-3.5 pl-11 pr-11 text-spa-dark text-sm sm:text-base font-bold focus:outline-none focus:border-spa-sage focus:bg-spa-card transition">
+                  <i data-lucide="lock" class="w-5 h-5 text-spa-hint absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+                  <button type="button" onclick="togglePasswordVisibility()" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-spa-hint hover:text-spa-dark p-1 cursor-pointer">
+                    <i data-lucide="eye" id="login-eye-icon" class="w-5 h-5"></i>
+                  </button>
+                </div>
+              </div>
+            `
+          }
 
           <div class="flex items-center justify-between pt-0.5">
             <label class="flex items-center gap-2 text-xs sm:text-sm text-spa-muted cursor-pointer">
