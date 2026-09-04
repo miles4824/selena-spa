@@ -228,3 +228,26 @@ Nhằm đảm bảo giao diện thống nhất $100\%$ giữa Admin và Staff, d
      + **Footer Pinned**: Các nút bấm hành động chuẩn `${AppButton()}` ghim chặt dưới đáy, không bị trôi khi cuộn.
      + **Chiều cao tối đa**: Luôn giới hạn `max-h-[calc(100dvh-48px)]` và bo góc cong `rounded-[28px]`.
    - Tuyệt đối cấm viết mã HTML modal tự do làm lệch chuẩn giao diện giữa các tính năng.
+---
+
+## 🏛️ 16. NGUYÊN TẮC KIỀNG 3 CHÂN BẤT BIẾN (THE TRIAD ARCHITECTURE: UI + LOGIC -> SCREENS)
+Toàn bộ hệ thống tổ chức nghiêm ngặt theo mô hình 3 khối rõ rệt, không bao giờ được lẫn lộn:
+
+1. **Khối Giao Diện (js/UI/)**:
+   - Chỉ quản lý vẻ đẹp, bo góc, màu sắc Tailwind 4 và HTML Template Literals.
+   - Nhận tham số { text, variant, icon, color... } và trả về HTML string.
+   - Tuyệt đối cấm tính toán số học, cấm gọi API mạng, cấm thao tác dữ liệu.
+   - Bao gồm: pp_button.js, pp_title.js, pp_card.js, stat_card.js, status_badge.js, 
+ole_badge.js, ed_card.js, modal_shell.js.
+
+2. **Khối Nghiệp Vụ & Toán Học (js/Logic/)**:
+   - js/Logic/Services/: Chuyên gia tính toán thuần túy (tính lương, chia hoa hồng, che SĐT, tính phút ca gội, định dạng giờ). Tuyệt đối cấm viết mã HTML (<div>, <span>) hoặc đụng vào DOM.
+   - js/Logic/Engine/: Cầu nối hạ tầng & dữ liệu (config.js cho LocalStorage, irebase_engine.js cho Realtime sync).
+
+3. **Khối Màn Hình Điều Phối (js/Screens/)**:
+   - Đóng vai trò lắp ráp: Lấy số liệu từ Logic/ -> ném vào linh kiện UI/ -> Render 1 lần duy nhất vào màn hình (innerHTML).
+   - Phân chia theo vương quốc phân quyền độc lập 100%:
+     + js/Screens/Auth/: Đăng nhập chung.
+     + js/Screens/Staff/: Màn hình riêng cho KTV (Home, History, Wallet).
+     + js/Screens/Owner/: Màn hình riêng cho Chủ Sáng Lập (Home, History, Wallet).
+     + js/Screens/POS/: Khu vực tạo ca & vào tour.

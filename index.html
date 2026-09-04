@@ -34,24 +34,22 @@
   <!-- APP ROOT CONTAINER -->
   <div id="app" class="min-h-screen"></div>
 
-  <!-- 1. CORE UI COMPONENTS (TAILWIND 4) -->
-  <script src="js/Core/Components/app_button.js"></script>
-  <script src="js/Core/Components/app_title.js"></script>
-  <script src="js/Core/Components/app_card.js"></script>
-  <script src="js/Core/Components/stat_card.js"></script>
-  <script src="js/Core/Components/status_badge.js"></script>
-  <script src="js/Core/Components/role_badge.js"></script>
-  <script src="js/Core/Components/bed_card.js"></script>
-  <script src="js/Core/Components/modal_shell.js"></script>
+  <!-- 1. KHỐI 1: GIAO DIỆN (UI COMPONENTS - TAILWIND 4) -->
+  <script src="js/UI/app_button.js"></script>
+  <script src="js/UI/app_title.js"></script>
+  <script src="js/UI/app_card.js"></script>
+  <script src="js/UI/stat_card.js"></script>
+  <script src="js/UI/status_badge.js"></script>
+  <script src="js/UI/role_badge.js"></script>
+  <script src="js/UI/bed_card.js"></script>
+  <script src="js/UI/modal_shell.js"></script>
 
-  <!-- 2. CORE SERVICES -->
-  <script src="js/Services/phone_service.js"></script>
+  <!-- 2. KHỐI 2: TOÁN HỌC & NGHIỆP VỤ (LOGIC SERVICES & ENGINE) -->
+  <script src="js/Logic/Services/phone_service.js"></script>
+  <script src="js/Logic/Engine/config.js"></script>
 
-  <!-- 3. ENGINE & STORAGE -->
-  <script src="js/Engine/config.js"></script>
-
-  <!-- 4. SCREENS -->
-  <script src="js/Screens/login_screen.js"></script>
+  <!-- 3. KHỐI 3: MÀN HÌNH RENDER (SCREENS) -->
+  <script src="js/Screens/Auth/login_screen.js"></script>
 
   <!-- APP INITIALIZER -->
   <script>
