@@ -51,10 +51,16 @@
   </script>
 </head>
 <body class="min-h-screen bg-spa-bg text-spa-dark font-sans selection:bg-spa-brand/20">
-  <!-- APP ROOT CONTAINER -->
-  <div id="app" class="min-h-screen"></div>
+  <!-- 1. LOGIN SCREEN CONTAINER -->
+  <div id="container-login"></div>
 
-  <!-- FLOATING BOTTOM NAVIGATION DOCK CONTAINER -->
+  <!-- 2. MAIN VIEWS CONTAINERS (4 TABS) -->
+  <div id="container-home" class="min-h-screen pb-28"></div>
+  <div id="container-pos" class="min-h-screen pb-28 hidden"></div>
+  <div id="container-history" class="min-h-screen pb-28 hidden"></div>
+  <div id="container-income" class="min-h-screen pb-28 hidden"></div>
+
+  <!-- 3. FLOATING BOTTOM NAVIGATION DOCK CONTAINER -->
   <div id="container-nav"></div>
 
   <!-- 1. KHỐI 1: GIAO DIỆN (UI COMPONENTS - TAILWIND 4) -->
@@ -84,42 +90,135 @@
   <script src="js/Screens/Home/owner_home.js?v=v0.0.3.0"></script>
   <script src="js/Screens/Home/home_screen.js?v=v0.0.3.0"></script>
 
-  <!-- APP INITIALIZER & SCREEN ROUTER -->
+  <!-- APP INITIALIZER & MULTI-CONTAINER ROUTER -->
   <script>
     function showScreen(screenName) {
       window.scrollTo(0, 0);
       const tabName = (screenName === 'add') ? 'pos' : screenName;
-      if (tabName !== 'login' && typeof updateNavSlidingPill === 'function') {
+
+      if (tabName === 'login') {
+        if (typeof hideBottomNav === 'function') hideBottomNav();
+        ['home', 'pos', 'history', 'income'].forEach(t => {
+          const el = document.getElementById('container-' + t);
+          if (el) el.classList.add('hidden');
+        });
+        const loginEl = document.getElementById('container-login');
+        if (loginEl) loginEl.classList.remove('hidden');
+        if (typeof initLogin === 'function') initLogin();
+        return;
+      }
+
+      // Ẩn màn hình đăng nhập
+      const loginEl = document.getElementById('container-login');
+      if (loginEl) loginEl.classList.add('hidden');
+
+      // Đồng bộ vị trí viên thuốc trên Bottom Nav
+      if (typeof updateNavSlidingPill === 'function') {
         updateNavSlidingPill(tabName);
       }
+
+      // Hoán đổi class hidden giữa các container (Bảo toàn nguyên vẹn form của các tab khác)
+      const tabs = ['home', 'pos', 'history', 'income'];
+      tabs.forEach(t => {
+        const el = document.getElementById('container-' + t);
+        if (!el) return;
+        if (t === tabName) {
+          el.classList.remove('hidden');
+          el.classList.remove('view-enter-active');
+          void el.offsetWidth; // Kích hoạt Luxury Fade Slide-in Transition
+          el.classList.add('view-enter-active');
+        } else {
+          el.classList.add('hidden');
+        }
+      });
+
+      const activeContainer = document.getElementById('container-' + tabName);
+
+      // LAZY LOAD: Tab nào chưa có nội dung thì mới dựng lần đầu
       if (tabName === 'home') {
-        if (typeof renderHomeScreen === 'function') renderHomeScreen();
-      } else if (tabName === 'login') {
-        if (typeof initLogin === 'function') initLogin();
-      } else {
-        const mainEl = document.getElementById('home-main-scroll');
-        if (mainEl) {
-          mainEl.classList.remove('view-enter-active');
-          void mainEl.offsetWidth; // Kích hoạt Luxury View Transition
-          mainEl.classList.add('view-enter-active');
-          const titles = { pos: 'Tạo Ca / Vé Mới (POS)', history: 'Lịch Sử Tour', income: 'Báo Cáo & Thu Nhập' };
-          mainEl.innerHTML = `
-            <div class="p-8 rounded-3xl bg-spa-card border border-spa-border text-center space-y-4 shadow-xs">
-              <div class="w-12 h-12 rounded-full bg-spa-brand/15 text-spa-brand mx-auto flex items-center justify-center">
-                <i data-lucide="sparkles" class="w-6 h-6"></i>
-              </div>
-              <h2 class="text-xl font-bold font-serif text-spa-dark">${titles[tabName] || tabName}</h2>
-              <p class="text-xs text-spa-muted">Module ${tabName.toUpperCase()} đang được hoàn thiện theo chuẩn giao diện Zen Spa Mindora.</p>
-              <button onclick="navigateTab('home')" class="px-5 py-2.5 rounded-full bg-spa-brand text-white text-xs font-bold shadow-glow-brand cursor-pointer active:scale-95">
-                Quay Lại Trang Chủ
-              </button>
-            </div>
-          `;
+        if (activeContainer && (!activeContainer.hasChildNodes() || activeContainer.innerHTML.trim() === '')) {
+          if (typeof renderHomeScreen === 'function') renderHomeScreen();
+        } else if (typeof refreshLiveBeds === 'function') {
+          // REFRESH HOOK: Tự động cập nhật số liệu mới nhất khi quay lại Home
+          refreshLiveBeds();
+        }
+      } else if (tabName === 'pos') {
+        if (activeContainer && (!activeContainer.hasChildNodes() || activeContainer.innerHTML.trim() === '')) {
+          activeContainer.innerHTML = renderPlaceholderTab('pos', 'Tạo Ca / Vé Mới (POS)');
+          if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+        }
+      } else if (tabName === 'history') {
+        if (activeContainer && (!activeContainer.hasChildNodes() || activeContainer.innerHTML.trim() === '')) {
+          activeContainer.innerHTML = renderPlaceholderTab('history', 'Lịch Sử Tour');
+          if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+        }
+      } else if (tabName === 'income') {
+        if (activeContainer && (!activeContainer.hasChildNodes() || activeContainer.innerHTML.trim() === '')) {
+          activeContainer.innerHTML = renderPlaceholderTab('income', 'Báo Cáo & Thu Nhập');
           if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
         }
       }
     }
     window.showScreen = showScreen;
+
+    function renderPlaceholderTab(screenName, title) {
+      const isOwner = (typeof isUserOwner === 'function' && typeof currentUser !== 'undefined') ? isUserOwner(currentUser) : false;
+      return `
+        <main class="p-4 sm:p-6 max-w-5xl mx-auto space-y-5">
+          ${screenName === 'income' ? `
+            <!-- Header Báo cáo & Tài khoản (Chỉ xuất hiện ở tab Báo cáo/Thu nhập theo bản gốc) -->
+            <div class="p-4 sm:p-5 rounded-3xl bg-spa-card border border-spa-border shadow-xs flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <div class="w-11 h-11 rounded-2xl bg-spa-brand/15 text-spa-brand flex items-center justify-center font-bold text-base shadow-2xs">
+                  ${isOwner ? '👑' : '💆'}
+                </div>
+                <div>
+                  <div class="font-extrabold text-base text-spa-dark">
+                    Chào <span class="text-spa-brand">${currentUser ? (currentUser.name || currentUser.username) : 'Bạn'}</span>,
+                  </div>
+                  <div class="text-xs text-spa-muted font-medium">
+                    ${isOwner ? '👑 Chủ Sáng Lập' : '💆 Kỹ Thuật Viên'}
+                  </div>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                ${typeof ThemeToggle === 'function' ? ThemeToggle({ customClass: 'w-9 h-9' }) : ''}
+                <button type="button" onclick="handleLogout()" title="Đăng xuất" class="p-2 rounded-full bg-spa-card hover:bg-rose-50 text-spa-muted hover:text-rose-600 border border-spa-border transition cursor-pointer active:scale-90 flex items-center justify-center">
+                  <i data-lucide="log-out" class="w-4 h-4"></i>
+                </button>
+              </div>
+            </div>
+          ` : ''}
+          <div class="p-8 rounded-3xl bg-spa-card border border-spa-border text-center space-y-4 shadow-xs">
+            <div class="w-12 h-12 rounded-full bg-spa-brand/15 text-spa-brand mx-auto flex items-center justify-center">
+              <i data-lucide="sparkles" class="w-6 h-6"></i>
+            </div>
+            <h2 class="text-xl font-bold font-serif text-spa-dark">${title}</h2>
+            <p class="text-xs text-spa-muted">Module ${screenName.toUpperCase()} đang được hoàn thiện theo chuẩn giao diện Zen Spa Mindora.</p>
+            <button onclick="navigateTab('home')" class="px-5 py-2.5 rounded-full bg-spa-brand text-white text-xs font-bold shadow-glow-brand cursor-pointer active:scale-95">
+              Quay Lại Trang Chủ
+            </button>
+          </div>
+        </main>
+      `;
+    }
+
+    function handleLogout() {
+      if (confirm('Bạn có chắc chắn muốn đăng xuất không?')) {
+        if (typeof stopHomeRealtimeTicker === 'function') stopHomeRealtimeTicker();
+        currentUser = null;
+        try {
+          localStorage.removeItem('selena_current_user');
+        } catch (e) {}
+        if (typeof hideBottomNav === 'function') hideBottomNav();
+        ['home', 'pos', 'history', 'income'].forEach(t => {
+          const el = document.getElementById('container-' + t);
+          if (el) el.classList.add('hidden');
+        });
+        showScreen('login');
+      }
+    }
+    window.handleLogout = handleLogout;
 
     window.addEventListener('DOMContentLoaded', () => {
       if (typeof initTheme === 'function') initTheme();
@@ -129,9 +228,11 @@
       const savedUser = (typeof getStored === 'function') ? getStored('current_user', null) : null;
       if (savedUser) {
         currentUser = savedUser;
-        renderHomeScreen();
+        if (typeof renderBottomNav === 'function') renderBottomNav('home');
+        if (typeof showBottomNav === 'function') showBottomNav();
+        showScreen('home');
       } else {
-        initLogin();
+        showScreen('login');
       }
 
       if (typeof initFirebaseEngine === 'function') initFirebaseEngine();

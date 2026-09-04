@@ -274,8 +274,19 @@ function onLoginSuccess(user) {
     localStorage.setItem("selena_current_user", JSON.stringify(user));
   } catch (e) {}
 
-  // Chuyển thẳng vào Màn hình Trang Chủ
-  if (typeof renderHomeScreen === "function") {
+  const loginContainer = document.getElementById("container-login");
+  if (loginContainer) loginContainer.classList.add("hidden");
+
+  // Dựng thanh Bottom Nav và chuyển vào Màn hình Trang Chủ
+  if (typeof renderBottomNav === "function") {
+    renderBottomNav("home");
+  }
+  if (typeof showBottomNav === "function") {
+    showBottomNav();
+  }
+  if (typeof showScreen === "function") {
+    showScreen("home");
+  } else if (typeof renderHomeScreen === "function") {
     renderHomeScreen();
   }
 }
@@ -283,10 +294,11 @@ function onLoginSuccess(user) {
 // Hàm khởi tạo màn hình Login ban đầu
 function initLogin() {
   if (typeof initTheme === "function") initTheme();
-  const appContainer = document.getElementById("app");
-  if (!appContainer) return;
+  const container = document.getElementById("container-login") || document.getElementById("app");
+  if (!container) return;
 
-  appContainer.innerHTML = renderLoginScreen();
+  container.classList.remove("hidden");
+  container.innerHTML = renderLoginScreen();
   if (typeof lucide !== "undefined") lucide.createIcons();
   if (typeof applyDynamicUIConfig === "function") applyDynamicUIConfig();
   if (typeof fetchLiveConfigFromSheet === "function")

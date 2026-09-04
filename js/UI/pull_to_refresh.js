@@ -1,4 +1,4 @@
-﻿// =============================================================
+// =============================================================
 // COMPONENT: PULL TO REFRESH (VUỐT KÉO ĐỂ LÀM MỚI CHUẨN NATIVE APP)
 // Hình nền giữ cố định tuyệt đối, chỉ có thẻ nội dung trượt xuống hé lộ thanh reload
 // Phong cách: Mindora Luxury (Sang trọng, mượt mà, không giật lag)
@@ -40,7 +40,7 @@ function initPullToRefresh() {
 
   // Chỉ kéo khối nội dung/card, TUYỆT ĐỐI KHÔNG KÉO HÌNH NỀN
   function getCardElement() {
-    return document.getElementById('login-content-wrapper') || document.getElementById('app');
+    return document.getElementById('login-content-wrapper') || document.querySelector('[id^="container-"]:not(.hidden)');
   }
 
   // Hàm xác định vị trí cuộn của container cha gần nhất hoặc window
