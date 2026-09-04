@@ -92,57 +92,65 @@ function renderOwnerHome(user) {
   return `
     <div id="owner-home-container" class="space-y-6 animate-fade-in">
       <!-- CỤM 1: WELLNESS BANNER CHỦ SÁNG LẬP -->
-      <div class="rounded-[32px] p-6 sm:p-7 relative overflow-hidden bg-spa-card border border-spa-border shadow-xs">
-        <div class="relative z-10 space-y-3.5">
-          <div class="flex items-center justify-between">
-            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-spa-brand/15 text-spa-brand border border-spa-brand/25">
-              <i data-lucide="crown" class="w-3.5 h-3.5"></i>
-              <span>Chủ Sáng Lập</span>
-            </span>
-            <span class="text-xs text-spa-muted font-medium">Hôm nay</span>
+      ${typeof AppCard === 'function' ? AppCard({
+        variant: 'banner',
+        content: `
+          <div class="relative z-10 space-y-3.5">
+            <div class="flex items-center justify-between">
+              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-spa-brand/15 text-spa-brand border border-spa-brand/25">
+                <i data-lucide="crown" class="w-3.5 h-3.5"></i>
+                <span>Chủ Sáng Lập</span>
+              </span>
+              <span class="text-xs text-spa-muted font-medium">Hôm nay</span>
+            </div>
+
+            <h2 class="text-2xl sm:text-3xl font-medium font-serif text-spa-dark tracking-tight">
+              Chào <span class="text-spa-brand font-bold">${user.full_name || 'Miles'}</span>, <span class="font-normal text-spa-muted">hôm nay tiệm vận hành tuyệt vời chứ? ✨</span>
+            </h2>
+
+            <p class="text-spa-muted text-sm max-w-md leading-relaxed">
+              Giám sát các giường đang gội trực tiếp & kiểm soát doanh thu thời gian thực.
+            </p>
+
+            <div class="pt-2">
+              ${actionBtnHtml}
+            </div>
           </div>
-
-          <h2 class="text-2xl sm:text-3xl font-medium font-serif text-spa-dark tracking-tight">
-            Chào <span class="text-spa-brand font-bold">${user.full_name || 'Miles'}</span>, <span class="font-normal text-spa-muted">hôm nay tiệm vận hành tuyệt vời chứ? ✨</span>
-          </h2>
-
-          <p class="text-spa-muted text-sm max-w-md leading-relaxed">
-            Giám sát các giường đang gội trực tiếp & kiểm soát doanh thu thời gian thực.
-          </p>
-
-          <div class="pt-2">
-            ${actionBtnHtml}
-          </div>
-        </div>
-      </div>
+        `
+      }) : ''}
 
       <!-- CỤM 2: CÁC TOUR ĐANG PHỤC VỤ TRỰC TIẾP (LIVE RUNNING TOURS REALTIME) -->
-      <div class="rounded-[32px] p-5 sm:p-6 bg-spa-card border border-spa-border shadow-xs space-y-4">
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 pb-3 border-b border-spa-border">
-          <div class="flex items-center gap-2.5">
-            <span class="flex h-3 w-3 relative">
-              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-spa-sage opacity-75"></span>
-              <span class="relative inline-flex rounded-full h-3 w-3 bg-spa-sage"></span>
-            </span>
-            <h3 class="text-base sm:text-lg font-bold text-spa-dark">
-              Các Giường Đang Phục Vụ Trực Tiếp
-            </h3>
-            <span class="text-xs font-mono font-bold px-2.5 py-0.5 rounded-full bg-spa-sage/15 text-spa-sage">
-              ${liveTours.length} đang chạy
-            </span>
+      ${typeof AppCard === 'function' ? AppCard({
+        variant: 'surface',
+        padding: 'p-5 sm:p-6',
+        customClass: 'space-y-4',
+        content: `
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 pb-3 border-b border-spa-border">
+            <div class="flex items-center gap-2.5">
+              <span class="flex h-3 w-3 relative">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-spa-sage opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-3 w-3 bg-spa-sage"></span>
+              </span>
+              <h3 class="text-base sm:text-lg font-bold text-spa-dark">
+                Các Giường Đang Phục Vụ Trực Tiếp
+              </h3>
+              <span class="text-xs font-mono font-bold px-2.5 py-0.5 rounded-full bg-spa-sage/15 text-spa-sage">
+                ${liveTours.length} đang chạy
+              </span>
+            </div>
+
+            <button onclick="refreshLiveBeds()" class="px-3 py-1.5 rounded-xl bg-spa-bg hover:bg-spa-peach-light text-spa-muted hover:text-spa-brand text-xs font-bold flex items-center gap-1.5 transition cursor-pointer border border-spa-border">
+              <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+              <span>Cập nhật</span>
+            </button>
           </div>
 
-          <button onclick="refreshLiveBeds()" class="px-3 py-1.5 rounded-xl bg-spa-bg hover:bg-spa-peach-light text-spa-muted hover:text-spa-brand text-xs font-bold flex items-center gap-1.5 transition cursor-pointer border border-spa-border">
-            <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
-            <span>Cập nhật</span>
-          </button>
-        </div>
-
-        <!-- Danh sách các thẻ giường BedCard -->
-        <div id="owner-live-beds-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
-          ${liveBedsListHtml}
-        </div>
-      </div>
+          <!-- Danh sách các thẻ giường BedCard -->
+          <div id="owner-live-beds-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
+            ${liveBedsListHtml}
+          </div>
+        `
+      }) : ''}
 
       <!-- CỤM 3: CHỈ SỐ NHANH HÔM NAY (TODAY SNAPSHOT) -->
       <div class="space-y-3">
@@ -161,22 +169,27 @@ function renderOwnerHome(user) {
       </div>
 
       <!-- CỤM 4: THÔNG BÁO ĐANG PHÁT CHO TOÀN BỘ KTV -->
-      <div class="rounded-3xl p-5 bg-spa-card border border-spa-peach-border shadow-xs space-y-3">
-        <div class="flex items-center justify-between">
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-spa-brand/15 text-spa-brand text-xs font-bold border border-spa-brand/25">
-            <i data-lucide="megaphone" class="w-3.5 h-3.5"></i>
-            <span>Thông Báo Đang Phát Cho KTV</span>
+      ${typeof AppCard === 'function' ? AppCard({
+        variant: 'peach',
+        padding: 'p-5',
+        customClass: 'space-y-3',
+        content: `
+          <div class="flex items-center justify-between">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-spa-brand/15 text-spa-brand text-xs font-bold border border-spa-brand/25">
+              <i data-lucide="megaphone" class="w-3.5 h-3.5"></i>
+              <span>Thông Báo Đang Phát Cho KTV</span>
+            </div>
+            <button onclick="promptEditAnnouncement()" class="px-3.5 py-1.5 rounded-full bg-spa-brand hover:bg-spa-brand-hover text-white text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shadow-glow-brand active:scale-95">
+              <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+              <span>Sửa Thông Báo</span>
+            </button>
           </div>
-          <button onclick="promptEditAnnouncement()" class="px-3.5 py-1.5 rounded-full bg-spa-brand hover:bg-spa-brand-hover text-white text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shadow-glow-brand active:scale-95">
-            <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
-            <span>Sửa Thông Báo</span>
-          </button>
-        </div>
 
-        <div class="text-sm font-semibold text-spa-dark leading-relaxed" id="owner-announcement-display">
-          ${announcement}
-        </div>
-      </div>
+          <div class="text-sm font-semibold text-spa-dark leading-relaxed" id="owner-announcement-display">
+            ${announcement}
+          </div>
+        `
+      }) : ''}
     </div>
   `;
 }
