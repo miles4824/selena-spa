@@ -1,4 +1,4 @@
-﻿// =============================================================
+// =============================================================
 // SELENA SPA - UI COMPONENT: APP CHECKBOX (TAILWIND 4 & MINDORA LUXURY)
 // Khối 1: Giao diện thuần túy - Không chứa logic nghiệp vụ
 // =============================================================
@@ -29,7 +29,7 @@ function AppCheckbox({
         ${checkedAttr} 
         ${disabledAttr} 
         ${onChangeAttr}
-        class="w-4 h-4 rounded border border-spa-border accent-[#E8AEB7] cursor-pointer transition-all focus:outline-none focus:ring-1 focus:ring-spa-sage/50 focus:ring-offset-1 ${inputClass}"
+        class="w-4 h-4 rounded border border-spa-border accent-spa-brand cursor-pointer transition-all focus:outline-none focus:ring-1 focus:ring-spa-sage/50 focus:ring-offset-1 ${inputClass}"
       >
       ${label ? `<span class="${labelClass}">${label}</span>` : ''}
     </label>

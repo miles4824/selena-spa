@@ -11,8 +11,8 @@ function AppButton({
   id = ''
 } = {}) {
   const variantStyles = {
-    primary: 'bg-[#E8AEB7] hover:bg-[#DF9CA6] text-white shadow-lg shadow-[#E8AEB7]/25 font-bold',
-    teal: 'bg-[#5E887E] hover:bg-[#4F756C] text-white shadow-lg shadow-[#5E887E]/25 font-bold',
+    primary: 'bg-spa-brand hover:bg-spa-brand-hover text-white shadow-lg shadow-spa-brand/25 font-bold',
+    teal: 'bg-spa-sage hover:bg-spa-sage/90 text-white shadow-lg shadow-spa-sage/25 font-bold',
     secondary: 'bg-spa-bg hover:bg-spa-sage-light text-spa-dark border border-spa-border font-semibold',
     danger: 'bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 hover:bg-rose-100 border border-rose-200 dark:border-rose-900/50 font-bold'
   };
