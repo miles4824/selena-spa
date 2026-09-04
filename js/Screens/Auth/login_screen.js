@@ -67,7 +67,7 @@ function renderLoginScreen() {
           <!-- Ô nhập Số điện thoại (AppInput Component) -->
           ${AppInput({
             id: "login-phone",
-            label: "Số điện thoại / Tài khoản:",
+            label: "Số điện thoại:",
             type: "tel",
             placeholder: getConfig("ph_login_phone", "0949251144"),
             icon: "phone",
@@ -93,10 +93,11 @@ function renderLoginScreen() {
           })}
 
           <div class="flex items-center justify-between pt-0.5">
-            <label class="flex items-center gap-2 text-xs sm:text-sm text-spa-muted cursor-pointer">
-              <input type="checkbox" id="login-remember" checked class="w-4 h-4 accent-[#E8AEB7] rounded cursor-pointer">
-              <span>Ghi nhớ đăng nhập trên máy này</span>
-            </label>
+            ${AppCheckbox({
+              id: "login-remember",
+              label: "Ghi nhớ đăng nhập trên máy này",
+              checked: true,
+            })}
           </div>
 
           <!-- Thông báo lỗi khi sai mật khẩu -->
