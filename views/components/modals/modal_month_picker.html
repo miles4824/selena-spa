@@ -1,36 +1,43 @@
-<!-- MODAL CHỌN LỊCH THÁNG NHANH CHUẨN THẨM MỸ SELENA SPA -->
-<div id="modal-month-calendar-picker" class="hidden fixed inset-0 z-[999] flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs" onclick="if(event.target === this) closeMonthPickerModal()">
-  <div class="w-full max-w-xs bg-white rounded-[32px] border border-[#F0EAE1] shadow-[0_25px_50px_-12px_rgba(45,36,36,0.15)] p-5 space-y-4 relative my-auto shadow-2xl animate-in fade-in zoom-in-95">
-    <div class="flex items-center justify-between">
+<!-- MODAL CHỌN LỊCH THÁNG NHANH (CHUẨN MODALSHELL & APPTITLE) -->
+<div id="modal-month-calendar-picker" class="hidden fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-sm transition-all duration-300" onclick="if(event.target === this) closeMonthPickerModal()">
+  <div class="w-full max-w-xs max-h-[calc(100dvh-48px)] bg-white rounded-[28px] border border-[#F0EAE1] shadow-2xl flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200" onclick="event.stopPropagation()">
+    
+    <!-- 1. HEADER (PIN CHẶT TRÊN ĐỈNH) -->
+    <div class="flex items-center justify-between px-5 py-4 border-b border-[#F0EAE1] bg-[#FAF6F1]/90 backdrop-blur-md shrink-0 select-none">
       <div class="flex items-center gap-1">
-        <button type="button" onclick="changePickerMonth(-1)" class="p-1.5 rounded-xl hover:bg-[#FAF6F1] text-[#7E7272] hover:text-[#E58A7B] transition cursor-pointer">
+        <button type="button" onclick="changePickerMonth(-1)" class="w-7 h-7 rounded-xl hover:bg-white text-[#7E7272] hover:text-[#E58A7B] flex items-center justify-center transition cursor-pointer active:scale-90 shadow-2xs">
           <i data-lucide="chevron-left" class="w-4 h-4"></i>
         </button>
-        <span id="picker-month-header-label" class="text-sm font-extrabold text-[#2D2424] font-heading px-1">
+        <span id="picker-month-header-label" class="text-xs sm:text-sm font-extrabold text-[#2D2424] font-serif px-1.5">
           Tháng 8 / 2026
         </span>
-        <button type="button" onclick="changePickerMonth(1)" class="p-1.5 rounded-xl hover:bg-[#FAF6F1] text-[#7E7272] hover:text-[#E58A7B] transition cursor-pointer">
+        <button type="button" onclick="changePickerMonth(1)" class="w-7 h-7 rounded-xl hover:bg-white text-[#7E7272] hover:text-[#E58A7B] flex items-center justify-center transition cursor-pointer active:scale-90 shadow-2xs">
           <i data-lucide="chevron-right" class="w-4 h-4"></i>
         </button>
       </div>
-      <button type="button" onclick="closeMonthPickerModal()" class="p-1.5 rounded-xl hover:bg-[#FAF6F1] text-[#7E7272] hover:text-[#E58A7B] transition cursor-pointer">
+      <button type="button" onclick="closeMonthPickerModal()" class="w-8 h-8 rounded-full bg-white hover:bg-[#FFF0EB] text-[#7E7272] hover:text-[#E58A7B] border border-[#EFE8DF] flex items-center justify-center transition cursor-pointer active:scale-90 shadow-2xs" title="Đóng">
         <i data-lucide="x" class="w-4 h-4"></i>
       </button>
     </div>
 
-    <div class="grid grid-cols-7 gap-1 text-center text-[10px] font-bold text-[#A39696] uppercase">
-      <span>T2</span><span>T3</span><span>T4</span><span>T5</span><span>T6</span><span>T7</span><span>CN</span>
+    <!-- 2. BODY (LƯỚI LỊCH CUỘN MƯỢT Ở GIỮA) -->
+    <div class="p-5 overflow-y-auto space-y-3 overscroll-contain flex-1 text-sm text-[#2D2424]">
+      <div class="grid grid-cols-7 gap-1 text-center text-[10px] font-bold text-[#A39696] uppercase">
+        <span>T2</span><span>T3</span><span>T4</span><span>T5</span><span>T6</span><span>T7</span><span>CN</span>
+      </div>
+
+      <div id="picker-month-grid" class="grid grid-cols-7 gap-1 text-center"></div>
     </div>
 
-    <div id="picker-month-grid" class="grid grid-cols-7 gap-1 text-center"></div>
-
-    <div class="flex items-center justify-between pt-2 border-t border-[#F0EAE1] text-xs">
+    <!-- 3. FOOTER (PIN CHẶT DƯỚI ĐÁY) -->
+    <div class="px-5 py-3 border-t border-[#F0EAE1] bg-[#FAF6F1]/90 backdrop-blur-md shrink-0 flex items-center justify-between text-xs">
       <button type="button" onclick="selectPickerToday()" class="font-bold text-[#E58A7B] hover:underline cursor-pointer">
         Hôm nay
       </button>
-      <button type="button" onclick="closeMonthPickerModal()" class="font-semibold text-[#7E7272] hover:text-[#2D2424] cursor-pointer">
+      <button type="button" onclick="closeMonthPickerModal()" class="px-4 py-1.5 rounded-full font-bold text-[#7E7272] bg-white hover:bg-[#FFF0EB] border border-[#EFE8DF] transition active:scale-95 cursor-pointer">
         Đóng
       </button>
     </div>
+
   </div>
 </div>
