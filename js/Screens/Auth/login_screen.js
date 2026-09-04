@@ -1,11 +1,12 @@
 ﻿// =============================================================
 // SCREEN: LOGIN (MÀN HÌNH ĐĂNG NHẬP - PURE COMPONENT DRIVEN)
-// Sử dụng 100% Theme Tokens: bg-spa-bg, text-spa-dark, text-spa-brand
+// Hỗ trợ 100% Theme Tokens & Chế độ Sáng / Tối (Light & Dark Mode)
 // =============================================================
 let isPasswordVisible = false;
 
 function renderLoginScreen() {
   const users = (typeof getStored === 'function') ? getStored('users', DEFAULT_USERS) : DEFAULT_USERS;
+  const isDark = (typeof getTheme === 'function') && getTheme() === 'dark';
 
   // Render danh sách tài khoản mẫu 1-chạm
   const quickAccountsHtml = users.map(u => {
@@ -15,7 +16,7 @@ function renderLoginScreen() {
     const displayPhone = (typeof PhoneService !== 'undefined') ? PhoneService.normalize(u.phone) : u.phone;
 
     return `
-      <button type="button" onclick="quickFillLogin('${displayPhone}', '${u.password || '123'}')" class="w-full p-3 rounded-2xl bg-spa-bg hover:bg-spa-peach-light text-spa-dark hover:text-spa-brand text-xs sm:text-sm font-semibold transition flex items-center justify-between cursor-pointer border border-[#EFE8DF] active:scale-98">
+      <button type="button" onclick="quickFillLogin('${displayPhone}', '${u.password || '123'}')" class="w-full p-3 rounded-2xl bg-spa-bg hover:bg-spa-peach-light text-spa-dark hover:text-spa-brand text-xs sm:text-sm font-semibold transition flex items-center justify-between cursor-pointer border border-spa-border active:scale-98">
         <span class="flex items-center gap-2">
           <span>${roleIcon}</span>
           <span class="font-bold">${u.full_name}</span>
@@ -28,8 +29,13 @@ function renderLoginScreen() {
 
   return `
     <div id="screen-login" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-spa-bg/95 backdrop-blur-xl animate-in fade-in duration-300">
-      <div class="w-full max-w-md bg-white rounded-[28px] border border-spa-border shadow-[0_10px_30px_-5px_rgba(229,138,123,0.05),0_4px_12px_rgba(0,0,0,0.02)] p-6 sm:p-8 text-center relative space-y-4">
+      <div class="w-full max-w-md bg-spa-card rounded-[28px] border border-spa-border shadow-[0_10px_30px_-5px_rgba(0,0,0,0.06),0_4px_12px_rgba(0,0,0,0.02)] p-6 sm:p-8 text-center relative space-y-4 transition-colors duration-300">
         
+        <!-- Nút Công Tắc Bật Tắt Sáng / Tối (Dark Mode Toggle) -->
+        <button type="button" onclick="toggleTheme()" title="Chuyển chế độ Sáng / Tối" class="absolute top-5 right-5 p-2 rounded-full bg-spa-bg hover:bg-spa-peach-light text-spa-muted hover:text-spa-brand border border-spa-border transition cursor-pointer active:scale-90">
+          <i data-lucide="${isDark ? 'sun' : 'moon'}" class="w-4 h-4 theme-toggle-icon"></i>
+        </button>
+
         <!-- Logo & Thương Hiệu -->
         <div class="inline-flex p-4 rounded-3xl bg-spa-peach-light border border-spa-peach-border">
           <i data-lucide="sparkles" class="w-8 h-8 text-spa-brand"></i>
@@ -51,7 +57,7 @@ function renderLoginScreen() {
           <div>
             <label class="block text-xs sm:text-sm font-bold text-spa-dark mb-1">Số điện thoại / Tài khoản:</label>
             <div class="relative">
-              <input type="tel" id="login-phone" placeholder="0949251144" required class="w-full bg-spa-bg border border-[#EFE8DF] rounded-2xl p-3.5 pl-11 text-spa-dark text-sm sm:text-base font-bold font-mono focus:outline-none focus:border-spa-brand focus:bg-white transition">
+              <input type="tel" id="login-phone" placeholder="0949251144" required class="w-full bg-spa-bg border border-spa-border rounded-2xl p-3.5 pl-11 text-spa-dark text-sm sm:text-base font-bold font-mono focus:outline-none focus:border-spa-brand focus:bg-spa-card transition">
               <i data-lucide="phone" class="w-5 h-5 text-spa-hint absolute left-3.5 top-1/2 -translate-y-1/2"></i>
             </div>
           </div>
@@ -59,7 +65,7 @@ function renderLoginScreen() {
           <div>
             <label class="block text-xs sm:text-sm font-bold text-spa-dark mb-1">Mật khẩu:</label>
             <div class="relative">
-              <input type="password" id="login-password" placeholder="••••••" required class="w-full bg-spa-bg border border-[#EFE8DF] rounded-2xl p-3.5 pl-11 pr-11 text-spa-dark text-sm sm:text-base font-bold focus:outline-none focus:border-spa-brand focus:bg-white transition">
+              <input type="password" id="login-password" placeholder="••••••" required class="w-full bg-spa-bg border border-spa-border rounded-2xl p-3.5 pl-11 pr-11 text-spa-dark text-sm sm:text-base font-bold focus:outline-none focus:border-spa-brand focus:bg-spa-card transition">
               <i data-lucide="lock" class="w-5 h-5 text-spa-hint absolute left-3.5 top-1/2 -translate-y-1/2"></i>
               <button type="button" onclick="togglePasswordVisibility()" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-spa-hint hover:text-spa-dark p-1 cursor-pointer">
                 <i data-lucide="eye" id="login-eye-icon" class="w-5 h-5"></i>
@@ -75,7 +81,7 @@ function renderLoginScreen() {
           </div>
 
           <!-- Thông báo lỗi khi sai mật khẩu -->
-          <div id="login-error" class="hidden p-3 rounded-2xl bg-rose-50 border border-rose-200 text-rose-600 text-xs sm:text-sm flex items-center gap-2">
+          <div id="login-error" class="hidden p-3 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/50 text-rose-600 dark:text-rose-400 text-xs sm:text-sm flex items-center gap-2">
             <i data-lucide="alert-triangle" class="w-4 h-4 shrink-0"></i>
             <span id="login-error-text">Số điện thoại hoặc mật khẩu không chính xác!</span>
           </div>
@@ -84,7 +90,7 @@ function renderLoginScreen() {
           <div class="pt-1">
             ${(typeof AppButton === 'function') 
               ? AppButton({ text: 'ĐĂNG NHẬP NGAY', icon: 'log-in', variant: 'primary', size: 'lg', onClick: 'handlePhoneLogin(event)', customClass: 'w-full uppercase tracking-wider' })
-              : '<button type="submit" class="w-full py-3.5 rounded-full bg-[#E58A7B] text-white font-extrabold">ĐĂNG NHẬP NGAY</button>'
+              : '<button type="submit" class="w-full py-3.5 rounded-full bg-spa-brand text-white font-extrabold">ĐĂNG NHẬP NGAY</button>'
             }
           </div>
         </form>
@@ -174,7 +180,7 @@ function onLoginSuccess(user) {
   if (appContainer) {
     appContainer.innerHTML = `
       <div class="min-h-screen flex items-center justify-center p-4 bg-spa-bg">
-        <div class="w-full max-w-md bg-white rounded-[28px] border border-spa-border shadow-xl p-8 text-center space-y-4">
+        <div class="w-full max-w-md bg-spa-card rounded-[28px] border border-spa-border shadow-xl p-8 text-center space-y-4 transition-colors duration-300">
           <div class="inline-flex p-4 rounded-full bg-spa-teal/10 border border-spa-teal/30 text-spa-teal">
             <i data-lucide="check-circle-2" class="w-10 h-10"></i>
           </div>
@@ -184,7 +190,7 @@ function onLoginSuccess(user) {
             <div class="text-lg font-extrabold text-spa-brand">${user.full_name}</div>
             <div class="text-xs font-semibold text-spa-teal">${isOwner ? '👑' : '💆'} ${roleTitle}</div>
           </div>
-          <p class="text-xs text-spa-muted">Màn hình Login đã chuẩn hóa 100% Theme Tokens!</p>
+          <p class="text-xs text-spa-muted">Hỗ trợ đầy đủ Light & Dark Mode!</p>
           <button onclick="initLogin()" class="w-full py-3.5 rounded-full bg-spa-bg hover:bg-spa-peach-light border border-spa-border text-spa-muted hover:text-spa-brand text-xs font-bold transition flex items-center justify-center gap-2 cursor-pointer">
             <i data-lucide="log-out" class="w-4 h-4"></i> Đăng xuất thử lại
           </button>
@@ -197,6 +203,7 @@ function onLoginSuccess(user) {
 
 // Hàm khởi tạo màn hình Login ban đầu
 function initLogin() {
+  if (typeof initTheme === 'function') initTheme();
   const appContainer = document.getElementById('app');
   if (!appContainer) return;
   

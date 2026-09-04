@@ -1,8 +1,9 @@
 ﻿/* =============================================================
-   SELENA SPA - MASTER THEME TOKENS (ĐỔI 1 NƠI - TOÀN APP ĐỔI THEO)
+   SELENA SPA - MASTER THEME TOKENS (LIGHT & DARK MODE LUXURY)
    ============================================================= */
 @theme {
   --color-spa-bg: #FAF6F1;
+  --color-spa-card: #FFFFFF;
   --color-spa-dark: #2D2424;
   --color-spa-brand: #E58A7B;
   --color-spa-brand-hover: #D9796A;
@@ -20,6 +21,7 @@
 :root {
   --sticky-date-offset: 130px;
   --color-spa-bg: #FAF6F1;
+  --color-spa-card: #FFFFFF;
   --color-spa-dark: #2D2424;
   --color-spa-brand: #E58A7B;
   --color-spa-brand-hover: #D9796A;
@@ -32,10 +34,33 @@
   --color-spa-teal-border: #B7EBDD;
   --color-spa-peach-light: #FFF0EB;
   --color-spa-peach-border: #FCDFD7;
+  color-scheme: light;
+}
+
+/* =============================================================
+   CHẾ ĐỘ BAN ĐÊM (DARK MODE LUXURY - DỊU MẮT & SANG TRỌNG)
+   ============================================================= */
+[data-theme="dark"], .dark {
+  --color-spa-bg: #141110;
+  --color-spa-card: #1F1B19;
+  --color-spa-dark: #FAF6F1;
+  --color-spa-brand: #F2A396;
+  --color-spa-brand-hover: #E58A7B;
+  --color-spa-muted: #A89F91;
+  --color-spa-hint: #786F69;
+  --color-spa-border: #332B28;
+  --color-spa-input: #26211E;
+  --color-spa-teal: #3FB99F;
+  --color-spa-teal-light: #162B26;
+  --color-spa-teal-border: #24473F;
+  --color-spa-peach-light: #2D1E1B;
+  --color-spa-peach-border: #4D332E;
+  color-scheme: dark;
 }
 
 /* Fallback Semantic Utility Classes */
 .bg-spa-bg { background-color: var(--color-spa-bg); }
+.bg-spa-card { background-color: var(--color-spa-card); }
 .text-spa-dark { color: var(--color-spa-dark); }
 .text-spa-brand { color: var(--color-spa-brand); }
 .bg-spa-brand { background-color: var(--color-spa-brand); }
@@ -54,6 +79,7 @@ body {
   font-family: 'Plus Jakarta Sans', sans-serif;
   -webkit-tap-highlight-color: transparent;
   overscroll-behavior-y: contain;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 h1, h2, h3, .font-heading, .font-serif-luxury {
@@ -94,17 +120,19 @@ h4, h5, h6 {
 .card-banner {
   border-radius: 28px;
   border: 1px solid var(--color-spa-border);
-  box-shadow: 0 10px 30px -5px rgba(229, 138, 123, 0.05), 0 4px 12px rgba(0, 0, 0, 0.02);
-  background-image: linear-gradient(to bottom right, var(--color-spa-peach-light), #FFFFFF, var(--color-spa-bg));
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.02);
+  background-image: linear-gradient(to bottom right, var(--color-spa-peach-light), var(--color-spa-card), var(--color-spa-bg));
   position: relative;
   overflow: hidden;
+  transition: background 0.3s ease, border-color 0.3s ease;
 }
 
 .card-surface {
-  background-color: #ffffff;
+  background-color: var(--color-spa-card);
   border-radius: 28px;
   border: 1px solid var(--color-spa-border);
-  box-shadow: 0 10px 30px -5px rgba(229, 138, 123, 0.05), 0 4px 12px rgba(0, 0, 0, 0.02);
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.02);
   position: relative;
   overflow: hidden;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }

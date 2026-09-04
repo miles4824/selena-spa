@@ -77,3 +77,39 @@ function isUserOwner(u) {
   const phone = (typeof PhoneService !== 'undefined') ? PhoneService.normalize(u.phone) : String(u.phone || '').trim();
   return (role === 'admin' || role === 'chủ tiệm' || role === 'chủ sáng lập' || role === 'owner' || phone === '0949251144');
 }
+// 4. Quản lý Chế độ Sáng / Tối (Theme Manager - Light & Dark Mode)
+function getTheme() {
+  const saved = localStorage.getItem('selena_theme');
+  if (saved) return saved;
+  return (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+}
+
+function setTheme(theme) {
+  localStorage.setItem('selena_theme', theme);
+  if (theme === 'dark') {
+    document.documentElement.classList.add('dark');
+    document.documentElement.setAttribute('data-theme', 'dark');
+  } else {
+    document.documentElement.classList.remove('dark');
+    document.documentElement.setAttribute('data-theme', 'light');
+  }
+  updateThemeToggleIcons();
+}
+
+function toggleTheme() {
+  const current = getTheme();
+  const next = current === 'dark' ? 'light' : 'dark';
+  setTheme(next);
+}
+
+function initTheme() {
+  setTheme(getTheme());
+}
+
+function updateThemeToggleIcons() {
+  const isDark = getTheme() === 'dark';
+  document.querySelectorAll('.theme-toggle-icon').forEach(el => {
+    el.setAttribute('data-lucide', isDark ? 'sun' : 'moon');
+  });
+  if (typeof lucide !== 'undefined') lucide.createIcons();
+}
