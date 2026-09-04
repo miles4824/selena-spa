@@ -151,3 +151,21 @@ h4, h5, h6 {
   overflow: hidden;
   transition: background-color 0.3s ease, border-color 0.3s ease;
 }
+
+/* Luxury Ambient Glow Shadows for Buttons (Đồng màu với nền nút) */
+.shadow-glow-brand {
+  box-shadow: 0 12px 28px -6px color-mix(in srgb, var(--color-spa-brand) 50%, transparent),
+              0 6px 12px -4px color-mix(in srgb, var(--color-spa-brand) 28%, transparent);
+}
+.shadow-glow-brand:hover {
+  box-shadow: 0 16px 32px -6px color-mix(in srgb, var(--color-spa-brand) 65%, transparent),
+              0 8px 16px -4px color-mix(in srgb, var(--color-spa-brand) 35%, transparent);
+}
+.shadow-glow-sage {
+  box-shadow: 0 12px 28px -6px color-mix(in srgb, var(--color-spa-sage) 45%, transparent),
+              0 6px 12px -4px color-mix(in srgb, var(--color-spa-sage) 25%, transparent);
+}
+.shadow-glow-sage:hover {
+  box-shadow: 0 16px 32px -6px color-mix(in srgb, var(--color-spa-sage) 55%, transparent),
+              0 8px 16px -4px color-mix(in srgb, var(--color-spa-sage) 30%, transparent);
+}
