@@ -198,7 +198,8 @@ async function loadAllModalTemplates() {
     'views/components/modals/modal_month_picker.html',
     'views/components/modals/modal_staff_note.html',
     'views/components/modals/modal_owner_customer.html',
-    'views/components/modals/modal_gift_voucher.html'
+    'views/components/modals/modal_gift_voucher.html',
+    'views/components/modals/modal_edit_live_services.html'
   ];
 
   try {
