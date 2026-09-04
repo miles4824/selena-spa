@@ -104,11 +104,11 @@ function renderStaffHome(user) {
               </div>
             </div>
 
-            <h2 class="text-2xl sm:text-3xl font-medium font-serif text-spa-dark dark:text-white tracking-tight">
-              Chào <span class="text-spa-brand font-bold">${user.full_name || 'KTV'}</span>, <span class="font-normal text-spa-muted dark:text-white/70">hôm nay sẵn sàng tỏa sáng chưa? ✨</span>
+            <h2 class="text-2xl sm:text-3xl font-medium font-serif text-spa-dark dark:!text-white tracking-tight">
+              Chào <span class="text-spa-brand font-bold">${user.full_name || 'KTV'}</span>, <span class="font-normal text-spa-muted dark:!text-white/80">hôm nay sẵn sàng tỏa sáng chưa? ✨</span>
             </h2>
 
-            <p class="text-spa-muted dark:text-white/70 text-sm max-w-md leading-relaxed">
+            <p class="text-spa-muted dark:!text-white/70 text-sm max-w-md leading-relaxed">
               ${statusDesc}
             </p>
 
@@ -130,7 +130,7 @@ function renderStaffHome(user) {
           </div>
           <div class="space-y-1">
             <div class="text-xs font-bold text-spa-brand uppercase tracking-wider">Thông Báo Từ Chủ Tiệm</div>
-            <p class="text-xs sm:text-sm text-spa-dark dark:text-white font-medium leading-relaxed">
+            <p class="text-xs sm:text-sm text-spa-dark dark:!text-white font-medium leading-relaxed">
               ${announcement}
             </p>
           </div>
@@ -140,7 +140,7 @@ function renderStaffHome(user) {
       <!-- CỤM 3: THÀNH TÍCH CỦA BẠN TRONG NGÀY HÔM NAY -->
       <div class="space-y-3">
         <div class="flex items-center justify-between px-1">
-          <h3 class="text-base font-bold text-spa-dark dark:text-white flex items-center gap-2">
+          <h3 class="text-base font-bold text-spa-dark dark:!text-white flex items-center gap-2">
             <i data-lucide="award" class="w-4 h-4 text-spa-brand"></i>
             <span>Thành Tích Của Bạn Hôm Nay</span>
           </h3>

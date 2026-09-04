@@ -23,27 +23,27 @@ function renderBottomNav(activeTab = "home") {
 
   container.innerHTML = `
     <nav id="mobile-bottom-nav" class="fixed left-4 right-4 z-50 max-w-sm mx-auto pointer-events-auto" style="bottom: calc(env(safe-area-inset-bottom, 16px) + 12px);">
-      <div id="nav-dock" class="relative bg-spa-card/90 border border-spa-border backdrop-blur-xl rounded-full shadow-[0_12px_32px_rgba(0,0,0,0.10)] px-2.5 py-4 flex items-center justify-around">
+      <div id="nav-dock" class="relative bg-white/90 dark:bg-[#2F3E46]/95 border border-spa-border dark:border-[#3D4E56] backdrop-blur-xl rounded-full shadow-[0_12px_32px_rgba(0,0,0,0.10)] dark:shadow-[0_12px_32px_rgba(0,0,0,0.5)] px-2.5 py-4 flex items-center justify-around">
         <!-- VIÊN THUỐC TRƯỢT DI CHUYỂN TỰ ĐỘNG (SLIDING PILL) -->
         <div id="nav-sliding-indicator" class="absolute rounded-full bg-spa-brand shadow-glow-brand z-[1] pointer-events-none opacity-0 transition-all duration-300 ease-out"></div>
 
         <!-- 1. TAB HOME -->
-        <button type="button" onclick="navigateTab('home')" id="nav-btn-home" data-tab="home" title="Trang chủ" class="relative z-10 w-12 h-12 flex items-center justify-center rounded-full text-spa-muted hover:text-spa-brand transition-colors cursor-pointer active:scale-95">
+        <button type="button" onclick="navigateTab('home')" id="nav-btn-home" data-tab="home" title="Trang chủ" class="relative z-10 w-12 h-12 flex items-center justify-center rounded-full text-[#6D7E84] dark:text-[#A7C7E7] hover:text-spa-brand dark:hover:text-white transition-colors cursor-pointer active:scale-95">
           <i data-lucide="home" class="w-5 h-5"></i>
         </button>
 
         <!-- 2. TAB POS / TẠO CA -->
-        <button type="button" onclick="navigateTab('pos')" id="nav-btn-pos" data-tab="pos" title="Tạo ca mới" class="relative z-10 w-12 h-12 flex items-center justify-center rounded-full text-spa-muted hover:text-spa-brand transition-colors cursor-pointer active:scale-95">
+        <button type="button" onclick="navigateTab('pos')" id="nav-btn-pos" data-tab="pos" title="Tạo ca mới" class="relative z-10 w-12 h-12 flex items-center justify-center rounded-full text-[#6D7E84] dark:text-[#A7C7E7] hover:text-spa-brand dark:hover:text-white transition-colors cursor-pointer active:scale-95">
           <i data-lucide="plus" class="w-5 h-5"></i>
         </button>
 
         <!-- 3. TAB HISTORY -->
-        <button type="button" onclick="navigateTab('history')" id="nav-btn-history" data-tab="history" title="Lịch sử tour" class="relative z-10 w-12 h-12 flex items-center justify-center rounded-full text-spa-muted hover:text-spa-brand transition-colors cursor-pointer active:scale-95">
+        <button type="button" onclick="navigateTab('history')" id="nav-btn-history" data-tab="history" title="Lịch sử tour" class="relative z-10 w-12 h-12 flex items-center justify-center rounded-full text-[#6D7E84] dark:text-[#A7C7E7] hover:text-spa-brand dark:hover:text-white transition-colors cursor-pointer active:scale-95">
           <i data-lucide="clock" class="w-5 h-5"></i>
         </button>
 
         <!-- 4. TAB INCOME / REPORT -->
-        <button type="button" onclick="navigateTab('income')" id="nav-btn-income" data-tab="income" title="${incomeLabel}" class="relative z-10 w-12 h-12 flex items-center justify-center rounded-full text-spa-muted hover:text-spa-brand transition-colors cursor-pointer active:scale-95">
+        <button type="button" onclick="navigateTab('income')" id="nav-btn-income" data-tab="income" title="${incomeLabel}" class="relative z-10 w-12 h-12 flex items-center justify-center rounded-full text-[#6D7E84] dark:text-[#A7C7E7] hover:text-spa-brand dark:hover:text-white transition-colors cursor-pointer active:scale-95">
           <i data-lucide="wallet" class="w-5 h-5"></i>
         </button>
       </div>

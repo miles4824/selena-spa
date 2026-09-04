@@ -14,24 +14,24 @@ function StatCard({
 } = {}) {
   const colorStyles = {
     mint: { 
-      bg: 'bg-[#E8F8F5] dark:bg-[#5E887E]/20', 
+      bg: 'bg-[#E8F8F5] dark:bg-[#2F3E46]', 
       border: 'border-[#B7EBDD] dark:border-[#5E887E]/40', 
       text: 'text-[#2E7D6D] dark:text-[#88B8AD]' 
     },
     blue: { 
-      bg: 'bg-[#EBF5FB] dark:bg-[#A7C7E7]/20', 
+      bg: 'bg-[#EBF5FB] dark:bg-[#2F3E46]', 
       border: 'border-[#D4E6F1] dark:border-[#A7C7E7]/40', 
       text: 'text-[#2980B9] dark:text-[#A7C7E7]' 
     },
     purple: { 
-      bg: 'bg-[#F5EEF8] dark:bg-[#E8AEB7]/20', 
+      bg: 'bg-[#F5EEF8] dark:bg-[#2F3E46]', 
       border: 'border-[#E8DAEF] dark:border-[#E8AEB7]/40', 
       text: 'text-[#8E44AD] dark:text-[#E8AEB7]' 
     },
     coral: { 
-      bg: 'bg-gradient-to-br from-[#E8AEB7] to-[#D995A0] dark:from-[#D995A0] dark:to-[#B8727E]', 
-      border: 'border-transparent', 
-      text: 'text-white' 
+      bg: 'bg-gradient-to-br from-[#E8AEB7] to-[#D995A0] dark:from-[#2F3E46] dark:to-[#263339]', 
+      border: 'border-transparent dark:border-[#E8AEB7]/40', 
+      text: 'text-white dark:text-[#E8AEB7]' 
     }
   };
 
@@ -46,8 +46,8 @@ function StatCard({
 
   const valueClick = isPrivacy ? `onclick="${onPrivacyToggle}"` : '';
   const valueCursor = isPrivacy ? 'cursor-pointer select-none' : '';
-  const numColor = isCoral ? 'text-white' : 'text-[#2D2424] dark:text-white';
-  const subColor = isCoral ? 'text-white/90' : `${c.text} dark:text-white/70`;
+  const numColor = isCoral ? 'text-white dark:text-white' : 'text-[#2D2424] dark:text-white';
+  const subColor = isCoral ? 'text-white/90 dark:text-white/70' : `${c.text} dark:text-white/70`;
 
   return `
     <div class="p-4 sm:p-5 rounded-3xl ${c.bg} border ${c.border} space-y-1 shadow-xs ${customClass}">

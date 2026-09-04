@@ -41,8 +41,8 @@ function renderOwnerHome(user) {
         <div class="w-10 h-10 rounded-2xl bg-spa-sage/15 text-spa-sage mx-auto flex items-center justify-center">
           <i data-lucide="sparkles" class="w-5 h-5"></i>
         </div>
-        <div class="font-bold text-sm text-spa-dark dark:text-white">Tất cả các giường đang sẵn sàng!</div>
-        <p class="text-xs text-spa-muted dark:text-white/60 max-w-sm mx-auto">
+        <div class="font-bold text-sm text-spa-dark dark:!text-white">Tất cả các giường đang sẵn sàng!</div>
+        <p class="text-xs text-spa-muted dark:!text-white/70 max-w-sm mx-auto">
           Hiện tại chưa có ca phục vụ nào đang chạy. Bấm nút "Lập phiếu tour mới" khi có khách ghé trải nghiệm.
         </p>
       </div>
@@ -112,11 +112,11 @@ function renderOwnerHome(user) {
               </div>
             </div>
 
-            <h2 class="text-2xl sm:text-3xl font-medium font-serif text-spa-dark dark:text-white tracking-tight">
-              Chào <span class="text-spa-brand font-bold">${user.full_name || 'Miles'}</span>, <span class="font-normal text-spa-muted dark:text-white/70">hôm nay tiệm vận hành tuyệt vời chứ? ✨</span>
+            <h2 class="text-2xl sm:text-3xl font-medium font-serif text-spa-dark dark:!text-white tracking-tight">
+              Chào <span class="text-spa-brand font-bold">${user.full_name || 'Miles'}</span>, <span class="font-normal text-spa-muted dark:!text-white/80">hôm nay tiệm vận hành tuyệt vời chứ? ✨</span>
             </h2>
 
-            <p class="text-spa-muted dark:text-white/70 text-sm max-w-md leading-relaxed">
+            <p class="text-spa-muted dark:!text-white/70 text-sm max-w-md leading-relaxed">
               Giám sát các giường đang gội trực tiếp & kiểm soát doanh thu thời gian thực.
             </p>
 
@@ -139,7 +139,7 @@ function renderOwnerHome(user) {
                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-spa-sage opacity-75"></span>
                 <span class="relative inline-flex rounded-full h-3 w-3 bg-spa-sage"></span>
               </span>
-              <h3 class="text-base sm:text-lg font-bold text-spa-dark dark:text-white">
+              <h3 class="text-base sm:text-lg font-bold text-spa-dark dark:!text-white">
                 Các Giường Đang Phục Vụ Trực Tiếp
               </h3>
               <span class="text-xs font-mono font-bold px-2.5 py-0.5 rounded-full bg-spa-sage/15 text-spa-sage dark:text-[#88B8AD]">
@@ -163,7 +163,7 @@ function renderOwnerHome(user) {
       <!-- CỤM 3: CHỈ SỐ NHANH HÔM NAY (TODAY SNAPSHOT) -->
       <div class="space-y-3">
         <div class="flex items-center justify-between px-1">
-          <h3 class="text-base font-bold text-spa-dark dark:text-white flex items-center gap-2">
+          <h3 class="text-base font-bold text-spa-dark dark:!text-white flex items-center gap-2">
             <i data-lucide="bar-chart-2" class="w-4 h-4 text-spa-brand"></i>
             <span>Chỉ Số Vận Hành Hôm Nay (Today Snapshot)</span>
           </h3>
@@ -193,7 +193,7 @@ function renderOwnerHome(user) {
             </button>
           </div>
 
-          <div class="text-sm font-semibold text-spa-dark dark:text-white leading-relaxed" id="owner-announcement-display">
+          <div class="text-sm font-semibold text-spa-dark dark:!text-white leading-relaxed" id="owner-announcement-display">
             ${announcement}
           </div>
         `
@@ -217,8 +217,8 @@ function refreshLiveBeds() {
         <div class="w-10 h-10 rounded-2xl bg-spa-sage/15 text-spa-sage mx-auto flex items-center justify-center">
           <i data-lucide="sparkles" class="w-5 h-5"></i>
         </div>
-        <div class="font-bold text-sm text-spa-dark dark:text-white">Tất cả các giường đang sẵn sàng!</div>
-        <p class="text-xs text-spa-muted dark:text-white/60 max-w-sm mx-auto">
+        <div class="font-bold text-sm text-spa-dark dark:!text-white">Tất cả các giường đang sẵn sàng!</div>
+        <p class="text-xs text-spa-muted dark:!text-white/70 max-w-sm mx-auto">
           Hiện tại chưa có ca phục vụ nào đang chạy.
         </p>
       </div>

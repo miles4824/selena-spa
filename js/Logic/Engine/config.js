@@ -231,9 +231,21 @@ function setTheme(theme, isManual = false) {
   if (theme === 'dark') {
     document.documentElement.classList.add('dark');
     document.documentElement.setAttribute('data-theme', 'dark');
+    if (document.body) {
+      document.body.classList.add('dark');
+      document.body.setAttribute('data-theme', 'dark');
+      document.body.style.backgroundColor = '#1C2428';
+      document.body.style.color = '#F1F5F4';
+    }
   } else {
     document.documentElement.classList.remove('dark');
     document.documentElement.setAttribute('data-theme', 'light');
+    if (document.body) {
+      document.body.classList.remove('dark');
+      document.body.setAttribute('data-theme', 'light');
+      document.body.style.backgroundColor = '#F1F5F4';
+      document.body.style.color = '#2F3E46';
+    }
   }
   const metaThemeColor = document.getElementById('meta-theme-color') || document.querySelector('meta[name="theme-color"]');
   if (metaThemeColor) {
