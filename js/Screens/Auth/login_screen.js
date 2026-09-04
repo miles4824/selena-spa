@@ -207,4 +207,5 @@ function initLogin() {
   appContainer.innerHTML = renderLoginScreen();
   if (typeof lucide !== 'undefined') lucide.createIcons();
   if (typeof applyDynamicUIConfig === 'function') applyDynamicUIConfig();
+  if (typeof fetchLiveConfigFromSheet === 'function') fetchLiveConfigFromSheet();
 }

@@ -118,6 +118,85 @@ function applyDynamicUIConfig(customConfig) {
   }
 }
 
+// 2c. Cơ chế đồng bộ trực tiếp từ Google Sheets (Bảo vệ đa kênh không cần cài trigger)
+const GOOGLE_SPREADSHEET_ID = '1SFFR2sWmOxtRIMOkdlkuKIDYyXJM7IxNyP9gFtZY0L0';
+
+function parseCSVLine(line) {
+  const result = [];
+  let current = '';
+  let inQuotes = false;
+  for (let i = 0; i < line.length; i++) {
+    const char = line[i];
+    if (char === '"') {
+      if (inQuotes && line[i + 1] === '"') {
+        current += '"';
+        i++;
+      } else {
+        inQuotes = !inQuotes;
+      }
+    } else if (char === ',' && !inQuotes) {
+      result.push(current.trim());
+      current = '';
+    } else {
+      current += char;
+    }
+  }
+  result.push(current.trim());
+  return result;
+}
+
+let isFetchingSheetConfig = false;
+async function fetchLiveConfigFromSheet() {
+  if (isFetchingSheetConfig) return;
+  isFetchingSheetConfig = true;
+  try {
+    const url = `https://docs.google.com/spreadsheets/d/${GOOGLE_SPREADSHEET_ID}/gviz/tq?tqx=out:csv&sheet=tb_config&t=${Date.now()}`;
+    const res = await fetch(url);
+    if (!res.ok) return;
+    const text = await res.text();
+    const lines = text.split('\n');
+    const newConfig = {};
+    for (let i = 1; i < lines.length; i++) {
+      const line = lines[i].trim();
+      if (!line) continue;
+      const parts = parseCSVLine(line);
+      const k = parts[0] ? parts[0].trim() : '';
+      const v = parts[1] ? parts[1].trim() : '';
+      if (k) {
+        newConfig[k] = v;
+        newConfig[k.toLowerCase()] = v;
+        newConfig[k.toUpperCase()] = v;
+      }
+    }
+    if (Object.keys(newConfig).length > 0) {
+      const current = getStored('ui_config', {});
+      setStored('ui_config', { ...current, ...newConfig });
+      applyDynamicUIConfig(newConfig);
+
+      // Đồng bộ sang Firebase Realtime nếu có kết nối
+      if (typeof fbDb !== 'undefined' && fbDb) {
+        try {
+          fbDb.ref('config/ui_config').update(newConfig);
+        } catch(e) {}
+      }
+    }
+  } catch (err) {
+    console.warn('⚠️ [Config Sync] Lỗi kết nối Google Sheet:', err);
+  } finally {
+    isFetchingSheetConfig = false;
+  }
+}
+
+// Tự động kích hoạt cơ chế kéo Realtime:
+// 1. Chạy mỗi khi người dùng click chuột quay lại tab App (focus)
+// 2. Chạy chu kỳ ngầm mỗi 5 giây
+if (typeof window !== 'undefined') {
+  window.addEventListener('focus', () => {
+    fetchLiveConfigFromSheet();
+  });
+  setInterval(fetchLiveConfigFromSheet, 5000);
+}
+
 // 3. Quản trị phiên người dùng hiện tại
 let currentUser = null;
 
