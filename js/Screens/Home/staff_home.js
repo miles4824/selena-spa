@@ -90,17 +90,25 @@ function renderStaffHome(user) {
       ${typeof AppCard === 'function' ? AppCard({
         variant: 'mindora',
         content: `
+          <!-- Ambient Glow Spheres (Bộ 5 màu) -->
+          <div class="absolute -top-10 -right-10 w-44 h-44 rounded-full bg-[#E8AEB7]/20 dark:bg-[#E8AEB7]/10 blur-3xl pointer-events-none"></div>
+          <div class="absolute -bottom-10 -left-10 w-44 h-44 rounded-full bg-[#5E887E]/20 dark:bg-[#5E887E]/10 blur-3xl pointer-events-none"></div>
+          <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-36 h-36 rounded-full bg-[#A7C7E7]/15 dark:bg-[#A7C7E7]/5 blur-3xl pointer-events-none"></div>
+
           <div class="relative z-10 space-y-3.5">
             <div class="flex items-center justify-between">
               ${statusBadgeHtml}
-              <span class="text-xs text-spa-muted font-medium">Hôm nay</span>
+              <div class="flex items-center gap-2">
+                <span class="text-xs text-spa-muted dark:text-white/60 font-medium">Hôm nay</span>
+                ${typeof ThemeToggle === 'function' ? ThemeToggle({ customClass: 'w-8 h-8 !p-1.5 bg-white/70 dark:bg-white/10 hover:bg-white dark:hover:bg-white/20 border border-spa-border dark:border-white/15 shadow-2xs' }) : ''}
+              </div>
             </div>
 
-            <h2 class="text-2xl sm:text-3xl font-medium font-serif text-spa-dark tracking-tight">
-              Chào <span class="text-spa-brand font-bold">${user.full_name || 'KTV'}</span>, <span class="font-normal text-spa-muted">hôm nay sẵn sàng tỏa sáng chưa? ✨</span>
+            <h2 class="text-2xl sm:text-3xl font-medium font-serif text-spa-dark dark:text-white tracking-tight">
+              Chào <span class="text-spa-brand font-bold">${user.full_name || 'KTV'}</span>, <span class="font-normal text-spa-muted dark:text-white/70">hôm nay sẵn sàng tỏa sáng chưa? ✨</span>
             </h2>
 
-            <p class="text-spa-muted text-sm max-w-md leading-relaxed">
+            <p class="text-spa-muted dark:text-white/70 text-sm max-w-md leading-relaxed">
               ${statusDesc}
             </p>
 
@@ -122,7 +130,7 @@ function renderStaffHome(user) {
           </div>
           <div class="space-y-1">
             <div class="text-xs font-bold text-spa-brand uppercase tracking-wider">Thông Báo Từ Chủ Tiệm</div>
-            <p class="text-xs sm:text-sm text-spa-dark font-medium leading-relaxed">
+            <p class="text-xs sm:text-sm text-spa-dark dark:text-white font-medium leading-relaxed">
               ${announcement}
             </p>
           </div>
@@ -132,7 +140,7 @@ function renderStaffHome(user) {
       <!-- CỤM 3: THÀNH TÍCH CỦA BẠN TRONG NGÀY HÔM NAY -->
       <div class="space-y-3">
         <div class="flex items-center justify-between px-1">
-          <h3 class="text-base font-bold text-spa-dark flex items-center gap-2">
+          <h3 class="text-base font-bold text-spa-dark dark:text-white flex items-center gap-2">
             <i data-lucide="award" class="w-4 h-4 text-spa-brand"></i>
             <span>Thành Tích Của Bạn Hôm Nay</span>
           </h3>

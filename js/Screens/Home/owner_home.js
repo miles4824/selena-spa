@@ -95,20 +95,28 @@ function renderOwnerHome(user) {
       ${typeof AppCard === 'function' ? AppCard({
         variant: 'mindora',
         content: `
+          <!-- Ambient Glow Spheres (Bộ 5 màu) -->
+          <div class="absolute -top-10 -right-10 w-44 h-44 rounded-full bg-[#E8AEB7]/20 dark:bg-[#E8AEB7]/10 blur-3xl pointer-events-none"></div>
+          <div class="absolute -bottom-10 -left-10 w-44 h-44 rounded-full bg-[#5E887E]/20 dark:bg-[#5E887E]/10 blur-3xl pointer-events-none"></div>
+          <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-36 h-36 rounded-full bg-[#A7C7E7]/15 dark:bg-[#A7C7E7]/5 blur-3xl pointer-events-none"></div>
+
           <div class="relative z-10 space-y-3.5">
             <div class="flex items-center justify-between">
               <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-spa-brand/15 text-spa-brand border border-spa-brand/25">
                 <i data-lucide="crown" class="w-3.5 h-3.5"></i>
                 <span>Chủ Sáng Lập</span>
               </span>
-              <span class="text-xs text-spa-muted font-medium">Hôm nay</span>
+              <div class="flex items-center gap-2">
+                <span class="text-xs text-spa-muted dark:text-white/60 font-medium">Hôm nay</span>
+                ${typeof ThemeToggle === 'function' ? ThemeToggle({ customClass: 'w-8 h-8 !p-1.5 bg-white/70 dark:bg-white/10 hover:bg-white dark:hover:bg-white/20 border border-spa-border dark:border-white/15 shadow-2xs' }) : ''}
+              </div>
             </div>
 
-            <h2 class="text-2xl sm:text-3xl font-medium font-serif text-spa-dark tracking-tight">
-              Chào <span class="text-spa-brand font-bold">${user.full_name || 'Miles'}</span>, <span class="font-normal text-spa-muted">hôm nay tiệm vận hành tuyệt vời chứ? ✨</span>
+            <h2 class="text-2xl sm:text-3xl font-medium font-serif text-spa-dark dark:text-white tracking-tight">
+              Chào <span class="text-spa-brand font-bold">${user.full_name || 'Miles'}</span>, <span class="font-normal text-spa-muted dark:text-white/70">hôm nay tiệm vận hành tuyệt vời chứ? ✨</span>
             </h2>
 
-            <p class="text-spa-muted text-sm max-w-md leading-relaxed">
+            <p class="text-spa-muted dark:text-white/70 text-sm max-w-md leading-relaxed">
               Giám sát các giường đang gội trực tiếp & kiểm soát doanh thu thời gian thực.
             </p>
 
@@ -125,21 +133,21 @@ function renderOwnerHome(user) {
         padding: 'p-5 sm:p-6',
         customClass: 'space-y-4',
         content: `
-          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 pb-3 border-b border-spa-border">
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 pb-3 border-b border-spa-border dark:border-white/10">
             <div class="flex items-center gap-2.5">
               <span class="flex h-3 w-3 relative">
                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-spa-sage opacity-75"></span>
                 <span class="relative inline-flex rounded-full h-3 w-3 bg-spa-sage"></span>
               </span>
-              <h3 class="text-base sm:text-lg font-bold text-spa-dark">
+              <h3 class="text-base sm:text-lg font-bold text-spa-dark dark:text-white">
                 Các Giường Đang Phục Vụ Trực Tiếp
               </h3>
-              <span class="text-xs font-mono font-bold px-2.5 py-0.5 rounded-full bg-spa-sage/15 text-spa-sage">
+              <span class="text-xs font-mono font-bold px-2.5 py-0.5 rounded-full bg-spa-sage/15 text-spa-sage dark:text-[#88B8AD]">
                 ${liveTours.length} đang chạy
               </span>
             </div>
 
-            <button onclick="refreshLiveBeds()" class="px-3 py-1.5 rounded-xl bg-spa-bg hover:bg-spa-peach-light text-spa-muted hover:text-spa-brand text-xs font-bold flex items-center gap-1.5 transition cursor-pointer border border-spa-border">
+            <button onclick="refreshLiveBeds()" class="px-3 py-1.5 rounded-xl bg-spa-bg dark:bg-white/10 hover:bg-spa-peach-light dark:hover:bg-white/15 text-spa-muted dark:text-white/80 hover:text-spa-brand text-xs font-bold flex items-center gap-1.5 transition cursor-pointer border border-spa-border dark:border-white/10">
               <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
               <span>Cập nhật</span>
             </button>
@@ -155,7 +163,7 @@ function renderOwnerHome(user) {
       <!-- CỤM 3: CHỈ SỐ NHANH HÔM NAY (TODAY SNAPSHOT) -->
       <div class="space-y-3">
         <div class="flex items-center justify-between px-1">
-          <h3 class="text-base font-bold text-spa-dark flex items-center gap-2">
+          <h3 class="text-base font-bold text-spa-dark dark:text-white flex items-center gap-2">
             <i data-lucide="bar-chart-2" class="w-4 h-4 text-spa-brand"></i>
             <span>Chỉ Số Vận Hành Hôm Nay (Today Snapshot)</span>
           </h3>
@@ -185,7 +193,7 @@ function renderOwnerHome(user) {
             </button>
           </div>
 
-          <div class="text-sm font-semibold text-spa-dark leading-relaxed" id="owner-announcement-display">
+          <div class="text-sm font-semibold text-spa-dark dark:text-white leading-relaxed" id="owner-announcement-display">
             ${announcement}
           </div>
         `

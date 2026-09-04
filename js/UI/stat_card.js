@@ -13,10 +13,26 @@ function StatCard({
   customClass = ''
 } = {}) {
   const colorStyles = {
-    mint: { bg: 'bg-[#E8F8F5]', border: 'border-[#B7EBDD]', text: 'text-[#2E7D6D]' },
-    blue: { bg: 'bg-[#EBF5FB]', border: 'border-[#D4E6F1]', text: 'text-[#2980B9]' },
-    purple: { bg: 'bg-[#F5EEF8]', border: 'border-[#E8DAEF]', text: 'text-[#8E44AD]' },
-    coral: { bg: 'bg-[#E58A7B]', border: 'border-transparent', text: 'text-white' }
+    mint: { 
+      bg: 'bg-[#E8F8F5] dark:bg-[#5E887E]/20', 
+      border: 'border-[#B7EBDD] dark:border-[#5E887E]/40', 
+      text: 'text-[#2E7D6D] dark:text-[#88B8AD]' 
+    },
+    blue: { 
+      bg: 'bg-[#EBF5FB] dark:bg-[#A7C7E7]/20', 
+      border: 'border-[#D4E6F1] dark:border-[#A7C7E7]/40', 
+      text: 'text-[#2980B9] dark:text-[#A7C7E7]' 
+    },
+    purple: { 
+      bg: 'bg-[#F5EEF8] dark:bg-[#E8AEB7]/20', 
+      border: 'border-[#E8DAEF] dark:border-[#E8AEB7]/40', 
+      text: 'text-[#8E44AD] dark:text-[#E8AEB7]' 
+    },
+    coral: { 
+      bg: 'bg-gradient-to-br from-[#E8AEB7] to-[#D995A0] dark:from-[#D995A0] dark:to-[#B8727E]', 
+      border: 'border-transparent', 
+      text: 'text-white' 
+    }
   };
 
   const c = colorStyles[color] || colorStyles.mint;
@@ -30,8 +46,8 @@ function StatCard({
 
   const valueClick = isPrivacy ? `onclick="${onPrivacyToggle}"` : '';
   const valueCursor = isPrivacy ? 'cursor-pointer select-none' : '';
-  const numColor = isCoral ? 'text-white' : 'text-[#2D2424]';
-  const subColor = isCoral ? 'text-white/90' : c.text;
+  const numColor = isCoral ? 'text-white' : 'text-[#2D2424] dark:text-white';
+  const subColor = isCoral ? 'text-white/90' : `${c.text} dark:text-white/70`;
 
   return `
     <div class="p-4 sm:p-5 rounded-3xl ${c.bg} border ${c.border} space-y-1 shadow-xs ${customClass}">

@@ -50,23 +50,23 @@
   color-scheme: light;
 }
 
-/* GIAO DIỆN BAN ĐÊM (DARK MODE SLATE PINE - SANG TRỌNG NHƯ MOCKUP) */
+/* GIAO DIỆN BAN ĐÊM (DARK MODE SLATE PINE - THEO ĐÚNG BỘ 5 MÀU MỚI) */
 [data-theme="dark"], .dark {
   --color-spa-bg: #1C2428;
-  --color-spa-card: #28343B;
+  --color-spa-card: #2F3E46;
   --color-spa-dark: #F1F5F4;
   --color-spa-brand: #E8AEB7;
   --color-spa-brand-hover: #F0BCC4;
-  --color-spa-sage: #7BA69C;
+  --color-spa-sage: #5E887E;
   --color-spa-sage-light: #243533;
   --color-spa-mist: #A7C7E7;
   --color-spa-muted: #9AAEB5;
   --color-spa-hint: #637780;
-  --color-spa-border: #3A4A52;
-  --color-spa-input: #202A2F;
-  --color-spa-teal: #7BA69C;
+  --color-spa-border: #3D4E56;
+  --color-spa-input: #243238;
+  --color-spa-teal: #5E887E;
   --color-spa-teal-light: #243533;
-  --color-spa-teal-border: #38524D;
+  --color-spa-teal-border: #3E544E;
   --color-spa-peach-light: #3D2D31;
   --color-spa-peach-border: #5A3E45;
   color-scheme: dark;
