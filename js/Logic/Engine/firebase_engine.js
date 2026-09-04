@@ -1,4 +1,10 @@
 
+// Biến trạng thái tour realtime toàn cục
+var currentLiveSession = null;
+var tempSwapStaffs = [];
+var liveTimerInterval = null;
+var currentTab = 'login';
+
 // Quản lý các phiên tour đã hoàn thành hoặc đã hủy để chống vòng lặp 100%
 let dismissedSessionIds = new Set();
 try {
