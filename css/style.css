@@ -242,5 +242,24 @@ h4, h5, h6 {
   opacity: 1;
 }
 
+/* =============================================================
+   IPHONE NOTCH & STATUS BAR BLUR OVERLAY (FOR PWA STANDALONE)
+   ============================================================= */
+.ios-notch-blur {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: env(safe-area-inset-top, 0px);
+  background: rgba(241, 245, 244, 0.72);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  pointer-events: none;
+  z-index: 99999;
+  transition: background-color 0.35s linear;
+}
 
-
+[data-theme="dark"] .ios-notch-blur,
+.dark .ios-notch-blur {
+  background: rgba(28, 36, 40, 0.72);
+}
