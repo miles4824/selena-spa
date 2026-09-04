@@ -251,3 +251,20 @@ ole_badge.js, ed_card.js, modal_shell.js.
      + js/Screens/Staff/: Màn hình riêng cho KTV (Home, History, Wallet).
      + js/Screens/Owner/: Màn hình riêng cho Chủ Sáng Lập (Home, History, Wallet).
      + js/Screens/POS/: Khu vực tạo ca & vào tour.
+
+---
+
+## ⚡ 17. NGUYÊN TẮC REALTIME TỰ ĐỘNG HÓA TỪ GOOGLE SHEETS (DATASHEET-DRIVEN & ZERO-REFRESH)
+1. **Quản trị thuần túy từ Google Sheets (Datasheet as Control Center)**:
+   - Toàn bộ tham số thương hiệu (Tên Spa `spa_brand_name`, Slogan `spa_brand_slogan`), tài khoản ngân hàng, thông tin Wifi, danh mục dịch vụ & giá (`tb_menu`), câu châm ngôn KTV (`home_greeting_slogan`, `home_free_quote`), thông báo nội bộ... **BẮT BUỘC** phải được định hướng từ Google Sheets (`tb_config`, `tb_menu`...).
+   - Người vận hành sau này không cần có kiến thức lập trình, chỉ cần mở Google Sheets sửa trực tiếp trên điện thoại/máy tính là ứng dụng tự động tiếp nhận.
+
+2. **Kiến Trúc Realtime 3 Lớp Bất Biến**:
+   - **Lớp 1 (Google Sheets Trigger)**: Khi có chỉnh sửa ô, trigger `installedOnEdit` (hoặc `installedOnChange`) trong `Code.gs` tự động kích hoạt đẩy dữ liệu sang Firebase.
+   - **Lớp 2 (Firebase Realtime Database)**: Trung tâm điều phối máy chủ Singapore phản hồi trong **0.03 giây**, lập tức bắn WebSocket về mọi thiết bị đang mở App.
+   - **Lớp 3 (Client Targeted DOM Mutation)**: Trình duyệt nhận sự kiện từ `firebase_engine.js`, kích hoạt hàm chuyên trách (`applyDynamicUIConfig`, cập nhật thẻ giường, danh sách tour...) để cập nhật chính xác phần tử DOM cần đổi.
+
+3. **Tiêu Chuẩn Zero-Refresh (Không Bắt Người Dùng F5)**:
+   - Tuyệt đối cấm thiết kế tính năng bắt người dùng phải tải lại trang (F5) mới thấy dữ liệu mới.
+   - Bất kỳ thay đổi nào từ Google Sheets hay từ các máy khác đều phải tự động nhảy chữ, đổi trạng thái mượt mà trước mắt người dùng trong thời gian thực.
+   - Phải luôn có giá trị mặc định dự phòng an toàn (`fallback`) trong `config.js` để app luôn tải tức thì $0\text{ms}$ kể cả khi mất mạng tạm thời.

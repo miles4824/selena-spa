@@ -26,6 +26,8 @@
   <!-- LIBRARIES -->
   <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
   <!-- CUSTOM STYLES -->
   <link rel="stylesheet" href="css/style.css">
@@ -48,6 +50,7 @@
   <!-- 2. KHỐI 2: TOÁN HỌC & NGHIỆP VỤ (LOGIC SERVICES & ENGINE) -->
   <script src="js/Logic/Services/phone_service.js"></script>
   <script src="js/Logic/Engine/config.js"></script>
+  <script src="js/Logic/Engine/firebase_engine.js"></script>
 
   <!-- 3. KHỐI 3: MÀN HÌNH RENDER (SCREENS) -->
   <script src="js/Screens/Auth/login_screen.js"></script>
@@ -56,6 +59,7 @@
   <script>
     window.addEventListener('DOMContentLoaded', () => {
       initLogin();
+      if (typeof initFirebaseEngine === 'function') initFirebaseEngine();
     });
   </script>
 </body>

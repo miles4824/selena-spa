@@ -134,7 +134,7 @@ function setupRealtimeListeners() {
     if (data) {
       const list = Object.values(data);
       setStored('customers', list);
-      if (typeof renderAdminCustomersList === 'function' && currentTab === 'home') {
+      if (typeof renderAdminCustomersList === 'function' && typeof currentTab !== 'undefined' && currentTab === 'home') {
         renderAdminCustomersList();
       }
     }
@@ -168,7 +168,7 @@ function setupRealtimeListeners() {
       setStored('ui_config', liveConfig);
       if (typeof applyDynamicUIConfig === 'function') applyDynamicUIConfig(liveConfig);
       if (typeof renderHomeStatusAndActionButton === 'function') renderHomeStatusAndActionButton();
-      if (typeof loadKTVHomeStats === 'function' && currentTab === 'home') loadKTVHomeStats();
+      if (typeof loadKTVHomeStats === 'function' && typeof currentTab !== 'undefined' && currentTab === 'home') loadKTVHomeStats();
       console.log('⚡ [Firebase Realtime] Đã cập nhật ui_config thời gian thực');
     }
   });
@@ -252,7 +252,7 @@ function setupRealtimeListeners() {
     if (typeof renderAdminLiveRunningTours === 'function') renderAdminLiveRunningTours();
     if (typeof renderAdminTodaySnapshot === 'function') renderAdminTodaySnapshot();
     if (typeof renderHomeStatusAndActionButton === 'function') renderHomeStatusAndActionButton();
-    if (typeof loadKTVHomeStats === 'function' && currentTab === 'home') loadKTVHomeStats();
+    if (typeof loadKTVHomeStats === 'function' && typeof currentTab !== 'undefined' && currentTab === 'home') loadKTVHomeStats();
   });
 
   // Lắng nghe Danh mục Hạng mục (tb_categories)
