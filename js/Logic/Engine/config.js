@@ -218,6 +218,10 @@ function getTimeBasedTheme() {
 let userManualTheme = null;
 
 function getTheme() {
+  try {
+    const saved = localStorage.getItem('selena_theme');
+    if (saved === 'dark' || saved === 'light') return saved;
+  } catch (e) {}
   if (userManualTheme === 'dark' || userManualTheme === 'light') {
     return userManualTheme;
   }
@@ -227,6 +231,9 @@ function getTheme() {
 function setTheme(theme, isManual = false) {
   if (isManual) {
     userManualTheme = theme;
+    try {
+      localStorage.setItem('selena_theme', theme);
+    } catch (e) {}
   }
   if (theme === 'dark') {
     document.documentElement.classList.add('dark');
@@ -261,10 +268,12 @@ function toggleTheme() {
 }
 
 function initTheme() {
-  // Luôn tự động đồng bộ theo thời gian thực tế khi tải trang hoặc bấm F5
-  localStorage.removeItem('selena_theme');
-  userManualTheme = null;
-  setTheme(getTimeBasedTheme(), false);
+  let saved = null;
+  try {
+    saved = localStorage.getItem('selena_theme');
+  } catch (e) {}
+  const targetTheme = (saved === 'dark' || saved === 'light') ? saved : getTimeBasedTheme();
+  setTheme(targetTheme, false);
 }
 
 function updateThemeToggleIcons() {

@@ -108,6 +108,115 @@ html.dark .text-spa-dark, html[data-theme="dark"] .text-spa-dark { color: #F1F5F
 html.dark .text-spa-muted, html[data-theme="dark"] .text-spa-muted { color: #9AAEB5 !important; }
 html.dark .border-spa-border, html[data-theme="dark"] .border-spa-border { border-color: #3D4E56 !important; }
 
+/* =========================================================================
+   ROBUST CLASS-BASED THEME ADAPTATIONS FOR APPCARD & UI COMPONENTS
+   ========================================================================= */
+
+/* 1. Base / Light Mode Card Styles (Hoàn toàn trắng / hồng đào sáng khi Light Mode) */
+.app-card-mindora {
+  background: linear-gradient(135deg, #FBF0F2 0%, #FFFFFF 50%, #EBF2F0 100%) !important;
+  border-color: rgba(232, 174, 183, 0.45) !important;
+  box-shadow: 0 12px 32px -6px rgba(232, 174, 183, 0.20), 0 4px 12px rgba(0, 0, 0, 0.03) !important;
+}
+
+.app-card-zen {
+  background: linear-gradient(135deg, #EBF2F0 0%, #FFFFFF 50%, #F1F5F4 100%) !important;
+  border-color: rgba(94, 136, 126, 0.35) !important;
+  box-shadow: 0 12px 32px -6px rgba(94, 136, 126, 0.15), 0 4px 12px rgba(0, 0, 0, 0.03) !important;
+}
+
+.app-card-banner,
+.app-card-banner-classic {
+  background: linear-gradient(135deg, #FFF0EB 0%, #FFFFFF 50%, #FAF6F1 100%) !important;
+  border-color: #F0EAE1 !important;
+  box-shadow: 0 10px 30px -5px rgba(229, 138, 123, 0.05), 0 4px 12px rgba(0, 0, 0, 0.02) !important;
+}
+
+.app-card-surface {
+  background: #FFFFFF !important;
+  border-color: #E2E8E6 !important;
+  box-shadow: 0 10px 30px -5px rgba(229, 138, 123, 0.05), 0 4px 12px rgba(0, 0, 0, 0.02) !important;
+}
+
+.app-card-peach {
+  background: linear-gradient(135deg, #FBF0F2 0%, #FFFFFF 50%, #FAF6F1 100%) !important;
+  border-color: rgba(232, 174, 183, 0.4) !important;
+}
+
+/* 2. Dark Mode Overrides (Chỉ kích hoạt khi html có class .dark hoặc data-theme="dark") */
+html.dark .app-card-mindora,
+html[data-theme="dark"] .app-card-mindora {
+  background: linear-gradient(135deg, #2F3E46 0%, #263339 50%, #1C2428 100%) !important;
+  border-color: rgba(94, 136, 126, 0.35) !important;
+  box-shadow: 0 12px 32px -6px rgba(0, 0, 0, 0.5) !important;
+}
+
+html.dark .app-card-zen,
+html[data-theme="dark"] .app-card-zen {
+  background: linear-gradient(135deg, #26343A 0%, #222E33 50%, #1C2428 100%) !important;
+  border-color: rgba(94, 136, 126, 0.35) !important;
+  box-shadow: 0 12px 32px -6px rgba(0, 0, 0, 0.5) !important;
+}
+
+html.dark .app-card-banner,
+html.dark .app-card-banner-classic,
+html[data-theme="dark"] .app-card-banner,
+html[data-theme="dark"] .app-card-banner-classic {
+  background: linear-gradient(135deg, #2F3E46 0%, #263339 50%, #1C2428 100%) !important;
+  border-color: #3D4E56 !important;
+  box-shadow: 0 12px 32px -6px rgba(0, 0, 0, 0.5) !important;
+}
+
+html.dark .app-card-surface,
+html[data-theme="dark"] .app-card-surface {
+  background: #2F3E46 !important;
+  border-color: #3D4E56 !important;
+  box-shadow: none !important;
+}
+
+html.dark .app-card-peach,
+html[data-theme="dark"] .app-card-peach {
+  background: linear-gradient(135deg, #35272B 0%, #2F3E46 50%, #222D33 100%) !important;
+  border-color: rgba(232, 174, 183, 0.25) !important;
+}
+
+/* 3. Typography Adaptations */
+.theme-heading {
+  color: #2F3E46 !important;
+}
+.theme-subtext {
+  color: #6D7E84 !important;
+}
+html.dark .theme-heading,
+html[data-theme="dark"] .theme-heading {
+  color: #FFFFFF !important;
+}
+html.dark .theme-subtext,
+html[data-theme="dark"] .theme-subtext {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* 4. Stat Cards Theme Adaptations */
+html.dark .stat-card-theme-mint {
+  background: #2F3E46 !important;
+  border-color: rgba(94, 136, 126, 0.4) !important;
+}
+html.dark .stat-card-theme-blue {
+  background: #2F3E46 !important;
+  border-color: rgba(167, 199, 231, 0.4) !important;
+}
+html.dark .stat-card-theme-purple {
+  background: #2F3E46 !important;
+  border-color: rgba(232, 174, 183, 0.4) !important;
+}
+html.dark .stat-card-theme-coral {
+  background: #2F3E46 !important;
+  border-color: rgba(232, 174, 183, 0.45) !important;
+}
+html.dark .stat-card-val {
+  color: #FFFFFF !important;
+}
+
 body {
   background-color: var(--color-spa-bg);
   color: var(--color-spa-dark);

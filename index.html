@@ -25,20 +25,24 @@
   
   <!-- LIBRARIES -->
   <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+  <style type="text/tailwindcss">
+    @custom-variant dark (&:where(.dark, .dark *));
+  </style>
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
   <!-- CUSTOM STYLES -->
-  <link rel="stylesheet" href="css/style.css?v=v0.0.3.1">
+  <link rel="stylesheet" href="css/style.css?v=v0.0.3.5">
   
-  <!-- EARLY THEME INITIALIZATION (Ngăn chặn chớp giao diện và lệch màu) -->
+  <!-- EARLY THEME INITIALIZATION (Nhớ cài đặt của người dùng & Ngăn chặn chớp giao diện) -->
   <script>
     (function() {
       try {
+        var saved = localStorage.getItem('selena_theme');
         var h = new Date().getHours();
         var defaultTheme = (h >= 6 && h < 18) ? 'light' : 'dark';
-        var theme = defaultTheme;
+        var theme = (saved === 'dark' || saved === 'light') ? saved : defaultTheme;
         if (theme === 'dark') {
           document.documentElement.classList.add('dark');
           document.documentElement.setAttribute('data-theme', 'dark');
@@ -49,6 +53,7 @@
       } catch (e) {}
     })();
   </script>
+</head>
 <body class="min-h-screen bg-[#F1F5F4] dark:bg-[#1C2428] text-[#2F3E46] dark:text-[#F1F5F4] font-sans selection:bg-spa-brand/20 transition-colors duration-300">
   <!-- 1. LOGIN SCREEN CONTAINER -->
   <div id="container-login"></div>
@@ -63,33 +68,33 @@
   <div id="container-nav"></div>
 
   <!-- 1. KHỐI 1: GIAO DIỆN (UI COMPONENTS - TAILWIND 4) -->
-  <script src="js/UI/pull_to_refresh.js?v=v0.0.3.0"></script>
-  <script src="js/UI/app_button.js?v=v0.0.3.0"></script>
-  <script src="js/UI/app_input.js?v=v0.0.3.0"></script>
-  <script src="js/UI/app_checkbox.js?v=v0.0.3.0"></script>
-  <script src="js/UI/app_title.js?v=v0.0.3.0"></script>
-  <script src="js/UI/app_card.js?v=v0.0.3.0"></script>
-  <script src="js/UI/stat_card.js?v=v0.0.3.0"></script>
-  <script src="js/UI/status_badge.js?v=v0.0.3.0"></script>
-  <script src="js/UI/role_badge.js?v=v0.0.3.0"></script>
-  <script src="js/UI/bed_card.js?v=v0.0.3.0"></script>
-  <script src="js/UI/modal_shell.js?v=v0.0.3.0"></script>
-  <script src="js/UI/theme_toggle.js?v=v0.0.3.0"></script>
-  <script src="js/UI/bottom_nav.js?v=v0.0.3.0"></script>
+  <script src="js/UI/pull_to_refresh.js?v=v0.0.3.5"></script>
+  <script src="js/UI/app_button.js?v=v0.0.3.5"></script>
+  <script src="js/UI/app_input.js?v=v0.0.3.5"></script>
+  <script src="js/UI/app_checkbox.js?v=v0.0.3.5"></script>
+  <script src="js/UI/app_title.js?v=v0.0.3.5"></script>
+  <script src="js/UI/app_card.js?v=v0.0.3.5"></script>
+  <script src="js/UI/stat_card.js?v=v0.0.3.5"></script>
+  <script src="js/UI/status_badge.js?v=v0.0.3.5"></script>
+  <script src="js/UI/role_badge.js?v=v0.0.3.5"></script>
+  <script src="js/UI/bed_card.js?v=v0.0.3.5"></script>
+  <script src="js/UI/modal_shell.js?v=v0.0.3.5"></script>
+  <script src="js/UI/theme_toggle.js?v=v0.0.3.5"></script>
+  <script src="js/UI/bottom_nav.js?v=v0.0.3.5"></script>
 
   <!-- 2. KHỐI 2: TOÁN HỌC & NGHIỆP VỤ (LOGIC SERVICES & ENGINE) -->
-  <script src="js/Logic/Services/phone_service.js?v=v0.0.3.0"></script>
-  <script src="js/Logic/Services/home_service.js?v=v0.0.3.0"></script>
-  <script src="js/Logic/Engine/config.js?v=v0.0.3.0"></script>
-  <script src="js/Logic/Engine/firebase_engine.js?v=v0.0.3.0"></script>
+  <script src="js/Logic/Services/phone_service.js?v=v0.0.3.5"></script>
+  <script src="js/Logic/Services/home_service.js?v=v0.0.3.5"></script>
+  <script src="js/Logic/Engine/config.js?v=v0.0.3.5"></script>
+  <script src="js/Logic/Engine/firebase_engine.js?v=v0.0.3.5"></script>
 
   <!-- 3. KHỐI 3: MÀN HÌNH RENDER (SCREENS) -->
-  <script src="js/Screens/Auth/login_screen.js?v=v0.0.3.0"></script>
-  <script src="js/Screens/Home/staff_home.js?v=v0.0.3.0"></script>
-  <script src="js/Screens/Home/owner_home.js?v=v0.0.3.0"></script>
-  <script src="js/Screens/Home/home_screen.js?v=v0.0.3.0"></script>
+  <script src="js/Screens/Auth/login_screen.js?v=v0.0.3.5"></script>
+  <script src="js/Screens/Home/staff_home.js?v=v0.0.3.5"></script>
+  <script src="js/Screens/Home/owner_home.js?v=v0.0.3.5"></script>
+  <script src="js/Screens/Home/home_screen.js?v=v0.0.3.5"></script>
 
   <!-- 4. KHỐI 4: KHỞI ĐỘNG & BỘ ĐIỀU PHỐI ROUTER TOÀN CỤC -->
-  <script src="js/app.js?v=v0.0.3.1"></script>
+  <script src="js/app.js?v=v0.0.3.5"></script>
 </body>
 </html>

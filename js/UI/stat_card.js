@@ -50,12 +50,12 @@ function StatCard({
   const subColor = isCoral ? 'text-white/90 dark:text-white/70' : `${c.text} dark:text-white/70`;
 
   return `
-    <div class="p-4 sm:p-5 rounded-3xl ${c.bg} border ${c.border} space-y-1 shadow-xs ${customClass}">
+    <div class="p-4 sm:p-5 rounded-3xl ${c.bg} border ${c.border} stat-card-theme-${color} space-y-1 shadow-xs transition-all duration-300 ${customClass}">
       <div class="flex items-center gap-1.5">
         <span class="text-xs font-bold ${c.text} uppercase tracking-wider block">${title}</span>
         ${eyeBtn}
       </div>
-      <div ${valueClick} class="text-2xl sm:text-3xl font-extrabold font-mono ${numColor} tracking-tight ${valueCursor}" id="${id}">${value}</div>
+      <div ${valueClick} class="text-2xl sm:text-3xl font-extrabold font-mono ${numColor} stat-card-val tracking-tight ${valueCursor}" id="${id}">${value}</div>
       <span class="text-xs ${subColor} font-medium block">${subtitle}</span>
     </div>
   `;
