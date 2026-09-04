@@ -1,27 +1,27 @@
 <!-- ============================================================= -->
-<!-- MODAL THANH TOÁN 2 PHA (PHA 1: KHÁCH XEM -> PHA 2: KTV NHẬP TIPS) -->
+<!-- MODAL THANH TOÁN 2 PHA (CHUẨN MODALSHELL & APPTITLE) -->
 <!-- ============================================================= -->
-<div id="modal-checkout" class="hidden fixed inset-0 z-[999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
-  <div class="w-full max-w-md bg-white rounded-[32px] border border-[#F0EAE1] shadow-[0_25px_50px_-12px_rgba(45,36,36,0.15)] flex flex-col max-h-[92vh] overflow-hidden my-auto">
+<div id="modal-checkout" class="hidden fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-sm transition-all duration-300">
+  <div class="w-full max-w-md max-h-[calc(100dvh-48px)] bg-white rounded-[28px] border border-[#F0EAE1] shadow-2xl flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
     
     <!-- 🟢 PHA 1: MÀN HÌNH ĐƯA CHO KHÁCH XEM (HOÀN TOÀN GIẤU CHỮ TIPS) -->
     <div id="checkout-step-customer" class="flex flex-col flex-1 min-h-0">
       
-      <!-- PINNED HEADER PHA 1 -->
-      <div class="p-5 sm:p-6 pb-3 border-b border-[#F0EAE1]/80 flex justify-between items-center bg-white shrink-0">
+      <!-- 1. PINNED HEADER PHA 1 -->
+      <div class="flex items-center justify-between px-6 py-4.5 border-b border-[#F0EAE1] bg-[#FAF6F1]/90 backdrop-blur-md shrink-0 select-none">
         <div>
           <span class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-[#FFF0EB] text-[#E58A7B] text-xs font-bold">
             <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> Selena Spa • Thanh Toán
           </span>
-          <h3 class="text-xl font-bold font-serif text-[#2D2424] mt-1">Thông Tin Thanh Toán</h3>
+          <h3 class="text-base sm:text-lg font-bold font-serif text-[#2D2424] mt-1">Thông Tin Thanh Toán</h3>
         </div>
-        <button type="button" onclick="closeCheckoutModal()" class="p-2 rounded-full bg-[#F7F2EC] hover:bg-[#FFF0EB] text-[#7E7272] hover:text-[#E58A7B] transition cursor-pointer">
-          <i data-lucide="x" class="w-5 h-5"></i>
+        <button type="button" onclick="closeCheckoutModal()" class="w-8 h-8 rounded-full bg-white hover:bg-[#FFF0EB] text-[#7E7272] hover:text-[#E58A7B] border border-[#EFE8DF] flex items-center justify-center transition cursor-pointer active:scale-90 shadow-2xs" title="Đóng">
+          <i data-lucide="x" class="w-4 h-4"></i>
         </button>
       </div>
 
-      <!-- SCROLLABLE BODY PHA 1 -->
-      <div class="p-5 sm:p-6 space-y-4 overflow-y-auto flex-1 no-scrollbar">
+      <!-- 2. SCROLLABLE BODY PHA 1 -->
+      <div class="p-6 overflow-y-auto space-y-4 overscroll-contain flex-1 text-sm text-[#2D2424]">
         <!-- Tóm tắt dịch vụ khách sử dụng -->
         <div class="p-4 rounded-2xl bg-[#FAF6F1] border border-[#F0EAE1] space-y-2 text-xs sm:text-sm">
           <div class="flex justify-between font-bold text-[#2D2424]">
@@ -53,60 +53,62 @@
           </div>
         </div>
 
-        <!-- 📱 KHUNG MÃ QR VIB CỦA TIỆM (ĐỂ ĐƯA KHÁCH QUÉT - FULL WIDTH) -->
+        <!-- 📱 KHUNG MÃ QR VIB CỦA TIỆM (ĐỂ ĐƯA KHÁCH QUÉT) -->
         <div id="chk-qr-display-box" class="p-2 sm:p-3 rounded-3xl bg-white border border-[#F0EAE1] text-center overflow-hidden">
           <img src="images/qr_bank.jpg?v=0.0.7.1" alt="Mã QR VIB" class="w-full h-auto object-contain rounded-2xl mx-auto shadow-2xs">
         </div>
       </div>
 
-      <!-- PINNED FOOTER PHA 1 -->
-      <div class="p-5 sm:p-6 pt-3 border-t border-[#F0EAE1]/80 bg-white shrink-0">
-        <button type="button" onclick="goToStaffTipStep()" class="w-full py-4 rounded-full bg-[#2E7D6D] hover:bg-[#25685B] text-white font-extrabold text-base shadow-lg shadow-[#2E7D6D]/25 flex items-center justify-center gap-2 transition active:scale-95 cursor-pointer">
+      <!-- 3. PINNED FOOTER PHA 1 -->
+      <div class="px-6 py-4 border-t border-[#F0EAE1] bg-[#FAF6F1]/90 backdrop-blur-md shrink-0 flex items-center justify-end">
+        <button type="button" onclick="goToStaffTipStep()" class="w-full py-3.5 rounded-full bg-gradient-to-r from-[#2E7D6D] to-[#25685B] hover:opacity-95 text-white font-extrabold text-sm shadow-lg shadow-[#2E7D6D]/25 flex items-center justify-center gap-2 transition active:scale-95 cursor-pointer">
           <span>Khách Đã Thanh Toán</span>
-          <i data-lucide="arrow-right" class="w-5 h-5"></i>
+          <i data-lucide="arrow-right" class="w-4 h-4"></i>
         </button>
       </div>
 
     </div>
 
-    <!-- 🔒 PHA 2: MÀN HÌNH NỘI BỘ KTV (GHI NHẬN TIPS RIÊNG BIỆT CHO TỪNG KTV) -->
+    <!-- 🔴 PHA 2: MÀN HÌNH BÍ MẬT DÀNH CHO KTV (NHẬP TIỀN TIP & XUẤT HÓA ĐƠN) -->
     <div id="checkout-step-staff" class="hidden flex flex-col flex-1 min-h-0">
       
-      <!-- PINNED HEADER PHA 2 -->
-      <div class="p-5 sm:p-6 pb-3 border-b border-[#F0EAE1]/80 flex justify-between items-center bg-white shrink-0">
+      <!-- 1. PINNED HEADER PHA 2 -->
+      <div class="flex items-center justify-between px-6 py-4.5 border-b border-[#F0EAE1] bg-[#FAF6F1]/90 backdrop-blur-md shrink-0 select-none">
         <div>
           <span class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-[#E8F8F5] text-[#2E7D6D] text-xs font-bold">
-            <i data-lucide="lock" class="w-3.5 h-3.5"></i> Bước Riêng KTV
+            <i data-lucide="lock" class="w-3.5 h-3.5"></i> KTV • Xác Nhận Tiền Tip
           </span>
-          <h3 class="text-xl font-medium font-serif text-[#2D2424] uppercase mt-1">Ghi Nhận Tiền Tips</h3>
+          <h3 class="text-base sm:text-lg font-bold font-serif text-[#2D2424] mt-1">Hoàn Tất Ca & Nhận Tip</h3>
         </div>
-        <button type="button" onclick="backToCustomerStep()" class="text-xs text-[#7E7272] hover:text-[#E58A7B] underline cursor-pointer">Quay lại</button>
+        <button type="button" onclick="backToCustomerStep()" class="text-xs font-bold text-[#7E7272] hover:text-[#2D2424] cursor-pointer">
+          Quay lại
+        </button>
       </div>
 
-      <!-- SCROLLABLE BODY PHA 2 -->
-      <div class="p-5 sm:p-6 space-y-4 overflow-y-auto flex-1 no-scrollbar">
-        <div class="p-3 rounded-2xl bg-[#FAF6F1] border border-[#F0EAE1] text-xs text-[#7E7272] flex justify-between items-center">
-          <span>Tiền dịch vụ tour: <b id="staff-step-service-price" class="text-[#2D2424] font-mono font-bold">64.000 đ</b></span>
-          <span class="font-semibold text-[#2E7D6D]" id="staff-step-pay-method">Tiền mặt</span>
+      <!-- 2. SCROLLABLE BODY PHA 2 -->
+      <div class="p-6 overflow-y-auto space-y-4 overscroll-contain flex-1 text-sm text-[#2D2424]">
+        <div>
+          <label class="block text-xs font-bold text-[#2D2424] mb-1.5">Khách Có Tip Thêm Không?</label>
+          <input type="number" id="chk-input-tips" placeholder="Nhập số tiền tip (VD: 50000)..." class="w-full bg-[#F7F2EC] border border-[#EFE8DF] rounded-2xl p-3.5 text-base font-bold text-[#E58A7B] focus:outline-none focus:border-[#E58A7B] focus:bg-white transition">
         </div>
 
-        <!-- CONTAINER CÁC Ô NHẬP TIPS DÀNH RIÊNG CHO TỪNG KTV -->
-        <div id="checkout-dynamic-tips-container" class="space-y-3"></div>
-      </div>
-
-      <!-- PINNED FOOTER PHA 2 -->
-      <div class="p-5 sm:p-6 pt-3 border-t border-[#F0EAE1]/80 bg-white shrink-0 space-y-3">
-        <div id="staff-step-summary-card" class="p-3 rounded-2xl bg-[#FAF6F1] border border-[#F0EAE1] space-y-1.5 text-xs">
-          <div id="checkout-summary-staff-list" class="space-y-1"></div>
-          <div class="flex justify-between items-center pt-2 border-t border-[#F0EAE1] font-bold">
-            <span class="text-[#2D2424]">Tổng khách thanh toán (gồm tip):</span>
-            <span id="staff-step-grand-total" class="text-sm font-extrabold text-[#E58A7B] font-mono">64.000 đ</span>
+        <div class="p-3.5 rounded-2xl bg-[#FAF6F1] border border-[#F0EAE1] text-xs space-y-1.5">
+          <div class="flex justify-between text-[#7E7272]">
+            <span>Tổng tiền tour:</span>
+            <span id="chk-staff-tour-price" class="font-bold text-[#2D2424]">99.000 đ</span>
+          </div>
+          <div class="flex justify-between text-[#7E7272]">
+            <span>Hoa hồng KTV:</span>
+            <span id="chk-staff-comm-est" class="font-bold text-[#2E7D6D]">-- đ</span>
           </div>
         </div>
+      </div>
 
-        <button type="button" onclick="confirmSaveReceiptFromCheckout()" class="w-full py-4 rounded-full bg-[#E58A7B] hover:bg-[#D9796A] text-white font-extrabold text-base shadow-lg shadow-[#E58A7B]/25 flex items-center justify-center gap-2 transition active:scale-95 cursor-pointer">
-          <i data-lucide="check-circle" class="w-5 h-5"></i>
-          <span>Hoàn Tất & Lưu Hóa Đơn</span>
+      <!-- 3. PINNED FOOTER PHA 2 -->
+      <div class="px-6 py-4 border-t border-[#F0EAE1] bg-[#FAF6F1]/90 backdrop-blur-md shrink-0 flex items-center justify-end gap-3">
+        <button type="button" onclick="backToCustomerStep()" class="px-5 py-2.5 rounded-full text-xs font-bold text-[#7E7272] bg-[#FAF6F1] hover:bg-[#FFF0EB] border border-[#EFE8DF] transition active:scale-95 cursor-pointer">Sửa Lại</button>
+        <button type="button" onclick="handleCompleteCheckout()" class="px-6 py-2.5 rounded-full text-xs font-bold text-white bg-gradient-to-r from-[#E58A7B] to-[#D9796A] hover:opacity-95 shadow-md shadow-[#E58A7B]/20 transition active:scale-95 cursor-pointer flex items-center gap-1.5">
+          <i data-lucide="check-circle" class="w-4 h-4"></i> Hoàn Tất & Lưu Ca
         </button>
       </div>
 
