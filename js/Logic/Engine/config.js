@@ -1,7 +1,7 @@
 // =============================================================
 // SELENA SPA - ENGINE CONFIG & LOCAL STORAGE (SINGLE SOURCE OF TRUTH)
 // =============================================================
-const APP_VERSION = 'v0.0.1.7';
+const APP_VERSION = 'v0.0.1.8';
 
 // 1. Danh sách người dùng mặc định ban đầu
 const DEFAULT_USERS = [
@@ -234,6 +234,10 @@ function setTheme(theme, isManual = false) {
   } else {
     document.documentElement.classList.remove('dark');
     document.documentElement.setAttribute('data-theme', 'light');
+  }
+  const metaThemeColor = document.getElementById('meta-theme-color') || document.querySelector('meta[name="theme-color"]');
+  if (metaThemeColor) {
+    metaThemeColor.setAttribute('content', theme === 'dark' ? '#1C2428' : '#FAF6F1');
   }
   updateThemeToggleIcons();
 }
