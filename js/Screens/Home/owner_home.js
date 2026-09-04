@@ -29,7 +29,7 @@ function renderOwnerHome(user) {
     iconPosition: 'left',
     variant: 'primary',
     size: 'lg',
-    onClick: "showScreen('pos')",
+    onClick: "navigateTab('pos')",
     customClass: 'w-full sm:w-auto shadow-glow-brand'
   }) : '';
 
@@ -234,7 +234,9 @@ function handleAdminInspectSession(sessionId) {
       localStorage.setItem('selena_active_live_session', JSON.stringify(target));
     } catch (e) {}
   }
-  if (typeof showScreen === 'function') {
+  if (typeof navigateTab === 'function') {
+    navigateTab('pos');
+  } else if (typeof showScreen === 'function') {
     showScreen('pos');
   }
 }

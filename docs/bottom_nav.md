@@ -83,6 +83,10 @@
 ---
 
 ## 6. Lịch Sử Phiên Bản & Lưu Vết (Changelog)
+- **v0.0.3.1 (2026-09-04)**:
+  - Đồng bộ biến trạng thái `currentActiveNavTab` bên trong `updateNavSlidingPill()` và `renderBottomNav()`.
+  - Khắc phục triệt để lỗi khi người dùng nhảy trang qua các nút hành động trong thân trang (như nút *"LẬP PHIẾU TOUR MỚI"*), sau đó bấm lại icon `home` ở Bottom Nav bị chặn không cho chuyển về Home do lệch biến `currentActiveNavTab`.
+  - Chuyển toàn bộ các nút điều hướng trong trang (`owner_home.js`, `staff_home.js`, `index.html`) sang sử dụng `navigateTab()` đồng bộ.
 - **v0.0.3.0 (2026-09-04)**:
   - Tách hoàn toàn thanh Nav ra khỏi màn hình Home, đưa vào container độc lập `#container-nav` bên ngoài `#app`.
   - Đơn giản hóa logic trượt viên thuốc về thuật toán gốc thuần CSS `translateX()` 15 dòng như bản cũ (`OLD`), đảm bảo trượt mượt mà 100% hai chiều.

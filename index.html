@@ -88,9 +88,13 @@
   <script>
     function showScreen(screenName) {
       window.scrollTo(0, 0);
-      if (screenName === 'home') {
+      const tabName = (screenName === 'add') ? 'pos' : screenName;
+      if (tabName !== 'login' && typeof updateNavSlidingPill === 'function') {
+        updateNavSlidingPill(tabName);
+      }
+      if (tabName === 'home') {
         if (typeof renderHomeScreen === 'function') renderHomeScreen();
-      } else if (screenName === 'login') {
+      } else if (tabName === 'login') {
         if (typeof initLogin === 'function') initLogin();
       } else {
         const mainEl = document.getElementById('home-main-scroll');
@@ -104,14 +108,13 @@
               <div class="w-12 h-12 rounded-full bg-spa-brand/15 text-spa-brand mx-auto flex items-center justify-center">
                 <i data-lucide="sparkles" class="w-6 h-6"></i>
               </div>
-              <h2 class="text-xl font-bold font-serif text-spa-dark">${titles[screenName] || screenName}</h2>
-              <p class="text-xs text-spa-muted">Module ${screenName.toUpperCase()} đang được hoàn thiện theo chuẩn giao diện Zen Spa Mindora.</p>
-              <button onclick="showScreen('home')" class="px-5 py-2.5 rounded-full bg-spa-brand text-white text-xs font-bold shadow-glow-brand cursor-pointer active:scale-95">
+              <h2 class="text-xl font-bold font-serif text-spa-dark">${titles[tabName] || tabName}</h2>
+              <p class="text-xs text-spa-muted">Module ${tabName.toUpperCase()} đang được hoàn thiện theo chuẩn giao diện Zen Spa Mindora.</p>
+              <button onclick="navigateTab('home')" class="px-5 py-2.5 rounded-full bg-spa-brand text-white text-xs font-bold shadow-glow-brand cursor-pointer active:scale-95">
                 Quay Lại Trang Chủ
               </button>
             </div>
           `;
-          if (typeof updateNavSlidingPill === 'function') updateNavSlidingPill(screenName);
           if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
         }
       }

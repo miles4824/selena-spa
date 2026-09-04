@@ -45,7 +45,7 @@ function renderStaffHome(user) {
       iconPosition: 'left',
       variant: 'teal',
       size: 'lg',
-      onClick: "showScreen('pos')",
+      onClick: "navigateTab('pos')",
       customClass: 'w-full sm:w-auto shadow-glow-sage'
     }) : '';
   } else {
@@ -59,7 +59,7 @@ function renderStaffHome(user) {
       iconPosition: 'left',
       variant: 'primary',
       size: 'lg',
-      onClick: "showScreen('pos')",
+      onClick: "navigateTab('pos')",
       customClass: 'w-full sm:w-auto shadow-glow-brand'
     }) : '';
   }

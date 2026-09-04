@@ -2,6 +2,8 @@
 // UI COMPONENT: BOTTOM NAVIGATION DOCK (FLOATING GLASS DOCK & SLIDING PILL)
 // =========================================================================
 
+let currentActiveNavTab = 'home';
+
 /**
  * Render cấu trúc HTML của thanh Dock điều hướng vào #container-nav
  * @param {string} activeTab - Tab đang chọn mặc định ('home' | 'pos' | 'history' | 'income')
@@ -9,6 +11,9 @@
 function renderBottomNav(activeTab = 'home') {
   const container = document.getElementById('container-nav');
   if (!container) return;
+
+  const tabName = (activeTab === 'add') ? 'pos' : activeTab;
+  currentActiveNavTab = tabName;
 
   const isOwner = (typeof isUserOwner === 'function' && typeof currentUser !== 'undefined') ? isUserOwner(currentUser) : false;
   const incomeLabel = isOwner ? 'Báo cáo' : 'Thu nhập';
@@ -47,7 +52,7 @@ function renderBottomNav(activeTab = 'home') {
   }
 
   requestAnimationFrame(() => {
-    updateNavSlidingPill(activeTab);
+    updateNavSlidingPill(tabName);
   });
 }
 
@@ -57,6 +62,7 @@ function renderBottomNav(activeTab = 'home') {
  */
 function updateNavSlidingPill(activeTab = 'home') {
   const tabName = (activeTab === 'add') ? 'pos' : activeTab;
+  currentActiveNavTab = tabName;
   const tabs = ['home', 'pos', 'history', 'income'];
   const pill = document.getElementById('nav-sliding-indicator');
   const activeBtn = document.getElementById('nav-btn-' + tabName);
@@ -84,8 +90,6 @@ function updateNavSlidingPill(activeTab = 'home') {
     pill.classList.add('opacity-100');
   }
 }
-
-let currentActiveNavTab = 'home';
 
 /**
  * Điều hướng tab
@@ -130,6 +134,8 @@ if (typeof window !== 'undefined') {
   window.navigateTab = navigateTab;
   window.showBottomNav = showBottomNav;
   window.hideBottomNav = hideBottomNav;
+  window.getCurrentActiveNavTab = () => currentActiveNavTab;
+  window.setCurrentActiveNavTab = (tab) => { currentActiveNavTab = tab; };
 
   // Giữ viên thuốc bám chuẩn khi xoay màn hình hoặc đổi kích cỡ
   window.addEventListener('resize', () => {
