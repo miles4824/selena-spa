@@ -94,7 +94,7 @@ body {
   font-family: 'Plus Jakarta Sans', sans-serif;
   -webkit-tap-highlight-color: transparent;
   overscroll-behavior-y: contain;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition: background-color 0.3s linear, color 0.3s linear;
 }
 
 h1, h2, h3, .font-heading, .font-serif-luxury {
@@ -139,7 +139,7 @@ h4, h5, h6 {
   background-image: linear-gradient(to bottom right, var(--color-spa-sage-light), var(--color-spa-card), var(--color-spa-bg));
   position: relative;
   overflow: hidden;
-  transition: background 0.3s ease, border-color 0.3s ease;
+  transition: background 0.3s linear, border-color 0.3s linear;
 }
 
 .card-surface {
@@ -149,7 +149,7 @@ h4, h5, h6 {
   box-shadow: 0 10px 30px -5px rgba(47, 62, 70, 0.05), 0 4px 12px rgba(47, 62, 70, 0.02);
   position: relative;
   overflow: hidden;
-  transition: background-color 0.3s ease, border-color 0.3s ease;
+  transition: background-color 0.3s linear, border-color 0.3s linear;
 }
 
 /* Luxury Ambient Glow Shadows for Buttons (Đồng màu với nền nút) */
@@ -214,7 +214,7 @@ h4, h5, h6 {
   user-select: none;
   will-change: opacity;
   transform: translate3d(0, 0, 0);
-  transition: opacity 0.5s ease-in-out;
+  transition: opacity 0.35s linear;
 }
 
 .bg-theme-light {
@@ -237,20 +237,5 @@ h4, h5, h6 {
   opacity: 1;
 }
 
-/* Màn hình Login xuất hiện êm dịu mượt mà, không bị giật khựng */
-#screen-login {
-  animation: loginScreenFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-@keyframes loginScreenFadeIn {
-  from {
-    opacity: 0;
-    transform: translate3d(0, 6px, 0);
-  }
-  to {
-    opacity: 1;
-    transform: translate3d(0, 0, 0);
-  }
-}
 
 
