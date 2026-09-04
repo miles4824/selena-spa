@@ -40,28 +40,7 @@ function renderLoginScreen() {
     .join("");
 
   return `
-    <div id="screen-login" class="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto relative animate-in fade-in duration-300">
-      <!-- LỚP NỀN XANH THIỀN ĐỊNH SÁNG TỐI BLUR (MINDORA AMBIENT LIGHT MESH) -->
-      <div class="fixed inset-0 -z-10 overflow-hidden pointer-events-none select-none bg-[#4A645D]">
-        <!-- Nền dải màu xanh rêu sâu lắng -->
-        <div class="absolute inset-0 bg-gradient-to-b from-[#527068] via-[#4A645D] to-[#364A44]"></div>
-        
-        <!-- Vầng sáng mặt trời buổi sớm góc trên trái (Sun Glow Orb) -->
-        <div class="absolute -top-24 -left-24 w-[420px] h-[420px] rounded-full bg-[#EBF2F0]/30 blur-[100px]"></div>
-        
-        <!-- Vầng sáng xanh sương mai góc trên phải (Blue Mist Orb) -->
-        <div class="absolute top-1/4 -right-20 w-80 h-80 rounded-full bg-[#A7C7E7]/30 blur-[90px]"></div>
-        
-        <!-- Vầng sáng hồng phấn nhẹ góc giữa bên trái (Dusty Rose Ambient Orb) -->
-        <div class="absolute top-2/3 -left-16 w-72 h-72 rounded-full bg-[#E8AEB7]/25 blur-[90px]"></div>
-
-        <!-- Vầng tối sâu thẳm của rừng thông góc dưới phải (Deep Pine Shadow Orb) -->
-        <div class="absolute -bottom-32 -right-24 w-[500px] h-[500px] rounded-full bg-[#1C2428]/65 blur-[120px]"></div>
-        
-        <!-- Lớp phủ ánh sáng tự nhiên mờ ảo -->
-        <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-white/10 via-transparent to-black/30"></div>
-      </div>
-
+    <div id="screen-login" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-spa-bg/95 backdrop-blur-xl animate-in fade-in duration-300">
       <div class="w-full max-w-md bg-spa-card/95 backdrop-blur-2xl rounded-[32px] border border-spa-border/90 shadow-[0_25px_60px_-15px_rgba(28,36,40,0.35)] p-7 sm:p-9 text-center relative space-y-5 transition-colors duration-300 my-auto">
         
         <!-- Nút Công Tắc Bật Tắt Sáng / Tối (ThemeToggle Component) -->
