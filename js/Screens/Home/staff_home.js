@@ -88,7 +88,7 @@ function renderStaffHome(user) {
     <div id="staff-home-container" class="space-y-5 animate-fade-in">
       <!-- CỤM 1: WELLNESS BANNER CHÀO ĐÓN & NÚT TRẠNG THÁI BIẾN HÌNH -->
       ${typeof AppCard === 'function' ? AppCard({
-        variant: 'banner',
+        variant: 'mindora',
         content: `
           <div class="relative z-10 space-y-3.5">
             <div class="flex items-center justify-between">
