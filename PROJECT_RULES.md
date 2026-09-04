@@ -254,17 +254,23 @@ ole_badge.js, ed_card.js, modal_shell.js.
 
 ---
 
-## ⚡ 17. NGUYÊN TẮC REALTIME TỰ ĐỘNG HÓA TỪ GOOGLE SHEETS (DATASHEET-DRIVEN & ZERO-REFRESH)
+## ⚡ 17. NGUYÊN TẮC REALTIME ĐỒNG BỘ KÉP TỪ GOOGLE SHEETS (DUAL-CHANNEL REALTIME & ZERO-REFRESH)
 1. **Quản trị thuần túy từ Google Sheets (Datasheet as Control Center)**:
-   - Toàn bộ tham số thương hiệu (Tên Spa `spa_brand_name`, Slogan `spa_brand_slogan`), tài khoản ngân hàng, thông tin Wifi, danh mục dịch vụ & giá (`tb_menu`), câu châm ngôn KTV (`home_greeting_slogan`, `home_free_quote`), thông báo nội bộ... **BẮT BUỘC** phải được định hướng từ Google Sheets (`tb_config`, `tb_menu`...).
-   - Người vận hành sau này không cần có kiến thức lập trình, chỉ cần mở Google Sheets sửa trực tiếp trên điện thoại/máy tính là ứng dụng tự động tiếp nhận.
+   - Toàn bộ tham số thương hiệu (Tên Spa `spa_brand_name`, Slogan `spa_brand_slogan`), tài khoản ngân hàng, thông tin Wifi, danh mục menu dịch vụ & giá (`tb_menu`), câu châm ngôn KTV (`home_greeting_slogan`, `home_free_quote`), thông báo nội bộ... **BẮT BUỘC** phải được định hướng từ Google Sheets (`tb_config`, `tb_menu`...).
+   - Người vận hành sau này không cần biết lập trình, chỉ cần mở Google Sheets sửa trực tiếp trên điện thoại/máy tính là ứng dụng tự động tiếp nhận.
 
-2. **Kiến Trúc Realtime 3 Lớp Bất Biến**:
-   - **Lớp 1 (Google Sheets Trigger)**: Khi có chỉnh sửa ô, trigger `installedOnEdit` (hoặc `installedOnChange`) trong `Code.gs` tự động kích hoạt đẩy dữ liệu sang Firebase.
-   - **Lớp 2 (Firebase Realtime Database)**: Trung tâm điều phối máy chủ Singapore phản hồi trong **0.03 giây**, lập tức bắn WebSocket về mọi thiết bị đang mở App.
-   - **Lớp 3 (Client Targeted DOM Mutation)**: Trình duyệt nhận sự kiện từ `firebase_engine.js`, kích hoạt hàm chuyên trách (`applyDynamicUIConfig`, cập nhật thẻ giường, danh sách tour...) để cập nhật chính xác phần tử DOM cần đổi.
+2. **Cơ Chế Đồng Bộ Kép (Dual-Channel Realtime Architecture) Bắt Buộc**:
+   Mọi module đọc dữ liệu từ Google Sheets trong hệ thống **BẮT BUỘC** phải vận hành song song 2 kênh độc lập:
+   - **Kênh 1: Direct Google Sheet Fetch (Kéo trực tiếp từ Google Sheet)**:
+     + Được đặt trong khối Logic Engine (ví dụ: [`js/Logic/Engine/config.js`](js/Logic/Engine/config.js#L121-L198) với `fetchLiveConfigFromSheet()`).
+     + Sử dụng Google Visualization CSV API (`gviz/tq?tqx=out:csv&sheet={sheet_name}`) kết nối thẳng đến Sheet qua ID công khai.
+     + **Tự động kích hoạt 3 thời điểm**: (1) Ngay khi nạp trang, (2) Mỗi khi người dùng click chuột quay lại tab App (`window focus`), (3) Chu kỳ quét ngầm tự động mỗi 5 giây (`setInterval 5000ms`).
+     + **Ưu điểm tối thượng**: Không phụ thuộc vào bất kỳ Trigger hay phân quyền nào trên Google Apps Script; bất kỳ ai sửa trên Sheet, app đều tự nhận ngay khi chuyển tab hoặc tối đa trong 5s!
+   - **Kênh 2: Firebase Realtime Database (Bắn Socket thời gian thực 0.03s)**:
+     + Khi dữ liệu từ Sheet được đẩy sang Firebase (qua trigger `installedOnEdit` hoặc do máy Client đồng bộ ngược lên), Firebase lập tức phát sóng WebSocket tới mọi thiết bị đang mở app.
+     + Trình duyệt bắt sự kiện và thực hiện **Cập nhật trúng đích DOM (Targeted DOM Mutation)** ngay lập tức mà không cần F5.
 
-3. **Tiêu Chuẩn Zero-Refresh (Không Bắt Người Dùng F5)**:
+3. **Tiêu Chuẩn Vàng Về Trải Nghiệm (Zero-Refresh Standard)**:
    - Tuyệt đối cấm thiết kế tính năng bắt người dùng phải tải lại trang (F5) mới thấy dữ liệu mới.
    - Bất kỳ thay đổi nào từ Google Sheets hay từ các máy khác đều phải tự động nhảy chữ, đổi trạng thái mượt mà trước mắt người dùng trong thời gian thực.
-   - Phải luôn có giá trị mặc định dự phòng an toàn (`fallback`) trong `config.js` để app luôn tải tức thì $0\text{ms}$ kể cả khi mất mạng tạm thời.
+   - Phải luôn có giá trị mặc định dự phòng an toàn (`DEFAULT_UI_CONFIG` / fallback) trong `config.js` để app luôn hiển thị tức thì $0\text{ms}$ ngay cả khi chưa có mạng.
