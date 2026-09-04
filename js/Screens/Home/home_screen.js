@@ -26,7 +26,23 @@ function renderHomeScreen() {
     ? (typeof renderOwnerHome === 'function' ? renderOwnerHome(currentUser) : '')
     : (typeof renderStaffHome === 'function' ? renderStaffHome(currentUser) : '');
 
-  // 3. Khung bố cục chuẩn Luxury: Đệm đáy pb-28 để không bị thanh Navigation Dock che khuất
+  const screenHome = document.getElementById('screen-home');
+  const mainScroll = document.getElementById('home-main-scroll');
+
+  // NẾU APP SHELL ĐÃ CÓ (Không xóa app.innerHTML để giữ nguyên Bottom Nav & hiệu ứng trượt)
+  if (screenHome && mainScroll) {
+    mainScroll.innerHTML = homeContentHtml;
+    if (typeof updateNavSlidingPill === 'function') {
+      updateNavSlidingPill('home');
+    }
+    if (typeof lucide !== 'undefined' && lucide.createIcons) {
+      lucide.createIcons();
+    }
+    startHomeRealtimeTicker(isOwner);
+    return;
+  }
+
+  // 3. Khung bố cục chuẩn Luxury (chỉ dựng lần đầu khi đăng nhập): Đệm đáy pb-28 để không bị thanh Navigation Dock che khuất
   app.innerHTML = `
     <div id="screen-home" class="min-h-screen bg-spa-bg text-spa-dark font-sans relative selection:bg-spa-brand/20 pb-28">
       <!-- HEADER TRANG CHỦ: LOGO, TÊN SPA & NÚT ĐỔI THEME / ĐĂNG XUẤT -->

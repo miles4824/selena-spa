@@ -66,13 +66,29 @@ function updateNavSlidingPill(activeTab = 'home') {
   });
 
   if (pill && activeBtn) {
-    pill.style.width = `${activeBtn.offsetWidth}px`;
-    pill.style.height = `${activeBtn.offsetHeight}px`;
-    pill.style.top = `${activeBtn.offsetTop}px`;
-    pill.style.left = `0px`;
-    pill.style.transform = `translateX(${activeBtn.offsetLeft}px)`;
-    pill.classList.remove('opacity-0');
-    pill.classList.add('opacity-100');
+    const isFirstTime = pill.classList.contains('opacity-0');
+    if (isFirstTime) {
+      // Lần đầu mở app: đặt ngay vị trí, tắt transition để không bị giật lùi
+      pill.style.transition = 'none';
+      pill.style.width = `${activeBtn.offsetWidth}px`;
+      pill.style.height = `${activeBtn.offsetHeight}px`;
+      pill.style.top = `${activeBtn.offsetTop}px`;
+      pill.style.left = `0px`;
+      pill.style.transform = `translateX(${activeBtn.offsetLeft}px)`;
+      pill.classList.remove('opacity-0');
+      pill.classList.add('opacity-100');
+      // Bật lại transition mượt mà cho các lần bấm tiếp theo
+      requestAnimationFrame(() => {
+        pill.style.transition = '';
+      });
+    } else {
+      // Bấm chuyển tab: trượt mượt mà hai chiều (trái sang phải hoặc phải sang trái)
+      pill.style.width = `${activeBtn.offsetWidth}px`;
+      pill.style.height = `${activeBtn.offsetHeight}px`;
+      pill.style.top = `${activeBtn.offsetTop}px`;
+      pill.style.left = `0px`;
+      pill.style.transform = `translateX(${activeBtn.offsetLeft}px)`;
+    }
   }
 }
 
@@ -111,4 +127,13 @@ if (typeof window !== 'undefined') {
   window.navigateTab = navigateTab;
   window.showBottomNav = showBottomNav;
   window.hideBottomNav = hideBottomNav;
+
+  // Giữ viên thuốc bám chuẩn khi xoay màn hình hoặc đổi kích thước cửa sổ
+  window.addEventListener('resize', () => {
+    const activeBtn = document.querySelector('#nav-dock button.active');
+    if (activeBtn) {
+      const tab = activeBtn.getAttribute('data-tab');
+      if (tab) updateNavSlidingPill(tab);
+    }
+  });
 }
