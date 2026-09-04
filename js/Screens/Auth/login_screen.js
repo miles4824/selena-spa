@@ -41,41 +41,53 @@ function renderLoginScreen() {
 
   return `
     <div id="screen-login" class="fixed inset-0 z-50 overflow-y-auto animate-in fade-in duration-300">
-      <!-- LỚP HÌNH NỀN TOÀN TRANG: HỒ SEN VÀ CON THUYỀN (ZEN LOTUS POND BACKGROUND) -->
+      <!-- LỚP HÌNH NỀN TOÀN TRANG: TỰ ĐỘNG CHUYỂN ĐỔI THEO THEME SÁNG / TỐI -->
       <div class="fixed inset-0 -z-20 pointer-events-none select-none overflow-hidden">
+        <!-- Nền Sáng (bg_login_light.png) -->
         <img 
-          src="images/lotus_boat_bg.jpg?v=${APP_VERSION}" 
-          alt="Zen Lotus Pond" 
-          class="w-full h-full object-cover object-center scale-105 transition-transform duration-1000"
+          id="bg-login-light"
+          src="images/bg_login_light.png?v=${APP_VERSION}" 
+          alt="Zen Spa Light Background" 
+          class="absolute inset-0 w-full h-full object-cover object-center transition-opacity duration-700 ease-in-out dark:opacity-0 opacity-100"
         />
-        <!-- Lớp phủ sẫm nhẹ tạo chiều sâu để tôn card kính lên -->
-        <div class="absolute inset-0 bg-black/30 backdrop-blur-[2px]"></div>
+        <!-- Nền Tối (bg_login_dark.png) -->
+        <img 
+          id="bg-login-dark"
+          src="images/bg_login_dark.png?v=${APP_VERSION}" 
+          alt="Zen Spa Dark Background" 
+          class="absolute inset-0 w-full h-full object-cover object-center transition-opacity duration-700 ease-in-out dark:opacity-100 opacity-0"
+        />
+        <!-- Lớp phủ sẫm nhẹ tạo chiều sâu cho tấm kính Liquid Glass -->
+        <div class="absolute inset-0 bg-black/15 dark:bg-black/45 backdrop-blur-[1px] transition-colors duration-700"></div>
       </div>
 
       <!-- KHỐI CĂN CHÍNH GIỮA MÀN HÌNH (DEAD CENTER HORIZONTAL & VERTICAL) -->
       <div class="min-h-full w-full flex items-center justify-center p-4 sm:p-6 py-8">
-        <!-- CARD ĐĂNG NHẬP: KÍNH MỜ XANH THIỀN ĐỊNH TRONG SUỐT (FROSTED GLASS LOOKING DOWN TO BG) -->
-        <div class="w-full max-w-md rounded-[32px] border border-white/30 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.5)] backdrop-blur-2xl p-7 sm:p-9 text-center relative space-y-5 transition-colors duration-300 overflow-hidden text-white" style="--color-spa-dark: #FFFFFF; --color-spa-muted: rgba(255,255,255,0.8); --color-spa-hint: rgba(255,255,255,0.65); --color-spa-border: rgba(255,255,255,0.25); --color-spa-bg: rgba(255,255,255,0.15); --color-spa-card: rgba(40,58,52,0.6); --color-spa-sage: #A7C7E7; --color-spa-sage-light: rgba(255,255,255,0.2);">
+        <!-- CARD ĐĂNG NHẬP: PHONG CÁCH LIQUID GLASS (KÍNH LỎNG SIÊU THỰC) -->
+        <div class="liquid-glass w-full max-w-md rounded-[36px] p-7 sm:p-9 text-center relative space-y-5 transition-all duration-500 overflow-hidden text-white" style="--color-spa-dark: #FFFFFF; --color-spa-muted: rgba(255,255,255,0.82); --color-spa-hint: rgba(255,255,255,0.68); --color-spa-border: rgba(255,255,255,0.28); --color-spa-bg: rgba(255,255,255,0.14); --color-spa-card: rgba(40,58,52,0.5); --color-spa-sage: #A7C7E7; --color-spa-sage-light: rgba(255,255,255,0.22);">
         
-        <!-- LỚP NỀN XANH HƠI TRONG SUỐT KÈM SÁNG TỐI BLUR (AMBIENT LIGHT MESH TRONG CARD) -->
-        <div class="absolute inset-0 -z-10 pointer-events-none select-none overflow-hidden bg-[#3D544C]/75 backdrop-blur-2xl m-0">
-          <!-- Gradient nền xanh rêu trong suốt -->
-          <div class="absolute inset-0 bg-gradient-to-b from-[#4A675E]/60 via-[#3D544C]/65 to-[#263731]/75"></div>
+        <!-- LỚP NỀN XANH THỦY TINH LỎNG KÈM QUẦNG SÁNG KHÚC XẠ (LIQUID GLASS AMBIENT CORE) -->
+        <div class="absolute inset-0 -z-10 pointer-events-none select-none overflow-hidden bg-[#3D544C]/65 dark:bg-[#1E2E28]/75 backdrop-blur-3xl transition-colors duration-500">
+          <!-- Dải gradient khúc xạ ánh sáng lỏng (Liquid Refraction Gradient) -->
+          <div class="absolute inset-0 bg-gradient-to-br from-[#5E887E]/35 via-[#3D544C]/45 to-[#1F2D27]/65"></div>
           
-          <!-- Vầng sáng mặt trời buổi sớm góc trên trái (Sun Glow Orb) -->
-          <div class="absolute -top-16 -left-16 w-52 h-52 rounded-full bg-white/20 blur-[50px]"></div>
-          
-          <!-- Vầng sáng xanh sương mai góc trên phải (Blue Mist Orb) -->
-          <div class="absolute top-1/4 -right-12 w-48 h-48 rounded-full bg-[#A7C7E7]/20 blur-[45px]"></div>
-          
-          <!-- Vầng sáng hồng phấn nhẹ góc giữa bên trái (Dusty Rose / Lotus Petal Orb) -->
-          <div class="absolute top-2/3 -left-10 w-44 h-44 rounded-full bg-[#E8AEB7]/25 blur-[45px]"></div>
+          <!-- Vệt sáng bóng kính cong phía trên (Liquid Curved Specular Reflection) -->
+          <div class="absolute -top-1/2 left-0 right-0 h-full bg-[radial-gradient(ellipse_at_top,_rgba(255,255,255,0.25)_0%,_rgba(255,255,255,0.04)_50%,_transparent_75%)]"></div>
 
-          <!-- Vầng tối sâu thẳm góc dưới phải (Deep Shadow Orb) -->
-          <div class="absolute -bottom-20 -right-12 w-60 h-60 rounded-full bg-[#121B18]/50 blur-[60px]"></div>
+          <!-- Vầng sáng mặt trời khúc xạ góc trên trái (Sun Glow Caustic) -->
+          <div class="absolute -top-16 -left-16 w-52 h-52 rounded-full bg-white/25 blur-[50px]"></div>
+          
+          <!-- Vầng sáng sương mai góc trên phải (Blue Mist Caustic) -->
+          <div class="absolute top-1/4 -right-12 w-48 h-48 rounded-full bg-[#A7C7E7]/25 blur-[45px]"></div>
+          
+          <!-- Vầng sáng cánh sen hồng phấn góc giữa bên trái (Lotus Petal Caustic) -->
+          <div class="absolute top-2/3 -left-10 w-44 h-44 rounded-full bg-[#E8AEB7]/30 blur-[45px]"></div>
+
+          <!-- Vầng bóng sâu thẳm góc dưới phải (Deep Caustic Shadow) -->
+          <div class="absolute -bottom-20 -right-12 w-60 h-60 rounded-full bg-[#0D1512]/60 blur-[60px]"></div>
           
           <!-- Lớp phủ ánh sáng tự nhiên mờ ảo -->
-          <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-white/15 via-transparent to-black/30"></div>
+          <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-white/20 via-transparent to-black/35"></div>
         </div>
         
         <!-- Nút Công Tắc Bật Tắt Sáng / Tối (ThemeToggle Component) -->
