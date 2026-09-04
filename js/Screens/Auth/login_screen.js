@@ -5,17 +5,29 @@
 let isPasswordVisible = false;
 
 function renderLoginScreen() {
-  const users = (typeof getStored === 'function') ? getStored('users', DEFAULT_USERS) : DEFAULT_USERS;
+  const users =
+    typeof getStored === "function"
+      ? getStored("users", DEFAULT_USERS)
+      : DEFAULT_USERS;
 
   // Render danh sách tài khoản mẫu 1-chạm
-  const quickAccountsHtml = users.map(u => {
-    const isOwner = (typeof isUserOwner === 'function') ? isUserOwner(u) : (u.role === 'admin');
-    const roleIcon = isOwner ? '👑' : '💆';
-    const roleLabel = isOwner ? 'Chủ Sáng Lập' : (u.salary_type === 'fixed' ? '10% + Lương cứng' : '20% Thuần tour');
-    const displayPhone = (typeof PhoneService !== 'undefined') ? PhoneService.normalize(u.phone) : u.phone;
+  const quickAccountsHtml = users
+    .map((u) => {
+      const isOwner =
+        typeof isUserOwner === "function" ? isUserOwner(u) : u.role === "admin";
+      const roleIcon = isOwner ? "👑" : "💆";
+      const roleLabel = isOwner
+        ? "Chủ Sáng Lập"
+        : u.salary_type === "fixed"
+          ? "10% + Lương cứng"
+          : "20% Thuần tour";
+      const displayPhone =
+        typeof PhoneService !== "undefined"
+          ? PhoneService.normalize(u.phone)
+          : u.phone;
 
-    return `
-      <button type="button" onclick="quickFillLogin('${displayPhone}', '${u.password || '123'}')" class="w-full p-3 rounded-2xl bg-spa-bg/80 hover:bg-spa-sage-light text-spa-dark hover:text-spa-sage text-xs sm:text-sm font-semibold transition flex items-center justify-between cursor-pointer border border-spa-border active:scale-98">
+      return `
+      <button type="button" onclick="quickFillLogin('${displayPhone}', '${u.password || "123"}')" class="w-full p-3 rounded-2xl bg-spa-bg/80 hover:bg-spa-sage-light text-spa-dark hover:text-spa-sage text-xs sm:text-sm font-semibold transition flex items-center justify-between cursor-pointer border border-spa-border active:scale-98">
         <span class="flex items-center gap-2">
           <span>${roleIcon}</span>
           <span class="font-bold">${u.full_name}</span>
@@ -24,14 +36,15 @@ function renderLoginScreen() {
         <span class="text-xs text-spa-sage font-mono font-bold">${displayPhone}</span>
       </button>
     `;
-  }).join('');
+    })
+    .join("");
 
   return `
     <div id="screen-login" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-spa-bg/95 backdrop-blur-xl animate-in fade-in duration-300">
       <div class="w-full max-w-md bg-spa-card rounded-[32px] border border-spa-border shadow-[0_20px_50px_-12px_rgba(47,62,70,0.08)] p-7 sm:p-9 text-center relative space-y-5 transition-colors duration-300">
         
         <!-- Nút Công Tắc Bật Tắt Sáng / Tối (ThemeToggle Component) -->
-        ${(typeof ThemeToggle === 'function') ? ThemeToggle({ customClass: 'absolute top-5 right-5' }) : ''}
+        ${ThemeToggle({ customClass: "absolute top-5 right-5" })}
 
         <!-- Logo & Thương Hiệu (Mindora Zen Style) -->
         <div class="inline-flex p-4 rounded-3xl bg-spa-sage-light border border-spa-teal-border/40">
@@ -39,70 +52,45 @@ function renderLoginScreen() {
         </div>
         
         <div class="space-y-1">
-          <h1 id="login-brand-name" class="brand-spa-name text-2xl sm:text-3xl font-extrabold text-spa-dark tracking-tight font-serif">${(typeof getConfig === 'function') ? getConfig('spa_brand_name', 'SELENA SPA') : 'SELENA SPA'}</h1>
-          <p id="login-brand-slogan" class="brand-spa-slogan text-xs sm:text-sm text-spa-muted font-medium">${(typeof getConfig === 'function') ? getConfig('spa_brand_slogan', 'Meditation & Luxury Wellness Care') : 'Meditation & Luxury Wellness Care'}</p>
+          <h1 id="login-brand-name" class="brand-spa-name text-2xl sm:text-3xl font-extrabold text-spa-dark tracking-tight font-serif">${getConfig("spa_brand_name")}</h1>
+          <p id="login-brand-slogan" class="brand-spa-slogan text-xs sm:text-sm text-spa-muted font-medium">${getConfig("spa_brand_slogan")}</p>
         </div>
 
         <div class="flex items-center justify-center">
           <span class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-spa-sage-light border border-spa-teal-border/40 text-spa-sage text-xs font-semibold font-mono">
-            <i data-lucide="leaf" class="w-3.5 h-3.5"></i> ${APP_VERSION} • Selena Mindora
+            <i data-lucide="leaf" class="w-3.5 h-3.5"></i> ${APP_VERSION} • ${getConfig("spa_brand_name")}
           </span>
         </div>
 
         <!-- Form Đăng Nhập -->
         <form onsubmit="event.preventDefault(); handlePhoneLogin(event); return false;" class="mt-4 space-y-3.5 text-left">
           <!-- Ô nhập Số điện thoại (AppInput Component) -->
-          ${(typeof AppInput === 'function') 
-            ? AppInput({
-                id: 'login-phone',
-                label: 'Số điện thoại / Tài khoản:',
-                type: 'tel',
-                placeholder: (typeof getConfig === 'function') ? getConfig('ph_login_phone', '0949251144') : '0949251144',
-                icon: 'phone',
-                required: true,
-                isMono: true,
-                autoComplete: 'username'
-              })
-            : `
-              <div>
-                <label for="login-phone" class="block text-xs sm:text-sm font-bold text-spa-dark mb-1">Số điện thoại / Tài khoản:</label>
-                <div class="relative">
-                  <input type="tel" id="login-phone" placeholder="0949251144" required class="w-full bg-spa-bg border border-spa-border rounded-2xl p-3.5 pl-11 text-spa-dark text-sm sm:text-base font-bold font-mono focus:outline-none focus:border-spa-sage focus:bg-spa-card transition">
-                  <i data-lucide="phone" class="w-5 h-5 text-spa-hint absolute left-3.5 top-1/2 -translate-y-1/2"></i>
-                </div>
-              </div>
-            `
-          }
+          ${AppInput({
+            id: "login-phone",
+            label: "Số điện thoại / Tài khoản:",
+            type: "tel",
+            placeholder: getConfig("ph_login_phone", "0949251144"),
+            icon: "phone",
+            required: true,
+            isMono: true,
+            autoComplete: "username",
+          })}
 
           <!-- Ô nhập Mật khẩu (AppInput Component) -->
-          ${(typeof AppInput === 'function') 
-            ? AppInput({
-                id: 'login-password',
-                label: 'Mật khẩu:',
-                type: 'password',
-                placeholder: (typeof getConfig === 'function') ? getConfig('ph_login_password', '••••••') : '••••••',
-                icon: 'lock',
-                required: true,
-                autoComplete: 'current-password',
-                rightAction: `
-                  <button type="button" onclick="togglePasswordVisibility()" class="text-spa-hint hover:text-spa-dark p-1 cursor-pointer transition">
-                    <i data-lucide="eye" id="login-eye-icon" class="w-5 h-5"></i>
-                  </button>
-                `
-              })
-            : `
-              <div>
-                <label for="login-password" class="block text-xs sm:text-sm font-bold text-spa-dark mb-1">Mật khẩu:</label>
-                <div class="relative">
-                  <input type="password" id="login-password" placeholder="••••••" required class="w-full bg-spa-bg border border-spa-border rounded-2xl p-3.5 pl-11 pr-11 text-spa-dark text-sm sm:text-base font-bold focus:outline-none focus:border-spa-sage focus:bg-spa-card transition">
-                  <i data-lucide="lock" class="w-5 h-5 text-spa-hint absolute left-3.5 top-1/2 -translate-y-1/2"></i>
-                  <button type="button" onclick="togglePasswordVisibility()" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-spa-hint hover:text-spa-dark p-1 cursor-pointer">
-                    <i data-lucide="eye" id="login-eye-icon" class="w-5 h-5"></i>
-                  </button>
-                </div>
-              </div>
-            `
-          }
+          ${AppInput({
+            id: "login-password",
+            label: "Mật khẩu:",
+            type: "password",
+            placeholder: getConfig("ph_login_password", "••••••"),
+            icon: "lock",
+            required: true,
+            autoComplete: "current-password",
+            rightAction: `
+              <button type="button" onclick="togglePasswordVisibility()" class="text-spa-hint hover:text-spa-dark p-1 cursor-pointer transition">
+                <i data-lucide="eye" id="login-eye-icon" class="w-5 h-5"></i>
+              </button>
+            `,
+          })}
 
           <div class="flex items-center justify-between pt-0.5">
             <label class="flex items-center gap-2 text-xs sm:text-sm text-spa-muted cursor-pointer">
@@ -119,10 +107,14 @@ function renderLoginScreen() {
 
           <!-- Nút bấm chuẩn AppButton (Màu Dusty Rose như nút Log in trong ảnh Mindora) -->
           <div class="pt-2">
-            ${(typeof AppButton === 'function') 
-              ? AppButton({ text: 'ĐĂNG NHẬP NGAY', icon: 'log-in', variant: 'primary', size: 'lg', onClick: 'handlePhoneLogin(event)', customClass: 'w-full uppercase tracking-wider' })
-              : '<button type="submit" class="w-full py-3.5 rounded-full bg-[#E8AEB7] text-white font-extrabold">ĐĂNG NHẬP NGAY</button>'
-            }
+            ${AppButton({
+              text: "ĐĂNG NHẬP NGAY",
+              icon: "log-in",
+              variant: "primary",
+              size: "lg",
+              onClick: "handlePhoneLogin(event)",
+              customClass: "w-full uppercase tracking-wider",
+            })}
           </div>
         </form>
 
@@ -142,19 +134,19 @@ function renderLoginScreen() {
 // Ẩn / hiện mật khẩu
 function togglePasswordVisibility() {
   isPasswordVisible = !isPasswordVisible;
-  const pwdInput = document.getElementById('login-password');
-  const eyeIcon = document.getElementById('login-eye-icon');
-  if (pwdInput) pwdInput.type = isPasswordVisible ? 'text' : 'password';
+  const pwdInput = document.getElementById("login-password");
+  const eyeIcon = document.getElementById("login-eye-icon");
+  if (pwdInput) pwdInput.type = isPasswordVisible ? "text" : "password";
   if (eyeIcon) {
-    eyeIcon.setAttribute('data-lucide', isPasswordVisible ? 'eye-off' : 'eye');
-    if (typeof lucide !== 'undefined') lucide.createIcons();
+    eyeIcon.setAttribute("data-lucide", isPasswordVisible ? "eye-off" : "eye");
+    if (typeof lucide !== "undefined") lucide.createIcons();
   }
 }
 
 // Điền nhanh tài khoản 1-chạm
 function quickFillLogin(phone, pwd) {
-  const pInput = document.getElementById('login-phone');
-  const pwdInput = document.getElementById('login-password');
+  const pInput = document.getElementById("login-phone");
+  const pwdInput = document.getElementById("login-password");
   if (pInput) pInput.value = phone;
   if (pwdInput) pwdInput.value = pwd;
   handlePhoneLogin();
@@ -163,38 +155,54 @@ function quickFillLogin(phone, pwd) {
 // Xử lý xác thực đăng nhập
 function handlePhoneLogin(e) {
   if (e) e.preventDefault();
-  const phoneEl = document.getElementById('login-phone');
-  const pwdEl = document.getElementById('login-password');
-  const errBox = document.getElementById('login-error');
+  const phoneEl = document.getElementById("login-phone");
+  const pwdEl = document.getElementById("login-password");
+  const errBox = document.getElementById("login-error");
   if (!phoneEl || !pwdEl) return;
 
   const phoneInput = phoneEl.value.trim();
   const pwdInput = pwdEl.value.trim();
-  const normInput = (typeof PhoneService !== 'undefined') ? PhoneService.normalize(phoneInput) : phoneInput;
+  const normInput =
+    typeof PhoneService !== "undefined"
+      ? PhoneService.normalize(phoneInput)
+      : phoneInput;
 
-  const users = (typeof getStored === 'function') ? getStored('users', DEFAULT_USERS) : DEFAULT_USERS;
-  const user = users.find(u => {
-    const uNorm = (typeof PhoneService !== 'undefined') ? PhoneService.normalize(u.phone) : u.phone;
-    const matchUser = (uNorm === normInput || String(u.user_id).trim() === phoneInput || String(u.staff_id).trim() === phoneInput);
-    const matchPwd = (String(u.password).trim() === pwdInput || pwdInput === '123' || pwdInput === '123456');
+  const users =
+    typeof getStored === "function"
+      ? getStored("users", DEFAULT_USERS)
+      : DEFAULT_USERS;
+  const user = users.find((u) => {
+    const uNorm =
+      typeof PhoneService !== "undefined"
+        ? PhoneService.normalize(u.phone)
+        : u.phone;
+    const matchUser =
+      uNorm === normInput ||
+      String(u.user_id).trim() === phoneInput ||
+      String(u.staff_id).trim() === phoneInput;
+    const matchPwd =
+      String(u.password).trim() === pwdInput ||
+      pwdInput === "123" ||
+      pwdInput === "123456";
     return matchUser && matchPwd;
   });
 
   if (!user) {
     if (errBox) {
-      errBox.classList.remove('hidden');
-      const errText = document.getElementById('login-error-text');
-      if (errText) errText.innerText = 'Số điện thoại hoặc mật khẩu không chính xác!';
+      errBox.classList.remove("hidden");
+      const errText = document.getElementById("login-error-text");
+      if (errText)
+        errText.innerText = "Số điện thoại hoặc mật khẩu không chính xác!";
     }
     return;
   }
 
-  if (errBox) errBox.classList.add('hidden');
+  if (errBox) errBox.classList.add("hidden");
 
   // Ghi nhớ phiên đăng nhập nếu được tích
-  const remCb = document.getElementById('login-remember');
+  const remCb = document.getElementById("login-remember");
   if (remCb && remCb.checked) {
-    localStorage.setItem('selena_active_session', JSON.stringify(user));
+    localStorage.setItem("selena_active_session", JSON.stringify(user));
   }
 
   onLoginSuccess(user);
@@ -203,11 +211,11 @@ function handlePhoneLogin(e) {
 // Khi đăng nhập thành công
 function onLoginSuccess(user) {
   currentUser = user;
-  const isOwner = (typeof isUserOwner === 'function') ? isUserOwner(user) : false;
-  const roleTitle = isOwner ? 'Chủ Sáng Lập' : 'Kỹ Thuật Viên';
-  
+  const isOwner = typeof isUserOwner === "function" ? isUserOwner(user) : false;
+  const roleTitle = isOwner ? "Chủ Sáng Lập" : "Kỹ Thuật Viên";
+
   // Thông báo đăng nhập thành công
-  const appContainer = document.getElementById('app');
+  const appContainer = document.getElementById("app");
   if (appContainer) {
     appContainer.innerHTML = `
       <div class="min-h-screen flex items-center justify-center p-4 bg-spa-bg">
@@ -219,7 +227,7 @@ function onLoginSuccess(user) {
           <div class="p-4 rounded-2xl bg-spa-bg border border-spa-border space-y-1">
             <div class="text-sm text-spa-muted">Xin chào:</div>
             <div class="text-lg font-extrabold text-spa-sage">${user.full_name}</div>
-            <div class="text-xs font-semibold text-spa-dark">${isOwner ? '👑' : '💆'} ${roleTitle}</div>
+            <div class="text-xs font-semibold text-spa-dark">${isOwner ? "👑" : "💆"} ${roleTitle}</div>
           </div>
           <p class="text-xs text-spa-muted">Hệ thống màu Mindora Luxury siêu sang và mượt mà!</p>
           <button onclick="initLogin()" class="w-full py-3.5 rounded-full bg-spa-bg hover:bg-spa-sage-light border border-spa-border text-spa-muted hover:text-spa-sage text-xs font-bold transition flex items-center justify-center gap-2 cursor-pointer">
@@ -228,18 +236,19 @@ function onLoginSuccess(user) {
         </div>
       </div>
     `;
-    if (typeof lucide !== 'undefined') lucide.createIcons();
+    if (typeof lucide !== "undefined") lucide.createIcons();
   }
 }
 
 // Hàm khởi tạo màn hình Login ban đầu
 function initLogin() {
-  if (typeof initTheme === 'function') initTheme();
-  const appContainer = document.getElementById('app');
+  if (typeof initTheme === "function") initTheme();
+  const appContainer = document.getElementById("app");
   if (!appContainer) return;
-  
+
   appContainer.innerHTML = renderLoginScreen();
-  if (typeof lucide !== 'undefined') lucide.createIcons();
-  if (typeof applyDynamicUIConfig === 'function') applyDynamicUIConfig();
-  if (typeof fetchLiveConfigFromSheet === 'function') fetchLiveConfigFromSheet();
+  if (typeof lucide !== "undefined") lucide.createIcons();
+  if (typeof applyDynamicUIConfig === "function") applyDynamicUIConfig();
+  if (typeof fetchLiveConfigFromSheet === "function")
+    fetchLiveConfigFromSheet();
 }

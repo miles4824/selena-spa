@@ -4,45 +4,49 @@
 // =============================================================
 
 function AppInput({
-  id = '',
-  name = '',
-  label = '',
-  type = 'text',
-  placeholder = '',
-  value = '',
-  icon = '',              // Tên Lucide Icon ở bên trái (vd: 'phone', 'lock', 'user', 'search')
+  id = "",
+  name = "",
+  label = "",
+  type = "text",
+  placeholder = "",
+  value = "",
+  icon = "", // Tên Lucide Icon ở bên trái (vd: 'phone', 'lock', 'user', 'search')
   required = false,
-  isMono = false,         // font-mono cho SĐT, tiền tệ, mật khẩu
-  rightAction = '',       // Element / Nút hành động bên phải (như nút mắt ẩn/hiện mật khẩu)
-  customClass = '',
-  inputClass = '',
+  isMono = false, // font-mono cho SĐT, tiền tệ, mật khẩu
+  rightAction = "", // Element / Nút hành động bên phải (như nút mắt ẩn/hiện mật khẩu)
+  customClass = "",
+  inputClass = "",
   disabled = false,
   readOnly = false,
-  onInput = '',
-  onChange = '',
-  autoComplete = 'off'
+  onInput = "",
+  onChange = "",
+  autoComplete = "off",
 } = {}) {
-  const monoClass = isMono ? 'font-mono' : '';
-  const paddingLeft = icon ? 'pl-11' : 'pl-4';
-  const paddingRight = rightAction ? 'pr-11' : 'pr-4';
-  const requiredAttr = required ? 'required' : '';
-  const disabledAttr = disabled ? 'disabled' : '';
-  const readOnlyAttr = readOnly ? 'readonly' : '';
-  const onInputAttr = onInput ? `oninput="${onInput}"` : '';
-  const onChangeAttr = onChange ? `onchange="${onChange}"` : '';
-  const valAttr = value !== '' ? `value="${value}"` : '';
-  const nameAttr = name ? `name="${name}"` : '';
-  const forAttr = id ? `for="${id}"` : '';
+  const monoClass = isMono ? "font-mono" : "";
+  const paddingLeft = icon ? "pl-12" : "pl-4";
+  const paddingRight = rightAction ? "pr-12" : "pr-4";
+  const requiredAttr = required ? "required" : "";
+  const disabledAttr = disabled ? "disabled" : "";
+  const readOnlyAttr = readOnly ? "readonly" : "";
+  const onInputAttr = onInput ? `oninput="${onInput}"` : "";
+  const onChangeAttr = onChange ? `onchange="${onChange}"` : "";
+  const valAttr = value !== "" ? `value="${value}"` : "";
+  const nameAttr = name ? `name="${name}"` : "";
+  const forAttr = id ? `for="${id}"` : "";
 
   return `
     <div class="space-y-1 text-left ${customClass}">
-      ${label ? `<label ${forAttr} class="block text-xs sm:text-sm font-bold text-spa-dark">${label}</label>` : ''}
+      ${label ? `<label ${forAttr} class="block text-xs sm:text-sm font-bold text-spa-dark">${label}</label>` : ""}
       <div class="relative">
-        ${icon ? `
-          <div class="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none text-spa-hint flex items-center justify-center">
-            <i data-lucide="${icon}" class="w-5 h-5"></i>
+        ${
+          icon
+            ? `
+          <div class="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none text-spa-hint flex items-center justify-center">
+            <i data-lucide="${icon}" class="w-4 h-4"></i>
           </div>
-        ` : ''}
+        `
+            : ""
+        }
         <input 
           type="${type}" 
           id="${id}" 
@@ -55,13 +59,17 @@ function AppInput({
           ${onInputAttr}
           ${onChangeAttr}
           autocomplete="${autoComplete}"
-          class="w-full bg-spa-bg border border-spa-border rounded-2xl p-3.5 ${paddingLeft} ${paddingRight} text-spa-dark text-sm sm:text-base font-bold ${monoClass} focus:outline-none focus:border-spa-sage focus:bg-spa-card transition-colors duration-200 placeholder:text-spa-hint/70 ${inputClass}"
+          class="w-full bg-spa-bg border border-spa-border rounded-2xl p-4 ${paddingLeft} ${paddingRight} text-spa-dark text-sm sm:text-base font-bold ${monoClass} focus:outline-none focus:border-spa-sage focus:bg-spa-card transition-colors duration-200 placeholder:text-spa-hint/70 ${inputClass}"
         >
-        ${rightAction ? `
-          <div class="absolute right-3.5 top-1/2 -translate-y-1/2 flex items-center">
+        ${
+          rightAction
+            ? `
+          <div class="absolute right-4 top-1/2 -translate-y-1/2 flex items-center">
             ${rightAction}
           </div>
-        ` : ''}
+        `
+            : ""
+        }
       </div>
     </div>
   `;
