@@ -1,4 +1,9 @@
-<!-- MODAL ĐỔI & THÊM DỊCH VỤ GIỮA CA PHỤC VỤ (CHUẨN MODALSHELL & APPTITLE) -->
+# -*- coding: utf-8 -*-
+import os
+
+BASE_DIR = r"c:\Users\Miles\Downloads\Selena"
+
+modal_html = """<!-- MODAL ĐỔI & THÊM DỊCH VỤ GIỮA CA PHỤC VỤ (CHUẨN MODALSHELL & APPTITLE) -->
 <div id="modal-edit-live-services" class="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-sm hidden transition-all duration-300">
   <div class="w-full max-w-lg max-h-[calc(100dvh-48px)] bg-white rounded-[28px] border border-[#F0EAE1] shadow-2xl flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
     
@@ -107,3 +112,25 @@
 
   </div>
 </div>
+"""
+
+# Update views/components/modals/modal_edit_live_services.html
+modal_file_path = os.path.join(BASE_DIR, "views", "components", "modals", "modal_edit_live_services.html")
+with open(modal_file_path, "w", encoding="utf-8") as f:
+    f.write(modal_html)
+print("Updated views/components/modals/modal_edit_live_services.html!")
+
+# Update views/add.html
+add_html_path = os.path.join(BASE_DIR, "views", "add.html")
+with open(add_html_path, "r", encoding="utf-8") as f:
+    add_text = f.read()
+
+split_marker = "<!-- MODAL ĐỔI & THÊM DỊCH VỤ GIỮA CA PHỤC VỤ (MODAL EDIT LIVE SERVICES) -->"
+if split_marker in add_text:
+    prefix = add_text.split(split_marker)[0]
+    add_text = prefix + modal_html
+    with open(add_html_path, "w", encoding="utf-8") as f:
+        f.write(add_text)
+    print("Updated views/add.html modal-edit-live-services!")
+else:
+    print("Marker not found in views/add.html")
