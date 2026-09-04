@@ -3,18 +3,17 @@
 // =========================================================================
 
 /**
- * Render cấu trúc HTML của thanh Dock điều hướng vào #container-nav
- * @param {string} activeTab - Tab đang chọn mặc định ('home' | 'pos' | 'history' | 'income')
+ * Component Bottom Navigation Dock
+ * @param {Object} props
+ * @param {string} props.activeTab - Tab đang chọn mặc định ('home' | 'pos' | 'history' | 'income')
+ * @returns {string} Mã HTML của Bottom Nav
  */
-function renderBottomNav(activeTab = 'home') {
-  const container = document.getElementById('container-nav');
-  if (!container) return;
-
+function BottomNav({ activeTab = 'home' } = {}) {
   const isOwner = (typeof isUserOwner === 'function' && typeof currentUser !== 'undefined') ? isUserOwner(currentUser) : false;
   const incomeLabel = isOwner ? 'Báo cáo' : 'Thu nhập';
 
-  container.innerHTML = `
-    <nav id="mobile-bottom-nav" class="fixed left-4 right-4 z-50 max-w-sm mx-auto pointer-events-auto" style="bottom: calc(env(safe-area-inset-bottom, 16px) + 12px);">
+  return `
+    <nav id="mobile-bottom-nav" class="fixed left-4 right-4 z-40 max-w-sm mx-auto pointer-events-auto" style="bottom: calc(env(safe-area-inset-bottom, 16px) + 12px);">
       <div id="nav-dock" class="relative bg-spa-card/90 border border-spa-border backdrop-blur-xl rounded-full shadow-[0_12px_32px_rgba(0,0,0,0.10)] px-2.5 py-2 flex items-center justify-around">
         <!-- VIÊN THUỐC TRƯỢT DI CHUYỂN TỰ ĐỘNG (SLIDING PILL) -->
         <div id="nav-sliding-indicator" class="absolute rounded-full bg-spa-brand shadow-glow-brand z-[1] pointer-events-none opacity-0 transition-all duration-300 ease-out"></div>
@@ -41,14 +40,6 @@ function renderBottomNav(activeTab = 'home') {
       </div>
     </nav>
   `;
-
-  if (typeof lucide !== 'undefined' && lucide.createIcons) {
-    lucide.createIcons();
-  }
-
-  requestAnimationFrame(() => {
-    updateNavSlidingPill(activeTab);
-  });
 }
 
 /**
@@ -114,18 +105,19 @@ function navigateTab(tab) {
  * Ẩn/Hiện thanh Bottom Nav
  */
 function showBottomNav() {
-  const container = document.getElementById('container-nav');
-  if (container) container.classList.remove('hidden');
+  const nav = document.getElementById('mobile-bottom-nav');
+  if (nav) nav.classList.remove('hidden');
 }
 
 function hideBottomNav() {
-  const container = document.getElementById('container-nav');
-  if (container) container.classList.add('hidden');
+  const nav = document.getElementById('mobile-bottom-nav');
+  if (nav) nav.classList.add('hidden');
 }
 
 // Xuất ra phạm vi toàn cục
 if (typeof window !== 'undefined') {
-  window.renderBottomNav = renderBottomNav;
+  window.BottomNav = BottomNav;
+  window.renderBottomNav = BottomNav;
   window.updateNavSlidingPill = updateNavSlidingPill;
   window.navigateTab = navigateTab;
   window.showBottomNav = showBottomNav;

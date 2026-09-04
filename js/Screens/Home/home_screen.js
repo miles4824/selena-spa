@@ -77,19 +77,18 @@ function renderHomeScreen() {
       <main id="home-main-scroll" class="p-4 sm:p-6 max-w-5xl mx-auto">
         ${homeContentHtml}
       </main>
+
+      <!-- THANH ĐIỀU HƯỚNG DƯỚI ĐÁY (BOTTOM NAVIGATION COMPONENT) -->
+      ${(typeof BottomNav === 'function') ? BottomNav({ activeTab: 'home' }) : ''}
     </div>
   `;
 
-  // 4. Khởi tạo thanh điều hướng Bottom Nav nếu chưa có
-  if (!document.getElementById('mobile-bottom-nav') && typeof renderBottomNav === 'function') {
-    renderBottomNav('home');
-  }
-  if (typeof showBottomNav === 'function') {
-    showBottomNav();
-  }
-  if (typeof updateNavSlidingPill === 'function') {
-    updateNavSlidingPill('home');
-  }
+  // 4. Đặt vị trí viên thuốc trượt
+  requestAnimationFrame(() => {
+    if (typeof updateNavSlidingPill === 'function') {
+      updateNavSlidingPill('home');
+    }
+  });
 
   // 5. Khởi tạo lại toàn bộ icon Lucide
   if (typeof lucide !== 'undefined' && lucide.createIcons) {
