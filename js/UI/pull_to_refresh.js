@@ -6,8 +6,8 @@
 
 function PullToRefresh() {
   return `
-    <div id="ptr-indicator" class="fixed left-0 right-0 z-[99998] flex justify-center pointer-events-none -translate-y-full" style="top: env(safe-area-inset-top, 0px); will-change: transform;">
-      <div id="ptr-pill" class="mt-2.5 px-4 py-2 rounded-full liquid-glass shadow-xl border border-white/40 dark:border-white/20 flex items-center gap-2.5 text-xs font-semibold text-spa-dark dark:text-white backdrop-blur-xl transition-colors">
+    <div id="ptr-indicator" class="fixed top-0 left-0 right-0 z-[99998] flex justify-center pointer-events-none" style="transform: translateY(-90px); will-change: transform;">
+      <div id="ptr-pill" class="px-5 py-2.5 rounded-full liquid-glass shadow-2xl border border-white/50 dark:border-white/20 flex items-center gap-2.5 text-xs font-semibold text-spa-dark dark:text-white backdrop-blur-2xl transition-colors">
         <span id="ptr-icon-wrap" class="flex items-center justify-center text-spa-sage dark:text-spa-brand">
           <i data-lucide="arrow-down" class="w-4 h-4"></i>
         </span>
@@ -36,7 +36,8 @@ function initPullToRefresh() {
   let isPulling = false;
   let hasTriggeredHaptic = false;
   const PULL_THRESHOLD = 75; // Ngưỡng vuốt (px) để kích hoạt tải lại
-  const START_OFFSET = -55; // Vị trí giấu phía sau notch / top viền màn hình (px)
+  const HIDDEN_Y = -90;      // Vị trí giấu phía trên màn hình (px)
+  const HOLDING_Y = 80;     // Vị trí dừng trọn vẹn dưới tai thỏ khi đang tải lại (px)
 
   // Hàm xác định vị trí cuộn của container cha gần nhất hoặc window
   function getScrollTop(e) {
@@ -62,7 +63,7 @@ function initPullToRefresh() {
       isPulling = true;
       hasTriggeredHaptic = false;
       ptr.style.transition = 'none';
-      ptr.style.transform = `translateY(${START_OFFSET}px)`;
+      ptr.style.transform = `translateY(${HIDDEN_Y}px)`;
     }
   }, { passive: true });
 
@@ -73,7 +74,7 @@ function initPullToRefresh() {
     if (scrollTop > 3) {
       isPulling = false;
       ptr.style.transition = 'transform 0.25s linear';
-      ptr.style.transform = 'translateY(-100%)';
+      ptr.style.transform = `translateY(${HIDDEN_Y}px)`;
       return;
     }
 
@@ -84,10 +85,9 @@ function initPullToRefresh() {
       // Ngăn chặn giật nảy rubber-band mặc định của Safari khi đang ở đầu trang
       if (e.cancelable) e.preventDefault();
 
-      // Công thức vật lý cản lực kéo (rubber-band damping)
-      const damping = 0.45;
-      const progress = Math.min(diff * damping, 70);
-      const currentY = START_OFFSET + progress;
+      // Công thức đưa viên thuốc trượt trọn vẹn xuống dưới tai thỏ (từ -90px đến +85px..+130px)
+      const progress = Math.min(diff / PULL_THRESHOLD, 1.35);
+      const currentY = HIDDEN_Y + (progress * (HOLDING_Y - HIDDEN_Y + 10));
 
       ptr.style.transform = `translateY(${currentY}px)`;
 
@@ -122,8 +122,8 @@ function initPullToRefresh() {
     const diff = touchEndY - touchStartY;
 
     if (diff >= PULL_THRESHOLD) {
-      // Dừng lại ở vị trí hiển thị thanh thông báo và xoay spinner
-      ptr.style.transform = 'translateY(12px)';
+      // Dừng lại trọn vẹn ở vị trí 80px (hoàn toàn dưới tai thỏ, không bị che khuất)
+      ptr.style.transform = `translateY(${HOLDING_Y}px)`;
       ptrText.innerText = 'Đang tải lại bản mới nhất...';
       ptrIconWrap.innerHTML = '<i data-lucide="refresh-cw" class="w-4 h-4 animate-spin"></i>';
       if (window.lucide && typeof lucide.createIcons === 'function') {
@@ -135,10 +135,10 @@ function initPullToRefresh() {
         const url = new URL(window.location.href);
         url.searchParams.set('v', Date.now().toString());
         window.location.replace(url.toString());
-      }, 350);
+      }, 400);
     } else {
       // Thu lại về phía trên
-      ptr.style.transform = 'translateY(-100%)';
+      ptr.style.transform = `translateY(${HIDDEN_Y}px)`;
     }
   }, { passive: true });
 }

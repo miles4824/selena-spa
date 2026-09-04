@@ -250,16 +250,30 @@ h4, h5, h6 {
   top: 0;
   left: 0;
   right: 0;
-  height: env(safe-area-inset-top, 0px);
-  background: rgba(241, 245, 244, 0.72);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  height: max(48px, env(safe-area-inset-top, 48px));
+  min-height: 48px;
+  background: rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(25px) saturate(190%);
+  -webkit-backdrop-filter: blur(25px) saturate(190%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
   pointer-events: none;
   z-index: 99999;
-  transition: background-color 0.35s linear;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  transition: background-color 0.35s linear, border-color 0.35s linear;
 }
 
 [data-theme="dark"] .ios-notch-blur,
 .dark .ios-notch-blur {
-  background: rgba(28, 36, 40, 0.72);
+  background: rgba(28, 36, 40, 0.35);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 24px -2px rgba(0, 0, 0, 0.35);
 }
+
+@media (min-width: 1024px) {
+  .ios-notch-blur {
+    display: none !important;
+  }
+}
+

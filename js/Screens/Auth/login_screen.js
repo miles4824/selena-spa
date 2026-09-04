@@ -62,7 +62,7 @@ function renderLoginScreen() {
           class="bg-theme-dark"
         />
         <!-- Lớp phủ sẫm nhẹ tạo chiều sâu cho tấm kính Liquid Glass -->
-        <div class="absolute inset-0 bg-black/10 dark:bg-black/40 backdrop-blur-[1px] transition-colors duration-300"></div>
+        <div class="absolute inset-0 bg-black/10 dark:bg-black/40 transition-colors duration-300"></div>
       </div>
 
       <!-- KHỐI CĂN CHÍNH GIỮA MÀN HÌNH (DEAD CENTER HORIZONTAL & VERTICAL) -->
