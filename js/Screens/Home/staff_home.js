@@ -87,18 +87,18 @@ function renderStaffHome(user) {
   return `
     <div id="staff-home-container" class="space-y-5 animate-fade-in">
       <!-- CỤM 1: WELLNESS BANNER CHÀO ĐÓN & NÚT TRẠNG THÁI BIẾN HÌNH -->
-      <div class="rounded-[32px] p-6 sm:p-7 relative overflow-hidden bg-gradient-to-br from-white via-spa-bg/40 to-spa-peach-light/50 dark:from-[#1C2428] dark:via-[#1C2428]/90 dark:to-[#222E29] border border-spa-border shadow-xs">
+      <div class="rounded-[32px] p-6 sm:p-7 relative overflow-hidden bg-spa-card border border-spa-border shadow-xs">
         <div class="relative z-10 space-y-3.5">
           <div class="flex items-center justify-between">
             ${statusBadgeHtml}
-            <span class="text-xs text-spa-muted dark:text-white/60 font-medium">Hôm nay</span>
+            <span class="text-xs text-spa-muted font-medium">Hôm nay</span>
           </div>
 
-          <h2 class="text-2xl sm:text-3xl font-medium font-serif text-spa-dark dark:text-white tracking-tight">
-            Chào <span class="text-spa-brand font-bold">${user.full_name || 'KTV'}</span>, <span class="font-normal text-spa-muted dark:text-white/80">hôm nay sẵn sàng tỏa sáng chưa? ✨</span>
+          <h2 class="text-2xl sm:text-3xl font-medium font-serif text-spa-dark tracking-tight">
+            Chào <span class="text-spa-brand font-bold">${user.full_name || 'KTV'}</span>, <span class="font-normal text-spa-muted">hôm nay sẵn sàng tỏa sáng chưa? ✨</span>
           </h2>
 
-          <p class="text-spa-muted dark:text-white/70 text-sm max-w-md leading-relaxed">
+          <p class="text-spa-muted text-sm max-w-md leading-relaxed">
             ${statusDesc}
           </p>
 
@@ -109,13 +109,13 @@ function renderStaffHome(user) {
       </div>
 
       <!-- CỤM 2: THÔNG BÁO NỘI BỘ TỪ CHỦ TIỆM -->
-      <div class="rounded-3xl p-4 sm:p-5 bg-gradient-to-r from-spa-peach-light/60 to-white dark:from-[#2A2421] dark:to-[#1C2428] border border-spa-brand/20 shadow-xs flex items-start gap-3.5">
+      <div class="rounded-3xl p-4 sm:p-5 bg-spa-card border border-spa-peach-border shadow-xs flex items-start gap-3.5">
         <div class="w-10 h-10 rounded-2xl bg-spa-brand/15 text-spa-brand flex items-center justify-center shrink-0 mt-0.5">
           <i data-lucide="megaphone" class="w-5 h-5"></i>
         </div>
         <div class="space-y-1">
           <div class="text-xs font-bold text-spa-brand uppercase tracking-wider">Thông Báo Từ Chủ Tiệm</div>
-          <p class="text-xs sm:text-sm text-spa-dark dark:text-white/90 font-medium leading-relaxed">
+          <p class="text-xs sm:text-sm text-spa-dark font-medium leading-relaxed">
             ${announcement}
           </p>
         </div>
@@ -124,7 +124,7 @@ function renderStaffHome(user) {
       <!-- CỤM 3: THÀNH TÍCH CỦA BẠN TRONG NGÀY HÔM NAY -->
       <div class="space-y-3">
         <div class="flex items-center justify-between px-1">
-          <h3 class="text-base font-bold text-spa-dark dark:text-white flex items-center gap-2">
+          <h3 class="text-base font-bold text-spa-dark flex items-center gap-2">
             <i data-lucide="award" class="w-4 h-4 text-spa-brand"></i>
             <span>Thành Tích Của Bạn Hôm Nay</span>
           </h3>

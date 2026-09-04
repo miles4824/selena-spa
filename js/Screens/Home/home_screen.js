@@ -30,7 +30,7 @@ function renderHomeScreen() {
   app.innerHTML = `
     <div id="screen-home" class="min-h-screen bg-spa-bg text-spa-dark font-sans relative selection:bg-spa-brand/20 pb-28">
       <!-- HEADER TRANG CHỦ: LOGO, TÊN SPA & NÚT ĐỔI THEME / ĐĂNG XUẤT -->
-      <header class="sticky top-0 z-30 bg-spa-bg/85 dark:bg-[#1C2428]/85 backdrop-blur-md border-b border-spa-border px-4 sm:px-6 py-3 transition-colors duration-300">
+      <header class="sticky top-0 z-30 bg-spa-bg/90 backdrop-blur-md border-b border-spa-border px-4 sm:px-6 py-3 transition-colors duration-300">
         <div class="max-w-5xl mx-auto flex items-center justify-between">
           <!-- Thương hiệu Selena Spa -->
           <div class="flex items-center gap-3">
@@ -38,10 +38,10 @@ function renderHomeScreen() {
               <i data-lucide="sparkles" class="w-5 h-5"></i>
             </div>
             <div>
-              <h1 class="brand-spa-name text-base font-bold text-spa-dark dark:text-white leading-tight font-serif">
+              <h1 class="brand-spa-name text-base font-bold text-spa-dark leading-tight font-serif">
                 ${(typeof getConfig === 'function') ? getConfig('spa_brand_name', 'SELENA SPA') : 'SELENA SPA'}
               </h1>
-              <p class="brand-spa-slogan text-[10px] text-spa-muted dark:text-white/60 font-medium">
+              <p class="brand-spa-slogan text-[10px] text-spa-muted font-medium">
                 ${(typeof getConfig === 'function') ? getConfig('spa_brand_slogan', 'Luxury Wellness Care') : 'Luxury Wellness Care'}
               </p>
             </div>
@@ -50,7 +50,7 @@ function renderHomeScreen() {
           <!-- Nhóm nút góc phải: Nút đổi Theme & Nút Đăng xuất -->
           <div class="flex items-center gap-2">
             ${(typeof ThemeToggle === 'function') ? ThemeToggle({ customClass: 'w-9 h-9' }) : ''}
-            <button type="button" onclick="handleLogout()" title="Đăng xuất" class="p-2 rounded-full bg-spa-bg hover:bg-rose-50 dark:hover:bg-rose-950/30 text-spa-muted hover:text-rose-600 border border-spa-border transition cursor-pointer active:scale-90 flex items-center justify-center">
+            <button type="button" onclick="handleLogout()" title="Đăng xuất" class="p-2 rounded-full bg-spa-card hover:bg-rose-50 text-spa-muted hover:text-rose-600 border border-spa-border transition cursor-pointer active:scale-90 flex items-center justify-center">
               <i data-lucide="log-out" class="w-4 h-4"></i>
             </button>
           </div>

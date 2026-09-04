@@ -26,6 +26,8 @@
   --color-spa-peach-border: #F5D3D8;
 }
 
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *, .dark, .dark *));
+
 :root {
   --sticky-date-offset: 130px;
   --color-spa-bg: #F1F5F4;
