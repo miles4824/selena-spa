@@ -270,32 +270,13 @@ function handlePhoneLogin(e) {
 // Khi đăng nhập thành công
 function onLoginSuccess(user) {
   currentUser = user;
-  const isOwner = typeof isUserOwner === "function" ? isUserOwner(user) : false;
-  const roleTitle = isOwner ? "Chủ Sáng Lập" : "Kỹ Thuật Viên";
+  try {
+    localStorage.setItem("selena_current_user", JSON.stringify(user));
+  } catch (e) {}
 
-  // Thông báo đăng nhập thành công
-  const appContainer = document.getElementById("app");
-  if (appContainer) {
-    appContainer.innerHTML = `
-      <div class="min-h-screen flex items-center justify-center p-4 bg-spa-bg">
-        <div class="w-full max-w-md bg-spa-card rounded-[32px] border border-spa-border shadow-xl p-8 text-center space-y-4 transition-colors duration-300">
-          <div class="inline-flex p-4 rounded-full bg-spa-sage-light border border-spa-teal-border/40 text-spa-sage">
-            <i data-lucide="check-circle-2" class="w-10 h-10"></i>
-          </div>
-          <h2 class="text-2xl font-bold font-serif text-spa-dark">Đăng Nhập Thành Công!</h2>
-          <div class="p-4 rounded-2xl bg-spa-bg border border-spa-border space-y-1">
-            <div class="text-sm text-spa-muted">Xin chào:</div>
-            <div class="text-lg font-extrabold text-spa-sage">${user.full_name}</div>
-            <div class="text-xs font-semibold text-spa-dark">${isOwner ? "👑" : "💆"} ${roleTitle}</div>
-          </div>
-          <p class="text-xs text-spa-muted">Hệ thống màu Mindora Luxury siêu sang và mượt mà!</p>
-          <button onclick="initLogin()" class="w-full py-3.5 rounded-full bg-spa-bg hover:bg-spa-sage-light border border-spa-border text-spa-muted hover:text-spa-sage text-xs font-bold transition flex items-center justify-center gap-2 cursor-pointer">
-            <i data-lucide="log-out" class="w-4 h-4"></i> Đăng xuất thử lại
-          </button>
-        </div>
-      </div>
-    `;
-    if (typeof lucide !== "undefined") lucide.createIcons();
+  // Chuyển thẳng vào Màn hình Trang Chủ
+  if (typeof renderHomeScreen === "function") {
+    renderHomeScreen();
   }
 }
 

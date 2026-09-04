@@ -1,7 +1,7 @@
 // =============================================================
 // SELENA SPA - ENGINE CONFIG & LOCAL STORAGE (SINGLE SOURCE OF TRUTH)
 // =============================================================
-const APP_VERSION = 'v0.0.2.7';
+const APP_VERSION = 'v0.0.2.8';
 
 // 1. Danh sách người dùng mặc định ban đầu
 const DEFAULT_USERS = [
