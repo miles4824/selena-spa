@@ -1,13 +1,13 @@
 ﻿// =============================================================
-// COMPONENT: PULL TO REFRESH (VUỐT KÉO TOÀN TRANG ĐỂ LÀM MỚI)
-// Cơ chế chuẩn Native App: Toàn bộ trang kéo xuống để lộ thanh reload bên dưới
+// COMPONENT: PULL TO REFRESH (VUỐT KÉO ĐỂ LÀM MỚI CHUẨN NATIVE APP)
+// Hình nền giữ cố định tuyệt đối, chỉ có thẻ nội dung trượt xuống hé lộ thanh reload
 // Phong cách: Mindora Luxury (Sang trọng, mượt mà, không giật lag)
 // =============================================================
 
 function PullToRefresh() {
   return `
-    <div id="ptr-indicator" class="fixed top-0 left-0 right-0 h-14 flex items-center justify-center pointer-events-none z-0 select-none">
-      <div class="flex items-center gap-2 text-xs font-semibold text-spa-dark/80 dark:text-white/80">
+    <div id="ptr-indicator" class="fixed top-0 left-0 right-0 h-16 flex items-center justify-center pointer-events-none opacity-0 select-none" style="z-index: 10; transition: opacity 0.2s linear;">
+      <div class="flex items-center gap-2.5 px-4 py-2 rounded-full liquid-glass border border-white/40 dark:border-white/20 text-xs font-semibold text-spa-dark dark:text-white shadow-lg backdrop-blur-xl">
         <span id="ptr-icon" class="flex items-center justify-center text-spa-sage dark:text-spa-brand transition-transform">
           <i data-lucide="arrow-down" class="w-4 h-4"></i>
         </span>
@@ -18,7 +18,7 @@ function PullToRefresh() {
 }
 
 function initPullToRefresh() {
-  // Gắn thanh reload vào vị trí dưới cùng của body (z-index thấp hơn trang)
+  // Gắn thanh reload vào đầu trang
   let ptr = document.getElementById('ptr-indicator');
   if (!ptr) {
     document.body.insertAdjacentHTML('afterbegin', PullToRefresh());
@@ -36,11 +36,11 @@ function initPullToRefresh() {
   let isPulling = false;
   let hasTriggeredHaptic = false;
   const PULL_THRESHOLD = 70; // Ngưỡng kéo (px) để kích hoạt tải lại
-  const MAX_TRANSLATE = 75;  // Độ dãn tối đa khi kéo toàn trang
+  const MAX_TRANSLATE = 80;  // Độ dãn tối đa khi kéo thẻ card
 
-  // Lấy container trang đang hiển thị (màn hình login hoặc #app)
-  function getPageElement() {
-    return document.getElementById('screen-login') || document.getElementById('app');
+  // Chỉ kéo khối nội dung/card, TUYỆT ĐỐI KHÔNG KÉO HÌNH NỀN
+  function getCardElement() {
+    return document.getElementById('login-content-wrapper') || document.getElementById('app');
   }
 
   // Hàm xác định vị trí cuộn của container cha gần nhất hoặc window
@@ -66,23 +66,25 @@ function initPullToRefresh() {
       touchStartY = e.touches[0].clientY;
       isPulling = true;
       hasTriggeredHaptic = false;
-      const page = getPageElement();
-      if (page) page.style.transition = 'none';
+      const card = getCardElement();
+      if (card) card.style.transition = 'none';
+      ptr.style.transition = 'none';
     }
   }, { passive: true });
 
-  // Vuốt kéo toàn trang xuống
+  // Vuốt kéo nội dung xuống
   window.addEventListener('touchmove', (e) => {
     if (!isPulling) return;
     const scrollTop = getScrollTop(e);
     if (scrollTop > 3) {
       isPulling = false;
-      const page = getPageElement();
-      if (page) {
-        page.style.transition = 'transform 0.2s linear';
-        page.style.transform = 'translateY(0px)';
-        setTimeout(() => { page.style.transform = ''; page.style.transition = ''; }, 200);
+      const card = getCardElement();
+      if (card) {
+        card.style.transition = 'transform 0.25s linear';
+        card.style.transform = 'translateY(0px)';
+        setTimeout(() => { card.style.transform = ''; card.style.transition = ''; }, 250);
       }
+      ptr.style.opacity = '0';
       return;
     }
 
@@ -92,12 +94,16 @@ function initPullToRefresh() {
     if (diff > 5) {
       if (e.cancelable) e.preventDefault();
 
-      const page = getPageElement();
-      if (!page) return;
+      const card = getCardElement();
+      if (!card) return;
 
-      // Toàn bộ trang trượt xuống êm ái theo ngón tay, để lộ thanh reload ở phía trên
+      // Card trượt xuống nhẹ nhàng theo tay, nền tranh giữ nguyên tĩnh lặng
       const translateY = Math.min(diff * 0.45, MAX_TRANSLATE);
-      page.style.transform = `translateY(${translateY}px)`;
+      card.style.transform = `translateY(${translateY}px)`;
+
+      // Thanh reload hiện dần ở khoảng trống phía trên
+      ptr.style.opacity = Math.min(diff / 45, 1).toString();
+      ptr.style.transform = `translateY(${Math.min(diff * 0.2, 18)}px)`;
 
       if (diff >= PULL_THRESHOLD) {
         if (!hasTriggeredHaptic) {
@@ -125,17 +131,20 @@ function initPullToRefresh() {
     if (!isPulling) return;
     isPulling = false;
 
-    const page = getPageElement();
-    if (!page) return;
+    const card = getCardElement();
+    if (!card) return;
 
     const touchEndY = (e.changedTouches && e.changedTouches[0]) ? e.changedTouches[0].clientY : touchStartY;
     const diff = touchEndY - touchStartY;
 
-    page.style.transition = 'transform 0.25s linear';
+    card.style.transition = 'transform 0.25s linear';
+    ptr.style.transition = 'all 0.25s linear';
 
     if (diff >= PULL_THRESHOLD) {
-      // Giữ trang hé mở ở 50px để hiển thị trạng thái đang tải lại
-      page.style.transform = 'translateY(50px)';
+      // Giữ card hé mở ở 55px để hiển thị trạng thái đang tải lại
+      card.style.transform = 'translateY(55px)';
+      ptr.style.opacity = '1';
+      ptr.style.transform = 'translateY(18px)';
       ptrText.innerText = 'Đang tải lại bản mới nhất...';
       ptrIcon.innerHTML = '<i data-lucide="refresh-cw" class="w-4 h-4 animate-spin"></i>';
       if (window.lucide && typeof lucide.createIcons === 'function') {
@@ -149,11 +158,13 @@ function initPullToRefresh() {
         window.location.replace(url.toString());
       }, 350);
     } else {
-      // Kéo chưa đủ ngưỡng: trả trang về lại vị trí ban đầu
-      page.style.transform = 'translateY(0px)';
+      // Kéo chưa đủ ngưỡng: trả card về vị trí cũ và ẩn thanh reload
+      card.style.transform = 'translateY(0px)';
+      ptr.style.opacity = '0';
+      ptr.style.transform = 'translateY(0px)';
       setTimeout(() => {
-        page.style.transform = '';
-        page.style.transition = '';
+        card.style.transform = '';
+        card.style.transition = '';
       }, 250);
     }
   }, { passive: true });

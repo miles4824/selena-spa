@@ -40,9 +40,9 @@ function renderLoginScreen() {
     .join("");
 
   return `
-    <div id="screen-login" class="fixed inset-0 z-50 overflow-y-auto">
-      <!-- LỚP HÌNH NỀN TOÀN TRANG: TỰ ĐỘNG CHUYỂN ĐỔI THEO THEME SÁNG / TỐI -->
-      <div class="fixed inset-0 -z-20 pointer-events-none select-none overflow-hidden">
+    <div id="screen-login" class="fixed inset-0 z-50 overflow-hidden">
+      <!-- LỚP HÌNH NỀN CỐ ĐỊNH 100% TUYỆT ĐỐI (STATIC WALLPAPER - KHÔNG BAO GIỜ BỊ NHẢY KHI CUỘN) -->
+      <div class="fixed inset-0 pointer-events-none select-none overflow-hidden" style="z-index: 1;">
         <!-- Nền Sáng (bg_login_light.png) -->
         <img 
           id="bg-login-light"
@@ -65,10 +65,12 @@ function renderLoginScreen() {
         <div class="absolute inset-0 bg-black/10 dark:bg-black/40 transition-colors duration-300"></div>
       </div>
 
-      <!-- KHỐI CĂN CHÍNH GIỮA MÀN HÌNH (DEAD CENTER HORIZONTAL & VERTICAL) -->
-      <div class="min-h-full w-full flex items-center justify-center p-4 sm:p-6 py-8">
-        <!-- CARD ĐĂNG NHẬP: PHONG CÁCH LIQUID GLASS (KÍNH LỎNG SIÊU THỰC) -->
-        <div class="liquid-glass w-full max-w-md rounded-[36px] p-7 sm:p-9 text-center relative space-y-5 transition-colors duration-300 overflow-hidden text-spa-dark dark:text-white" style="--color-spa-border: rgba(255,255,255,0.45); --color-spa-bg: rgba(255,255,255,0.35); --color-spa-card: rgba(255,255,255,0.4); -webkit-mask-image: -webkit-radial-gradient(white, black); border-radius: 36px;">
+      <!-- KHỐI CUỘN NỘI DUNG (SCROLL CONTAINER ĐỘC LẬP - NỀN KHÔNG BỊ CUỘN THEO) -->
+      <div id="login-scroll-container" class="absolute inset-0 overflow-y-auto overflow-x-hidden" style="z-index: 2; overscroll-behavior-y: contain;">
+        <!-- KHỐI CĂN CHÍNH GIỮA MÀN HÌNH (SẼ TRƯỢT XUỐNG KHI KÉO RELOAD) -->
+        <div id="login-content-wrapper" class="min-h-full w-full flex items-center justify-center p-4 sm:p-6 py-8">
+          <!-- CARD ĐĂNG NHẬP: PHONG CÁCH LIQUID GLASS (KÍNH LỎNG SIÊU THỰC) -->
+          <div class="liquid-glass w-full max-w-md rounded-[36px] p-7 sm:p-9 text-center relative space-y-5 transition-colors duration-300 overflow-hidden text-spa-dark dark:text-white" style="--color-spa-border: rgba(255,255,255,0.45); --color-spa-bg: rgba(255,255,255,0.35); --color-spa-card: rgba(255,255,255,0.4); -webkit-mask-image: -webkit-radial-gradient(white, black); border-radius: 36px;">
         
         <!-- LỚP NỀN XANH THỦY TINH LỎNG KÈM QUẦNG SÁNG KHÚC XẠ (LIQUID GLASS AMBIENT CORE) -->
         <div class="absolute inset-0 m-0 -z-10 pointer-events-none select-none overflow-hidden rounded-[36px] transition-colors duration-300" style="-webkit-mask-image: -webkit-radial-gradient(white, black); border-radius: 36px;">
@@ -181,7 +183,8 @@ function renderLoginScreen() {
         </div>
       </div>
     </div>
-  `;
+  </div>
+`;
 }
 
 // Ẩn / hiện mật khẩu
