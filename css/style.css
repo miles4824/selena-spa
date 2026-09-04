@@ -175,17 +175,24 @@ h4, h5, h6 {
    ============================================================= */
 .liquid-glass {
   background: linear-gradient(145deg, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0.05) 40%, rgba(0, 0, 0, 0.12) 100%);
-  backdrop-filter: blur(32px) saturate(190%);
-  -webkit-backdrop-filter: blur(32px) saturate(190%);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
   border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 36px;
   box-shadow: 
     0 30px 70px -15px rgba(0, 0, 0, 0.5),
     0 15px 35px -10px rgba(0, 0, 0, 0.3),
-    inset 0 1.5px 1.5px 0 rgba(255, 255, 255, 0.75),
-    inset 0 -1.5px 1.5px 0 rgba(255, 255, 255, 0.15),
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.75),
+    inset 0 -1px 1px 0 rgba(255, 255, 255, 0.15),
     inset 0 0 25px rgba(255, 255, 255, 0.08);
   position: relative;
   overflow: hidden;
+  /* Fix Safari/WebKit border-radius clipping bug with backdrop-filter */
+  -webkit-mask-image: -webkit-radial-gradient(white, black);
+  mask-image: radial-gradient(white, black);
+  isolation: isolate;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
 }
 
 [data-theme="dark"] .liquid-glass, .dark .liquid-glass {
@@ -194,8 +201,8 @@ h4, h5, h6 {
   box-shadow: 
     0 35px 80px -15px rgba(0, 0, 0, 0.75),
     0 20px 40px -10px rgba(0, 0, 0, 0.55),
-    inset 0 1.5px 1.5px 0 rgba(255, 255, 255, 0.5),
-    inset 0 -1.5px 1.5px 0 rgba(0, 0, 0, 0.35),
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.5),
+    inset 0 -1px 1px 0 rgba(0, 0, 0, 0.35),
     inset 0 0 30px rgba(255, 255, 255, 0.05);
 }
 

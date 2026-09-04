@@ -68,18 +68,18 @@ function renderLoginScreen() {
       <!-- KHỐI CĂN CHÍNH GIỮA MÀN HÌNH (DEAD CENTER HORIZONTAL & VERTICAL) -->
       <div class="min-h-full w-full flex items-center justify-center p-4 sm:p-6 py-8">
         <!-- CARD ĐĂNG NHẬP: PHONG CÁCH LIQUID GLASS (KÍNH LỎNG SIÊU THỰC) -->
-        <div class="liquid-glass w-full max-w-md rounded-[36px] p-7 sm:p-9 text-center relative space-y-5 transition-colors duration-300 overflow-hidden text-spa-dark dark:text-white" style="--color-spa-border: rgba(255,255,255,0.45); --color-spa-bg: rgba(255,255,255,0.35); --color-spa-card: rgba(255,255,255,0.4);">
+        <div class="liquid-glass w-full max-w-md rounded-[36px] p-7 sm:p-9 text-center relative space-y-5 transition-colors duration-300 overflow-hidden text-spa-dark dark:text-white" style="--color-spa-border: rgba(255,255,255,0.45); --color-spa-bg: rgba(255,255,255,0.35); --color-spa-card: rgba(255,255,255,0.4); -webkit-mask-image: -webkit-radial-gradient(white, black); border-radius: 36px;">
         
         <!-- LỚP NỀN XANH THỦY TINH LỎNG KÈM QUẦNG SÁNG KHÚC XẠ (LIQUID GLASS AMBIENT CORE) -->
-        <div class="absolute inset-0 m-0 -z-10 pointer-events-none select-none overflow-hidden transition-colors duration-300">
+        <div class="absolute inset-0 m-0 -z-10 pointer-events-none select-none overflow-hidden rounded-[36px] transition-colors duration-300" style="-webkit-mask-image: -webkit-radial-gradient(white, black); border-radius: 36px;">
           <!-- Dải gradient khúc xạ ánh sáng lỏng (Liquid Refraction Gradient) -->
-          <div class="absolute inset-0 bg-gradient-to-br from-[#5E887E]/25 via-white/10 to-[#1F2D27]/30 dark:from-[#5E887E]/30 dark:via-[#3D544C]/40 dark:to-[#1F2D27]/60"></div>
+          <div class="absolute inset-0 rounded-[36px] bg-gradient-to-br from-[#5E887E]/25 via-white/10 to-[#1F2D27]/30 dark:from-[#5E887E]/30 dark:via-[#3D544C]/40 dark:to-[#1F2D27]/60"></div>
           
           <!-- Vệt sáng bóng kính cong phía trên (Liquid Curved Specular Reflection) -->
-          <div class="absolute -top-1/2 left-0 right-0 h-full bg-[radial-gradient(ellipse_at_top,_rgba(255,255,255,0.35)_0%,_rgba(255,255,255,0.05)_50%,_transparent_75%)]"></div>
+          <div class="absolute -top-1/2 left-0 right-0 h-full rounded-[36px] bg-[radial-gradient(ellipse_at_top,_rgba(255,255,255,0.35)_0%,_rgba(255,255,255,0.05)_50%,_transparent_75%)]"></div>
 
           <!-- Vầng sáng mặt trời khúc xạ góc trên trái (Sun Glow Caustic) -->
-          <div class="absolute -top-16 -left-16 w-52 h-52 rounded-full bg-white/30 blur-[50px]"></div>
+          <div class="absolute top-0 left-0 -translate-x-1/4 -translate-y-1/4 w-52 h-52 rounded-full bg-white/30 blur-[50px]"></div>
           
           <!-- Vầng sáng sương mai góc trên phải (Blue Mist Caustic) -->
           <div class="absolute top-1/4 -right-12 w-48 h-48 rounded-full bg-[#A7C7E7]/30 blur-[45px]"></div>
