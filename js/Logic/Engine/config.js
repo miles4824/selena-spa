@@ -77,11 +77,16 @@ function isUserOwner(u) {
   const phone = (typeof PhoneService !== 'undefined') ? PhoneService.normalize(u.phone) : String(u.phone || '').trim();
   return (role === 'admin' || role === 'chủ tiệm' || role === 'chủ sáng lập' || role === 'owner' || phone === '0949251144');
 }
-// 4. Quản lý Chế độ Sáng / Tối (Theme Manager - Light & Dark Mode)
+// 4. Quản lý Chế độ Sáng / Tối (Tự động theo thời gian thực: 6h - 18h Sáng, 18h - 6h Tối)
 function getTheme() {
+  // 1. Ưu tiên lựa chọn người dùng đã tự tay bấm công tắc
   const saved = localStorage.getItem('selena_theme');
-  if (saved) return saved;
-  return (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+  if (saved === 'dark' || saved === 'light') return saved;
+
+  // 2. Mặc định tự động theo THỜI GIAN THỰC TẾ TRONG NGÀY
+  const currentHour = new Date().getHours();
+  const isNight = currentHour < 6 || currentHour >= 18; // Trước 6h sáng hoặc sau 18h tối là ban đêm
+  return isNight ? 'dark' : 'light';
 }
 
 function setTheme(theme) {
