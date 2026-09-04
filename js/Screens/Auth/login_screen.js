@@ -48,14 +48,14 @@ function renderLoginScreen() {
           id="bg-login-light"
           src="images/bg_login_light.png?v=${APP_VERSION}" 
           alt="Zen Spa Light Background" 
-          class="absolute inset-0 w-full h-full object-cover object-center transition-opacity duration-700 ease-in-out dark:opacity-0 opacity-100"
+          class="bg-theme-light absolute inset-0 w-full h-full object-cover object-center"
         />
         <!-- Nền Tối (bg_login_dark.png) -->
         <img 
           id="bg-login-dark"
           src="images/bg_login_dark.png?v=${APP_VERSION}" 
           alt="Zen Spa Dark Background" 
-          class="absolute inset-0 w-full h-full object-cover object-center transition-opacity duration-700 ease-in-out dark:opacity-100 opacity-0"
+          class="bg-theme-dark absolute inset-0 w-full h-full object-cover object-center"
         />
         <!-- Lớp phủ sẫm nhẹ tạo chiều sâu cho tấm kính Liquid Glass -->
         <div class="absolute inset-0 bg-black/15 dark:bg-black/45 backdrop-blur-[1px] transition-colors duration-700"></div>
@@ -67,7 +67,7 @@ function renderLoginScreen() {
         <div class="liquid-glass w-full max-w-md rounded-[36px] p-7 sm:p-9 text-center relative space-y-5 transition-all duration-500 overflow-hidden text-white" style="--color-spa-dark: #FFFFFF; --color-spa-muted: rgba(255,255,255,0.82); --color-spa-hint: rgba(255,255,255,0.68); --color-spa-border: rgba(255,255,255,0.28); --color-spa-bg: rgba(255,255,255,0.14); --color-spa-card: rgba(40,58,52,0.5); --color-spa-sage: #A7C7E7; --color-spa-sage-light: rgba(255,255,255,0.22);">
         
         <!-- LỚP NỀN XANH THỦY TINH LỎNG KÈM QUẦNG SÁNG KHÚC XẠ (LIQUID GLASS AMBIENT CORE) -->
-        <div class="absolute inset-0 -z-10 pointer-events-none select-none overflow-hidden bg-[#3D544C]/65 dark:bg-[#1E2E28]/75 backdrop-blur-3xl transition-colors duration-500">
+        <div class="absolute inset-0 m-0 -z-10 pointer-events-none select-none overflow-hidden bg-[#3D544C]/65 dark:bg-[#1E2E28]/75 backdrop-blur-3xl transition-colors duration-500">
           <!-- Dải gradient khúc xạ ánh sáng lỏng (Liquid Refraction Gradient) -->
           <div class="absolute inset-0 bg-gradient-to-br from-[#5E887E]/35 via-[#3D544C]/45 to-[#1F2D27]/65"></div>
           
