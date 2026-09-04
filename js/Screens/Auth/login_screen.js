@@ -44,7 +44,7 @@ function renderLoginScreen() {
       <!-- LỚP HÌNH NỀN TOÀN TRANG: HỒ SEN VÀ CON THUYỀN (ZEN LOTUS POND BACKGROUND) -->
       <div class="fixed inset-0 -z-20 pointer-events-none select-none overflow-hidden">
         <img 
-          src="assets/images/lotus_boat_bg.jpg?v=${APP_VERSION}" 
+          src="images/lotus_boat_bg.jpg?v=${APP_VERSION}" 
           alt="Zen Lotus Pond" 
           class="w-full h-full object-cover object-center scale-105 transition-transform duration-1000"
         />
@@ -58,7 +58,7 @@ function renderLoginScreen() {
         <div class="w-full max-w-md rounded-[32px] border border-white/30 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.5)] backdrop-blur-2xl p-7 sm:p-9 text-center relative space-y-5 transition-colors duration-300 overflow-hidden text-white" style="--color-spa-dark: #FFFFFF; --color-spa-muted: rgba(255,255,255,0.8); --color-spa-hint: rgba(255,255,255,0.65); --color-spa-border: rgba(255,255,255,0.25); --color-spa-bg: rgba(255,255,255,0.15); --color-spa-card: rgba(40,58,52,0.6); --color-spa-sage: #A7C7E7; --color-spa-sage-light: rgba(255,255,255,0.2);">
         
         <!-- LỚP NỀN XANH HƠI TRONG SUỐT KÈM SÁNG TỐI BLUR (AMBIENT LIGHT MESH TRONG CARD) -->
-        <div class="absolute inset-0 -z-10 pointer-events-none select-none overflow-hidden bg-[#3D544C]/75 backdrop-blur-2xl">
+        <div class="absolute inset-0 -z-10 pointer-events-none select-none overflow-hidden bg-[#3D544C]/75 backdrop-blur-2xl m-0">
           <!-- Gradient nền xanh rêu trong suốt -->
           <div class="absolute inset-0 bg-gradient-to-b from-[#4A675E]/60 via-[#3D544C]/65 to-[#263731]/75"></div>
           
