@@ -252,6 +252,17 @@ ole_badge.js, ed_card.js, modal_shell.js.
      + js/Screens/Owner/: Màn hình riêng cho Chủ Sáng Lập (Home, History, Wallet).
      + js/Screens/POS/: Khu vực tạo ca & vào tour.
 
+4. **Quy Chuẩn Gọi Component Thuần Túy & Cấm Viết Fallback Trùng Lặp (Zero-Fallback Clutter Rule)**:
+   - **Tín nhiệm kiến trúc**: Mọi Component trong `js/UI/` (`AppButton`, `AppInput`, `AppTitle`, `ThemeToggle`, `StatCard`...) đã được nạp sẵn tại `index.html` và luôn luôn tồn tại 100%.
+   - **CẤM TUYỆT ĐỐI**: Không bao giờ được viết cấu trúc phòng thủ tam nguyên (ternary) kèm đoạn HTML dự phòng trùng lặp:
+     `❌ ${typeof AppInput === 'function' ? AppInput(...) : '<div>...HTML cũ trùng lặp...</div>'}`
+     `❌ ${typeof AppButton === 'function' ? AppButton(...) : '<button>...HTML cũ trùng lặp...</button>'}`
+   - Việc viết đoạn HTML fallback sau dấu `:` là "rác kỹ thuật" (technical debt) làm phình to mã nguồn gấp 2 lần, làm rối mắt và phá vỡ nguyên tắc Nguồn Chân Lý Duy Nhất (Single Source of Truth).
+   - **BẮT BUỘC**: Luôn gọi trực tiếp component thuần túy 1 dòng:
+     `✅ ${AppInput({ id: '...', label: '...' })}`
+     `✅ ${AppButton({ text: '...', variant: 'primary' })}`
+     `✅ ${ThemeToggle({ customClass: '...' })}`
+
 ---
 
 ## ⚡ 17. NGUYÊN TẮC REALTIME ĐỒNG BỘ KÉP TỪ GOOGLE SHEETS (DUAL-CHANNEL REALTIME & ZERO-REFRESH)
