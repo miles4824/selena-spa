@@ -36,7 +36,7 @@ function AppInput({
 
   return `
     <div class="space-y-1 text-left ${customClass}">
-      ${label ? `<label ${forAttr} class="block text-xs sm:text-sm font-bold text-spa-dark">${label}</label>` : ""}
+      ${label ? `<label ${forAttr} class="block text-sm font-bold text-spa-dark mb-2">${label}</label>` : ""}
       <div class="relative">
         ${
           icon
@@ -59,7 +59,7 @@ function AppInput({
           ${onInputAttr}
           ${onChangeAttr}
           autocomplete="${autoComplete}"
-          class="w-full bg-spa-bg border border-spa-border rounded-full p-4 ${paddingLeft} ${paddingRight} text-spa-dark text-sm sm:text-base font-bold ${monoClass} focus:outline-none focus:border-spa-sage focus:bg-spa-card transition-colors duration-200 placeholder:text-spa-hint/70 ${inputClass}"
+          class="w-full bg-spa-bg border border-spa-border rounded-full p-4 ${paddingLeft} ${paddingRight} text-spa-dark text-sm sm:text-base ${monoClass} focus:outline-none focus:border-spa-sage focus:bg-spa-card transition-colors duration-200 placeholder:text-spa-hint/70 ${inputClass}"
         >
         ${
           rightAction
