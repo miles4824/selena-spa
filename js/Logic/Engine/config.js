@@ -68,6 +68,56 @@ function setStored(key, val) {
   }
 }
 
+// 2b. Cấu hình giao diện mặc định & Trình tra cứu tb_config động
+const DEFAULT_UI_CONFIG = {
+  spa_brand_name: 'SELENA SPA',
+  spa_brand_slogan: 'Meditation & Luxury Wellness Care',
+  home_greeting_slogan: 'hôm nay sẵn sàng tỏa sáng chưa? ✨',
+  home_free_quote: 'Mỗi tour gội là một trải nghiệm thư giãn tuyệt vời gửi gắm đến khách hàng thân yêu.',
+  ph_login_phone: '0949251144',
+  ph_login_password: '••••••'
+};
+
+function getConfig(key, fallback = '') {
+  const uiConfig = getStored('ui_config', {});
+  const kLower = String(key).toLowerCase();
+  const kUpper = String(key).toUpperCase();
+  if (uiConfig && typeof uiConfig === 'object') {
+    if (uiConfig[key] !== undefined && uiConfig[key] !== '') return uiConfig[key];
+    if (uiConfig[kLower] !== undefined && uiConfig[kLower] !== '') return uiConfig[kLower];
+    if (uiConfig[kUpper] !== undefined && uiConfig[kUpper] !== '') return uiConfig[kUpper];
+  }
+  if (DEFAULT_UI_CONFIG[key] !== undefined) return DEFAULT_UI_CONFIG[key];
+  if (DEFAULT_UI_CONFIG[kLower] !== undefined) return DEFAULT_UI_CONFIG[kLower];
+  return fallback;
+}
+
+function applyDynamicUIConfig(customConfig) {
+  const cfg = { ...DEFAULT_UI_CONFIG, ...(customConfig || getStored('ui_config', {})) };
+
+  // 1. Cập nhật tên Spa & Slogan (Targeted DOM Mutation - không reload trang)
+  const brandNameEls = document.querySelectorAll('.brand-spa-name, #login-brand-name');
+  brandNameEls.forEach(el => {
+    if (el && cfg.spa_brand_name) el.innerText = cfg.spa_brand_name;
+  });
+
+  const brandSloganEls = document.querySelectorAll('.brand-spa-slogan, #login-brand-slogan');
+  brandSloganEls.forEach(el => {
+    if (el && cfg.spa_brand_slogan) el.innerText = cfg.spa_brand_slogan;
+  });
+
+  // 2. Placeholder màn hình Login
+  const logPhone = document.getElementById('login-phone');
+  if (logPhone && cfg.ph_login_phone) logPhone.placeholder = cfg.ph_login_phone;
+  const logPwd = document.getElementById('login-password');
+  if (logPwd && cfg.ph_login_password) logPwd.placeholder = cfg.ph_login_password;
+
+  // 3. Cập nhật Title Tab trình duyệt
+  if (cfg.spa_brand_name) {
+    document.title = `${cfg.spa_brand_name} - ${cfg.spa_brand_slogan || 'Management'}`;
+  }
+}
+
 // 3. Quản trị phiên người dùng hiện tại
 let currentUser = null;
 

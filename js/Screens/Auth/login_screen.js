@@ -39,8 +39,8 @@ function renderLoginScreen() {
         </div>
         
         <div class="space-y-1">
-          <h1 class="text-2xl sm:text-3xl font-extrabold text-spa-dark tracking-tight font-serif">SELENA SPA</h1>
-          <p class="text-xs sm:text-sm text-spa-muted font-medium">Meditation & Luxury Wellness Care</p>
+          <h1 id="login-brand-name" class="brand-spa-name text-2xl sm:text-3xl font-extrabold text-spa-dark tracking-tight font-serif">${(typeof getConfig === 'function') ? getConfig('spa_brand_name', 'SELENA SPA') : 'SELENA SPA'}</h1>
+          <p id="login-brand-slogan" class="brand-spa-slogan text-xs sm:text-sm text-spa-muted font-medium">${(typeof getConfig === 'function') ? getConfig('spa_brand_slogan', 'Meditation & Luxury Wellness Care') : 'Meditation & Luxury Wellness Care'}</p>
         </div>
 
         <div class="flex items-center justify-center">
@@ -206,4 +206,5 @@ function initLogin() {
   
   appContainer.innerHTML = renderLoginScreen();
   if (typeof lucide !== 'undefined') lucide.createIcons();
+  if (typeof applyDynamicUIConfig === 'function') applyDynamicUIConfig();
 }
