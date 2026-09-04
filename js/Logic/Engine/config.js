@@ -1,7 +1,7 @@
 // =============================================================
 // SELENA SPA - ENGINE CONFIG & LOCAL STORAGE (SINGLE SOURCE OF TRUTH)
 // =============================================================
-const APP_VERSION = 'v0.0.2.3';
+const APP_VERSION = 'v0.0.2.4';
 
 // 1. Danh sách người dùng mặc định ban đầu
 const DEFAULT_USERS = [
@@ -257,10 +257,16 @@ function initTheme() {
 
 function updateThemeToggleIcons() {
   const isDark = (document.documentElement.getAttribute('data-theme') === 'dark');
+  const iconName = isDark ? 'sun' : 'moon';
   document.querySelectorAll('.theme-toggle-icon').forEach(el => {
-    el.setAttribute('data-lucide', isDark ? 'sun' : 'moon');
+    const newIcon = document.createElement('i');
+    newIcon.setAttribute('data-lucide', iconName);
+    newIcon.className = 'theme-toggle-icon w-4 h-4';
+    el.replaceWith(newIcon);
   });
-  if (typeof lucide !== 'undefined') lucide.createIcons();
+  if (typeof lucide !== 'undefined' && typeof lucide.createIcons === 'function') {
+    lucide.createIcons();
+  }
 }
 
 // Tự động kiểm tra thời gian mỗi 30 giây để chuyển giao mượt mà giữa sáng & tối
