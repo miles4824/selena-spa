@@ -214,3 +214,9 @@ Nhằm đảm bảo giao diện thống nhất $100\%$ giữa Admin và Staff, d
    - **Tuyệt đối không nhồi nhét dữ liệu lớn vào thuộc tính DOM**: Thẻ HTML chỉ lưu trữ ID định danh ngắn (như `sessionId`, `receiptId`), không bao giờ nhét cả chuỗi JSON dữ liệu lớn vào thuộc tính `data-*` gây phình to cây DOM và rò rỉ bảo mật.
    - **Chống rò rỉ bộ nhớ (Memory Leaks)**: Sử dụng cơ chế hành động ủy quyền hoặc gọi hàm trực tiếp (`onclick="handleFunc()"`) thay vì gán `addEventListener` vô tội vạ trong các hàm render lặp lại làm tràn RAM thiết bị.
    - **Cập nhật trúng đích cục bộ (Targeted DOM Mutation)**: Khi dữ liệu từ Google Sheets (`tb_config`) hoặc Firebase Realtime bắn về, hệ thống chỉ cập nhật chính xác phần tử DOM cần đổi (bằng `innerText` hoặc `textContent`), tuyệt đối không xóa đi vẽ lại toàn bộ trang web gây giật lag hoặc hao pin.
+
+6. **Quy Chuẩn Thiết Kế Popup Modal Chuẩn Mobile (`ModalShell`)**:
+   - **Header ghim chặt trên đỉnh (Sticky Top)**: Luôn cố định tiêu đề và nút đóng tròn ✕ để người dùng có thể đóng modal bất kỳ lúc nào mà không bị trôi khi cuộn.
+   - **Body cuộn tự do ở giữa (Scrollable Center)**: Cuộn mượt mà với `overflow-y-auto overscroll-contain flex-1`.
+   - **Footer ghim chặt dưới đáy (Sticky Bottom)**: Luôn hiển thị sẵn các nút bấm hành động (`AppButton` Lưu / Hủy / Xác nhận) để người dùng bấm ngay mà không cần phải cuộn chuột xuống đáy.
+   - **Chiều cao tối đa thông minh**: Giới hạn trong khoảng `max-h-[calc(100dvh-48px)]` trừ khoảng đệm trên dưới vừa mắt, bo góc cong chuẩn `rounded-[28px]` và lớp phủ mờ `backdrop-blur-sm`.

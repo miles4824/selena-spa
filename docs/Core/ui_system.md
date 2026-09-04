@@ -2,6 +2,21 @@
 
 *Hồ sơ đặc tả kỹ thuật chuẩn hóa toàn bộ thành phần giao diện (UI Components) của dự án Selena Spa theo kiến trúc Component-Driven với Tailwind 4.*
 
+
+### D. Component `ModalShell`
+- **Cấu trúc chuẩn 3 tầng**:
+  + **Tầng 1 (Header Sticky)**: Ghim chặt trên đỉnh với icon, tiêu đề và nút đóng ✕ tròn `w-8 h-8 rounded-full`.
+  + **Tầng 2 (Body Scrollable)**: Cuộn mượt ở giữa với `overflow-y-auto overscroll-contain flex-1`.
+  + **Tầng 3 (Footer Sticky)**: Ghim chặt ở đáy chứa các nút bấm hành động (`AppButton`).
+- **Kích thước**: `max-h-[calc(100dvh-48px)]`, bo góc `rounded-[28px]`, viền `#F0EAE1`, đổ bóng `shadow-2xl`.
+
+### E. Component `RoleBadge`
+- `role: 'owner'`: Nền vàng hoàng gia `bg-[#FEF9C3] text-[#854D0E] border border-[#FEF08A]` kèm nhãn `👑 Chủ Sáng Lập`.
+- `role: 'staff'`: Nền cam đào nhạt `bg-[#FFF0EB] text-[#E58A7B] border border-[#FCDFD7]` kèm nhãn `💆 Kỹ Thuật Viên`.
+
+### F. Component `BedCard`
+- Quy chuẩn thẻ giường trực tiếp trên Admin Home: Tên giường (Giường số 01, 02...), tên khách, dịch vụ, thanh % thời gian chạy động, nhấp nháy đỏ khi lố giờ (`animate-pulse`), và nút bấm vào xem ca.
+
 ---
 
 ## 1. Mục Đích & Bối Cảnh Thực Tế Tại Tiệm (Purpose & Context)

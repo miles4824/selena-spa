@@ -452,40 +452,17 @@ function renderAdminLiveRunningTours() {
       ? sess.staffs.map(s => s.name).join(', ')
       : (sess.staff_1_name || 'KTV');
 
-    return `
-      <div class="p-4 rounded-3xl bg-[#FAF6F1] border border-[#F0EAE1] space-y-3 shadow-xs hover:border-[#E58A7B]/40 transition group">
-        <div class="flex justify-between items-start">
-          <div>
-            <div class="text-[11px] font-black text-[#E58A7B] uppercase tracking-wider flex items-center gap-1.5">
-              <span class="w-2 h-2 rounded-full ${isOverdue ? 'bg-rose-500' : 'bg-[#2E7D6D]'} animate-pulse"></span>
-              <span>Giường số 0${idx + 1}</span>
-            </div>
-            <div class="font-extrabold text-sm text-[#2D2424] mt-0.5">${sess.customer_name || 'Khách vãng lai'}</div>
-            <div class="text-xs text-[#7E7272]">${sess.service_name || 'Dịch vụ'}</div>
-          </div>
-          <span class="text-xs font-mono font-bold px-2.5 py-1 rounded-full ${isOverdue ? 'bg-rose-100 text-rose-700' : 'bg-[#E8F8F5] text-[#2E7D6D]'}">
-            ${elapsedMin}/${targetMin}p
-          </span>
-        </div>
-
-        <!-- Tiến trình thời gian -->
-        <div class="space-y-1">
-          <div class="w-full h-2 bg-white rounded-full overflow-hidden shadow-inner">
-            <div class="h-full ${isOverdue ? 'bg-rose-500' : 'bg-gradient-to-r from-[#2E7D6D] to-[#3B9E8B]'} rounded-full transition-all duration-500" style="width: ${progressPct}%"></div>
-          </div>
-          <div class="flex justify-between text-[10px] text-[#A39696] font-medium">
-            <span>Bắt đầu: ${sess.start_time || '--:--'}</span>
-            <span>KTV: ${staffNames}</span>
-          </div>
-        </div>
-
-        <!-- Nút vào xem ca này -->
-        <button onclick="handleAdminInspectSession('${sess.session_id}')" class="w-full py-2 px-3 rounded-2xl bg-white hover:bg-[#FFF0EB] border border-[#EFE8DF] hover:border-[#E58A7B]/40 text-[#2D2424] hover:text-[#E58A7B] text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs active:scale-98">
-          <i data-lucide="timer" class="w-3.5 h-3.5 text-[#E58A7B]"></i>
-          <span>Xem / Chăm Sóc Ca Này</span>
-        </button>
-      </div>
-    `;
+    if (typeof BedCard === 'function') {
+      return BedCard({
+        sess,
+        bedIndex: idx + 1,
+        elapsedMin,
+        targetMin,
+        progressPct,
+        isOverdue,
+        staffNames
+      });
+    }
   }).join('');
 
   if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
