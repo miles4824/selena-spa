@@ -172,31 +172,25 @@ h4, h5, h6 {
    LIQUID GLASS (KÍNH LỎNG SIÊU THỰC - VISIONOS & LUXURY ZEN STYLE)
    ============================================================= */
 .liquid-glass {
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0.05) 40%, rgba(0, 0, 0, 0.12) 100%);
-  backdrop-filter: blur(28px) saturate(180%);
-  -webkit-backdrop-filter: blur(28px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.08) 40%, rgba(0, 0, 0, 0.08) 100%);
+  backdrop-filter: blur(18px) saturate(160%);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.45);
   border-radius: 36px;
   box-shadow: 
-    0 30px 70px -15px rgba(0, 0, 0, 0.5),
-    0 15px 35px -10px rgba(0, 0, 0, 0.3),
-    inset 0 1px 1px 0 rgba(255, 255, 255, 0.75),
-    inset 0 -1px 1px 0 rgba(255, 255, 255, 0.15),
-    inset 0 0 25px rgba(255, 255, 255, 0.08);
+    0 20px 50px -10px rgba(0, 0, 0, 0.35),
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.65);
   position: relative;
   overflow: hidden;
   isolation: isolate;
 }
 
 [data-theme="dark"] .liquid-glass, .dark .liquid-glass {
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.03) 40%, rgba(0, 0, 0, 0.4) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.03) 40%, rgba(0, 0, 0, 0.35) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   box-shadow: 
-    0 35px 80px -15px rgba(0, 0, 0, 0.75),
-    0 20px 40px -10px rgba(0, 0, 0, 0.55),
-    inset 0 1px 1px 0 rgba(255, 255, 255, 0.5),
-    inset 0 -1px 1px 0 rgba(0, 0, 0, 0.35),
-    inset 0 0 30px rgba(255, 255, 255, 0.05);
+    0 25px 60px -10px rgba(0, 0, 0, 0.6),
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.4);
 }
 
 /* =============================================================
@@ -246,5 +240,16 @@ h4, h5, h6 {
 .dark .app-input-group:focus-within .app-input-icon {
   color: #FFFFFF !important;
 }
+
+/* =============================================================
+   BUTTON ĐĂNG NHẬP NGAY: CHỮ & ICON LUÔN MÀU TRẮNG
+   ============================================================= */
+.bg-spa-brand,
+.bg-spa-brand span,
+.bg-spa-brand i,
+.bg-spa-brand svg {
+  color: #FFFFFF !important;
+}
+
 
 

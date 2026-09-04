@@ -43,19 +43,19 @@ function renderLoginScreen() {
     <div id="screen-login" class="fixed inset-0 z-50 overflow-hidden">
       <!-- LỚP HÌNH NỀN CỐ ĐỊNH 100% TUYỆT ĐỐI (STATIC WALLPAPER - KHÔNG BAO GIỜ BỊ NHẢY KHI CUỘN) -->
       <div class="fixed inset-0 pointer-events-none select-none overflow-hidden" style="z-index: 1;">
-        <!-- Nền Sáng (bg_login_light.png) -->
+        <!-- Nền Sáng (bg_login_light.jpg - Tối ưu siêu nhẹ 164KB) -->
         <img 
           id="bg-login-light"
-          src="images/bg_login_light.png?v=${APP_VERSION}" 
+          src="images/bg_login_light.jpg?v=${APP_VERSION}" 
           alt="Zen Spa Light Background" 
           loading="eager"
           decoding="async"
           class="bg-theme-light"
         />
-        <!-- Nền Tối (bg_login_dark.png) -->
+        <!-- Nền Tối (bg_login_dark.jpg - Tối ưu siêu nhẹ 140KB) -->
         <img 
           id="bg-login-dark"
-          src="images/bg_login_dark.png?v=${APP_VERSION}" 
+          src="images/bg_login_dark.jpg?v=${APP_VERSION}" 
           alt="Zen Spa Dark Background" 
           loading="eager"
           decoding="async"
@@ -80,17 +80,17 @@ function renderLoginScreen() {
           <!-- Vệt sáng bóng kính cong phía trên (Liquid Curved Specular Reflection) -->
           <div class="absolute -top-1/2 left-0 right-0 h-full rounded-[36px] bg-[radial-gradient(ellipse_at_top,_rgba(255,255,255,0.35)_0%,_rgba(255,255,255,0.05)_50%,_transparent_75%)]"></div>
 
-          <!-- Vầng sáng mặt trời khúc xạ góc trên trái (Sun Glow Caustic) -->
-          <div class="absolute top-0 left-0 -translate-x-1/4 -translate-y-1/4 w-52 h-52 rounded-full bg-white/30 blur-[50px]"></div>
+          <!-- Vầng sáng mặt trời khúc xạ góc trên trái (Sun Glow Caustic - Radial Gradient thuần không ngốn GPU) -->
+          <div class="absolute top-0 left-0 -translate-x-1/4 -translate-y-1/4 w-52 h-52 rounded-full" style="background: radial-gradient(circle, rgba(255,255,255,0.35) 0%, transparent 70%);"></div>
           
           <!-- Vầng sáng sương mai góc trên phải (Blue Mist Caustic) -->
-          <div class="absolute top-1/4 -right-12 w-48 h-48 rounded-full bg-[#A7C7E7]/30 blur-[45px]"></div>
+          <div class="absolute top-1/4 -right-12 w-48 h-48 rounded-full" style="background: radial-gradient(circle, rgba(167,199,231,0.3) 0%, transparent 70%);"></div>
           
           <!-- Vầng sáng cánh sen hồng phấn góc giữa bên trái (Lotus Petal Caustic) -->
-          <div class="absolute top-2/3 -left-10 w-44 h-44 rounded-full bg-[#E8AEB7]/30 blur-[45px]"></div>
+          <div class="absolute top-2/3 -left-10 w-44 h-44 rounded-full" style="background: radial-gradient(circle, rgba(232,174,183,0.3) 0%, transparent 70%);"></div>
 
           <!-- Vầng bóng sâu thẳm góc dưới phải (Deep Caustic Shadow) -->
-          <div class="absolute -bottom-20 -right-12 w-60 h-60 rounded-full bg-spa-dark/20 dark:bg-[#0D1512]/60 blur-[60px]"></div>
+          <div class="absolute -bottom-20 -right-12 w-60 h-60 rounded-full" style="background: radial-gradient(circle, rgba(13,21,18,0.35) 0%, transparent 70%);"></div>
           
           <!-- Lớp phủ ánh sáng tự nhiên mờ ảo -->
           <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-white/20 via-transparent to-black/25"></div>
