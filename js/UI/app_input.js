@@ -1,4 +1,4 @@
-﻿// =============================================================
+// =============================================================
 // SELENA SPA - UI COMPONENT: APP INPUT (TAILWIND 4 & MINDORA LUXURY)
 // Khối 1: Giao diện thuần túy - Không chứa logic nghiệp vụ
 // =============================================================
@@ -37,11 +37,11 @@ function AppInput({
   return `
     <div class="space-y-1 text-left ${customClass}">
       ${label ? `<label ${forAttr} class="block text-sm font-bold text-spa-dark mb-2">${label}</label>` : ""}
-      <div class="relative">
+      <div class="relative group app-input-group">
         ${
           icon
             ? `
-          <div class="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none text-spa-hint flex items-center justify-center">
+          <div class="app-input-icon absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none text-spa-hint group-focus-within:text-spa-dark dark:group-focus-within:text-white transition-colors duration-200 flex items-center justify-center">
             <i data-lucide="${icon}" class="w-4 h-4"></i>
           </div>
         `

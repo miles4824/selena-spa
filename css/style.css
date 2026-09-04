@@ -242,3 +242,14 @@ h4, h5, h6 {
   opacity: 1;
 }
 
+/* =============================================================
+   INPUT ICON FOCUS TRANSITION (text-spa-hint -> text-spa-dark)
+   ============================================================= */
+.app-input-group:focus-within .app-input-icon {
+  color: var(--color-spa-dark) !important;
+}
+
+[data-theme="dark"] .app-input-group:focus-within .app-input-icon,
+.dark .app-input-group:focus-within .app-input-icon {
+  color: #FFFFFF !important;
+}

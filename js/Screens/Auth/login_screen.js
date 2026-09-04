@@ -126,7 +126,7 @@ function renderLoginScreen() {
             icon: "phone",
             required: true,
             isMono: true,
-            autoComplete: "username",
+            autoComplete: "off",
           })}
 
           <!-- Ô nhập Mật khẩu (AppInput Component) -->
@@ -137,9 +137,9 @@ function renderLoginScreen() {
             placeholder: getConfig("ph_login_password", "••••••"),
             icon: "lock",
             required: true,
-            autoComplete: "current-password",
+            autoComplete: "off",
             rightAction: `
-              <button type="button" onclick="togglePasswordVisibility()" class="text-spa-hint hover:text-spa-dark p-1 cursor-pointer transition">
+              <button type="button" onclick="togglePasswordVisibility()" class="text-spa-hint group-focus-within:text-spa-dark dark:group-focus-within:text-white hover:text-spa-dark p-1 cursor-pointer transition">
                 <i data-lucide="eye" id="login-eye-icon" class="w-5 h-5"></i>
               </button>
             `,
@@ -307,4 +307,16 @@ function initLogin() {
   if (typeof applyDynamicUIConfig === "function") applyDynamicUIConfig();
   if (typeof fetchLiveConfigFromSheet === "function")
     fetchLiveConfigFromSheet();
+
+  // Ngăn chặn trình duyệt tự động nhảy con trỏ / bật bàn phím ảo trên mobile khi F5 hoặc mở app
+  if (document.activeElement && typeof document.activeElement.blur === "function") {
+    document.activeElement.blur();
+  }
+  setTimeout(() => {
+    const active = document.activeElement;
+    if (active && (active.tagName === "INPUT" || active.tagName === "TEXTAREA")) {
+      active.blur();
+    }
+  }, 60);
 }
+
