@@ -83,8 +83,12 @@ function renderOwnerHome(user) {
           id: "owner-today-revenue",
           title: "Doanh Thu Hôm Nay",
           value: snapshot.formattedRevenue,
-          subtitle: "Thực thu toàn tiệm",
+          subtitle: "Bấm để ẩn / hiện số tiền",
           color: "coral",
+          isPrivacy: true,
+          isMasked: snapshot.isMasked,
+          privacyEyeId: "owner-rev-eye-icon",
+          onPrivacyToggle: "handleOwnerTogglePrivacy()",
         })
       : "";
 
@@ -194,7 +198,7 @@ function renderOwnerHome(user) {
           </h3>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3.5">
           ${revCardHtml}
           ${custCardHtml}
           ${bedsCardHtml}
@@ -318,10 +322,32 @@ function promptEditAnnouncement() {
   }
 }
 
+/**
+ * Xử lý sự kiện bấm nút mắt ẩn/hiện doanh thu toàn tiệm riêng tư (Chủ tiệm)
+ */
+function handleOwnerTogglePrivacy() {
+  if (typeof HomeService === "undefined") return;
+  const isMasked = HomeService.toggleOwnerRevenuePrivacy();
+  const valEl = document.getElementById("owner-today-revenue");
+  const eyeIcon = document.getElementById("owner-rev-eye-icon");
+
+  if (valEl) {
+    const snapshot = HomeService.getOwnerTodaySnapshot();
+    valEl.innerText = isMasked ? "•••••• đ" : snapshot.formattedRevenue;
+  }
+
+  if (eyeIcon) {
+    eyeIcon.setAttribute("data-lucide", isMasked ? "eye-off" : "eye");
+    if (typeof lucide !== "undefined" && lucide.createIcons)
+      lucide.createIcons();
+  }
+}
+
 // Xuất ra phạm vi toàn cục
 if (typeof window !== "undefined") {
   window.renderOwnerHome = renderOwnerHome;
   window.refreshLiveBeds = refreshLiveBeds;
   window.handleAdminInspectSession = handleAdminInspectSession;
   window.promptEditAnnouncement = promptEditAnnouncement;
+  window.handleOwnerTogglePrivacy = handleOwnerTogglePrivacy;
 }

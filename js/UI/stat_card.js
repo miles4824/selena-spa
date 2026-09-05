@@ -8,6 +8,7 @@ function StatCard({
   subtitle = '',
   color = 'mint', // 'mint' | 'blue' | 'purple' | 'coral'
   isPrivacy = false,
+  isMasked = true,
   privacyEyeId = '',
   onPrivacyToggle = '',
   customClass = ''
@@ -40,7 +41,7 @@ function StatCard({
 
   const eyeBtn = isPrivacy ? `
     <button type="button" onclick="${onPrivacyToggle}" class="${c.text}/70 hover:${c.text} p-0.5 cursor-pointer transition" title="Ẩn/hiện số tiền">
-      <i id="${privacyEyeId}" data-lucide="eye-off" class="w-3.5 h-3.5"></i>
+      <i id="${privacyEyeId}" data-lucide="${isMasked ? 'eye-off' : 'eye'}" class="w-3.5 h-3.5"></i>
     </button>
   ` : '';
 

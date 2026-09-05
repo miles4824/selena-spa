@@ -106,6 +106,7 @@ function renderStaffHome(user) {
           subtitle: "Bấm để ẩn / hiện số tiền",
           color: "mint",
           isPrivacy: true,
+          isMasked: stats.isMasked,
           privacyEyeId: "staff-comm-eye-icon",
           onPrivacyToggle: "handleStaffTogglePrivacy()",
         })

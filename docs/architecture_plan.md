@@ -139,6 +139,9 @@ Toàn bộ hệ thống giao diện được quy chuẩn trên 5 gam màu phong 
 ---
 
 ## 6. Lịch Sử Phiên Bản & Lưu Vết (Changelog)
+- **v0.0.4.4 (2026-09-05)**:
+  - Tích hợp tính năng bảo mật ẩn/hiện số tiền Doanh Thu Hôm Nay (`owner-today-revenue`) cho Chủ Sáng Lập qua `HomeService.toggleOwnerRevenuePrivacy()` và hàm xử lý `handleOwnerTogglePrivacy()`.
+  - Hỗ trợ tham số `isMasked` linh hoạt trong `StatCard` để hiển thị đúng biểu tượng `eye` / `eye-off`.
 - **v0.0.4.3 (2026-09-05)**:
   - Khắc phục lỗi mất màu nền gradient trên thẻ `toursCardHtml` (`StatCard` variant `coral` - Số Tour Đã Gội) bằng class `.stat-card-coral` chuẩn CSS gradient và khai báo `@theme` trực tiếp trong `<style type="text/tailwindcss">` của `index.html`.
 - **v0.0.4.2 (2026-09-05)**:

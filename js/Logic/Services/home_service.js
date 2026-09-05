@@ -50,6 +50,25 @@ function toggleStaffCommPrivacy() {
 }
 
 /**
+ * Quản lý trạng thái che doanh thu riêng tư của Chủ tiệm (Privacy Mode)
+ */
+function isOwnerRevenueMasked() {
+  try {
+    return localStorage.getItem('selena_owner_rev_masked') !== 'false';
+  } catch (e) {
+    return true;
+  }
+}
+
+function toggleOwnerRevenuePrivacy() {
+  const next = !isOwnerRevenueMasked();
+  try {
+    localStorage.setItem('selena_owner_rev_masked', String(next));
+  } catch (e) {}
+  return next;
+}
+
+/**
  * Kiểm tra xem người dùng (KTV hoặc Chủ tiệm) có đang trong tour nào không
  * @param {Object} user - Thông tin currentUser
  * @returns {Object} { isRunning, session, elapsedMin, targetMin }
@@ -240,10 +259,13 @@ function getOwnerTodaySnapshot() {
 
   const activeTours = getLiveRunningTours();
   const totalBeds = 6; // Số giường mặc định toàn tiệm
+  const isMasked = isOwnerRevenueMasked();
+  const formattedRevenue = isMasked ? '•••••• đ' : formatMoney(todayRevenue);
 
   return {
     todayRevenue,
-    formattedRevenue: formatMoney(todayRevenue),
+    formattedRevenue,
+    isMasked,
     todayCustomers: todayReceipts.length,
     activeBedsCount: activeTours.length,
     totalBedsCount: totalBeds
@@ -285,6 +307,8 @@ if (typeof window !== 'undefined') {
     toDateKey,
     isStaffCommMasked,
     toggleStaffCommPrivacy,
+    isOwnerRevenueMasked,
+    toggleOwnerRevenuePrivacy,
     checkUserRunningTour,
     getStaffTodayStats,
     getLiveRunningTours,
