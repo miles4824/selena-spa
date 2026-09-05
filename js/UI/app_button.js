@@ -26,7 +26,7 @@ function AppButton({
       "bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 hover:bg-rose-100 border border-rose-200 dark:border-rose-900/50 font-bold",
     pink: "border-spa-brand/40 hover:border-spa-brand bg-spa-brand/5 hover:bg-spa-brand/10 text-spa-brand dark:text-spa-brand",
     dashPink:
-      "border-spa-brand/40 hover:border-spa-brand bg-spa-brand/5 hover:bg-spa-brand/10 text-spa-brand dark:text-spa-brand border border-dashed",
+      "border-spa-brand/40 hover:border-spa-brand bg-spa-brand/5 hover:bg-spa-brand/10 text-spa-brand dark:text-spa-brand border border-dashed rounded-full",
   };
 
   const sizeStyles = {
@@ -45,6 +45,15 @@ function AppButton({
   const typeAttr = type ? `type="${type}"` : 'type="button"';
   const disabledAttr = disabled ? "disabled" : "";
 
+  // Tự động nhận diện màu text nếu có customClass chứa class màu (ví dụ text-spa-brand)
+  let detectedCustomTextColor = "";
+  if (customClass) {
+    const match = customClass.match(
+      /\btext-(spa-[a-z0-9-]+|[a-z]+-[1-9]00|white|black)\b/
+    );
+    if (match) detectedCustomTextColor = match[0];
+  }
+
   // Màu sắc icon đồng bộ theo variant hoặc prop iconColor
   const variantIconColors = {
     primary: "text-white",
@@ -55,7 +64,10 @@ function AppButton({
     secondary: "text-spa-dark dark:text-white",
   };
   const activeIconColor =
-    iconColor || variantIconColors[variant] || "currentColor";
+    iconColor ||
+    detectedCustomTextColor ||
+    variantIconColors[variant] ||
+    "currentColor";
   const activeIcon = iconSvg || icon;
   const currentIconSize = iconSizes[size] || iconSizes.lg;
 

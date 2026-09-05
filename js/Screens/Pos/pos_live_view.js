@@ -31,11 +31,11 @@ const PosLiveView = {
           ${AppButton({
             text: "Đổi Dịch Vụ",
             icon: "edit-3",
-            variant: "secondary",
+            variant: "pink",
             size: "sm",
             onClick: "ServiceEditModal.open()",
             customClass:
-              "!rounded-full bg-spa-brand/10 hover:bg-spa-brand/20 text-spa-brand border-spa-brand/30 shrink-0 font-bold",
+              "!rounded-full shrink-0 font-bold border border-spa-brand/30",
           })}
         </div>
         <div class="flex items-center gap-1.5 text-xs sm:text-sm text-spa-muted dark:text-white/60">
