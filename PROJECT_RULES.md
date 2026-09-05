@@ -23,10 +23,7 @@
 - Sau khi hoàn thành bất kỳ tính năng mới hoặc thay đổi cấu trúc nào:
   - Cập nhật phiên bản (+1) và ghi nội dung đã sửa vào **Mục 6 (Lịch Sử Thay Đổi & Lưu Vết)** của file `.md` tương ứng trong `docs/`.
   - Nếu có thay đổi cấu trúc file/module: **Cập nhật lại `selena_spa_master_architecture.md` và `PROJECT_RULES.md`**.
-  - Nếu có thay đổi Database: Tuân thủ nghiêm ngặt **Quy tắc 4 bước** trong [`selena_spa_database_architecture.md`](selena_spa_database_architecture.md) (Cập nhật Sheet $
-ightarrow$ Cập nhật `Code.gs` $
-ightarrow$ Triển khai New Deployment $
-ightarrow$ Cập nhật tài liệu Database).
+  - Nếu có thay đổi Database: Tuân thủ nghiêm ngặt **Quy tắc 4 bước** trong [`selena_spa_database_architecture.md`](selena_spa_database_architecture.md) (Cập nhật Sheet → Cập nhật `Code.gs` → Triển khai New Deployment → Cập nhật tài liệu Database).
 
 ---
 
@@ -109,22 +106,11 @@ ightarrow$ Cập nhật tài liệu Database).
 
 ## 🔢 11. NGUYÊN TẮC ĐÁNH SỐ PHIÊN BẢN HỆ THỐNG (DECIMAL VERSIONING RULE)
 - **Quy tắc nhảy số tuần tự hệ thập phân (0 – 9 Rollover)**: Mỗi lần chỉnh sửa, cập nhật code hoặc tính năng mới, số phiên bản **BẮT BUỘC tăng tuần tự 1 đơn vị theo đúng chuỗi thập phân**:
-  - `v0.0.0.1` $
-ightarrow$ `v0.0.0.2` $
-ightarrow$ ... $
-ightarrow$ `v0.0.0.8` $
-ightarrow$ `v0.0.0.9`
-  - Sau `.9` $
-ightarrow$ Nhảy số hàng trước thành: **`v0.0.1.0`**
-  - Tiếp tục: `v0.0.1.0` $
-ightarrow$ `v0.0.1.1` $
-ightarrow$ ... $
-ightarrow$ `v0.0.1.9` $
-ightarrow$ **`v0.0.2.0`**
-  - Khi đạt đến `v0.0.9.9` $
-ightarrow$ Nhảy tiếp thành: **`v0.1.0.0`**
-  - Khi đạt đến `v0.9.9.9` $
-ightarrow$ Nhảy tiếp thành: **`v1.0.0.0`** (Bản phát hành chính thức toàn diện)
+  - `v0.0.0.1` → `v0.0.0.2` → ... → `v0.0.0.8` → `v0.0.0.9`
+  - Sau `.9` → Nhảy số hàng trước thành: **`v0.0.1.0`**
+  - Tiếp tục: `v0.0.1.0` → `v0.0.1.1` → ... → `v0.0.1.9` → **`v0.0.2.0`**
+  - Khi đạt đến `v0.0.9.9` → Nhảy tiếp thành: **`v0.1.0.0`**
+  - Khi đạt đến `v0.9.9.9` → Nhảy tiếp thành: **`v1.0.0.0`** (Bản phát hành chính thức toàn diện)
 - **Tuyệt đối không nhảy cóc**: Không được bỏ qua bất kỳ số nào trong chuỗi thập phân.
 - **Đồng bộ bắt buộc tại 4 vị trí**:
   1. `index.html` (Toàn bộ query string `?v=v0.0.0.x` của các file script, css, icon, manifest).
@@ -183,16 +169,19 @@ Mỗi khi người dùng yêu cầu gửi mã dữ liệu / dữ liệu mẫu / 
 ## 🧩 15. NGUYÊN TẮC HỆ THỐNG UI SYSTEM & REUSABLE COMPONENTS (TAILWIND 4 COMPONENT-DRIVEN)
 Nhằm đảm bảo giao diện thống nhất $100\%$ giữa Admin và Staff, dễ dàng tùy biến giao diện bằng **Tailwind 4** mà **chỉ cần sửa đúng 1 nơi duy nhất**, toàn bộ dự án tuân thủ các quy chuẩn sau:
 
-1. **Kiến Trúc Module Tách Biệt Theo File Độc Lập (`js/Core/Components/`)**:
+1. **Kiến Trúc Module Tách Biệt Theo File Độc Lập (`js/UI/`)**:
    - Mỗi loại thành phần giao diện được đặt trong **1 file riêng biệt** mang tên thành phần đó (theo chuẩn snake_case):
      + `app_button.js`: Nút bấm hành động toàn app (`AppButton`).
+     + `app_card.js`: Khung thẻ nền đa năng (`AppCard`), hỗ trợ tham số `ambient: true` (tích hợp sẵn khối Ambient Glow Spheres 5 màu Mindora), bo cong mềm mại với chuẩn WebKit isolation.
      + `stat_card.js`: Thẻ số liệu & thành tích (`StatCard`).
-     + `status_badge.js`: Huy hiệu trạng thái Sẵn sàng / Trong tour (`StatusBadge`).
-     + `app_title.js`: Chuẩn hóa kiểu dáng tiêu đề toàn hệ thống (`AppTitle`).
-     + `role_badge.js`: Huy hiệu vai trò Chủ tiệm / KTV (`RoleBadge`).
      + `bed_card.js`: Thẻ giám sát giường trực tiếp (`BedCard`).
-     + `home_banner.js`: Khung banner chào đón (`HomeBanner`).
-     + `modal_shell.js`: Khung nền popup chuẩn (`ModalShell`).
+     + `status_badge.js`: Huy hiệu trạng thái Sẵn sàng / Trong tour / Trống (`StatusBadge`).
+     + `role_badge.js`: Huy hiệu vai trò Chủ tiệm / KTV (`RoleBadge`).
+     + `app_title.js`: Chuẩn hóa kiểu dáng tiêu đề toàn hệ thống (`AppTitle`).
+     + `modal_shell.js`: Khung nền popup chuẩn 3 tầng (`ModalShell`).
+     + `theme_toggle.js`: Nút gạt chuyển đổi giao diện Sáng / Tối (`ThemeToggle`).
+     + `bottom_nav.js`: Thanh điều hướng đáy nổi kính mờ kèm viên thuốc trượt (`renderBottomNav`, `updateNavSlidingPill`, `navigateTab`).
+     + `pull_to_refresh.js`: Cơ chế kéo để làm mới dữ liệu màn hình (`initPullToRefresh`).
    - Tuyệt đối không gộp chung toàn bộ component vào 1 file khổng lồ khó quản lý.
 
 2. **Nguyên Tắc Phân Tách Trách Nhiệm (Decoupling Giao Diện vs Dữ Liệu/Hành Động)**:
@@ -200,7 +189,7 @@ Nhằm đảm bảo giao diện thống nhất $100\%$ giữa Admin và Staff, d
    - **Nơi gọi component truyền vào DỮ LIỆU & HÀNH ĐỘNG**:
      + `text` hoặc `configKey`: Câu chữ hiển thị (gõ trực tiếp hoặc lấy tự động từ `tb_config` trên Google Sheets).
      + `onClick`: Hành động khi bấm (hàm chuyển tab `showView`, mở modal, thanh toán...).
-     + `variant` / `color` / `size` / `level`: Chọn biến thể hiển thị theo ngữ cảnh.
+     + `variant` / `color` / `size` / `level` / `ambient`: Chọn biến thể hiển thị theo ngữ cảnh.
 
 3. **Mô Hình Khung Xương & Nội Thất (Hybrid Architecture với `views/`)**:
    - Thư mục `views/` giữ các file HTML đóng vai trò **khung sườn (Layout Skeleton)** với các hộp `<div>` rỗng sạch sẽ.
@@ -228,29 +217,46 @@ Nhằm đảm bảo giao diện thống nhất $100\%$ giữa Admin và Staff, d
      + **Footer Pinned**: Các nút bấm hành động chuẩn `${AppButton()}` ghim chặt dưới đáy, không bị trôi khi cuộn.
      + **Chiều cao tối đa**: Luôn giới hạn `max-h-[calc(100dvh-48px)]` và bo góc cong `rounded-[28px]`.
    - Tuyệt đối cấm viết mã HTML modal tự do làm lệch chuẩn giao diện giữa các tính năng.
+
+8. **Quy Chuẩn Chống Lỗi WebKit Bo Góc Bị Xén ("Cạnh Bo Cạnh Không")**:
+   - Trên trình duyệt iOS Safari / WebKit, các thẻ hoặc container có `rounded-[28px]` kết hợp `overflow-hidden` và phần tử con có background blur/glow thường gặp lỗi viền bo bị xén nham nhở, cạnh bo cạnh không do xung đột layer compositing của GPU.
+   - Bắt buộc áp dụng bộ 3 thuộc tính đồng bộ trực tiếp vào style:
+     ```css
+     style="-webkit-mask-image: -webkit-radial-gradient(white, black); border-radius: 28px; -webkit-border-radius: 28px; isolation: isolate; transform: translateZ(0);"
+     ```
+   - Thuộc tính này ép WebKit tạo layer cô lập (isolated stacking context) và kích hoạt GPU hardware acceleration, đảm bảo viền bo tròn hoàn hảo $100\%$ không bao giờ bị lem hay xén mép. Đã được tích hợp sẵn trong `AppCard`, `StatCard`, `BedCard`.
+
+9. **Quy Chuẩn Xử Lý Safe Area Notch / Dynamic Island Tránh Bị Che Khi Mở Lần Đầu**:
+   - Trên iOS WebKit và PWA, khi ứng dụng vừa khởi động lần đầu, thuộc tính `env(safe-area-inset-top)` có thể trả về `0px` trước khi người dùng chạm hoặc cuộn trang, dẫn đến nội dung bị đè lên tai thỏ / Dynamic Island.
+   - Bắt buộc sử dụng hàm `max()` với khoảng đệm cơ sở cố định:
+     ```css
+     padding-top: max(54px, calc(env(safe-area-inset-top, 0px) + 12px));
+     bottom: max(14px, calc(env(safe-area-inset-bottom, 0px) + 6px));
+     ```
+   - Đảm bảo ngay từ millisecond đầu tiên khi mở app, khoảng cách luôn tối thiểu $54\text{px}$ trên đỉnh và $14\text{px}$ dưới đáy, không phụ thuộc vào độ trễ đọc `env()` của trình duyệt.
 ---
 
 ## 🏛️ 16. NGUYÊN TẮC KIỀNG 3 CHÂN BẤT BIẾN (THE TRIAD ARCHITECTURE: UI + LOGIC -> SCREENS)
 Toàn bộ hệ thống tổ chức nghiêm ngặt theo mô hình 3 khối rõ rệt, không bao giờ được lẫn lộn:
 
-1. **Khối Giao Diện (js/UI/)**:
+1. **Khối Giao Diện (`js/UI/`)**:
    - Chỉ quản lý vẻ đẹp, bo góc, màu sắc Tailwind 4 và HTML Template Literals.
-   - Nhận tham số { text, variant, icon, color... } và trả về HTML string.
+   - Nhận tham số `{ text, variant, icon, color... }` và trả về HTML string.
    - Tuyệt đối cấm tính toán số học, cấm gọi API mạng, cấm thao tác dữ liệu.
-   - Bao gồm: pp_button.js, pp_title.js, pp_card.js, stat_card.js, status_badge.js, 
-ole_badge.js, ed_card.js, modal_shell.js.
+   - Bao gồm: `app_button.js`, `app_title.js`, `app_card.js`, `stat_card.js`, `status_badge.js`, `role_badge.js`, `bed_card.js`, `modal_shell.js`, `theme_toggle.js`, `bottom_nav.js`, `pull_to_refresh.js`.
 
-2. **Khối Nghiệp Vụ & Toán Học (js/Logic/)**:
-   - js/Logic/Services/: Chuyên gia tính toán thuần túy (tính lương, chia hoa hồng, che SĐT, tính phút ca gội, định dạng giờ). Tuyệt đối cấm viết mã HTML (<div>, <span>) hoặc đụng vào DOM.
-   - js/Logic/Engine/: Cầu nối hạ tầng & dữ liệu (config.js cho LocalStorage, irebase_engine.js cho Realtime sync).
+2. **Khối Nghiệp Vụ & Toán Học (`js/Logic/`)**:
+   - `js/Logic/Services/`: Chuyên gia tính toán thuần túy (tính lương, chia hoa hồng, che SĐT, tính phút ca gội, định dạng giờ). Tuyệt đối cấm viết mã HTML (`<div>`, `<span>`) hoặc đụng vào DOM.
+   - `js/Logic/Engine/`: Cầu nối hạ tầng & dữ liệu (`config.js` cho LocalStorage/Google Sheets, `firebase_engine.js` cho Realtime sync).
 
-3. **Khối Màn Hình Điều Phối (js/Screens/)**:
-   - Đóng vai trò lắp ráp: Lấy số liệu từ Logic/ -> ném vào linh kiện UI/ -> Render 1 lần duy nhất vào màn hình (innerHTML).
+3. **Khối Màn Hình Điều Phối (`js/Screens/`)**:
+   - Đóng vai trò lắp ráp: Lấy số liệu từ Logic/ -> ném vào linh kiện UI/ -> Render 1 lần duy nhất vào màn hình (`innerHTML`).
    - Phân chia theo vương quốc phân quyền độc lập 100%:
-     + js/Screens/Auth/: Đăng nhập chung.
-     + js/Screens/Staff/: Màn hình riêng cho KTV (Home, History, Wallet).
-     + js/Screens/Owner/: Màn hình riêng cho Chủ Sáng Lập (Home, History, Wallet).
-     + js/Screens/POS/: Khu vực tạo ca & vào tour.
+     + `js/Screens/Auth/`: Đăng nhập chung (`login_screen.js`).
+     + `js/Screens/Home/`: Màn hình Home điều phối (`home_screen.js`, `staff_home.js`, `owner_home.js`).
+     + `js/Screens/Pos/`: Khu vực tạo ca & vào tour.
+     + `js/Screens/History/`: Màn hình lịch sử tour (KTV và Chủ tiệm).
+     + `js/Screens/Income/`: Màn hình thu nhập KTV và báo cáo doanh thu Chủ tiệm.
 
 4. **Quy Chuẩn Gọi Component Thuần Túy & Cấm Viết Fallback Trùng Lặp (Zero-Fallback Clutter Rule)**:
    - **Tín nhiệm kiến trúc**: Mọi Component trong `js/UI/` (`AppButton`, `AppInput`, `AppTitle`, `ThemeToggle`, `StatCard`...) đã được nạp sẵn tại `index.html` và luôn luôn tồn tại 100%.
@@ -285,3 +291,20 @@ ole_badge.js, ed_card.js, modal_shell.js.
    - Tuyệt đối cấm thiết kế tính năng bắt người dùng phải tải lại trang (F5) mới thấy dữ liệu mới.
    - Bất kỳ thay đổi nào từ Google Sheets hay từ các máy khác đều phải tự động nhảy chữ, đổi trạng thái mượt mà trước mắt người dùng trong thời gian thực.
    - Phải luôn có giá trị mặc định dự phòng an toàn (`DEFAULT_UI_CONFIG` / fallback) trong `config.js` để app luôn hiển thị tức thì $0\text{ms}$ ngay cả khi chưa có mạng.
+
+---
+
+## 🎨 18. NGUYÊN TẮC HỆ THỐNG MÀU SẮC MINDORA LUXURY (5 CORE COLOR PALETTE & ZERO HARDCODING)
+1. **Bộ 5 Màu Chuẩn Thương Hiệu Mindora Luxury**:
+   Hệ thống nhận diện thương hiệu của Selena Spa được chuẩn hóa trên 5 gam màu phong thủy thư giãn tĩnh tại:
+   - **`#5E887E` (Deep Sage Green - `spa-brand`)**: Xanh ngọc xô thơm quý phái, màu sắc thương hiệu chủ đạo (nút chính, viền active, icon điểm nhấn, vầng sáng ambient).
+   - **`#A7C7E7` (Soft Sky / Mist Blue - `spa-mist`)**: Xanh sương mai êm đềm, tạo cảm giác thư giãn chuẩn spa tĩnh tại (badge phụ, vầng sáng trung tâm, viền dịu mắt).
+   - **`#2F3E46` (Dark Charcoal Slate - `spa-dark`)**: Xám đá phiến trầm sang trọng, dùng cho tiêu đề chính, chữ nổi bật trên nền sáng và làm màu nền chiều sâu cho Dark Mode.
+   - **`#F1F5F4` (Clean Porcelain Cream - `spa-bg`)**: Trắng sứ ngọc trai nhẹ êm mắt, thay thế hoàn toàn nền trắng tinh chói lóa, mang lại cảm giác dịu nhẹ tự nhiên.
+   - **`#E8AEB7` (Dusty Rose Pink - `spa-blush`)**: Hồng phấn hoàng gia tinh tế, dùng cho badge nổi bật, các điểm nhấn nữ tính lãng mạn và vầng sáng ambient góc trên.
+
+2. **Quy Tắc Nghiêm Ngặt Về Màu Sắc (Zero-Hardcoding & Deprecation Rule)**:
+   - ❌ **CẤM TUYỆT ĐỐI dùng mã màu san hô cũ**: `#E58A7B` (đã thay thế bằng `#E8AEB7` hoặc semantic class `spa-blush` / `spa-brand`).
+   - ❌ **CẤM TUYỆT ĐỐI dùng mã màu nền cát cũ**: `#FAF6F1` (đã thay thế bằng `#F1F5F4` hoặc `bg-spa-bg`).
+   - ❌ **CẤM TUYỆT ĐỐI dùng mã màu chữ nâu đen cũ**: `#2D2424`, `#7E7272` (đã thay thế bằng `text-spa-dark`, `text-spa-muted`).
+   - ❌ **CẤM viết mã màu hex trực tiếp trong HTML/inline style**: Khi đã có semantic class trong cấu hình Tailwind 4 (`bg-spa-bg`, `bg-spa-card`, `text-spa-dark`, `text-spa-muted`, `text-spa-brand`, `text-spa-mist`, `border-spa-border`, `dark:bg-spa-dark`, `dark:border-[#3D4E56]`, v.v.), bắt buộc phải sử dụng semantic class để đảm bảo khả năng tùy biến giao diện toàn hệ thống từ 1 điểm duy nhất.

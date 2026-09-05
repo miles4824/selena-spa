@@ -25,13 +25,14 @@
 ### A. Khung Dock Kính Mờ Nổi (Floating Glass Dock)
 - **Vị trí cố định (Fixed Positioning)**:
   ```html
-  <nav id="mobile-bottom-nav" class="fixed left-4 right-4 z-50 max-w-sm mx-auto pointer-events-auto" style="bottom: calc(env(safe-area-inset-bottom, 16px) + 12px);">
+  <nav id="mobile-bottom-nav" class="fixed left-4 right-4 z-50 max-w-sm mx-auto pointer-events-auto" style="bottom: max(14px, calc(env(safe-area-inset-bottom, 0px) + 6px));">
   ```
-  - Hỗ trợ chuẩn `env(safe-area-inset-bottom)` cho iPhone có tai thỏ (Notch / Dynamic Island) và thanh gạt Home Bar.
-- **Hiệu ứng kính mờ Luxury**:
-  - Nền: `bg-spa-card/90 border border-spa-border backdrop-blur-xl`
+  - Hỗ trợ chuẩn `max(14px, calc(env(...) + 6px))` đảm bảo khoảng cách an toàn chống dính đáy trên iPhone (Home Bar / Dynamic Island) và các dòng Android gesture navigation.
+- **Hiệu ứng kính mờ Mindora Luxury**:
+  - Nền: `bg-white/90 dark:bg-[#2F3E46]/95 border border-spa-border dark:border-[#3D4E56] backdrop-blur-xl`
   - Bo tròn hoàn toàn: `rounded-full`
-  - Đổ bóng chiều sâu: `shadow-[0_12px_32px_rgba(0,0,0,0.10)]`
+  - Đổ bóng chiều sâu: `shadow-[0_12px_32px_rgba(0,0,0,0.10)] dark:shadow-[0_12px_32px_rgba(0,0,0,0.5)]`
+  - Padding: `px-2.5 py-4`
 
 ### B. Hiệu Ứng Viên Thuốc Trượt (Sliding Pill Indicator)
 - **Thẻ trượt phát sáng**:
@@ -42,9 +43,9 @@
   - Lấy toạ độ `offsetLeft`, kích thước `offsetWidth`, `offsetHeight`, `offsetTop` của nút tab đang active.
   - Sử dụng CSS Transform: `transform: translateX(${activeBtn.offsetLeft}px)`.
   - Hiệu ứng trượt chuyển mượt mà 2 chiều (trái sang phải hoặc phải sang trái) với thời lượng 300ms (`duration-300 ease-out`).
-- **Màu sắc nút bấm**:
-  - Nút đang active (nằm đè lên viên thuốc hồng): `!text-white active`.
-  - Nút inactive: `text-spa-muted hover:text-spa-brand`.
+- **Màu sắc nút bấm theo bộ 5 màu Mindora**:
+  - Nút đang active (nằm đè lên viên thuốc hồng `spa-brand`): `!text-white active`.
+  - Nút inactive: `text-spa-muted dark:text-spa-mist hover:text-spa-brand dark:hover:text-white`.
 
 ---
 
@@ -83,6 +84,10 @@
 ---
 
 ## 6. Lịch Sử Phiên Bản & Lưu Vết (Changelog)
+- **v0.0.4.1 (2026-09-04)**:
+  - Cập nhật công thức căn lề an toàn dưới đáy sang `max(14px, calc(env(safe-area-inset-bottom, 0px) + 6px))` đảm bảo không bao giờ bị dính mép dưới trên cả iPhone (tai thỏ / Dynamic Island) và Android.
+  - Chuẩn hóa màu sắc nút và thanh Dock theo bộ 5 màu Mindora Luxury (`bg-white/90 dark:bg-[#2F3E46]/95`, `text-spa-muted dark:text-spa-mist hover:text-spa-brand dark:hover:text-white`).
+  - Đồng bộ bóng đổ Dark Mode `dark:shadow-[0_12px_32px_rgba(0,0,0,0.5)]` tạo độ sâu nổi bật và sang trọng.
 - **v0.0.3.1 (2026-09-04)**:
   - Đồng bộ biến trạng thái `currentActiveNavTab` bên trong `updateNavSlidingPill()` và `renderBottomNav()`.
   - Khắc phục triệt để lỗi khi người dùng nhảy trang qua các nút hành động trong thân trang (như nút *"LẬP PHIẾU TOUR MỚI"*), sau đó bấm lại icon `home` ở Bottom Nav bị chặn không cho chuyển về Home do lệch biến `currentActiveNavTab`.
