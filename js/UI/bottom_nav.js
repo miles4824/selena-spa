@@ -28,22 +28,22 @@ function renderBottomNav(activeTab = "home") {
         <div id="nav-sliding-indicator" class="absolute rounded-full bg-spa-brand shadow-glow-brand z-[1] pointer-events-none opacity-0 transition-all duration-300 ease-out"></div>
 
         <!-- 1. TAB HOME -->
-        <button type="button" onclick="navigateTab('home')" id="nav-btn-home" data-tab="home" title="Trang chủ" class="relative z-10 w-12 h-12 flex items-center justify-center rounded-full text-[#6D7E84] dark:text-[#A7C7E7] hover:text-spa-brand dark:hover:text-white transition-colors cursor-pointer active:scale-95">
+        <button type="button" onclick="navigateTab('home')" id="nav-btn-home" data-tab="home" title="Trang chủ" class="relative z-10 w-12 h-12 flex items-center justify-center rounded-full text-spa-muted dark:text-spa-mist hover:text-spa-brand dark:hover:text-white transition-colors cursor-pointer active:scale-95">
           <i data-lucide="home" class="w-5 h-5"></i>
         </button>
 
         <!-- 2. TAB POS / TẠO CA -->
-        <button type="button" onclick="navigateTab('pos')" id="nav-btn-pos" data-tab="pos" title="Tạo ca mới" class="relative z-10 w-12 h-12 flex items-center justify-center rounded-full text-[#6D7E84] dark:text-[#A7C7E7] hover:text-spa-brand dark:hover:text-white transition-colors cursor-pointer active:scale-95">
+        <button type="button" onclick="navigateTab('pos')" id="nav-btn-pos" data-tab="pos" title="Tạo ca mới" class="relative z-10 w-12 h-12 flex items-center justify-center rounded-full text-spa-muted dark:text-spa-mist hover:text-spa-brand dark:hover:text-white transition-colors cursor-pointer active:scale-95">
           <i data-lucide="plus" class="w-5 h-5"></i>
         </button>
 
         <!-- 3. TAB HISTORY -->
-        <button type="button" onclick="navigateTab('history')" id="nav-btn-history" data-tab="history" title="Lịch sử tour" class="relative z-10 w-12 h-12 flex items-center justify-center rounded-full text-[#6D7E84] dark:text-[#A7C7E7] hover:text-spa-brand dark:hover:text-white transition-colors cursor-pointer active:scale-95">
+        <button type="button" onclick="navigateTab('history')" id="nav-btn-history" data-tab="history" title="Lịch sử tour" class="relative z-10 w-12 h-12 flex items-center justify-center rounded-full text-spa-muted dark:text-spa-mist hover:text-spa-brand dark:hover:text-white transition-colors cursor-pointer active:scale-95">
           <i data-lucide="clock" class="w-5 h-5"></i>
         </button>
 
         <!-- 4. TAB INCOME / REPORT -->
-        <button type="button" onclick="navigateTab('income')" id="nav-btn-income" data-tab="income" title="${incomeLabel}" class="relative z-10 w-12 h-12 flex items-center justify-center rounded-full text-[#6D7E84] dark:text-[#A7C7E7] hover:text-spa-brand dark:hover:text-white transition-colors cursor-pointer active:scale-95">
+        <button type="button" onclick="navigateTab('income')" id="nav-btn-income" data-tab="income" title="${incomeLabel}" class="relative z-10 w-12 h-12 flex items-center justify-center rounded-full text-spa-muted dark:text-spa-mist hover:text-spa-brand dark:hover:text-white transition-colors cursor-pointer active:scale-95">
           <i data-lucide="wallet" class="w-5 h-5"></i>
         </button>
       </div>

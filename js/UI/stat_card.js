@@ -14,24 +14,24 @@ function StatCard({
 } = {}) {
   const colorStyles = {
     mint: { 
-      bg: 'bg-[#E8F8F5] dark:bg-[#2F3E46]', 
-      border: 'border-[#B7EBDD] dark:border-[#5E887E]/40', 
-      text: 'text-[#2E7D6D] dark:text-[#88B8AD]' 
+      bg: 'bg-[#E8F8F5] dark:bg-spa-card', 
+      border: 'border-spa-teal-border dark:border-spa-sage/40', 
+      text: 'text-spa-sage dark:text-[#88B8AD]' 
     },
     blue: { 
-      bg: 'bg-[#EBF5FB] dark:bg-[#2F3E46]', 
-      border: 'border-[#D4E6F1] dark:border-[#A7C7E7]/40', 
-      text: 'text-[#2980B9] dark:text-[#A7C7E7]' 
+      bg: 'bg-[#EBF5FB] dark:bg-spa-card', 
+      border: 'border-[#D4E6F1] dark:border-spa-mist/40', 
+      text: 'text-[#2980B9] dark:text-spa-mist' 
     },
     purple: { 
-      bg: 'bg-[#F5EEF8] dark:bg-[#2F3E46]', 
-      border: 'border-[#E8DAEF] dark:border-[#E8AEB7]/40', 
-      text: 'text-[#8E44AD] dark:text-[#E8AEB7]' 
+      bg: 'bg-[#F5EEF8] dark:bg-spa-card', 
+      border: 'border-[#E8DAEF] dark:border-spa-brand/40', 
+      text: 'text-[#8E44AD] dark:text-spa-brand' 
     },
     coral: { 
-      bg: 'bg-gradient-to-br from-[#E8AEB7] to-[#D995A0] dark:from-[#2F3E46] dark:to-[#263339]', 
-      border: 'border-transparent dark:border-[#E8AEB7]/40', 
-      text: 'text-white dark:text-[#E8AEB7]' 
+      bg: 'bg-gradient-to-br from-spa-brand to-[#D995A0] dark:from-spa-card dark:to-[#263339]', 
+      border: 'border-transparent dark:border-spa-brand/40', 
+      text: 'text-white dark:text-spa-brand' 
     }
   };
 
@@ -46,7 +46,7 @@ function StatCard({
 
   const valueClick = isPrivacy ? `onclick="${onPrivacyToggle}"` : '';
   const valueCursor = isPrivacy ? 'cursor-pointer select-none' : '';
-  const numColor = isCoral ? 'text-white dark:text-white' : 'text-[#2D2424] dark:text-white';
+  const numColor = isCoral ? 'text-white dark:text-white' : 'text-spa-dark dark:text-white';
   const subColor = isCoral ? 'text-white/90 dark:text-white/70' : `${c.text} dark:text-white/70`;
 
   return `

@@ -256,7 +256,7 @@ function setTheme(theme, isManual = false) {
   }
   const metaThemeColor = document.getElementById('meta-theme-color') || document.querySelector('meta[name="theme-color"]');
   if (metaThemeColor) {
-    metaThemeColor.setAttribute('content', theme === 'dark' ? '#1C2428' : '#FAF6F1');
+    metaThemeColor.setAttribute('content', theme === 'dark' ? '#1C2428' : '#F1F5F4');
   }
   updateThemeToggleIcons();
 }

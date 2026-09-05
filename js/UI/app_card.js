@@ -43,9 +43,9 @@ function AppCard({
     ? `
       <!-- Ambient Glow Spheres (Bộ 5 màu - Chuẩn WebKit Masking) -->
       <div class="absolute inset-0 pointer-events-none select-none overflow-hidden rounded-xl" style="-webkit-mask-image: -webkit-radial-gradient(white, black); border-radius: 28px;">
-        <div class="absolute -top-10 -right-10 w-44 h-44 rounded-full bg-[#E8AEB7]/20 dark:bg-[#E8AEB7]/10 blur-3xl pointer-events-none"></div>
-        <div class="absolute -bottom-10 -left-10 w-44 h-44 rounded-full bg-[#5E887E]/20 dark:bg-[#5E887E]/10 blur-3xl pointer-events-none"></div>
-        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-36 h-36 rounded-full bg-[#A7C7E7]/15 dark:bg-[#A7C7E7]/5 blur-3xl pointer-events-none"></div>
+        <div class="absolute -top-10 -right-10 w-44 h-44 rounded-full bg-spa-brand/20 dark:bg-spa-brand/10 blur-3xl pointer-events-none"></div>
+        <div class="absolute -bottom-10 -left-10 w-44 h-44 rounded-full bg-spa-sage/20 dark:bg-spa-sage/10 blur-3xl pointer-events-none"></div>
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-36 h-36 rounded-full bg-spa-mist/15 dark:bg-spa-mist/5 blur-3xl pointer-events-none"></div>
       </div>
     `
     : "";
