@@ -124,6 +124,14 @@ const SwapStaffModal = {
   },
 
   updateSplitButtonsUI() {
+    if (typeof CommissionSplit !== 'undefined') {
+      CommissionSplit.updateButtonsUI({
+        prefix: 'split',
+        activeMode: this.currentSplitMode,
+        disabled: this.tempSwapStaffs.length <= 1
+      });
+      return;
+    }
     const btnTimer = document.getElementById('btn-split-timer');
     const btnHalf = document.getElementById('btn-split-half');
     if (!btnTimer || !btnHalf) return;
@@ -355,6 +363,30 @@ const SwapStaffModal = {
     });
 
     // Cập nhật tóm tắt
+    if (typeof CommissionSplit !== 'undefined') {
+      const summaryItems = this.tempSwapStaffs.map((s, idx) => {
+        const commVnd = Math.round((totalPrice * 0.1) * (s.pct / 100)); // Ước lượng 10%
+        let subtext = '';
+        if (s.left_early) {
+          subtext = `Rời ca lúc ${s.left_min || targetMin}p`;
+        } else if (s.joined_min && s.joined_min > 0) {
+          subtext = `Vào lúc ${s.joined_min}p`;
+        } else {
+          subtext = `Làm từ đầu`;
+        }
+        return {
+          name: s.name,
+          subtext: subtext,
+          pct: s.pct,
+          amountVnd: commVnd,
+          dotColor: idx === 0 ? 'bg-spa-brand' : 'bg-spa-sage',
+          textColor: idx === 0 ? 'text-spa-brand' : 'text-spa-sage'
+        };
+      });
+      listEl.innerHTML = CommissionSplit.renderSummaryListHTML(summaryItems);
+      return;
+    }
+
     let summaryHtml = this.tempSwapStaffs.map(s => {
       const commVnd = Math.round((totalPrice * 0.1) * (s.pct / 100)); // Ước lượng 10%
       return `

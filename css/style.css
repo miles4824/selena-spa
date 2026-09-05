@@ -686,4 +686,64 @@ h6 {
   border-radius: 9999px !important;
 }
 
+/* CANH TRÁI TUYỆT ĐỐI CHO MODAL ĐIỀU CHỈNH DỊCH VỤ */
+#modal-edit-live-services,
+#modal-edit-live-services * {
+  text-align: left;
+}
+
+#modal-edit-live-quick-combos {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  justify-content: flex-start !important;
+  align-items: flex-start !important;
+  text-align: left !important;
+  width: 100% !important;
+}
+
+#modal-edit-live-quick-combos > button {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  text-align: center !important;
+}
+
+#modal-edit-live-tag-container {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  justify-content: flex-start !important;
+  text-align: left !important;
+  width: 100% !important;
+}
+
+#modal-edit-live-chips-list {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  justify-content: flex-start !important;
+  align-items: flex-start !important;
+  width: 100% !important;
+  text-align: left !important;
+}
+
+#modal-edit-live-chips-list > div {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  text-align: left !important;
+}
+
+#modal-edit-live-trigger-row {
+  width: 100% !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+}
+
+#modal-edit-live-placeholder-text {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  text-align: left !important;
+}
+
+
 

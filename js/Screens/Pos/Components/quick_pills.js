@@ -34,9 +34,9 @@ const QuickPills = {
   },
 
   /**
-   * Render HTML cho container #pos-quick-combos
+   * Render HTML cho container nút chọn nhanh combo
    */
-  render(selectedCartItems = []) {
+  render(selectedCartItems = [], context = 'pos') {
     const menu = (typeof getStored === 'function')
       ? getStored('menu', (typeof DEFAULT_MENU !== 'undefined' ? DEFAULT_MENU : []))
       : (typeof DEFAULT_MENU !== 'undefined' ? DEFAULT_MENU : []);
@@ -52,11 +52,11 @@ const QuickPills = {
 
       return `
         <button type="button" 
-          onclick="QuickPills.toggle('${item.service_id}')" 
+          onclick="QuickPills.toggle('${item.service_id}', '${context}')" 
           class="px-3.5 py-2 rounded-2xl text-xs font-extrabold border transition-all duration-200 active:scale-95 cursor-pointer ${
             isSelected
               ? 'bg-spa-brand/10 text-spa-brand border-spa-brand ring-2 ring-spa-brand/30 shadow-xs'
-              : 'bg-white text-spa-dark/80 border-spa-border hover:bg-spa-bg hover:border-spa-brand/40 hover:text-spa-brand'
+              : 'bg-white dark:bg-spa-card text-spa-dark/80 dark:text-white/80 border-spa-border hover:bg-spa-bg hover:border-spa-brand/40 hover:text-spa-brand'
           }">
           ${isSelected ? '✓ ' : ''}Combo ${num}
         </button>
@@ -67,12 +67,28 @@ const QuickPills = {
   /**
    * Xử lý khi bấm nút chọn nhanh (Quy tắc Single Combo: Thay thế combo cũ)
    */
-  toggle(serviceId) {
+  toggle(serviceId, context = 'pos') {
     const menu = (typeof getStored === 'function')
       ? getStored('menu', (typeof DEFAULT_MENU !== 'undefined' ? DEFAULT_MENU : []))
       : (typeof DEFAULT_MENU !== 'undefined' ? DEFAULT_MENU : []);
     const item = menu.find(m => m.service_id === serviceId);
     if (!item) return;
+
+    if (context === 'modal-edit') {
+      if (typeof ServiceEditModal !== 'undefined') {
+        let cart = ServiceEditModal.tempCartItems || [];
+        const existsIndex = cart.findIndex(i => i.service_id === serviceId);
+        if (existsIndex >= 0) {
+          cart.splice(existsIndex, 1);
+        } else {
+          cart = cart.filter(i => !this.isCombo(i));
+          cart.unshift({ ...item });
+        }
+        ServiceEditModal.tempCartItems = cart;
+        ServiceEditModal.onCartChanged();
+      }
+      return;
+    }
 
     if (!window.PosState) window.PosState = { selectedCartItems: [] };
     let cart = window.PosState.selectedCartItems || [];

@@ -48,6 +48,10 @@ const HandoverModal = {
   },
 
   updateSplitButtons() {
+    if (typeof CommissionSplit !== 'undefined') {
+      CommissionSplit.updateButtonsUI({ prefix: 'handover', activeMode: this.handoverSplitMode });
+      return;
+    }
     const btnTimer = document.getElementById('btn-handover-timer');
     const btnEqual = document.getElementById('btn-handover-equal');
     if (!btnTimer || !btnEqual) return;
@@ -118,6 +122,28 @@ const HandoverModal = {
     const p1Comm = Math.round(estTotalComm * (p1Pct / 100));
     const p2Comm = estTotalComm - p1Comm;
     const currentStaffName = session.staff_1_name || 'KTV hiện tại';
+
+    if (typeof CommissionSplit !== 'undefined') {
+      listEl.innerHTML = CommissionSplit.renderSummaryListHTML([
+        {
+          name: currentStaffName,
+          subtext: `Đã làm ${elapsedMin} phút`,
+          pct: p1Pct,
+          amountVnd: p1Comm,
+          dotColor: 'bg-spa-brand',
+          textColor: 'text-spa-brand'
+        },
+        {
+          name: targetUser.full_name || targetUser.name,
+          subtext: `Làm tiếp ${Math.max(0, targetMin - elapsedMin)} phút`,
+          pct: p2Pct,
+          amountVnd: p2Comm,
+          dotColor: 'bg-spa-sage',
+          textColor: 'text-spa-sage'
+        }
+      ]);
+      return;
+    }
 
     listEl.innerHTML = `
       <div class="flex justify-between items-center text-spa-dark dark:text-white">

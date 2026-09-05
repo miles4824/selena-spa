@@ -121,77 +121,41 @@ const PosLiveView = {
       icon: "refresh-cw",
       maxWidth: "max-w-lg",
       body: `
-        <!-- HÀNG 1: CHỌN NHANH COMBO (SINGLE COMBO RULE) -->
-        <div class="space-y-2 text-left">
-          <div class="text-[11px] font-extrabold text-spa-muted flex items-center gap-1.5 text-left">
-            <i data-lucide="zap" class="w-3.5 h-3.5 text-spa-brand"></i>
-            <span>Gói Combo Chính (Tối đa 1 combo):</span>
-          </div>
-          <div id="modal-edit-live-quick-combos" class="flex flex-wrap gap-2 justify-start text-left"></div>
-        </div>
+        <div class="space-y-3 text-left" style="text-align: left !important;">
+          ${typeof ServicePickerUI !== 'undefined'
+            ? ServicePickerUI.render({
+                prefix: 'modal-edit',
+                context: 'modal-edit',
+                title: 'Dịch Vụ Đang Chọn:',
+                placeholderText: '-- Chọn thêm dịch vụ từ menu --'
+              })
+            : `
+              <!-- Fallback -->
+              <div id="modal-edit-quick-combos" class="flex flex-wrap gap-2 text-left justify-start"></div>
+              <div id="modal-edit-cart-chips-list" class="flex flex-wrap gap-2.5 text-left justify-start"></div>
+            `}
 
-        <!-- ĐƯỜNG DASH NGĂN CÁCH -->
-        <div class="border-t border-dashed border-spa-border my-2"></div>
+          <div class="border-t border-dashed border-spa-border my-2"></div>
 
-        <!-- HÀNG 2: MULTI-TAG COMBOBOX DỊCH VỤ ĐANG CHỌN -->
-        <div class="space-y-2.5 text-left">
-          <div class="flex justify-between items-center px-0.5">
-            <span class="text-xs font-black text-spa-muted uppercase tracking-wider flex items-center gap-1.5 text-left">
-              <i data-lucide="clipboard-list" class="w-3.5 h-3.5 text-spa-sage"></i> Dịch Vụ Đang Chọn:
-            </span>
-            <span id="modal-edit-live-count-badge" class="text-[10px] font-black px-2.5 py-0.5 rounded-full bg-spa-sage/10 text-spa-sage border border-spa-sage/30">
-              1 dịch vụ
-            </span>
-          </div>
-
-          <!-- HỘP MULTI-TAGS KÈM DROPDOWN TRIGGER -->
-          <div class="relative text-left">
-            <div id="modal-edit-live-tag-container" onclick="ServiceEditModal.togglePopover(event)" class="min-h-[56px] p-3 bg-white dark:bg-spa-card border border-spa-border hover:border-spa-brand/60 rounded-2xl flex flex-col gap-2.5 cursor-pointer transition-all focus-within:border-spa-brand focus-within:ring-2 focus-within:ring-spa-brand/20 shadow-2xs text-left items-start">
-              <div id="modal-edit-live-chips-list" class="flex flex-wrap gap-2.5 justify-start text-left w-full"></div>
-              
-              <div id="modal-edit-live-trigger-row" class="w-full flex items-center justify-between text-xs font-bold text-spa-muted hover:text-spa-brand py-3 mt-1 px-3 rounded-xl bg-spa-bg/80 dark:bg-spa-dark/40 hover:bg-spa-brand/10 transition border border-dashed border-spa-border text-left">
-                <span id="modal-edit-live-placeholder-text" class="flex items-center gap-1.5 truncate text-left">
-                  <i data-lucide="plus-circle" class="w-3.5 h-3.5 text-spa-brand"></i>
-                  <span>-- Chọn thêm dịch vụ từ menu --</span>
-                </span>
-                <i id="modal-edit-live-chevron" data-lucide="chevron-down" class="w-4 h-4 text-spa-dark/40 transition-transform duration-200 shrink-0 ml-1"></i>
+          <!-- BẢNG TÍNH LẠI GIÁ VÀ THỜI LƯỢNG MỚI -->
+          <div class="p-3.5 rounded-2xl bg-spa-brand/10 border border-spa-brand/25 flex items-center justify-between text-left">
+            <div class="flex items-center gap-2.5 text-left">
+              <div class="w-9 h-9 rounded-xl bg-white dark:bg-spa-card border border-spa-brand/30 flex items-center justify-center text-spa-brand shadow-2xs shrink-0">
+                <i data-lucide="receipt" class="w-4 h-4"></i>
+              </div>
+              <div class="text-left">
+                <span class="text-[11px] font-extrabold text-spa-muted uppercase tracking-wider block text-left">Tổng Thanh Toán Mới</span>
+                <div id="modal-edit-live-total-price" class="text-xl font-black font-mono text-spa-brand tracking-tight leading-none mt-0.5 text-left">0 đ</div>
               </div>
             </div>
 
-            <!-- DROPDOWN DANH SÁCH DỊCH VỤ DẠNG POPOVER NỔI -->
-            <div id="modal-edit-live-popover" class="hidden absolute left-0 right-0 top-full mt-2 bg-white dark:bg-spa-card border border-spa-border rounded-2xl shadow-2xl z-50 overflow-hidden flex flex-col animate-in fade-in zoom-in-95 text-left" onclick="event.stopPropagation()">
-              <div class="p-2 border-b border-spa-border bg-spa-bg/90 dark:bg-spa-dark/90 sticky top-0 z-20 text-left">
-                <div class="relative flex items-center">
-                  <i data-lucide="search" class="w-3.5 h-3.5 text-spa-dark/40 absolute left-2.5 pointer-events-none"></i>
-                  <input type="text" id="modal-edit-live-search-input" oninput="ServiceEditModal.onSearch(this.value)" placeholder="Tìm tên dịch vụ..." class="w-full pl-8 pr-7 py-2 text-xs bg-white dark:bg-spa-card border border-spa-border rounded-xl text-spa-dark dark:text-white placeholder:text-spa-dark/40 focus:outline-none focus:border-spa-brand font-medium transition text-left" autocomplete="off" />
-                  <button type="button" id="btn-clear-modal-edit-search" onclick="ServiceEditModal.clearSearch()" class="hidden absolute right-2 text-spa-dark/40 hover:text-spa-brand p-0.5 cursor-pointer">
-                    <i data-lucide="x" class="w-3.5 h-3.5"></i>
-                  </button>
-                </div>
+            <div class="flex flex-col items-end text-right">
+              <div class="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-white dark:bg-spa-card border border-spa-border text-xs font-black text-spa-sage shadow-2xs">
+                <i data-lucide="clock" class="w-3.5 h-3.5"></i>
+                <span id="modal-edit-live-total-duration">50 phút</span>
               </div>
-              <div id="modal-edit-live-dropdown-items" class="border-spa-border border-t pb-2 px-2 space-y-1 max-h-56 overflow-y-auto text-left"></div>
+              <span id="modal-edit-live-remaining-note" class="text-[10px] text-spa-muted font-semibold mt-1">Còn lại khoảng -- phút</span>
             </div>
-          </div>
-        </div>
-
-        <!-- HÀNG 3: BẢNG TÍNH LẠI GIÁ VÀ THỜI LƯỢNG MỚI -->
-        <div class="p-3.5 rounded-2xl bg-spa-brand/10 border border-spa-brand/25 flex items-center justify-between text-left">
-          <div class="flex items-center gap-2.5 text-left">
-            <div class="w-9 h-9 rounded-xl bg-white dark:bg-spa-card border border-spa-brand/30 flex items-center justify-center text-spa-brand shadow-2xs shrink-0">
-              <i data-lucide="receipt" class="w-4 h-4"></i>
-            </div>
-            <div class="text-left">
-              <span class="text-[11px] font-extrabold text-spa-muted uppercase tracking-wider block text-left">Tổng Thanh Toán Mới</span>
-              <div id="modal-edit-live-total-price" class="text-xl font-black font-mono text-spa-brand tracking-tight leading-none mt-0.5 text-left">0 đ</div>
-            </div>
-          </div>
-
-          <div class="flex flex-col items-end text-right">
-            <div class="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-white dark:bg-spa-card border border-spa-border text-xs font-black text-spa-sage shadow-2xs">
-              <i data-lucide="clock" class="w-3.5 h-3.5"></i>
-              <span id="modal-edit-live-total-duration">50 phút</span>
-            </div>
-            <span id="modal-edit-live-remaining-note" class="text-[10px] text-spa-muted font-semibold mt-1">Còn lại khoảng -- phút</span>
           </div>
         </div>
       `,
@@ -221,24 +185,40 @@ const PosLiveView = {
             <select id="modal-handover-staff-select" onchange="HandoverModal.updatePreview()" class="w-full bg-white dark:bg-spa-card border border-spa-border rounded-2xl p-3.5 text-sm text-spa-dark dark:text-white font-bold focus:outline-none focus:border-spa-brand transition cursor-pointer"></select>
           </div>
 
-          <div class="space-y-2 pt-1">
-            <label class="block text-xs font-bold text-spa-muted uppercase tracking-wider">Hình Thức Phân Chia Hoa Hồng:</label>
-            <div class="grid grid-cols-2 gap-2.5">
-              <button type="button" id="btn-handover-timer" onclick="HandoverModal.setSplitMode('timer')" class="p-3 rounded-2xl border bg-spa-brand/10 border-spa-brand text-spa-brand font-bold text-xs flex flex-col items-center gap-1 cursor-pointer transition shadow-xs">
-                <span class="flex items-center gap-1 font-extrabold"><i data-lucide="clock" class="w-3.5 h-3.5"></i> Theo thời gian thực</span>
-                <span class="text-[10px] font-normal text-spa-muted">Tính theo số phút đã làm</span>
-              </button>
-              <button type="button" id="btn-handover-equal" onclick="HandoverModal.setSplitMode('equal')" class="p-3 rounded-2xl border bg-spa-bg dark:bg-spa-dark/40 border-spa-border text-spa-muted hover:bg-spa-brand/5 font-bold text-xs flex flex-col items-center gap-1 cursor-pointer transition">
-                <span class="flex items-center gap-1 font-extrabold"><i data-lucide="handshake" class="w-3.5 h-3.5"></i> Chia đều 50 / 50</span>
-                <span class="text-[10px] font-normal text-spa-muted">Cưa đôi hoa hồng tour</span>
-              </button>
-            </div>
-          </div>
+          ${typeof CommissionSplit !== 'undefined'
+            ? CommissionSplit.renderSelector({
+                prefix: 'handover',
+                activeMode: 'timer',
+                onSelectFn: 'HandoverModal.setSplitMode',
+                equalSubtext: 'Cưa đôi hoa hồng tour'
+              })
+            : `
+              <div class="space-y-2 pt-1">
+                <label class="block text-xs font-bold text-spa-muted uppercase tracking-wider">Hình Thức Phân Chia Hoa Hồng:</label>
+                <div class="grid grid-cols-2 gap-2.5">
+                  <button type="button" id="btn-handover-timer" onclick="HandoverModal.setSplitMode('timer')" class="p-3 rounded-2xl border bg-spa-brand/10 border-spa-brand text-spa-brand font-bold text-xs flex flex-col items-center gap-1 cursor-pointer transition shadow-xs">
+                    <span class="flex items-center gap-1 font-extrabold"><i data-lucide="clock" class="w-3.5 h-3.5"></i> Theo thời gian thực</span>
+                    <span class="text-[10px] font-normal text-spa-muted">Tính theo số phút đã làm</span>
+                  </button>
+                  <button type="button" id="btn-handover-equal" onclick="HandoverModal.setSplitMode('equal')" class="p-3 rounded-2xl border bg-spa-bg dark:bg-spa-dark/40 border-spa-border text-spa-muted hover:bg-spa-brand/5 font-bold text-xs flex flex-col items-center gap-1 cursor-pointer transition">
+                    <span class="flex items-center gap-1 font-extrabold"><i data-lucide="handshake" class="w-3.5 h-3.5"></i> Chia đều 50 / 50</span>
+                    <span class="text-[10px] font-normal text-spa-muted">Cưa đôi hoa hồng tour</span>
+                  </button>
+                </div>
+              </div>
+            `}
 
-          <div class="p-3.5 rounded-2xl bg-spa-bg dark:bg-white/5 border border-spa-border text-xs space-y-2">
-            <span class="font-bold text-spa-muted block pb-1 border-b border-spa-border">Dự kiến phân bổ hoa hồng tour:</span>
-            <div id="handover-preview-list" class="space-y-1.5"></div>
-          </div>
+          ${typeof CommissionSplit !== 'undefined'
+            ? CommissionSplit.renderSummaryContainer({
+                listId: 'handover-preview-list',
+                title: 'Dự kiến phân bổ hoa hồng tour:'
+              })
+            : `
+              <div class="p-3.5 rounded-2xl bg-spa-bg dark:bg-white/5 border border-spa-border text-xs space-y-2">
+                <span class="font-bold text-spa-muted block pb-1 border-b border-spa-border">Dự kiến phân bổ hoa hồng tour:</span>
+                <div id="handover-preview-list" class="space-y-1.5"></div>
+              </div>
+            `}
         </div>
       `,
       footer: AppButton({
@@ -277,24 +257,40 @@ const PosLiveView = {
             })}
           </div>
 
-          <div class="space-y-2 pt-1">
-            <label class="block text-xs font-bold text-spa-muted uppercase tracking-wider">Hình Thức Phân Chia Hoa Hồng</label>
-            <div class="grid grid-cols-2 gap-2.5">
-              <button type="button" id="btn-split-timer" onclick="SwapStaffModal.setSplitMode('timer')" class="p-3 rounded-2xl border bg-spa-brand/10 border-spa-brand text-spa-brand font-bold text-xs flex flex-col items-center gap-1 cursor-pointer transition shadow-xs">
-                <span class="flex items-center gap-1 font-extrabold"><i data-lucide="clock" class="w-3.5 h-3.5"></i> Theo thời gian thực</span>
-                <span class="text-[10px] font-normal text-spa-muted">Tính theo số phút đã làm</span>
-              </button>
-              <button type="button" id="btn-split-half" onclick="SwapStaffModal.setSplitMode('equal')" class="p-3 rounded-2xl border bg-spa-bg dark:bg-spa-dark/40 border-spa-border text-spa-muted hover:bg-spa-brand/5 font-bold text-xs flex flex-col items-center gap-1 cursor-pointer transition">
-                <span class="flex items-center gap-1 font-extrabold"><i data-lucide="handshake" class="w-3.5 h-3.5"></i> Chia đều 50 / 50</span>
-                <span class="text-[10px] font-normal text-spa-muted">Làm cùng từ đầu</span>
-              </button>
-            </div>
-          </div>
+          ${typeof CommissionSplit !== 'undefined'
+            ? CommissionSplit.renderSelector({
+                prefix: 'split',
+                activeMode: 'timer',
+                onSelectFn: 'SwapStaffModal.setSplitMode',
+                equalSubtext: 'Làm cùng từ đầu'
+              })
+            : `
+              <div class="space-y-2 pt-1">
+                <label class="block text-xs font-bold text-spa-muted uppercase tracking-wider">Hình Thức Phân Chia Hoa Hồng</label>
+                <div class="grid grid-cols-2 gap-2.5">
+                  <button type="button" id="btn-split-timer" onclick="SwapStaffModal.setSplitMode('timer')" class="p-3 rounded-2xl border bg-spa-brand/10 border-spa-brand text-spa-brand font-bold text-xs flex flex-col items-center gap-1 cursor-pointer transition shadow-xs">
+                    <span class="flex items-center gap-1 font-extrabold"><i data-lucide="clock" class="w-3.5 h-3.5"></i> Theo thời gian thực</span>
+                    <span class="text-[10px] font-normal text-spa-muted">Tính theo số phút đã làm</span>
+                  </button>
+                  <button type="button" id="btn-split-half" onclick="SwapStaffModal.setSplitMode('equal')" class="p-3 rounded-2xl border bg-spa-bg dark:bg-spa-dark/40 border-spa-border text-spa-muted hover:bg-spa-brand/5 font-bold text-xs flex flex-col items-center gap-1 cursor-pointer transition">
+                    <span class="flex items-center gap-1 font-extrabold"><i data-lucide="handshake" class="w-3.5 h-3.5"></i> Chia đều 50 / 50</span>
+                    <span class="text-[10px] font-normal text-spa-muted">Làm cùng từ đầu</span>
+                  </button>
+                </div>
+              </div>
+            `}
 
-          <div class="p-3.5 rounded-2xl bg-spa-bg dark:bg-white/5 border border-spa-border text-xs space-y-1.5">
-            <div class="font-bold text-spa-muted pb-1 border-b border-spa-border">Tóm tắt phân chia hoa hồng:</div>
-            <div id="swap-summary-pct-list" class="space-y-1"></div>
-          </div>
+          ${typeof CommissionSplit !== 'undefined'
+            ? CommissionSplit.renderSummaryContainer({
+                listId: 'swap-summary-pct-list',
+                title: 'Tóm tắt phân chia hoa hồng:'
+              })
+            : `
+              <div class="p-3.5 rounded-2xl bg-spa-bg dark:bg-white/5 border border-spa-border text-xs space-y-1.5">
+                <div class="font-bold text-spa-muted pb-1 border-b border-spa-border">Tóm tắt phân chia hoa hồng:</div>
+                <div id="swap-summary-pct-list" class="space-y-1"></div>
+              </div>
+            `}
         </div>
       `,
       footer: AppButton({
