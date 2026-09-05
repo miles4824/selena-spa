@@ -109,11 +109,11 @@ const SwapStaffModal = {
     if (!modal) return;
     if (typeof closeModal === 'function') {
       closeModal(modal, () => {
-        if (typeof showBottomNav === 'function') showBottomNav();
+        if (typeof showBottomNav === 'function') showBottomNav('pos');
       });
     } else {
       modal.classList.add('hidden');
-      if (typeof showBottomNav === 'function') showBottomNav();
+      if (typeof showBottomNav === 'function') showBottomNav('pos');
     }
   },
 
@@ -124,37 +124,11 @@ const SwapStaffModal = {
   },
 
   updateSplitButtonsUI() {
-    if (typeof CommissionSplit !== 'undefined') {
-      CommissionSplit.updateButtonsUI({
-        prefix: 'split',
-        activeMode: this.currentSplitMode,
-        disabled: this.tempSwapStaffs.length <= 1
-      });
-      return;
-    }
-    const btnTimer = document.getElementById('btn-split-timer');
-    const btnHalf = document.getElementById('btn-split-half');
-    if (!btnTimer || !btnHalf) return;
-
-    const count = this.tempSwapStaffs.length;
-    if (count <= 1) {
-      btnTimer.disabled = true;
-      btnHalf.disabled = true;
-      btnTimer.className = 'p-3 rounded-2xl border bg-spa-bg/50 border-spa-border text-spa-muted text-xs flex flex-col items-center gap-1 cursor-not-allowed opacity-60';
-      btnHalf.className = 'p-3 rounded-2xl border bg-spa-bg/50 border-spa-border text-spa-muted text-xs flex flex-col items-center gap-1 cursor-not-allowed opacity-60';
-      return;
-    }
-
-    btnTimer.disabled = false;
-    btnHalf.disabled = false;
-
-    if (this.currentSplitMode === 'timer') {
-      btnTimer.className = 'p-3 rounded-2xl border bg-spa-brand/10 border-spa-brand text-spa-brand font-bold text-xs flex flex-col items-center gap-1 cursor-pointer transition shadow-xs';
-      btnHalf.className = 'p-3 rounded-2xl border bg-spa-bg dark:bg-spa-dark/40 border-spa-border text-spa-muted hover:bg-spa-brand/5 font-bold text-xs flex flex-col items-center gap-1 cursor-pointer transition';
-    } else {
-      btnHalf.className = 'p-3 rounded-2xl border bg-spa-brand/10 border-spa-brand text-spa-brand font-bold text-xs flex flex-col items-center gap-1 cursor-pointer transition shadow-xs';
-      btnTimer.className = 'p-3 rounded-2xl border bg-spa-bg dark:bg-spa-dark/40 border-spa-border text-spa-muted hover:bg-spa-brand/5 font-bold text-xs flex flex-col items-center gap-1 cursor-pointer transition';
-    }
+    CommissionSplit.updateButtonsUI({
+      prefix: 'split',
+      activeMode: this.currentSplitMode,
+      disabled: this.tempSwapStaffs.length <= 1
+    });
   },
 
   renderStaffUI() {
@@ -321,83 +295,23 @@ const SwapStaffModal = {
     const targetMin = session?.duration_target_min || 50;
     const totalPrice = session?.price || 0;
 
-    // Tính % hoa hồng theo mode
-    const activeStaffs = this.tempSwapStaffs.filter(s => !s.left_early);
-    const totalCount = activeStaffs.length || 1;
-
-    if (this.currentSplitMode === 'equal' || totalCount === 1) {
-      const eachPct = Math.round(100 / totalCount);
-      this.tempSwapStaffs.forEach(s => {
-        if (s.left_early) {
-          s.pct = 0;
-        } else {
-          s.pct = eachPct;
-        }
-      });
-    } else {
-      // Tính theo số phút làm việc
-      let totalWorkedMinutes = 0;
-      this.tempSwapStaffs.forEach(s => {
-        const j = s.joined_min || 0;
-        const l = s.left_min || targetMin;
-        const worked = Math.max(1, l - j);
-        s.workedMinutes = worked;
-        totalWorkedMinutes += worked;
-      });
-
-      let allocatedPct = 0;
-      this.tempSwapStaffs.forEach((s, idx) => {
-        if (idx === this.tempSwapStaffs.length - 1) {
-          s.pct = Math.max(0, 100 - allocatedPct);
-        } else {
-          s.pct = Math.round((s.workedMinutes / totalWorkedMinutes) * 100);
-          allocatedPct += s.pct;
-        }
-      });
-    }
-
-    // Cập nhật badge trên từng thẻ
-    this.tempSwapStaffs.forEach((s, idx) => {
-      const badge = document.getElementById(`swap-item-pct-${idx}`);
-      if (badge) badge.innerText = `${s.pct}%`;
+    const calcResult = CommissionSplit.calculate({
+      staffs: this.tempSwapStaffs,
+      totalPrice,
+      targetMin,
+      mode: this.currentSplitMode || 'timer',
+      isHandover: false
     });
 
-    // Cập nhật tóm tắt
-    if (typeof CommissionSplit !== 'undefined') {
-      const summaryItems = this.tempSwapStaffs.map((s, idx) => {
-        const commVnd = Math.round((totalPrice * 0.1) * (s.pct / 100)); // Ước lượng 10%
-        let subtext = '';
-        if (s.left_early) {
-          subtext = `Rời ca lúc ${s.left_min || targetMin}p`;
-        } else if (s.joined_min && s.joined_min > 0) {
-          subtext = `Vào lúc ${s.joined_min}p`;
-        } else {
-          subtext = `Làm từ đầu`;
-        }
-        return {
-          name: s.name,
-          subtext: subtext,
-          pct: s.pct,
-          amountVnd: commVnd,
-          dotColor: idx === 0 ? 'bg-spa-brand' : 'bg-spa-sage',
-          textColor: idx === 0 ? 'text-spa-brand' : 'text-spa-sage'
-        };
-      });
-      listEl.innerHTML = CommissionSplit.renderSummaryListHTML(summaryItems);
-      return;
-    }
+    calcResult.items.forEach((item, idx) => {
+      if (this.tempSwapStaffs[idx]) {
+        this.tempSwapStaffs[idx].pct = item.pct;
+      }
+      const badge = document.getElementById(`swap-item-pct-${idx}`);
+      if (badge) badge.innerText = `${item.pct}%`;
+    });
 
-    let summaryHtml = this.tempSwapStaffs.map(s => {
-      const commVnd = Math.round((totalPrice * 0.1) * (s.pct / 100)); // Ước lượng 10%
-      return `
-        <div class="flex justify-between items-center text-xs">
-          <span class="font-bold text-spa-dark dark:text-white">• ${s.name}:</span>
-          <span class="font-mono font-extrabold text-spa-sage">${s.pct}% (~${commVnd.toLocaleString('vi-VN')} đ)</span>
-        </div>
-      `;
-    }).join('');
-
-    listEl.innerHTML = summaryHtml;
+    listEl.innerHTML = CommissionSplit.renderSummaryListHTML(calcResult.items);
   },
 
   onStaffSelectChange(idx, newPhone) {

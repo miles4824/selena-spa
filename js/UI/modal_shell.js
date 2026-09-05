@@ -35,7 +35,7 @@ function ModalShell({
       : "";
 
   return `
-    <div id="${id}" onclick="if(event.target === this) ${closeAction}" class="fixed inset-0 z-[9999] hidden flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-sm transition-all duration-300 overflow-y-auto">
+    <div id="${id}" onclick="if(event.target === this) ${closeAction}" class="modal-backdrop fixed inset-0 z-[9999] hidden flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-sm transition-all duration-300 overflow-y-auto">
       
       <!-- KHUNG MODAL CHUẨN: Luôn nằm giữa (m-auto), Chiều cao tối đa bằng ~2/3 màn hình thiết bị -->
       <div class="w-full ${maxWidth} max-h-[67dvh] sm:max-h-[70dvh] m-auto my-auto bg-spa-card rounded-[28px] border border-spa-border shadow-2xl flex flex-col min-h-0 overflow-hidden ${customClass}" style="-webkit-mask-image: -webkit-radial-gradient(white, black); border-radius: 28px; -webkit-border-radius: 28px; isolation: isolate; max-height: 67dvh; max-height: 67vh;">

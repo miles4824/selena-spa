@@ -608,18 +608,21 @@ h6 {
   }
 }
 
-[id^="modal-"].hidden {
+.modal-backdrop.hidden,
+[id^="modal-"].fixed.inset-0.hidden {
   display: none !important;
 }
 
-[id^="modal-"]:not(.hidden) {
+.modal-backdrop:not(.hidden),
+[id^="modal-"].fixed.inset-0:not(.hidden) {
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
   animation: modalBackdropFadeIn 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-[id^="modal-"]:not(.hidden) > div {
+.modal-backdrop:not(.hidden) > div,
+[id^="modal-"].fixed.inset-0:not(.hidden) > div {
   margin: auto !important;
   max-height: 67dvh !important;
   max-height: 67vh !important;
@@ -627,18 +630,21 @@ h6 {
   will-change: transform, opacity;
 }
 
-[id^="modal-"].is-closing {
+.modal-backdrop.is-closing,
+[id^="modal-"].fixed.inset-0.is-closing {
   display: flex !important;
   animation: modalBackdropFadeOut 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
 }
 
-[id^="modal-"].is-closing > div {
+.modal-backdrop.is-closing > div,
+[id^="modal-"].fixed.inset-0.is-closing > div {
   animation: modalCardPopOut 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
   will-change: transform, opacity;
 }
 
 @media (min-width: 640px) {
-  [id^="modal-"] > div {
+  .modal-backdrop > div,
+  [id^="modal-"].fixed.inset-0 > div {
     max-height: 70dvh !important;
     max-height: 70vh !important;
   }
@@ -682,16 +688,18 @@ h6 {
 }
 
 /* NÚT BOTTOM CỦA TẤT CẢ MODAL SHELL ĐỀU BO TRÒN ROUND-FULL */
-[id^="modal-"] [class*="border-t"] button {
+.modal-backdrop [class*="border-t"] button,
+[id^="modal-"].fixed.inset-0 [class*="border-t"] button {
   border-radius: 9999px !important;
 }
 
-/* CANH TRÁI TUYỆT ĐỐI CHO MODAL ĐIỀU CHỈNH DỊCH VỤ */
+/* CANH TRÁI VÀ BỐ CỤC CHUẨN CHO MODAL ĐIỀU CHỈNH DỊCH VỤ */
 #modal-edit-live-services,
 #modal-edit-live-services * {
   text-align: left;
 }
 
+#modal-edit-quick-combos,
 #modal-edit-live-quick-combos {
   display: flex !important;
   flex-wrap: wrap !important;
@@ -701,12 +709,14 @@ h6 {
   width: 100% !important;
 }
 
+#modal-edit-quick-combos > button,
 #modal-edit-live-quick-combos > button {
   margin-left: 0 !important;
   margin-right: 0 !important;
   text-align: center !important;
 }
 
+#modal-edit-tag-container,
 #modal-edit-live-tag-container {
   display: flex !important;
   flex-direction: column !important;
@@ -716,6 +726,7 @@ h6 {
   width: 100% !important;
 }
 
+#modal-edit-cart-chips-list,
 #modal-edit-live-chips-list {
   display: flex !important;
   flex-wrap: wrap !important;
@@ -725,12 +736,14 @@ h6 {
   text-align: left !important;
 }
 
+#modal-edit-cart-chips-list > div,
 #modal-edit-live-chips-list > div {
   margin-left: 0 !important;
   margin-right: 0 !important;
   text-align: left !important;
 }
 
+#modal-edit-dropdown-trigger-row,
 #modal-edit-live-trigger-row {
   width: 100% !important;
   display: flex !important;
@@ -738,12 +751,29 @@ h6 {
   align-items: center !important;
 }
 
+#modal-edit-dropdown-placeholder-text,
 #modal-edit-live-placeholder-text {
   display: flex !important;
   align-items: center !important;
   justify-content: flex-start !important;
   text-align: left !important;
 }
+
+/* ĐẢM BẢO MENU DỊCH VỤ / SẢN PHẨM TRONG DROPDOWN LUÔN DỌC, FULL WIDTH, RÕ RÀNG */
+#modal-edit-custom-dropdown-items,
+#pos-custom-dropdown-items {
+  display: flex !important;
+  flex-direction: column !important;
+  width: 100% !important;
+}
+
+#modal-edit-custom-dropdown-items > div,
+#pos-custom-dropdown-items > div {
+  width: 100% !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
 
 
 

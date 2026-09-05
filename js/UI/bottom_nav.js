@@ -5,14 +5,30 @@
 let currentActiveNavTab = "home";
 
 /**
- * Render cấu trúc HTML của thanh Dock điều hướng vào #container-nav
- * @param {string} activeTab - Tab đang chọn mặc định ('home' | 'pos' | 'history' | 'income')
+ * Tự động phát hiện tab tương ứng với màn hình container đang hiển thị trong DOM
+ * @returns {string} 'home' | 'pos' | 'history' | 'income'
  */
-function renderBottomNav(activeTab = (currentActiveNavTab || "home")) {
+function getCurrentlyVisibleNavTab() {
+  const tabs = ["pos", "history", "income", "home"];
+  for (const t of tabs) {
+    const el = document.getElementById("container-" + t);
+    if (el && !el.classList.contains("hidden")) {
+      return t;
+    }
+  }
+  return currentActiveNavTab || "home";
+}
+
+/**
+ * Render cấu trúc HTML của thanh Dock điều hướng vào #container-nav
+ * @param {string} [activeTab] - Tab đang chọn mặc định ('home' | 'pos' | 'history' | 'income')
+ */
+function renderBottomNav(activeTab) {
   const container = document.getElementById("container-nav");
   if (!container) return;
 
-  const tabName = activeTab === "add" ? "pos" : activeTab;
+  const target = activeTab || getCurrentlyVisibleNavTab();
+  const tabName = target === "add" ? "pos" : target;
   currentActiveNavTab = tabName;
   if (typeof window !== "undefined") window.currentTab = tabName;
 
@@ -62,10 +78,11 @@ function renderBottomNav(activeTab = (currentActiveNavTab || "home")) {
 
 /**
  * Cập nhật vị trí viên thuốc trượt (Sliding Pill Indicator) đến nút tab đang chọn
- * @param {string} activeTab - Tên tab ('home' | 'pos' | 'history' | 'income')
+ * @param {string} [activeTab] - Tên tab ('home' | 'pos' | 'history' | 'income')
  */
-function updateNavSlidingPill(activeTab = (currentActiveNavTab || "home")) {
-  const tabName = activeTab === "add" ? "pos" : (activeTab || currentActiveNavTab || "home");
+function updateNavSlidingPill(activeTab) {
+  const target = activeTab || getCurrentlyVisibleNavTab();
+  const tabName = target === "add" ? "pos" : target;
   currentActiveNavTab = tabName;
   if (typeof window !== "undefined") window.currentTab = tabName;
 
@@ -87,13 +104,15 @@ function updateNavSlidingPill(activeTab = (currentActiveNavTab || "home")) {
   });
 
   if (pill && activeBtn) {
-    pill.style.width = `${activeBtn.offsetWidth}px`;
-    pill.style.height = `${activeBtn.offsetHeight}px`;
-    pill.style.top = `${activeBtn.offsetTop}px`;
-    pill.style.left = `0px`;
-    pill.style.transform = `translateX(${activeBtn.offsetLeft}px)`;
-    pill.classList.remove("opacity-0");
-    pill.classList.add("opacity-100");
+    if (activeBtn.offsetWidth > 0) {
+      pill.style.width = `${activeBtn.offsetWidth}px`;
+      pill.style.height = `${activeBtn.offsetHeight}px`;
+      pill.style.top = `${activeBtn.offsetTop}px`;
+      pill.style.left = `0px`;
+      pill.style.transform = `translateX(${activeBtn.offsetLeft}px)`;
+      pill.classList.remove("opacity-0");
+      pill.classList.add("opacity-100");
+    }
   }
 }
 
@@ -123,13 +142,24 @@ function navigateTab(tab) {
 
 /**
  * Hiển thị thanh Bottom Navigation
+ * @param {string} [activeTab] - Tab muốn hiển thị active (tự nhận diện nếu bỏ trống)
  */
-function showBottomNav() {
+function showBottomNav(activeTab) {
   const container = document.getElementById("container-nav");
   if (container) container.classList.remove("hidden");
+  const tab = activeTab || getCurrentlyVisibleNavTab();
+  currentActiveNavTab = tab;
+  if (typeof window !== "undefined") window.currentTab = tab;
+
   requestAnimationFrame(() => {
-    updateNavSlidingPill(currentActiveNavTab);
+    updateNavSlidingPill(tab);
   });
+  setTimeout(() => {
+    updateNavSlidingPill(tab);
+  }, 50);
+  setTimeout(() => {
+    updateNavSlidingPill(tab);
+  }, 150);
 }
 
 /**
@@ -147,6 +177,7 @@ if (typeof window !== "undefined") {
   window.navigateTab = navigateTab;
   window.showBottomNav = showBottomNav;
   window.hideBottomNav = hideBottomNav;
+  window.getCurrentlyVisibleNavTab = getCurrentlyVisibleNavTab;
   window.getCurrentActiveNavTab = () => currentActiveNavTab;
   window.setCurrentActiveNavTab = (tab) => {
     currentActiveNavTab = tab;
@@ -155,6 +186,6 @@ if (typeof window !== "undefined") {
 
   // Giữ viên thuốc bám chuẩn khi xoay màn hình hoặc đổi kích cỡ
   window.addEventListener("resize", () => {
-    updateNavSlidingPill(currentActiveNavTab || "home");
+    updateNavSlidingPill(getCurrentlyVisibleNavTab());
   });
 }

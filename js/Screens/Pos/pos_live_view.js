@@ -117,23 +117,18 @@ const PosLiveView = {
     const modalEditServicesHtml = ModalShell({
       id: "modal-edit-live-services",
       title: "Điều Chỉnh Dịch Vụ",
-      subtitle: '<span id="modal-edit-live-customer-info">Khách: Khách vãng lai</span>',
+      subtitle:
+        '<span id="modal-edit-live-customer-info">Khách: Khách vãng lai</span>',
       icon: "refresh-cw",
       maxWidth: "max-w-lg",
       body: `
         <div class="space-y-3 text-left" style="text-align: left !important;">
-          ${typeof ServicePickerUI !== 'undefined'
-            ? ServicePickerUI.render({
-                prefix: 'modal-edit',
-                context: 'modal-edit',
-                title: 'Dịch Vụ Đang Chọn:',
-                placeholderText: '-- Chọn thêm dịch vụ từ menu --'
-              })
-            : `
-              <!-- Fallback -->
-              <div id="modal-edit-quick-combos" class="flex flex-wrap gap-2 text-left justify-start"></div>
-              <div id="modal-edit-cart-chips-list" class="flex flex-wrap gap-2.5 text-left justify-start"></div>
-            `}
+          ${ServicePicker.render({
+            prefix: "modal-edit",
+            context: "modal-edit",
+            title: "Dịch Vụ Đã Chọn:",
+            placeholderText: "-- Chọn thêm dịch vụ / sản phẩm --",
+          })}
 
           <div class="border-t border-dashed border-spa-border my-2"></div>
 
@@ -185,40 +180,17 @@ const PosLiveView = {
             <select id="modal-handover-staff-select" onchange="HandoverModal.updatePreview()" class="w-full bg-white dark:bg-spa-card border border-spa-border rounded-2xl p-3.5 text-sm text-spa-dark dark:text-white font-bold focus:outline-none focus:border-spa-brand transition cursor-pointer"></select>
           </div>
 
-          ${typeof CommissionSplit !== 'undefined'
-            ? CommissionSplit.renderSelector({
-                prefix: 'handover',
-                activeMode: 'timer',
-                onSelectFn: 'HandoverModal.setSplitMode',
-                equalSubtext: 'Cưa đôi hoa hồng tour'
-              })
-            : `
-              <div class="space-y-2 pt-1">
-                <label class="block text-xs font-bold text-spa-muted uppercase tracking-wider">Hình Thức Phân Chia Hoa Hồng:</label>
-                <div class="grid grid-cols-2 gap-2.5">
-                  <button type="button" id="btn-handover-timer" onclick="HandoverModal.setSplitMode('timer')" class="p-3 rounded-2xl border bg-spa-brand/10 border-spa-brand text-spa-brand font-bold text-xs flex flex-col items-center gap-1 cursor-pointer transition shadow-xs">
-                    <span class="flex items-center gap-1 font-extrabold"><i data-lucide="clock" class="w-3.5 h-3.5"></i> Theo thời gian thực</span>
-                    <span class="text-[10px] font-normal text-spa-muted">Tính theo số phút đã làm</span>
-                  </button>
-                  <button type="button" id="btn-handover-equal" onclick="HandoverModal.setSplitMode('equal')" class="p-3 rounded-2xl border bg-spa-bg dark:bg-spa-dark/40 border-spa-border text-spa-muted hover:bg-spa-brand/5 font-bold text-xs flex flex-col items-center gap-1 cursor-pointer transition">
-                    <span class="flex items-center gap-1 font-extrabold"><i data-lucide="handshake" class="w-3.5 h-3.5"></i> Chia đều 50 / 50</span>
-                    <span class="text-[10px] font-normal text-spa-muted">Cưa đôi hoa hồng tour</span>
-                  </button>
-                </div>
-              </div>
-            `}
+          ${CommissionSplit.renderSelector({
+            prefix: "handover",
+            activeMode: "timer",
+            onSelectFn: "HandoverModal.setSplitMode",
+            equalSubtext: "Cưa đôi hoa hồng tour",
+          })}
 
-          ${typeof CommissionSplit !== 'undefined'
-            ? CommissionSplit.renderSummaryContainer({
-                listId: 'handover-preview-list',
-                title: 'Dự kiến phân bổ hoa hồng tour:'
-              })
-            : `
-              <div class="p-3.5 rounded-2xl bg-spa-bg dark:bg-white/5 border border-spa-border text-xs space-y-2">
-                <span class="font-bold text-spa-muted block pb-1 border-b border-spa-border">Dự kiến phân bổ hoa hồng tour:</span>
-                <div id="handover-preview-list" class="space-y-1.5"></div>
-              </div>
-            `}
+          ${CommissionSplit.renderSummaryContainer({
+            listId: "handover-preview-list",
+            title: "Dự kiến phân bổ hoa hồng tour:",
+          })}
         </div>
       `,
       footer: AppButton({
@@ -257,40 +229,17 @@ const PosLiveView = {
             })}
           </div>
 
-          ${typeof CommissionSplit !== 'undefined'
-            ? CommissionSplit.renderSelector({
-                prefix: 'split',
-                activeMode: 'timer',
-                onSelectFn: 'SwapStaffModal.setSplitMode',
-                equalSubtext: 'Làm cùng từ đầu'
-              })
-            : `
-              <div class="space-y-2 pt-1">
-                <label class="block text-xs font-bold text-spa-muted uppercase tracking-wider">Hình Thức Phân Chia Hoa Hồng</label>
-                <div class="grid grid-cols-2 gap-2.5">
-                  <button type="button" id="btn-split-timer" onclick="SwapStaffModal.setSplitMode('timer')" class="p-3 rounded-2xl border bg-spa-brand/10 border-spa-brand text-spa-brand font-bold text-xs flex flex-col items-center gap-1 cursor-pointer transition shadow-xs">
-                    <span class="flex items-center gap-1 font-extrabold"><i data-lucide="clock" class="w-3.5 h-3.5"></i> Theo thời gian thực</span>
-                    <span class="text-[10px] font-normal text-spa-muted">Tính theo số phút đã làm</span>
-                  </button>
-                  <button type="button" id="btn-split-half" onclick="SwapStaffModal.setSplitMode('equal')" class="p-3 rounded-2xl border bg-spa-bg dark:bg-spa-dark/40 border-spa-border text-spa-muted hover:bg-spa-brand/5 font-bold text-xs flex flex-col items-center gap-1 cursor-pointer transition">
-                    <span class="flex items-center gap-1 font-extrabold"><i data-lucide="handshake" class="w-3.5 h-3.5"></i> Chia đều 50 / 50</span>
-                    <span class="text-[10px] font-normal text-spa-muted">Làm cùng từ đầu</span>
-                  </button>
-                </div>
-              </div>
-            `}
+          ${CommissionSplit.renderSelector({
+            prefix: "split",
+            activeMode: "timer",
+            onSelectFn: "SwapStaffModal.setSplitMode",
+            equalSubtext: "Làm cùng từ đầu",
+          })}
 
-          ${typeof CommissionSplit !== 'undefined'
-            ? CommissionSplit.renderSummaryContainer({
-                listId: 'swap-summary-pct-list',
-                title: 'Tóm tắt phân chia hoa hồng:'
-              })
-            : `
-              <div class="p-3.5 rounded-2xl bg-spa-bg dark:bg-white/5 border border-spa-border text-xs space-y-1.5">
-                <div class="font-bold text-spa-muted pb-1 border-b border-spa-border">Tóm tắt phân chia hoa hồng:</div>
-                <div id="swap-summary-pct-list" class="space-y-1"></div>
-              </div>
-            `}
+          ${CommissionSplit.renderSummaryContainer({
+            listId: "swap-summary-pct-list",
+            title: "Dự kiến phân bổ hoa hồng tour:",
+          })}
         </div>
       `,
       footer: AppButton({
@@ -307,7 +256,7 @@ const PosLiveView = {
 
     // 4. Modal Checkout 2 pha (Khách xem & KTV ghi nhận tips)
     const modalCheckoutHtml = `
-      <div id="modal-checkout" onclick="if(event.target === this) CheckoutModal.close()" class="hidden fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-sm transition-all duration-300 overflow-y-auto">
+      <div id="modal-checkout" onclick="if(event.target === this) CheckoutModal.close()" class="modal-backdrop hidden fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-sm transition-all duration-300 overflow-y-auto">
         <div class="w-full max-w-md max-h-[67dvh] sm:max-h-[70dvh] m-auto my-auto bg-spa-card rounded-[28px] border border-spa-border shadow-2xl flex flex-col min-h-0 overflow-hidden" style="-webkit-mask-image: -webkit-radial-gradient(white, black); border-radius: 28px; -webkit-border-radius: 28px; isolation: isolate; max-height: 67dvh; max-height: 67vh;">
           <!-- Pha 1: Khách xem -->
           <div id="checkout-step-customer" class="flex flex-col flex-1 min-h-0">

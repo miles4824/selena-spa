@@ -41,19 +41,25 @@ const QuickPills = {
       ? getStored('menu', (typeof DEFAULT_MENU !== 'undefined' ? DEFAULT_MENU : []))
       : (typeof DEFAULT_MENU !== 'undefined' ? DEFAULT_MENU : []);
 
-    const selectedIds = new Set(selectedCartItems.map(item => item.service_id));
     const quickNumbers = [1, 2, 3, 4, 5];
 
     return quickNumbers.map(num => {
       const item = this.findComboByNumber(menu, num);
       if (!item) return '';
 
-      const isSelected = selectedIds.has(item.service_id);
+      const isSelected = selectedCartItems.some(c => {
+        if (!c) return false;
+        const cName = String(c.service_name || '').toLowerCase();
+        if (cName.includes(`combo ${num}`) || cName.includes(`combo${num}`)) return true;
+        const normC = String(c.service_id || '').replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+        const normItem = String(item.service_id || '').replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+        return normC && normItem && normC === normItem;
+      });
 
       return `
         <button type="button" 
           onclick="QuickPills.toggle('${item.service_id}', '${context}')" 
-          class="px-3.5 py-2 rounded-2xl text-xs font-extrabold border transition-all duration-200 active:scale-95 cursor-pointer ${
+          class="px-3.5 py-2 rounded-2xl text-xs font-extrabold border transition-all duration-200 active:scale-95 cursor-pointer shrink-0 ${
             isSelected
               ? 'bg-spa-brand/10 text-spa-brand border-spa-brand ring-2 ring-spa-brand/30 shadow-xs'
               : 'bg-white dark:bg-spa-card text-spa-dark/80 dark:text-white/80 border-spa-border hover:bg-spa-bg hover:border-spa-brand/40 hover:text-spa-brand'

@@ -16,69 +16,16 @@ const PosFormView = {
       <div class="space-y-3.5">
         ${SectionTitle({ title: "1. Chọn Dịch Vụ & Sản Phẩm", icon: "sparkles" })}
 
-        ${typeof ServicePickerUI !== "undefined"
-          ? ServicePickerUI.render({
-              prefix: "pos",
-              context: "pos",
-              title: "Dịch Vụ Đã Chọn:",
-              placeholderText: "-- Chọn thêm dịch vụ / sản phẩm --"
-            })
-          : `
-            <!-- Hàng 1: Quick Pills -->
-            <div class="space-y-2">
-              <div class="text-[11px] font-extrabold text-spa-muted flex items-center gap-1.5">
-                <i data-lucide="zap" class="w-3.5 h-3.5 text-spa-brand"></i>
-                <span>Chọn nhanh Combo:</span>
-              </div>
-              <div id="pos-quick-combos" class="flex flex-wrap gap-2"></div>
-            </div>
+        ${ServicePicker.render({
+          prefix: "pos",
+          context: "pos",
+          title: "Dịch Vụ Đã Chọn:",
+          placeholderText: "-- Chọn thêm dịch vụ / sản phẩm --"
+        })}
+        <div class="border-t border-dashed border-spa-border my-3"></div>
 
-            <div class="border-t border-dashed border-spa-border my-3"></div>
-
-            <!-- Dịch vụ đã chọn & Dropdown popover -->
-            <div class="space-y-3">
-              <div class="flex justify-between items-center px-0.5">
-                <span class="text-xs font-black text-spa-muted uppercase tracking-wider flex items-center gap-1.5">
-                  <i data-lucide="clipboard-list" class="w-3.5 h-3.5 text-spa-sage"></i> Dịch Vụ Đã Chọn:
-                </span>
-                <span id="pos-cart-count-badge" class="text-[10px] font-black px-2.5 py-0.5 rounded-full bg-spa-sage/10 text-spa-sage border border-spa-sage/30">
-                  1 dịch vụ
-                </span>
-              </div>
-
-              <div class="relative">
-                <div id="pos-tag-container" onclick="ServiceDropdown.togglePopover(event)" class="min-h-[56px] p-3 bg-white dark:bg-spa-card border border-spa-border hover:border-spa-brand/60 rounded-2xl flex flex-col gap-2.5 cursor-pointer transition-all focus-within:border-spa-brand focus-within:ring-2 focus-within:ring-spa-brand/20 shadow-2xs">
-                  <div id="pos-cart-chips-list" class="flex flex-wrap gap-2.5"></div>
-                  
-                  <div id="pos-dropdown-trigger-row" class="w-full flex items-center justify-between text-xs font-bold text-spa-muted hover:text-spa-brand py-3 mt-1 px-3 rounded-xl bg-spa-bg/80 dark:bg-spa-dark/40 hover:bg-spa-brand/10 transition border border-dashed border-spa-border">
-                    <span id="pos-dropdown-placeholder-text" class="flex items-center gap-1.5 truncate">
-                      <i data-lucide="plus-circle" class="w-3.5 h-3.5 text-spa-brand"></i>
-                      <span>-- Chọn thêm dịch vụ / sản phẩm --</span>
-                    </span>
-                    <i id="pos-dropdown-chevron" data-lucide="chevron-down" class="w-4 h-4 text-spa-dark/40 transition-transform duration-200 shrink-0 ml-1"></i>
-                  </div>
-                </div>
-
-                <!-- Popover 7 nhóm dịch vụ -->
-                <div id="pos-custom-dropdown-popover" class="hidden absolute left-0 right-0 top-full mt-2 bg-white dark:bg-spa-card border border-spa-border rounded-2xl shadow-2xl ring-1 ring-black/5 z-50 overflow-hidden flex flex-col animate-in fade-in zoom-in-95">
-                  <div class="p-2 border-b border-spa-border bg-spa-bg/90 dark:bg-spa-dark/90 sticky top-0 z-20" onclick="event.stopPropagation()">
-                    <div class="relative flex items-center">
-                      <i data-lucide="search" class="w-3.5 h-3.5 text-spa-dark/40 absolute left-2.5 pointer-events-none"></i>
-                      <input type="text" id="pos-menu-search-input" oninput="ServiceDropdown.onSearch(this.value)" placeholder="Tìm kiếm nhanh dịch vụ, combo, mỹ phẩm..." class="w-full pl-8 pr-7 py-2 text-xs bg-white dark:bg-spa-card border border-spa-border rounded-xl text-spa-dark dark:text-white placeholder:text-spa-dark/40 focus:outline-none focus:border-spa-brand focus:ring-1 focus:ring-spa-brand/30 font-medium transition" autocomplete="off" />
-                      <button type="button" id="btn-clear-pos-menu-search" onclick="ServiceDropdown.clearSearch()" class="hidden absolute right-2 text-spa-dark/40 hover:text-spa-brand p-0.5 cursor-pointer">
-                        <i data-lucide="x" class="w-3.5 h-3.5"></i>
-                      </button>
-                    </div>
-                  </div>
-                  <div id="pos-custom-dropdown-items" class="border-spa-border border-t pb-2 px-2 space-y-1 max-h-64 overflow-y-auto"></div>
-                </div>
-              </div>
-            </div>
-          `}
-          <div class="border-t border-dashed border-spa-border my-3"></div>
-
-          <!-- Thẻ Tổng Thanh Toán (CartTotalBar) -->
-          ${typeof CartTotalBar !== "undefined" ? CartTotalBar.render([]) : ""}
+        <!-- Thẻ Tổng Thanh Toán (CartTotalBar) -->
+        ${CartTotalBar.render([])}
         </div>
 
       <!-- 2. PHÂN BỔ KỸ THUẬT VIÊN -->

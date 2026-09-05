@@ -76,11 +76,11 @@ const ServiceEditModal = {
     if (!modal) return;
     if (typeof closeModal === 'function') {
       closeModal(modal, () => {
-        if (typeof showBottomNav === 'function') showBottomNav();
+        if (typeof showBottomNav === 'function') showBottomNav('pos');
       });
     } else {
       modal.classList.add('hidden');
-      if (typeof showBottomNav === 'function') showBottomNav();
+      if (typeof showBottomNav === 'function') showBottomNav('pos');
     }
   },
 

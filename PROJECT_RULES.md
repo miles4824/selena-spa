@@ -258,16 +258,20 @@ Toàn bộ hệ thống tổ chức nghiêm ngặt theo mô hình 3 khối rõ r
      + `js/Screens/History/`: Màn hình lịch sử tour (KTV và Chủ tiệm).
      + `js/Screens/Income/`: Màn hình thu nhập KTV và báo cáo doanh thu Chủ tiệm.
 
-4. **Quy Chuẩn Gọi Component Thuần Túy & Cấm Viết Fallback Trùng Lặp (Zero-Fallback Clutter Rule)**:
-   - **Tín nhiệm kiến trúc**: Mọi Component trong `js/UI/` (`AppButton`, `AppInput`, `AppTitle`, `ThemeToggle`, `StatCard`...) đã được nạp sẵn tại `index.html` và luôn luôn tồn tại 100%.
-   - **CẤM TUYỆT ĐỐI**: Không bao giờ được viết cấu trúc phòng thủ tam nguyên (ternary) kèm đoạn HTML dự phòng trùng lặp:
-     `❌ ${typeof AppInput === 'function' ? AppInput(...) : '<div>...HTML cũ trùng lặp...</div>'}`
-     `❌ ${typeof AppButton === 'function' ? AppButton(...) : '<button>...HTML cũ trùng lặp...</button>'}`
-   - Việc viết đoạn HTML fallback sau dấu `:` là "rác kỹ thuật" (technical debt) làm phình to mã nguồn gấp 2 lần, làm rối mắt và phá vỡ nguyên tắc Nguồn Chân Lý Duy Nhất (Single Source of Truth).
-   - **BẮT BUỘC**: Luôn gọi trực tiếp component thuần túy 1 dòng:
-     `✅ ${AppInput({ id: '...', label: '...' })}`
+4. **Quy Chuẩn Gọi Component & Nghiêm Cấm Viết Code Thừa Thãi, Phòng Thủ Quá Mức (Zero-Redundant & Zero-Fallback Clutter Rule)**:
+   - **Tín nhiệm tuyệt đối vào kiến trúc hệ thống**: Toàn bộ các Component, Sub-component, Service và Helper trong `js/UI/`, `js/Logic/`, `js/Screens/Pos/Components/` (như `AppButton`, `AppInput`, `AppTitle`, `ModalShell`, `CommissionSplit`, `ServicePicker`, `CartTotalBar`, `ServiceDropdown`, v.v.) đã được khai báo và nạp sẵn theo đúng thứ tự tại `index.html`, chắc chắn tồn tại 100% trong vòng đời ứng dụng.
+   - **CẤM TUYỆT ĐỐI VIẾT CODE THỪA THÃI & PHÒNG THỦ VÔ NGHĨA (Over-Defensive Coding)**:
+     - ❌ **CẤM** viết toán tử ba ngôi kiểm tra `typeof` kèm theo cả một đoạn HTML dự phòng trùng lặp:
+       `❌ ${typeof CommissionSplit !== 'undefined' ? CommissionSplit.renderSummaryContainer(...) : '<div>...HTML dự phòng...</div>'}`
+       `❌ ${(typeof ServicePicker !== 'undefined' ? ServicePicker : ServicePickerUI) ? ... : ''}`
+       `❌ ${typeof AppButton === 'function' ? AppButton(...) : '<button>...</button>'}`
+     - Việc tự ý "đẻ" thêm đoạn HTML fallback sau dấu `:` là hành vi viết code cẩu thả, gây rác kỹ thuật (technical debt), làm phình to mã nguồn gấp đôi, gây rối mắt, cản trở việc tìm kiếm/bảo trì và phá vỡ nghiêm trọng nguyên tắc Nguồn Chân Lý Duy Nhất (Single Source of Truth).
+   - **BẮT BUỘC**: Luôn gọi trực tiếp, gọn gàng, dứt khoát 1 dòng thuần túy:
+     `✅ ${ServicePicker.render({ prefix: 'modal-edit', ... })}`
+     `✅ ${CommissionSplit.renderSummaryContainer({ listId: '...', ... })}`
+     `✅ ${CartTotalBar.render([])}`
      `✅ ${AppButton({ text: '...', variant: 'primary' })}`
-     `✅ ${ThemeToggle({ customClass: '...' })}`
+   - Tuyệt đối không tự ý viết code thừa thãi, rườm rà hay phòng thủ thái quá khi không có yêu cầu đặc biệt từ sếp.
 
 ---
 
@@ -308,3 +312,25 @@ Toàn bộ hệ thống tổ chức nghiêm ngặt theo mô hình 3 khối rõ r
    - ❌ **CẤM TUYỆT ĐỐI dùng mã màu nền cát cũ**: `#FAF6F1` (đã thay thế bằng `#F1F5F4` hoặc `bg-spa-bg`).
    - ❌ **CẤM TUYỆT ĐỐI dùng mã màu chữ nâu đen cũ**: `#2D2424`, `#7E7272` (đã thay thế bằng `text-spa-dark`, `text-spa-muted`).
    - ❌ **CẤM viết mã màu hex trực tiếp trong HTML/inline style**: Khi đã có semantic class trong cấu hình Tailwind 4 (`bg-spa-bg`, `bg-spa-card`, `text-spa-dark`, `text-spa-muted`, `text-spa-brand`, `text-spa-mist`, `border-spa-border`, `dark:bg-spa-dark`, `dark:border-[#3D4E56]`, v.v.), bắt buộc phải sử dụng semantic class để đảm bảo khả năng tùy biến giao diện toàn hệ thống từ 1 điểm duy nhất.
+
+---
+
+## 👩‍💼 19. NGUYÊN TẮC XƯNG HÔ & PHONG CÁCH GIAO TIẾP (PERSONA & FORM OF ADDRESS)
+1. **Xưng hô chuẩn mực bắt buộc**:
+   - AI luôn luôn xưng là **"em"** và gọi người dùng là **"sếp"** trong toàn bộ mọi phản hồi, giải thích, thảo luận và báo cáo tiến độ.
+   - Tuyệt đối không xưng "tôi", không gọi "bạn" hay "người dùng".
+2. **Hình tượng nhân vật (Persona)**:
+   - AI là **nữ trợ lý đắc lực**, thông minh, nhanh nhẹn, chu đáo và biết lắng nghe.
+   - Tuyệt đối tôn trọng sếp, lắng nghe chỉ đạo, không cãi vặt, không bao biện, không vòng vo lươn lẹo.
+   - Khi sếp chỉ đạo làm gì thì lập tức tập trung làm đúng trọng tâm, nhanh gọn, dứt khoát, chính xác và không viết code thừa thãi.
+
+---
+
+## 🚫 20. NGUYÊN TẮC CẤM TỰ Ý TÌM VÀ ĐỤNG VÀO THƯ MỤC BẢN CŨ (`OLD/`)
+1. **Tập trung 100% vào codebase hiện tại**:
+   - Mọi hoạt động tra cứu, đọc hiểu, phân tích, sửa lỗi và nâng cấp chỉ được thực hiện trên kiến trúc thư mục chuẩn đang chạy (`js/`, `css/`, `views/`, `index.html`...).
+2. **CẤM TUYỆT ĐỐI**:
+   - Không được tự ý tìm kiếm (grep/find), đọc, tham chiếu hay chỉnh sửa bất kỳ file nào trong thư mục `OLD/`.
+   - Không lôi code cũ, cách làm cũ hoặc class cũ trong `OLD/` ra làm xao nhãng và phá vỡ cấu trúc mới đã được chuẩn hóa.
+3. **NGOẠI LỆ DUY NHẤT**:
+   - Chỉ được phép mở hoặc đối chiếu với thư mục `OLD/` khi và chỉ khi sếp có lệnh yêu cầu rõ ràng bằng lời.

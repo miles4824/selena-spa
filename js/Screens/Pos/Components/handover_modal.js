@@ -33,11 +33,11 @@ const HandoverModal = {
     if (!modal) return;
     if (typeof closeModal === 'function') {
       closeModal(modal, () => {
-        if (typeof showBottomNav === 'function') showBottomNav();
+        if (typeof showBottomNav === 'function') showBottomNav('pos');
       });
     } else {
       modal.classList.add('hidden');
-      if (typeof showBottomNav === 'function') showBottomNav();
+      if (typeof showBottomNav === 'function') showBottomNav('pos');
     }
   },
 
@@ -107,43 +107,35 @@ const HandoverModal = {
     const elapsedSec = Math.max(1, Math.floor((Date.now() - (session.start_timestamp || Date.now())) / 1000));
     const elapsedMin = Math.floor(elapsedSec / 60);
     const targetMin = session.duration_target_min || 50;
-
     const totalPrice = session.price || 0;
-    const estTotalComm = Math.round(totalPrice * 0.1); // Ước tính hoa hồng 10%
+    const currentStaffName = session.staff_1_name || 'KTV hiện tại';
+    const targetStaffName = targetUser.full_name || targetUser.name || 'KTV mới';
 
+    if (typeof CommissionSplit !== 'undefined' && CommissionSplit.calculate) {
+      const calcResult = CommissionSplit.calculate({
+        staffs: [
+          { name: currentStaffName, workedMinutes: elapsedMin, phone: session.staff_1_phone },
+          { name: targetStaffName, phone: targetPhone }
+        ],
+        totalPrice,
+        targetMin,
+        mode: this.handoverSplitMode || 'timer',
+        isHandover: true
+      });
+      listEl.innerHTML = CommissionSplit.renderSummaryListHTML(calcResult.items);
+      return;
+    }
+
+    // Fallback nếu không có CommissionSplit
+    const estTotalComm = Math.round(totalPrice * 0.1);
     let p1Pct = 50;
     let p2Pct = 50;
-
     if (this.handoverSplitMode === 'timer') {
       p1Pct = Math.min(90, Math.max(10, Math.round((elapsedMin / targetMin) * 100)));
       p2Pct = 100 - p1Pct;
     }
-
     const p1Comm = Math.round(estTotalComm * (p1Pct / 100));
     const p2Comm = estTotalComm - p1Comm;
-    const currentStaffName = session.staff_1_name || 'KTV hiện tại';
-
-    if (typeof CommissionSplit !== 'undefined') {
-      listEl.innerHTML = CommissionSplit.renderSummaryListHTML([
-        {
-          name: currentStaffName,
-          subtext: `Đã làm ${elapsedMin} phút`,
-          pct: p1Pct,
-          amountVnd: p1Comm,
-          dotColor: 'bg-spa-brand',
-          textColor: 'text-spa-brand'
-        },
-        {
-          name: targetUser.full_name || targetUser.name,
-          subtext: `Làm tiếp ${Math.max(0, targetMin - elapsedMin)} phút`,
-          pct: p2Pct,
-          amountVnd: p2Comm,
-          dotColor: 'bg-spa-sage',
-          textColor: 'text-spa-sage'
-        }
-      ]);
-      return;
-    }
 
     listEl.innerHTML = `
       <div class="flex justify-between items-center text-spa-dark dark:text-white">
@@ -156,7 +148,7 @@ const HandoverModal = {
       <div class="flex justify-between items-center text-spa-dark dark:text-white">
         <span class="flex items-center gap-1.5 font-medium">
           <span class="w-2 h-2 rounded-full bg-spa-sage"></span>
-          <b>${targetUser.full_name || targetUser.name}</b> (Làm tiếp ${Math.max(0, targetMin - elapsedMin)} phút):
+          <b>${targetStaffName}</b> (Làm tiếp ${Math.max(0, targetMin - elapsedMin)} phút):
         </span>
         <span class="font-bold text-spa-sage font-mono">${p2Pct}% • ~${p2Comm.toLocaleString('vi-VN')} đ</span>
       </div>
@@ -189,7 +181,22 @@ const HandoverModal = {
 
     let p1Pct = 50;
     let p2Pct = 50;
-    if (this.handoverSplitMode === 'timer') {
+    if (typeof CommissionSplit !== 'undefined' && CommissionSplit.calculate) {
+      const calcResult = CommissionSplit.calculate({
+        staffs: [
+          { name: session.staff_1_name, workedMinutes: elapsedMin, phone: session.staff_1_phone },
+          { name: targetStaff.full_name || targetStaff.name, phone: targetStaff.phone }
+        ],
+        totalPrice: session.price || 0,
+        targetMin,
+        mode: this.handoverSplitMode || 'timer',
+        isHandover: true
+      });
+      if (calcResult.items && calcResult.items.length >= 2) {
+        p1Pct = calcResult.items[0].pct;
+        p2Pct = calcResult.items[1].pct;
+      }
+    } else if (this.handoverSplitMode === 'timer') {
       p1Pct = Math.min(90, Math.max(10, Math.round((elapsedMin / targetMin) * 100)));
       p2Pct = 100 - p1Pct;
     }
