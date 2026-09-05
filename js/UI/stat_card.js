@@ -29,7 +29,7 @@ function StatCard({
       text: 'text-spa-brand dark:text-spa-brand' 
     },
     coral: { 
-      bg: 'bg-gradient-to-br from-spa-brand to-spa-brand-hover dark:from-spa-card dark:to-spa-card', 
+      bg: 'stat-card-coral', 
       border: 'border-transparent dark:border-spa-brand/40', 
       text: 'text-white dark:text-spa-brand' 
     }

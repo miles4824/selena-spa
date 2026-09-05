@@ -207,11 +207,11 @@ html[data-theme="dark"] .border-spa-border {
 .app-card-banner-classic {
   background: linear-gradient(
     135deg,
-    #fff0eb 0%,
+    #fbf0f2 0%,
     #ffffff 50%,
-    #faf6f1 100%
+    #f1f5f4 100%
   ) !important;
-  border-color: #f0eae1 !important;
+  border-color: #e2e8e6 !important;
   box-shadow:
     0 10px 30px -5px rgba(232, 174, 183, 0.08),
     0 4px 12px rgba(0, 0, 0, 0.02) !important;
@@ -230,9 +230,21 @@ html[data-theme="dark"] .border-spa-border {
     135deg,
     #fbf0f2 0%,
     #ffffff 50%,
-    #faf6f1 100%
+    #f1f5f4 100%
   ) !important;
   border-color: rgba(232, 174, 183, 0.4) !important;
+}
+
+/* StatCard Coral (Thành tích chính: Số tour đã gội) */
+.stat-card-coral {
+  background: linear-gradient(135deg, #e8aeb7 0%, #df9ca6 100%) !important;
+  box-shadow: 0 10px 25px -5px rgba(232, 174, 183, 0.4) !important;
+}
+
+html.dark .stat-card-coral,
+html[data-theme="dark"] .stat-card-coral {
+  background: linear-gradient(135deg, #2f3e46 0%, #263339 100%) !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4) !important;
 }
 
 /* 2. Dark Mode Overrides (Chỉ kích hoạt khi html có class .dark hoặc data-theme="dark") */

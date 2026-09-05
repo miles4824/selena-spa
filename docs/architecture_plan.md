@@ -139,6 +139,8 @@ Toàn bộ hệ thống giao diện được quy chuẩn trên 5 gam màu phong 
 ---
 
 ## 6. Lịch Sử Phiên Bản & Lưu Vết (Changelog)
+- **v0.0.4.3 (2026-09-05)**:
+  - Khắc phục lỗi mất màu nền gradient trên thẻ `toursCardHtml` (`StatCard` variant `coral` - Số Tour Đã Gội) bằng class `.stat-card-coral` chuẩn CSS gradient và khai báo `@theme` trực tiếp trong `<style type="text/tailwindcss">` của `index.html`.
 - **v0.0.4.2 (2026-09-05)**:
   - Rà soát quét toàn bộ codebase và triệt tiêu dứt điểm 100% các mã màu fix cứng còn sót lại (`manifest.json`, `Code.gs`, `modal_shell.js`, `bed_card.js`, `stat_card.js`, `status_badge.js`, `owner_home.js`, `login_screen.js`).
   - Chuyển toàn bộ các thành phần sang token ngữ nghĩa Tailwind 4 Mindora Luxury (`bg-spa-card`, `bg-spa-sage-light`, `text-spa-sage`, `border-spa-border`, `to-spa-mist`...).
