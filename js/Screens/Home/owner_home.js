@@ -77,19 +77,6 @@ function renderOwnerHome(user) {
   }
 
   // 3. CỤM THẺ CHỈ SỐ TODAY SNAPSHOT
-  const revCardHtml =
-    typeof StatCard === "function"
-      ? StatCard({
-          id: "owner-today-revenue",
-          title: "Doanh Thu Hôm Nay",
-          value: snapshot.formattedRevenue,
-          subtitle: "Bấm để ẩn / hiện số tiền",
-          color: "coral",
-          isPrivacy: true,
-          privacyType: "owner_revenue",
-        })
-      : "";
-
   const custCardHtml =
     typeof StatCard === "function"
       ? StatCard({
@@ -97,7 +84,20 @@ function renderOwnerHome(user) {
           title: "Lượt Khách Đến",
           value: String(snapshot.todayCustomers),
           subtitle: "Hóa đơn đã thanh toán",
+          color: "purple",
+        })
+      : "";
+
+  const revCardHtml =
+    typeof StatCard === "function"
+      ? StatCard({
+          id: "owner-today-revenue",
+          title: "Doanh Thu Hôm Nay",
+          value: snapshot.formattedRevenue,
+          subtitle: "Bấm để ẩn / hiện số tiền",
           color: "mint",
+          isPrivacy: true,
+          privacyType: "owner_revenue",
         })
       : "";
 
@@ -108,7 +108,7 @@ function renderOwnerHome(user) {
           title: "Giường Đang Chạy",
           value: `${snapshot.activeBedsCount}/${snapshot.totalBedsCount}`,
           subtitle: "Công suất phòng gội",
-          color: "purple",
+          color: "mist",
         })
       : "";
 
@@ -197,8 +197,8 @@ function renderOwnerHome(user) {
         </div>
 
         <div class="grid grid-cols-2 sm:grid-cols-3 gap-3.5">
-          ${revCardHtml}
           ${custCardHtml}
+          ${revCardHtml}          
           ${bedsCardHtml}
         </div>
       </div>
