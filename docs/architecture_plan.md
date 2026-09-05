@@ -139,6 +139,11 @@ Toàn bộ hệ thống giao diện được quy chuẩn trên 5 gam màu phong 
 ---
 
 ## 6. Lịch Sử Phiên Bản & Lưu Vết (Changelog)
+- **v0.0.4.5 (2026-09-05)**:
+  - Tự động hóa toàn diện cơ chế che/hiện số tiền nhạy cảm (`privacyType: 'staff_comm' | 'owner_revenue'`) trực tiếp bên trong `StatCard` (`StatCard.toggle(cardId, privacyType)`).
+  - Loại bỏ hoàn toàn mã lặp boilerplate cập nhật DOM ở các màn hình `staff_home.js` và `owner_home.js`.
+  - Đảm bảo tính bảo mật Zero Leaks (không để lộ tiền thật vào thuộc tính HTML DOM) và tính đa hình Realtime 100% khi số liệu cập nhật từ Firebase.
+  - Tối ưu cơ chế render lại SVG Lucide icon mượt mà, chống lỗi cache icon trên các trình duyệt di động.
 - **v0.0.4.4 (2026-09-05)**:
   - Tích hợp tính năng bảo mật ẩn/hiện số tiền Doanh Thu Hôm Nay (`owner-today-revenue`) cho Chủ Sáng Lập qua `HomeService.toggleOwnerRevenuePrivacy()` và hàm xử lý `handleOwnerTogglePrivacy()`.
   - Hỗ trợ tham số `isMasked` linh hoạt trong `StatCard` để hiển thị đúng biểu tượng `eye` / `eye-off`.

@@ -106,9 +106,7 @@ function renderStaffHome(user) {
           subtitle: "Bấm để ẩn / hiện số tiền",
           color: "mint",
           isPrivacy: true,
-          isMasked: stats.isMasked,
-          privacyEyeId: "staff-comm-eye-icon",
-          onPrivacyToggle: "handleStaffTogglePrivacy()",
+          privacyType: "staff_comm",
         })
       : "";
 
@@ -188,25 +186,11 @@ function renderStaffHome(user) {
 }
 
 /**
- * Xử lý sự kiện bấm nút mắt ẩn/hiện số tiền hoa hồng riêng tư
+ * Xử lý sự kiện bấm nút mắt ẩn/hiện số tiền hoa hồng riêng tư (Ủy quyền cho StatCard.toggle)
  */
 function handleStaffTogglePrivacy() {
-  if (typeof HomeService === "undefined") return;
-  const isMasked = HomeService.toggleStaffCommPrivacy();
-  const valEl = document.getElementById("staff-today-commission-value");
-  const eyeIcon = document.getElementById("staff-comm-eye-icon");
-
-  if (valEl && typeof currentUser !== "undefined") {
-    const stats = HomeService.getStaffTodayStats(currentUser);
-    valEl.innerText = isMasked
-      ? "•••••• đ"
-      : HomeService.formatMoney(stats.todayCommission);
-  }
-
-  if (eyeIcon) {
-    eyeIcon.setAttribute("data-lucide", isMasked ? "eye-off" : "eye");
-    if (typeof lucide !== "undefined" && lucide.createIcons)
-      lucide.createIcons();
+  if (typeof StatCard !== "undefined" && StatCard.toggle) {
+    StatCard.toggle("staff-today-commission-value", "staff_comm");
   }
 }
 

@@ -86,9 +86,7 @@ function renderOwnerHome(user) {
           subtitle: "Bấm để ẩn / hiện số tiền",
           color: "coral",
           isPrivacy: true,
-          isMasked: snapshot.isMasked,
-          privacyEyeId: "owner-rev-eye-icon",
-          onPrivacyToggle: "handleOwnerTogglePrivacy()",
+          privacyType: "owner_revenue",
         })
       : "";
 
@@ -323,23 +321,11 @@ function promptEditAnnouncement() {
 }
 
 /**
- * Xử lý sự kiện bấm nút mắt ẩn/hiện doanh thu toàn tiệm riêng tư (Chủ tiệm)
+ * Xử lý sự kiện bấm nút mắt ẩn/hiện doanh thu toàn tiệm riêng tư (Ủy quyền cho StatCard.toggle)
  */
 function handleOwnerTogglePrivacy() {
-  if (typeof HomeService === "undefined") return;
-  const isMasked = HomeService.toggleOwnerRevenuePrivacy();
-  const valEl = document.getElementById("owner-today-revenue");
-  const eyeIcon = document.getElementById("owner-rev-eye-icon");
-
-  if (valEl) {
-    const snapshot = HomeService.getOwnerTodaySnapshot();
-    valEl.innerText = isMasked ? "•••••• đ" : snapshot.formattedRevenue;
-  }
-
-  if (eyeIcon) {
-    eyeIcon.setAttribute("data-lucide", isMasked ? "eye-off" : "eye");
-    if (typeof lucide !== "undefined" && lucide.createIcons)
-      lucide.createIcons();
+  if (typeof StatCard !== "undefined" && StatCard.toggle) {
+    StatCard.toggle("owner-today-revenue", "owner_revenue");
   }
 }
 
