@@ -352,20 +352,20 @@ body {
     color 0.3s linear;
 }
 
+.font-serif,
+[class*="font-serif"],
+.font-heading,
+.font-serif-luxury {
+  font-family: "Playfair Display", serif !important;
+}
+
 h1,
 h2,
 h3,
-.font-heading,
-.font-serif-luxury {
-  font-family: "Playfair Display", serif;
-  letter-spacing: 0.02em;
-}
-
 h4,
 h5,
 h6 {
   font-family: "Plus Jakarta Sans", sans-serif;
-  letter-spacing: -0.01em;
 }
 
 .font-sans,
@@ -390,7 +390,7 @@ h6 {
   }
   100% {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: none;
   }
 }
 
@@ -556,4 +556,3 @@ h6 {
     padding-top: 1.5rem !important;
   }
 }
-

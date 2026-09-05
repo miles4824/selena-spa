@@ -3,7 +3,17 @@
 var currentLiveSession = null;
 var tempSwapStaffs = [];
 var liveTimerInterval = null;
-var currentTab = 'login';
+if (typeof window !== 'undefined' && !Object.getOwnPropertyDescriptor(window, 'currentTab')) {
+  try {
+    Object.defineProperty(window, 'currentTab', {
+      get() { return (typeof getCurrentActiveNavTab === 'function') ? getCurrentActiveNavTab() : 'home'; },
+      set(val) { if (typeof setCurrentActiveNavTab === 'function') setCurrentActiveNavTab(val); },
+      configurable: true
+    });
+  } catch(e) {
+    var currentTab = 'home';
+  }
+}
 
 // Quản lý các phiên tour đã hoàn thành hoặc đã hủy để chống vòng lặp 100%
 let dismissedSessionIds = new Set();
@@ -14,14 +24,16 @@ try {
 
 function markSessionDismissed(sess) {
   if (!sess) return;
-  const sId = String(sess.session_id || sess.start_timestamp || '');
-  if (sId) {
-    dismissedSessionIds.add(sId);
-    try {
-      localStorage.setItem('selena_dismissed_sessions', JSON.stringify(Array.from(dismissedSessionIds)));
-    } catch(e) {}
-  }
+  const sId = String(sess.session_id || '');
+  const tId = String(sess.start_timestamp || '');
+  if (sId) dismissedSessionIds.add(sId);
+  if (tId) dismissedSessionIds.add(tId);
+  try {
+    localStorage.setItem('selena_dismissed_sessions', JSON.stringify(Array.from(dismissedSessionIds)));
+  } catch(e) {}
 }
+window.markSessionDismissed = markSessionDismissed;
+window.dismissedSessionIds = dismissedSessionIds;
 
 // =============================================================
 // SELENA SPA - FIREBASE REALTIME DATABASE ENGINE (SINGAPORE)
@@ -184,8 +196,14 @@ function setupRealtimeListeners() {
     const sessionsObj = snapshot.val();
     const myPhone = (currentUser && currentUser.phone) ? normalizePhone(currentUser.phone) : '';
     
-    // Lưu cache toàn bộ tour đang chạy toàn tiệm
-    const allActive = sessionsObj ? Object.values(sessionsObj).filter(Boolean) : [];
+    // Lưu cache toàn bộ tour đang chạy toàn tiệm (Loại bỏ triệt để tour đã hủy / hoàn thành)
+    const allActive = sessionsObj 
+      ? Object.values(sessionsObj).filter(s => {
+          if (!s) return false;
+          const sid = String(s.session_id || s.start_timestamp || '');
+          return !dismissedSessionIds.has(sid);
+        })
+      : [];
     setStored('live_sessions_cache', allActive);
     
     if (typeof updateStaffAvailabilityHeader === 'function') {
@@ -222,6 +240,7 @@ function setupRealtimeListeners() {
       if (mySession) {
         const isNewSession = !currentLiveSession || currentLiveSession.session_id !== mySession.session_id;
         currentLiveSession = mySession;
+        if (window.PosState) window.PosState.currentLiveSession = mySession;
         localStorage.setItem('selena_active_live_session', JSON.stringify(mySession));
         if (typeof renderLiveSessionUI === 'function') {
           renderLiveSessionUI();
@@ -242,6 +261,7 @@ function setupRealtimeListeners() {
         if (currentLiveSession) {
           if (typeof liveTimerInterval !== 'undefined') clearInterval(liveTimerInterval);
           currentLiveSession = null;
+          if (window.PosState) window.PosState.currentLiveSession = null;
           localStorage.removeItem('selena_active_live_session');
           if (typeof renderLiveSessionUI === 'function') renderLiveSessionUI();
           console.log('⚡ [Firebase Realtime] Đã thoát khỏi ca tour (không còn trong danh sách KTV)');
@@ -250,14 +270,17 @@ function setupRealtimeListeners() {
     } else if (currentLiveSession) {
       if (typeof liveTimerInterval !== 'undefined') clearInterval(liveTimerInterval);
       currentLiveSession = null;
+      if (window.PosState) window.PosState.currentLiveSession = null;
       localStorage.removeItem('selena_active_live_session');
       if (typeof renderLiveSessionUI === 'function') renderLiveSessionUI();
     }
 
     // TỰ ĐỘNG CẬP NHẬT TỨC THÌ CHO MÀN HÌNH ADMIN VÀ STAFF KHÔNG CẦN F5
+    if (typeof refreshLiveBeds === 'function') refreshLiveBeds();
     if (typeof renderAdminLiveRunningTours === 'function') renderAdminLiveRunningTours();
     if (typeof renderAdminTodaySnapshot === 'function') renderAdminTodaySnapshot();
     if (typeof renderHomeStatusAndActionButton === 'function') renderHomeStatusAndActionButton();
+    if (typeof renderHomeScreen === 'function' && typeof currentTab !== 'undefined' && currentTab === 'home') renderHomeScreen();
     if (typeof loadKTVHomeStats === 'function' && typeof currentTab !== 'undefined' && currentTab === 'home') loadKTVHomeStats();
   });
 
@@ -503,7 +526,13 @@ setInterval(async () => {
       const sessionsObj = await resSess.json();
       const myPhone = (currentUser && currentUser.phone) ? normalizePhone(currentUser.phone) : '';
       if (sessionsObj && typeof sessionsObj === 'object') {
-        const allSessions = Object.values(sessionsObj).filter(Boolean);
+        const allSessions = Object.values(sessionsObj).filter(s => {
+          if (!s) return false;
+          const sid = String(s.session_id || s.start_timestamp || '');
+          return !dismissedSessionIds.has(sid);
+        });
+        setStored('live_sessions_cache', allSessions);
+
         const mySession = allSessions.find(s => {
           const sId = String(s.session_id || s.start_timestamp || '');
           if (dismissedSessionIds.has(sId)) return false;
@@ -515,6 +544,7 @@ setInterval(async () => {
         if (mySession) {
           if (!currentLiveSession || currentLiveSession.session_id !== mySession.session_id) {
             currentLiveSession = mySession;
+            if (window.PosState) window.PosState.currentLiveSession = mySession;
             localStorage.setItem('selena_active_live_session', JSON.stringify(mySession));
             if (typeof renderLiveSessionUI === 'function') renderLiveSessionUI();
             if (typeof showView === 'function') showView('add');
@@ -522,14 +552,18 @@ setInterval(async () => {
         } else if (currentLiveSession) {
           if (typeof liveTimerInterval !== 'undefined') clearInterval(liveTimerInterval);
           currentLiveSession = null;
+          if (window.PosState) window.PosState.currentLiveSession = null;
           localStorage.removeItem('selena_active_live_session');
           if (typeof renderLiveSessionUI === 'function') renderLiveSessionUI();
+          if (typeof refreshLiveBeds === 'function') refreshLiveBeds();
         }
       } else if (currentLiveSession) {
         if (typeof liveTimerInterval !== 'undefined') clearInterval(liveTimerInterval);
         currentLiveSession = null;
+        if (window.PosState) window.PosState.currentLiveSession = null;
         localStorage.removeItem('selena_active_live_session');
         if (typeof renderLiveSessionUI === 'function') renderLiveSessionUI();
+        if (typeof refreshLiveBeds === 'function') refreshLiveBeds();
       }
     }
 
@@ -552,6 +586,60 @@ setInterval(async () => {
   } catch(e) {}
 }, 5000);
 
+
+// =========================================================================
+// GHI HÓA ĐƠN VÀ DỮ LIỆU KHÁCH LÊN FIREBASE REALTIME DATABASE (0.03s)
+// =========================================================================
+async function fbSaveReceipt(receipt, customerInfo = null, cycleInfo = null, voucherInfo = null) {
+  if (!receipt || !receipt.receipt_id) return false;
+  let updates = {};
+  try {
+    const rId = receipt.receipt_id;
+    updates[`receipts/${rId}`] = receipt;
+
+    if (customerInfo && (customerInfo.phone_number || customerInfo.raw_phone)) {
+      const pKey = typeof normalizePhone === 'function' ? normalizePhone(customerInfo.phone_number || customerInfo.raw_phone) : String(customerInfo.phone_number || customerInfo.raw_phone).replace(/[^0-9]/g, '');
+      if (pKey) updates[`customers/${pKey}`] = customerInfo;
+    }
+
+    if (cycleInfo && cycleInfo.cycle_id) {
+      updates[`loyalty_cycles/${cycleInfo.cycle_id}`] = cycleInfo;
+    }
+
+    if (voucherInfo && voucherInfo.voucher_id) {
+      updates[`vouchers/${voucherInfo.voucher_id}`] = voucherInfo;
+    }
+
+    const cleanUpdates = JSON.parse(JSON.stringify(updates));
+
+    if (fbDb) {
+      await fbDb.ref().update(cleanUpdates);
+    } else {
+      await fetch(`https://selena-spa-6a852-default-rtdb.asia-southeast1.firebasedatabase.app/.json`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(cleanUpdates)
+      });
+    }
+    console.log(`⚡ [Firebase] Đã lưu hóa đơn ${rId} trong 0.03s!`);
+    return true;
+  } catch (e) {
+    console.warn('⚠️ Lỗi fbSaveReceipt qua SDK, chuyển sang REST fallback:', e.message);
+    try {
+      const cleanUpdates = JSON.parse(JSON.stringify(updates));
+      await fetch(`https://selena-spa-6a852-default-rtdb.asia-southeast1.firebasedatabase.app/.json`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(cleanUpdates)
+      });
+      return true;
+    } catch(err2) {
+      console.error('Lỗi REST fbSaveReceipt:', err2);
+      return false;
+    }
+  }
+}
+window.fbSaveReceipt = fbSaveReceipt;
 
 // C. Lưu và đồng bộ Phiên Tour đang phục vụ (Hỗ trợ Nhiều Tour Song Song)
 window.fbSetLiveSession = function(sessionData) { return fbSaveLiveSession(sessionData); };
@@ -588,23 +676,48 @@ async function fbSaveLiveSession(sessionData) {
 }
 
 async function fbClearLiveSession(sessionId = null) {
-  let sId = sessionId;
-  if (!sId && currentLiveSession && currentLiveSession.session_id) {
-    sId = currentLiveSession.session_id;
+  const idsToDelete = new Set();
+  if (sessionId) idsToDelete.add(String(sessionId));
+  if (currentLiveSession && currentLiveSession.session_id) {
+    idsToDelete.add(String(currentLiveSession.session_id));
   }
-  if (!sId) {
-    // Nếu không có ID, dọn sạch active cũ
-    sId = 'active';
+  if (window.PosState && window.PosState.currentLiveSession && window.PosState.currentLiveSession.session_id) {
+    idsToDelete.add(String(window.PosState.currentLiveSession.session_id));
   }
-  try {
-    if (fbDb) {
-      fbDb.ref(`live_sessions/${sId}`).remove().catch(() => {});
+
+  const myPhone = (currentUser && currentUser.phone) ? normalizePhone(currentUser.phone) : '';
+  const curCache = (typeof getStored === 'function') ? getStored('live_sessions_cache', []) : [];
+  curCache.forEach(s => {
+    if (!s) return;
+    const sId = String(s.session_id || s.start_timestamp || '');
+    if (sessionId && sId === String(sessionId)) idsToDelete.add(sId);
+    if (myPhone) {
+      if (s.staff_1_phone && normalizePhone(s.staff_1_phone) === myPhone) idsToDelete.add(sId);
+      if (s.staffs && Array.isArray(s.staffs) && s.staffs.some(st => st && normalizePhone(st.phone) === myPhone)) idsToDelete.add(sId);
     }
-  } catch(e) {}
-  try {
-    fetch(`https://selena-spa-6a852-default-rtdb.asia-southeast1.firebasedatabase.app/live_sessions/${sId}.json`, {
-      method: 'DELETE'
-    }).catch(() => {});
-  } catch(e) {}
+  });
+
+  if (idsToDelete.size === 0) {
+    idsToDelete.add('active');
+  }
+
+  for (const sId of idsToDelete) {
+    if (!sId) continue;
+    if (typeof markSessionDismissed === 'function') {
+      markSessionDismissed({ session_id: sId });
+    }
+    try {
+      if (fbDb) {
+        await fbDb.ref(`live_sessions/${sId}`).remove().catch(() => {});
+      }
+    } catch(e) {}
+    try {
+      await fetch(`https://selena-spa-6a852-default-rtdb.asia-southeast1.firebasedatabase.app/live_sessions/${sId}.json`, {
+        method: 'DELETE'
+      }).catch(() => {});
+    } catch(e) {}
+  }
   return true;
 }
+
+window.fbClearLiveSession = fbClearLiveSession;

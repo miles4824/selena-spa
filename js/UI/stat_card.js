@@ -45,7 +45,7 @@ function StatCard({
       border: "border-spa-mist/40 dark:border-spa-mist/40",
       text: "text-spa-mist dark:text-spa-mist",
     },
-    purple: {
+    pink: {
       bg: "bg-spa-peach-light dark:bg-spa-card",
       border: "border-spa-peach-border dark:border-spa-brand/40",
       text: "text-spa-brand dark:text-spa-brand",
@@ -73,9 +73,7 @@ function StatCard({
   const numColor = isCoral
     ? "text-white dark:text-white"
     : "text-spa-dark dark:text-white";
-  const subColor = isCoral
-    ? "text-white/90 dark:text-white/70"
-    : `${c.text} dark:text-white/70`;
+  const subColor = isCoral ? "text-white/90 dark:text-white/70" : `${c.text}`;
 
   return `
     <div class="p-4 sm:p-5 rounded-3xl ${c.bg} border ${c.border} stat-card-theme-${color} space-y-1 shadow-xs transition-all duration-300 ${customClass}" style="-webkit-mask-image: -webkit-radial-gradient(white, black); border-radius: 24px; -webkit-border-radius: 24px; isolation: isolate; transform: translateZ(0);">

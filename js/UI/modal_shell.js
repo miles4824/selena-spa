@@ -19,18 +19,18 @@ function ModalShell({
 } = {}) {
   const closeAction = onClose || `closeModal('${id}')`;
 
-  // Tự động chuẩn hóa Title theo đúng AppTitle level 'modal'
-  const titleHtml =
-    typeof AppTitle === "function"
-      ? AppTitle({
-          text: title,
+  // Tự động chuẩn hóa Header theo đúng ModalHeader chuẩn mực
+  const headerHtml =
+    typeof ModalHeader === "function"
+      ? ModalHeader({
+          title,
           configKey,
           defaultText: defaultText || title,
           icon,
           iconColor,
-          level: "modal",
+          onClose: closeAction,
         })
-      : `<div class="flex items-center gap-2">${icon ? `<i data-lucide="${icon}" class="w-5 h-5 ${iconColor}"></i>` : ""}<h3 class="text-base sm:text-lg font-bold text-spa-dark dark:text-white font-serif tracking-tight">${title}</h3></div>`;
+      : "";
 
   return `
     <div id="${id}" class="fixed inset-0 z-[9999] hidden flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-sm transition-all duration-300">
@@ -38,13 +38,8 @@ function ModalShell({
       <!-- KHUNG MODAL CHUẨN: Chiều cao tối đa trừ padding, flex-col để ghim top/bottom -->
       <div class="w-full ${maxWidth} max-h-[calc(100dvh-48px)] bg-spa-card rounded-2xl border border-spa-border shadow-2xl flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200 ${customClass}">
         
-        <!-- 1. HEADER (PIN CHẶT TRÊN ĐỈNH VỚI APPTITLE) -->
-        <div class="flex items-center justify-between px-6 py-4.5 border-b border-spa-border bg-spa-bg/90 backdrop-blur-md shrink-0 select-none">
-          ${titleHtml}
-          <button type="button" onclick="${closeAction}" class="w-8 h-8 rounded-full bg-spa-card dark:bg-white/10 hover:bg-spa-brand/15 text-spa-muted hover:text-spa-brand border border-spa-border dark:border-white/15 flex items-center justify-center transition cursor-pointer active:scale-90 shadow-2xs" title="Đóng">
-            <i data-lucide="x" class="w-4 h-4"></i>
-          </button>
-        </div>
+        <!-- 1. HEADER (PIN CHẶT TRÊN ĐỈNH VỚI MODALHEADER) -->
+        ${headerHtml}
 
         <!-- 2. BODY (CUỘN TỰ DO Ở GIỮA) -->
         <div class="p-6 overflow-y-auto space-y-4 overscroll-contain flex-1 text-sm text-spa-dark dark:text-white">

@@ -85,7 +85,15 @@ function checkUserRunningTour(user) {
   let localSession = null;
   try {
     const saved = localStorage.getItem('selena_active_live_session');
-    if (saved) localSession = JSON.parse(saved);
+    if (saved) {
+      localSession = JSON.parse(saved);
+      const sId = String(localSession.session_id || '');
+      const tId = String(localSession.start_timestamp || '');
+      if (typeof dismissedSessionIds !== 'undefined' && (dismissedSessionIds.has(sId) || dismissedSessionIds.has(tId))) {
+        localStorage.removeItem('selena_active_live_session');
+        localSession = null;
+      }
+    }
   } catch (e) {}
 
   // 2. Kiểm tra bộ nhớ đệm Firebase
@@ -94,6 +102,10 @@ function checkUserRunningTour(user) {
 
   for (const s of candidateSessions) {
     if (!s) continue;
+    const sId = String(s.session_id || '');
+    const tId = String(s.start_timestamp || '');
+    if (typeof dismissedSessionIds !== 'undefined' && (dismissedSessionIds.has(sId) || dismissedSessionIds.has(tId))) continue;
+
     const startTime = Number(s.start_timestamp || 0);
     const targetMin = Number(s.duration_target_min || 45);
     const maxExpiryMs = (targetMin + 30) * 60 * 1000;
@@ -202,7 +214,15 @@ function getLiveRunningTours() {
   let localSession = null;
   try {
     const saved = localStorage.getItem('selena_active_live_session');
-    if (saved) localSession = JSON.parse(saved);
+    if (saved) {
+      localSession = JSON.parse(saved);
+      const sId = String(localSession.session_id || '');
+      const tId = String(localSession.start_timestamp || '');
+      if (typeof dismissedSessionIds !== 'undefined' && (dismissedSessionIds.has(sId) || dismissedSessionIds.has(tId))) {
+        localStorage.removeItem('selena_active_live_session');
+        localSession = null;
+      }
+    }
   } catch (e) {}
 
   const allSessions = (typeof getStored === 'function') ? getStored('live_sessions_cache', []) : [];
@@ -213,7 +233,9 @@ function getLiveRunningTours() {
   merged.forEach((sess, idx) => {
     if (!sess) return;
     const sId = String(sess.session_id || sess.start_timestamp || idx);
+    const tId = String(sess.start_timestamp || '');
     if (seenIds.has(sId)) return;
+    if (typeof dismissedSessionIds !== 'undefined' && (dismissedSessionIds.has(sId) || (tId && dismissedSessionIds.has(tId)))) return;
 
     const startTime = Number(sess.start_timestamp || 0);
     const targetMin = Number(sess.duration_target_min || 45);

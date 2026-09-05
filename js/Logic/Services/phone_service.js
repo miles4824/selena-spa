@@ -24,6 +24,10 @@ const PhoneService = {
     return raw.slice(0, 3) + '*' + raw.slice(-3);
   },
 
+  maskPhone(phone, isOwner = false) {
+    return this.mask(phone, isOwner);
+  },
+
   // So sánh 2 số điện thoại
   isSame(p1, p2) {
     const n1 = this.normalize(p1);
@@ -60,9 +64,65 @@ const PhoneService = {
   }
 };
 
+// Gom danh sách khách hàng từ Customers và Receipts làm fallback khi chưa sync kịp
+function getAllAvailableCustomers() {
+  const storedCusts = typeof getStored === 'function' ? getStored('customers', []) : [];
+  const custMap = new Map();
+
+  storedCusts.forEach(c => {
+    let p = String(c.raw_phone || c.phone_number || '').replace(/[^0-9]/g, '');
+    if (p.length === 9 && !p.startsWith('0')) p = '0' + p;
+    if (p && p.length >= 7) {
+      custMap.set(p, {
+        phone_number: p,
+        raw_phone: p,
+        customer_name: c.customer_name || 'Khách hàng',
+        birthday: c.birthday || '',
+        birth_month: c.birth_month || 0,
+        cycle_start_date: c.cycle_start_date || '',
+        cycle_end_date: c.cycle_end_date || '',
+        cycle_visits: Number(c.cycle_visits) || 0,
+        total_visits: Number(c.total_visits) || 0,
+        voucher_count: Number(c.voucher_count) || 0,
+        notes: c.notes || ''
+      });
+    }
+  });
+
+  const receipts = typeof getStored === 'function' ? getStored('receipts', []) : [];
+  receipts.forEach(r => {
+    let p = String(r.raw_phone || r.customer_phone || '').replace(/[^0-9]/g, '');
+    if (p.length === 9 && !p.startsWith('0')) p = '0' + p;
+    if (p && p.length >= 7 && !custMap.has(p)) {
+      custMap.set(p, {
+        phone_number: p,
+        raw_phone: p,
+        customer_name: r.customer_name || 'Khách hàng',
+        birthday: '',
+        birth_month: 0,
+        cycle_start_date: r.date || '',
+        cycle_end_date: '',
+        cycle_visits: 1,
+        total_visits: 1,
+        voucher_count: 0,
+        notes: ''
+      });
+    }
+  });
+
+  return Array.from(custMap.values());
+}
+
 // Global bridging for backwards compatibility
 function normalizePhone(val) { return PhoneService.normalize(val); }
 function maskPhoneNumber(phone, isOwner = false) { return PhoneService.mask(phone, isOwner); }
 function isSamePhone(p1, p2) { return PhoneService.isSame(p1, p2); }
-
 function matchPhone(p1, p2) { return isSamePhone(p1, p2); }
+
+if (typeof window !== 'undefined') {
+  window.getAllAvailableCustomers = getAllAvailableCustomers;
+  window.normalizePhone = normalizePhone;
+  window.maskPhoneNumber = maskPhoneNumber;
+  window.isSamePhone = isSamePhone;
+  window.matchPhone = matchPhone;
+}

@@ -93,7 +93,7 @@ function renderStaffHome(user) {
           title: "Số Tour Đã Gội",
           value: String(stats.todayTours),
           subtitle: "Đã hoàn thành hôm nay",
-          color: "coral",
+          color: "pink",
         })
       : "";
 
@@ -169,12 +169,15 @@ function renderStaffHome(user) {
 
       <!-- CỤM 3: THÀNH TÍCH CỦA BẠN TRONG NGÀY HÔM NAY -->
       <div class="space-y-3">
-        <div class="flex items-center justify-between px-1">
-          <h3 class="text-base font-bold theme-heading flex items-center gap-2">
-            <i data-lucide="award" class="w-4 h-4 text-spa-brand"></i>
-            <span>Thành Tích Của Bạn Hôm Nay</span>
-          </h3>
-        </div>
+        ${
+          typeof AppTitle === "function"
+            ? AppTitle({
+                title: "Thành Tích Của Bạn Hôm Nay",
+                icon: "award",
+                level: "section",
+              })
+            : ""
+        }
 
         <div class="grid grid-cols-2 sm:grid-cols-2 gap-3.5">
           ${toursCardHtml}

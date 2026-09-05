@@ -207,12 +207,10 @@ function isUserOwner(u) {
   return (role === 'admin' || role === 'chủ tiệm' || role === 'chủ sáng lập' || role === 'owner' || phone === '0949251144');
 }
 
-// 4. Quản lý Chế độ Sáng / Tối (Theme Manager - Tự Động Theo Thời Gian Thực)
-// Ban ngày (6:00 - 17:59): Light Mode (bg_login_light.png)
-// Ban đêm (18:00 - 5:59): Dark Mode (bg_login_dark.png)
+// 4. Quản lý Chế độ Sáng / Tối (Theme Manager)
+// Tạm thời tắt tính năng tự động chuyển darkmode theo thời gian, mặc định Light Mode
 function getTimeBasedTheme() {
-  const currentHour = new Date().getHours();
-  return (currentHour >= 6 && currentHour < 18) ? 'light' : 'dark';
+  return 'light';
 }
 
 let userManualTheme = null;
@@ -225,7 +223,7 @@ function getTheme() {
   if (userManualTheme === 'dark' || userManualTheme === 'light') {
     return userManualTheme;
   }
-  return getTimeBasedTheme();
+  return 'light';
 }
 
 function setTheme(theme, isManual = false) {
@@ -272,7 +270,7 @@ function initTheme() {
   try {
     saved = localStorage.getItem('selena_theme');
   } catch (e) {}
-  const targetTheme = (saved === 'dark' || saved === 'light') ? saved : getTimeBasedTheme();
+  const targetTheme = (saved === 'dark' || saved === 'light') ? saved : 'light';
   setTheme(targetTheme, false);
 }
 
@@ -289,16 +287,16 @@ function updateThemeToggleIcons() {
   });
 }
 
-// Tự động kiểm tra thời gian mỗi 30 giây để chuyển giao mượt mà giữa sáng & tối
-if (typeof window !== 'undefined') {
-  setInterval(() => {
-    if (!userManualTheme) {
-      const correctTheme = getTimeBasedTheme();
-      const currentTheme = document.documentElement.getAttribute('data-theme');
-      if (correctTheme !== currentTheme) {
-        setTheme(correctTheme, false);
-      }
-    }
-  }, 30000);
-}
+// Tạm thời tắt tự động kiểm tra thời gian để đổi màu dark mode (người dùng bấm nút mới đổi)
+// if (typeof window !== 'undefined') {
+//   setInterval(() => {
+//     if (!userManualTheme) {
+//       const correctTheme = getTimeBasedTheme();
+//       const currentTheme = document.documentElement.getAttribute('data-theme');
+//       if (correctTheme !== currentTheme) {
+//         setTheme(correctTheme, false);
+//       }
+//     }
+//   }, 30000);
+// }
 

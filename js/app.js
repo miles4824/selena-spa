@@ -10,6 +10,7 @@
 function showScreen(screenName) {
   window.scrollTo(0, 0);
   const tabName = (screenName === 'add') ? 'pos' : screenName;
+  window.currentTab = tabName;
 
   // 1. Nếu chuyển về màn hình đăng nhập
   if (tabName === 'login') {
@@ -50,18 +51,23 @@ function showScreen(screenName) {
 
   const activeContainer = document.getElementById('container-' + tabName);
 
-  // 5. LAZY LOAD: Tab nào chưa có nội dung thì mới dựng lần đầu
+  // 5. LAZY LOAD & DYNAMIC REFRESH: Tab nào chưa có nội dung thì dựng, đã có thì làm mới tức thì
   if (tabName === 'home') {
     if (activeContainer && (!activeContainer.hasChildNodes() || activeContainer.innerHTML.trim() === '')) {
       if (typeof renderHomeScreen === 'function') renderHomeScreen();
-    } else if (typeof refreshLiveBeds === 'function') {
-      // REFRESH HOOK: Tự động cập nhật số liệu mới nhất khi quay lại Home
-      refreshLiveBeds();
+    } else {
+      if (typeof refreshLiveBeds === 'function') refreshLiveBeds();
+      if (typeof renderHomeScreen === 'function') renderHomeScreen();
     }
   } else if (tabName === 'pos') {
     if (activeContainer && (!activeContainer.hasChildNodes() || activeContainer.innerHTML.trim() === '')) {
-      activeContainer.innerHTML = renderPlaceholderTab('pos', 'Tạo Ca / Vé Mới (POS)');
-      if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+      if (typeof renderPosScreen === 'function') {
+        renderPosScreen();
+      }
+    } else {
+      if (typeof PosScreen !== 'undefined' && PosScreen.renderLiveSessionUI) {
+        PosScreen.renderLiveSessionUI();
+      }
     }
   } else if (tabName === 'history') {
     if (activeContainer && (!activeContainer.hasChildNodes() || activeContainer.innerHTML.trim() === '')) {
@@ -162,5 +168,15 @@ window.addEventListener('DOMContentLoaded', () => {
 // Xuất hàm ra phạm vi toàn cục
 if (typeof window !== 'undefined') {
   window.showScreen = showScreen;
+  window.showView = function(view) {
+    showScreen(view);
+  };
+  window.refreshAllActiveViews = function() {
+    if (typeof refreshLiveBeds === 'function') refreshLiveBeds();
+    if (typeof renderHomeScreen === 'function') renderHomeScreen();
+    if (typeof PosScreen !== 'undefined' && PosScreen.renderLiveSessionUI) {
+      PosScreen.renderLiveSessionUI();
+    }
+  };
   window.handleLogout = handleLogout;
 }

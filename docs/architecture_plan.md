@@ -68,43 +68,92 @@
 
 ---
 
-## 4. Phân Định Trách Nhiệm Thư Mục
+### 4. Phân Định Trách Nhiệm Thư Mục & Phân Chia File Chuẩn Mực
 
 ```text
 js/
-├── UI/                  <-- CÁC LINH KIỆN & VỎ KHUNG TÁI SỬ DỤNG (TAILWIND 4)
-│   ├── app_button.js    <-- Nút bấm hành động (primary, secondary, danger, ghost...)
-│   ├── app_card.js      <-- Khung thẻ nền (banner, surface, mindora, zen; ambient: true)
-│   ├── stat_card.js     <-- Thẻ thống kê chỉ số & thành tích
-│   ├── bed_card.js      <-- Thẻ giám sát giường trực tiếp
-│   ├── status_badge.js  <-- Huy hiệu trạng thái (sẵn sàng, bận, trống)
-│   ├── role_badge.js    <-- Huy hiệu vai trò (KTV, Chủ tiệm)
-│   ├── app_title.js     <-- Tiêu đề chuẩn hóa toàn hệ thống
-│   ├── modal_shell.js   <-- Vỏ popup 3 tầng cố định header/footer
-│   ├── theme_toggle.js  <-- Nút gạt sáng / tối
-│   ├── bottom_nav.js    <-- Thanh menu đáy kính mờ & viên thuốc trượt
-│   └── pull_to_refresh.js <-- Kéo vuốt để làm mới
+├── UI/                                  <-- 1. CÁC LINH KIỆN & VỎ KHUNG TÁI SỬ DỤNG (TAILWIND 4)
+│   ├── app_button.js                    <-- Nút bấm hành động (primary, secondary, danger, ghost...)
+│   ├── app_card.js                      <-- Khung thẻ nền (banner, surface, mindora, zen; ambient: true)
+│   ├── stat_card.js                     <-- Thẻ thống kê chỉ số & thành tích
+│   ├── bed_card.js                      <-- Thẻ giám sát giường trực tiếp
+│   ├── status_badge.js                  <-- Huy hiệu trạng thái (sẵn sàng, bận, trống)
+│   ├── role_badge.js                    <-- Huy hiệu vai trò (KTV, Chủ tiệm)
+│   ├── app_title.js                     <-- Tiêu đề hệ thống (AppTitle), CardHeader & ModalHeader
+│   ├── modal_shell.js                   <-- Vỏ popup 3 tầng cố định header/footer
+│   ├── theme_toggle.js                  <-- Nút gạt sáng / tối
+│   └── bottom_nav.js                    <-- Thanh menu đáy kính mờ & viên thuốc trượt
 │
-├── Screens/             <-- NỘI DUNG RUỘT CỦA TỪNG MÀN HÌNH (ROUTING VIEW)
+├── Screens/                             <-- 2. NỘI DUNG RUỘT CỦA TỪNG MÀN HÌNH (4 TABS + AUTH)
 │   ├── Auth/
-│   │   └── login_screen.js   <-- Quản lý #container-login
-│   ├── Home/
-│   │   ├── home_screen.js    <-- Điều phối #container-home
-│   │   ├── owner_home.js     <-- Giao diện chủ sáng lập
-│   │   └── staff_home.js     <-- Giao diện kỹ thuật viên
-│   ├── Pos/                  <-- Quản lý #container-pos
-│   ├── History/              <-- Quản lý #container-history
-│   └── Income/               <-- Quản lý #container-income
+│   │   └── login_screen.js              <-- Quản lý #container-login
+│   │
+│   ├── Home/                            <-- TAB 1: HOME [Khác nhau 100% -> Tách đôi]
+│   │   ├── staff_home.js                <-- Giao diện kỹ thuật viên (Tour cá nhân, nút vào tour)
+│   │   ├── owner_home.js                <-- Giao diện chủ sáng lập (Live giường, doanh thu ngày)
+│   │   └── home_screen.js               <-- Router điều phối #container-home
+│   │
+│   ├── Pos/                             <-- TAB 2: ADD / POS [1 Nhạc trưởng + 16 Sub-Components]
+│   │   ├── Components/                  <-- 16 Linh kiện độc lập (40-70 dòng/file, phẳng, tên kỹ thuật sạch)
+│   │   │   ├── quick_pills.js           <-- Hàng nút chọn nhanh Combo 1 đến 5
+│   │   │   ├── cart_chips.js            <-- Thẻ chip các món đã chọn (2 dòng + nút xoá)
+│   │   │   ├── service_dropdown.js      <-- Menu thả xuống 7 nhóm dịch vụ + ô tìm kiếm
+│   │   │   ├── cart_total_bar.js        <-- Thẻ tổng thanh toán (tổng tiền + tổng phút)
+│   │   │   ├── staff_primary.js         <-- Ô chọn KTV 1 chính (khoá/mở theo role + mắt hoa hồng)
+│   │   │   ├── staff_extra.js           <-- Nút thêm KTV phụ & danh sách KTV phụ
+│   │   │   ├── customer_phone.js        <-- Ô nhập SĐT + gợi ý khách quen (che SĐT theo role)
+│   │   │   ├── customer_fields.js       <-- Ô Tên và Tháng sinh (khoá tên khách cũ, mở khách mới)
+│   │   │   ├── loyalty_card.js          <-- Thẻ chu kỳ 10 lần, banner sinh nhật 20%, voucher
+│   │   │   ├── live_header.js           <-- Header ca đang chạy, nút hủy, nút Đổi/Thêm & Bàn Giao
+│   │   │   ├── live_timer.js            <-- Đồng hồ đếm lùi MM:SS & thanh tiến trình %
+│   │   │   ├── live_actions.js          <-- Nút [Hoàn Thành Tour] / [Xong Việc Rời Tour Sớm]
+│   │   │   ├── checkout_modal.js        <-- Modal thanh toán 2 pha (bill khách + ảnh QR tĩnh VIB + tip riêng KTV)
+│   │   │   ├── service_edit_modal.js    <-- Modal đổi/thêm dịch vụ giữa ca
+│   │   │   ├── handover_modal.js        <-- Modal bàn giao ca cho KTV khác
+│   │   │   └── swap_staff_modal.js      <-- Modal đổi / thêm KTV cùng làm & rời tour sớm
+│   │   └── pos_screen.js                <-- Nhạc trưởng điều phối #container-pos (~120 dòng)
+│   │
+│   ├── History/                         <-- TAB 3: HISTORY [Khác nhau 70% -> Tách đôi]
+│   │   ├── staff_history.js             <-- Lịch sử tour cá nhân KTV
+│   │   ├── owner_history.js             <-- Lịch sử toàn tiệm, bộ lọc nâng cao, sửa/huỷ
+│   │   └── history_screen.js            <-- Router điều phối #container-history
+│   │
+│   └── Wallet/                          <-- TAB 4: WALLET / TÀI CHÍNH [Khác nhau 90% -> Tách đôi]
+│       ├── staff_wallet.js              <-- Bảng lương nhân viên, hoa hồng, xin ứng
+│       ├── owner_wallet.js              <-- Sổ quỹ thu chi, duyệt lương, báo cáo tài chính
+│       └── wallet_screen.js             <-- Router điều phối #container-income
 │
-└── Logic/               <-- TOÀN BỘ DỊCH VỤ DỮ LIỆU & TOÁN HỌC (ZERO DOM)
+└── Logic/                               <-- 3. TOÀN BỘ DỊCH VỤ DỮ LIỆU & TOÁN HỌC (ZERO DOM)
     ├── Engine/
-    │   ├── firebase_engine.js <-- WebSocket đồng bộ thời gian thực 0.03s
-    │   └── config.js          <-- Cấu hình thương hiệu & kéo trực tiếp từ Google Sheets
+    │   ├── firebase_engine.js           <-- WebSocket đồng bộ thời gian thực 20-50ms (Cache/Speed Layer)
+    │   ├── gas_client.js                <-- Kết nối Google Apps Script có Secret Token (Storage Layer)
+    │   └── config.js                    <-- Cấu hình thương hiệu & biến môi trường
+    │
     └── Services/
-        ├── phone_service.js   <-- Che số điện thoại bảo mật
-        ├── home_service.js    <-- Xử lý nghiệp vụ ca trực & giường
-        └── payroll_service.js <-- Tính lương, hoa hồng & tiền tip
+        ├── phone_service.js             <-- Che số điện thoại bảo mật
+        ├── home_service.js              <-- Xử lý nghiệp vụ ca trực & giường
+        ├── pos_service.js               <-- Tính tổng tiền, voucher, chia hoa hồng tour
+        ├── history_service.js           <-- Lọc tour theo ngày, KTV, tính doanh số
+        └── wallet_service.js            <-- Tính toán bảng lương, hoa hồng & tiền tip
 ```
+
+---
+
+## 5. Cơ Chế Chống Hack Dữ Liệu & Bảo Mật 3 Tầng (Anti-Tampering)
+
+1. **Lọc dữ liệu tại Máy chủ Google Apps Script (Server-Side Filtering)**:
+   - Khi thiết bị nhân viên gửi request lấy dữ liệu, Google Apps Script chỉ đóng gói trả về danh mục menu và các tour của chính nhân viên đó (`client_staff_id`).
+   - Tuyệt đối không gửi `receipts` (doanh thu toàn tiệm), `expenses` (chi phí) hay `payroll_logs` (lương người khác) về máy nhân viên.
+   - Nhân viên dù có dùng F12 sửa `currentUser.role = 'owner'` thì màn hình cũng không có dữ liệu để hiển thị.
+
+2. **Xác thực bảo mật qua Admin Secret Token**:
+   - Khi Chủ tiệm đăng nhập, hệ thống cấp mã Token quản trị.
+   - Mọi truy vấn xin dữ liệu nhạy cảm (Doanh thu, Thu chi) từ Google Apps Script đều phải gửi kèm Token này.
+   - Bất kỳ ai copy link Google Apps Script gọi từ ngoài đều bị chặn `403 Forbidden`.
+
+3. **Tốc Độ Thời Gian Thực 20-50ms (Không Giật Lag)**:
+   - **Firebase Realtime Engine** hoạt động như một lớp đệm (Speed / Cache Layer): Dữ liệu đọc/ghi qua WebSocket siêu tốc (20-50 mili-giây), phản hồi tức thì 0ms trên màn hình (Optimistic UI).
+   - **Google Sheets** đóng vai trò là sổ cái sao lưu vĩnh viễn (Permanent Storage Layer), được đồng bộ ngầm ở hậu cảnh mà không làm chặn luồng giao diện người dùng.
 
 ---
 

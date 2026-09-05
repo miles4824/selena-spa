@@ -8,12 +8,13 @@ let currentActiveNavTab = "home";
  * Render cấu trúc HTML của thanh Dock điều hướng vào #container-nav
  * @param {string} activeTab - Tab đang chọn mặc định ('home' | 'pos' | 'history' | 'income')
  */
-function renderBottomNav(activeTab = "home") {
+function renderBottomNav(activeTab = (currentActiveNavTab || "home")) {
   const container = document.getElementById("container-nav");
   if (!container) return;
 
   const tabName = activeTab === "add" ? "pos" : activeTab;
   currentActiveNavTab = tabName;
+  if (typeof window !== "undefined") window.currentTab = tabName;
 
   const isOwner =
     typeof isUserOwner === "function" && typeof currentUser !== "undefined"
@@ -25,7 +26,7 @@ function renderBottomNav(activeTab = "home") {
     <nav id="mobile-bottom-nav" class="fixed left-4 right-4 z-50 max-w-sm mx-auto pointer-events-auto" style="bottom: max(14px, calc(env(safe-area-inset-bottom, 0px) + 6px));">
       <div id="nav-dock" class="relative bg-spa-card/90 dark:bg-spa-card/95 border border-spa-border backdrop-blur-xl rounded-full shadow-[0_12px_32px_rgba(0,0,0,0.10)] dark:shadow-[0_12px_32px_rgba(0,0,0,0.5)] px-2.5 py-4 flex items-center justify-around">
         <!-- VIÊN THUỐC TRƯỢT DI CHUYỂN TỰ ĐỘNG (SLIDING PILL) -->
-        <div id="nav-sliding-indicator" class="absolute rounded-full bg-spa-brand shadow-glow-brand z-[1] pointer-events-none opacity-0 transition-all duration-300 ease-out"></div>
+        <div id="nav-sliding-indicator" class="absolute rounded-full bg-spa-brand shadow-glow-brand z-1 pointer-events-none opacity-0 transition-all duration-300 ease-out"></div>
 
         <!-- 1. TAB HOME -->
         <button type="button" onclick="navigateTab('home')" id="nav-btn-home" data-tab="home" title="Trang chủ" class="relative z-10 w-12 h-12 flex items-center justify-center rounded-full text-spa-muted dark:text-spa-mist hover:text-spa-brand dark:hover:text-white transition-colors cursor-pointer active:scale-95">
@@ -63,9 +64,11 @@ function renderBottomNav(activeTab = "home") {
  * Cập nhật vị trí viên thuốc trượt (Sliding Pill Indicator) đến nút tab đang chọn
  * @param {string} activeTab - Tên tab ('home' | 'pos' | 'history' | 'income')
  */
-function updateNavSlidingPill(activeTab = "home") {
-  const tabName = activeTab === "add" ? "pos" : activeTab;
+function updateNavSlidingPill(activeTab = (currentActiveNavTab || "home")) {
+  const tabName = activeTab === "add" ? "pos" : (activeTab || currentActiveNavTab || "home");
   currentActiveNavTab = tabName;
+  if (typeof window !== "undefined") window.currentTab = tabName;
+
   const tabs = ["home", "pos", "history", "income"];
   const pill = document.getElementById("nav-sliding-indicator");
   const activeBtn = document.getElementById("nav-btn-" + tabName);
@@ -108,6 +111,7 @@ function navigateTab(tab) {
   }
 
   currentActiveNavTab = tabName;
+  if (typeof window !== "undefined") window.currentTab = tabName;
   updateNavSlidingPill(tabName);
 
   if (typeof showScreen === "function") {
@@ -118,13 +122,19 @@ function navigateTab(tab) {
 }
 
 /**
- * Ẩn/Hiện thanh Bottom Nav
+ * Hiển thị thanh Bottom Navigation
  */
 function showBottomNav() {
   const container = document.getElementById("container-nav");
   if (container) container.classList.remove("hidden");
+  requestAnimationFrame(() => {
+    updateNavSlidingPill(currentActiveNavTab);
+  });
 }
 
+/**
+ * Ẩn thanh Bottom Navigation
+ */
 function hideBottomNav() {
   const container = document.getElementById("container-nav");
   if (container) container.classList.add("hidden");
@@ -140,14 +150,11 @@ if (typeof window !== "undefined") {
   window.getCurrentActiveNavTab = () => currentActiveNavTab;
   window.setCurrentActiveNavTab = (tab) => {
     currentActiveNavTab = tab;
+    window.currentTab = tab;
   };
 
   // Giữ viên thuốc bám chuẩn khi xoay màn hình hoặc đổi kích cỡ
   window.addEventListener("resize", () => {
-    const activeBtn = document.querySelector("#nav-dock button.active");
-    if (activeBtn) {
-      const tab = activeBtn.getAttribute("data-tab");
-      if (tab) updateNavSlidingPill(tab);
-    }
+    updateNavSlidingPill(currentActiveNavTab || "home");
   });
 }

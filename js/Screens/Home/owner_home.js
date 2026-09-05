@@ -3,6 +3,23 @@
 // =========================================================================
 
 /**
+ * Render trạng thái trống khi không có ca phục vụ / giường nào đang chạy
+ */
+function renderEmptyBedsState() {
+  return `
+    <div class="p-6 rounded-3xl bg-spa-bg/50 dark:bg-white/5 border border-dashed border-spa-border text-center space-y-2 col-span-full">
+      <div class="w-10 h-10 rounded-2xl bg-spa-sage/15 text-spa-sage mx-auto flex items-center justify-center">
+        <i data-lucide="sparkles" class="w-5 h-5"></i>
+      </div>
+      <div class="font-bold text-sm text-spa-dark dark:text-white">Tất cả các giường đang sẵn sàng!</div>
+      <p class="text-xs text-spa-muted dark:text-white/70 max-w-sm mx-auto">
+        Hiện tại chưa có ca phục vụ nào đang chạy. Bấm nút "Lập phiếu tour mới" khi có khách ghé trải nghiệm.
+      </p>
+    </div>
+  `;
+}
+
+/**
  * Render toàn bộ giao diện Trang chủ dành cho Chủ tiệm / Quản lý (Owner / Admin)
  * @param {Object} user - Thông tin Chủ tiệm hiện tại (currentUser)
  * @returns {string} Chuỗi HTML của giao diện Owner Home
@@ -46,17 +63,7 @@ function renderOwnerHome(user) {
   // 2. CỤM DANH SÁCH GIƯỜNG ĐANG CHẠY GIỜ REALTIME
   let liveBedsListHtml = "";
   if (liveTours.length === 0) {
-    liveBedsListHtml = `
-      <div class="p-6 rounded-3xl bg-spa-bg/50 dark:bg-white/5 border border-dashed border-spa-border text-center space-y-2 col-span-full">
-        <div class="w-10 h-10 rounded-2xl bg-spa-sage/15 text-spa-sage mx-auto flex items-center justify-center">
-          <i data-lucide="sparkles" class="w-5 h-5"></i>
-        </div>
-        <div class="font-bold text-sm text-spa-dark dark:!text-white">Tất cả các giường đang sẵn sàng!</div>
-        <p class="text-xs text-spa-muted dark:!text-white/70 max-w-sm mx-auto">
-          Hiện tại chưa có ca phục vụ nào đang chạy. Bấm nút "Lập phiếu tour mới" khi có khách ghé trải nghiệm.
-        </p>
-      </div>
-    `;
+    liveBedsListHtml = renderEmptyBedsState();
   } else {
     liveBedsListHtml = liveTours
       .map((t, idx) => {
@@ -83,8 +90,8 @@ function renderOwnerHome(user) {
           id: "owner-today-customers",
           title: "Lượt Khách Đến",
           value: String(snapshot.todayCustomers),
-          subtitle: "Hóa đơn đã thanh toán",
-          color: "purple",
+          subtitle: "Đã phục vụ hôm nay",
+          color: "pink",
         })
       : "";
 
@@ -92,9 +99,9 @@ function renderOwnerHome(user) {
     typeof StatCard === "function"
       ? StatCard({
           id: "owner-today-revenue",
-          title: "Doanh Thu Hôm Nay",
+          title: "Doanh Thu Tiệm",
           value: snapshot.formattedRevenue,
-          subtitle: "Bấm để ẩn / hiện số tiền",
+          subtitle: "Hôm Nay",
           color: "mint",
           isPrivacy: true,
           privacyType: "owner_revenue",
@@ -154,29 +161,27 @@ function renderOwnerHome(user) {
       ${
         typeof AppCard === "function"
           ? AppCard({
-              variant: "surface",
+              variant: "mindora",
+              ambient: true,
               padding: "p-5 sm:p-6",
               customClass: "space-y-4",
               content: `
-          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 pb-3 border-b border-spa-border dark:border-white/10">
-            <div class="flex items-center gap-2.5">
-              <span class="flex h-3 w-3 relative">
-                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-spa-sage opacity-75"></span>
-                <span class="relative inline-flex rounded-full h-3 w-3 bg-spa-sage"></span>
-              </span>
-              <h3 class="text-base sm:text-lg font-bold theme-heading">
-                Các Giường Đang Phục Vụ Trực Tiếp
-              </h3>
-              <span class="text-xs font-mono font-bold px-2.5 py-0.5 rounded-full bg-spa-sage/15 text-spa-sage dark:text-spa-sage">
-                ${liveTours.length} đang chạy
-              </span>
-            </div>
-
-            <button onclick="refreshLiveBeds()" class="px-3 py-1.5 rounded-xl bg-spa-bg dark:bg-white/10 hover:bg-spa-peach-light dark:hover:bg-white/15 text-spa-muted dark:text-white/80 hover:text-spa-brand text-xs font-bold flex items-center gap-1.5 transition cursor-pointer border border-spa-border dark:border-white/10">
-              <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
-              <span>Cập nhật</span>
-            </button>
-          </div>
+          ${
+            typeof CardHeader === "function"
+              ? CardHeader({
+                  title: "Các tour đang có ở tiệm",
+                  ping: true,
+                  badge: `${liveTours.length} đang chạy`,
+                  action: `
+                    <button onclick="refreshLiveBeds()" class="px-3 py-1.5 rounded-xl bg-spa-bg dark:bg-white/10 hover:bg-spa-peach-light dark:hover:bg-white/15 text-spa-muted dark:text-white/80 hover:text-spa-brand text-xs font-bold flex items-center gap-1.5 transition cursor-pointer border border-spa-border dark:border-white/10">
+                      <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+                      <span>Cập nhật</span>
+                    </button>
+                  `,
+                  border: true,
+                })
+              : ""
+          }
 
           <!-- Danh sách các thẻ giường BedCard -->
           <div id="owner-live-beds-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
@@ -189,12 +194,15 @@ function renderOwnerHome(user) {
 
       <!-- CỤM 3: CHỈ SỐ NHANH HÔM NAY (TODAY SNAPSHOT) -->
       <div class="space-y-3">
-        <div class="flex items-center justify-between px-1">
-          <h3 class="text-base font-bold theme-heading flex items-center gap-2">
-            <i data-lucide="bar-chart-2" class="w-4 h-4 text-spa-brand"></i>
-            <span>Chỉ Số Vận Hành Hôm Nay (Today Snapshot)</span>
-          </h3>
-        </div>
+        ${
+          typeof AppTitle === "function"
+            ? AppTitle({
+                title: "Chỉ Số Vận Hành Hôm Nay (Today Snapshot)",
+                icon: "bar-chart-2",
+                level: "section",
+              })
+            : ""
+        }
 
         <div class="grid grid-cols-2 sm:grid-cols-3 gap-3.5">
           ${custCardHtml}
@@ -211,16 +219,21 @@ function renderOwnerHome(user) {
               padding: "p-5",
               customClass: "space-y-3",
               content: `
-          <div class="flex items-center justify-between">
-            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-spa-brand/15 text-spa-brand text-xs font-bold border border-spa-brand/25">
-              <i data-lucide="megaphone" class="w-3.5 h-3.5"></i>
-              <span>Thông Báo Đang Phát Cho KTV</span>
-            </div>
-            <button onclick="promptEditAnnouncement()" class="px-3.5 py-1.5 rounded-full bg-spa-brand hover:bg-spa-brand-hover text-white text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shadow-glow-brand active:scale-95">
-              <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
-              <span>Sửa Thông Báo</span>
-            </button>
-          </div>
+          ${
+            typeof CardHeader === "function"
+              ? CardHeader({
+                  title: "Thông Báo Đang Phát Cho KTV",
+                  icon: "megaphone",
+                  border: false,
+                  action: `
+                    <button onclick="promptEditAnnouncement()" class="px-3.5 py-1.5 rounded-full bg-spa-brand hover:bg-spa-brand-hover text-white text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shadow-glow-brand active:scale-95">
+                      <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+                      <span>Sửa Thông Báo</span>
+                    </button>
+                  `,
+                })
+              : ""
+          }
 
           <div class="text-sm font-semibold theme-heading leading-relaxed" id="owner-announcement-display">
             ${announcement}
@@ -243,17 +256,7 @@ function refreshLiveBeds() {
   const liveTours = HomeService.getLiveRunningTours();
   if (liveTours.length === 0) {
     grid.className = "w-full";
-    grid.innerHTML = `
-      <div class="p-6 rounded-3xl bg-spa-bg/50 dark:bg-white/5 border border-dashed border-spa-border text-center space-y-2">
-        <div class="w-10 h-10 rounded-2xl bg-spa-sage/15 text-spa-sage mx-auto flex items-center justify-center">
-          <i data-lucide="sparkles" class="w-5 h-5"></i>
-        </div>
-        <div class="font-bold text-sm text-spa-dark dark:!text-white">Tất cả các giường đang sẵn sàng!</div>
-        <p class="text-xs text-spa-muted dark:!text-white/70 max-w-sm mx-auto">
-          Hiện tại chưa có ca phục vụ nào đang chạy.
-        </p>
-      </div>
-    `;
+    grid.innerHTML = renderEmptyBedsState();
   } else {
     grid.className = "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5";
     grid.innerHTML = liveTours
