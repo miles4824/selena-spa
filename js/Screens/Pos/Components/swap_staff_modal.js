@@ -106,8 +106,15 @@ const SwapStaffModal = {
 
   close() {
     const modal = document.getElementById('modal-swap-staff');
-    if (modal) modal.classList.add('hidden');
-    if (typeof showBottomNav === 'function') showBottomNav();
+    if (!modal) return;
+    if (typeof closeModal === 'function') {
+      closeModal(modal, () => {
+        if (typeof showBottomNav === 'function') showBottomNav();
+      });
+    } else {
+      modal.classList.add('hidden');
+      if (typeof showBottomNav === 'function') showBottomNav();
+    }
   },
 
   setSplitMode(mode) {
@@ -252,15 +259,25 @@ const SwapStaffModal = {
               </div>
 
               ${(isWantsEarly && (canEdit || isMe)) ? `
-                <button type="button" onclick="SwapStaffModal.triggerEarlyLeave(${idx})" class="w-full py-2 px-3 rounded-xl border border-dashed border-rose-400 bg-rose-50 dark:bg-rose-950/30 hover:bg-rose-100 text-rose-600 font-bold text-xs flex items-center justify-center gap-1.5 transition cursor-pointer active:scale-98">
-                  <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
-                  <span>Xác nhận KTV ${item.name} xong việc rời ca</span>
-                </button>
+                ${typeof AppButton === 'function' ? AppButton({
+                  text: `Xác nhận KTV ${item.name} xong việc rời ca`,
+                  icon: "log-out",
+                  iconPosition: "left",
+                  variant: "dashDanger",
+                  size: "md",
+                  onClick: `SwapStaffModal.triggerEarlyLeave(${idx})`,
+                  customClass: "w-full font-bold text-xs",
+                }) : `
+                  <button type="button" onclick="SwapStaffModal.triggerEarlyLeave(${idx})" class="w-full py-2.5 px-3 rounded-full border border-dashed border-rose-400 bg-rose-50 dark:bg-rose-950/30 hover:bg-rose-100 text-rose-600 font-bold text-xs flex items-center justify-center gap-1.5 transition cursor-pointer active:scale-98">
+                    <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
+                    <span>Xác nhận KTV ${item.name} xong việc rời ca</span>
+                  </button>
+                `}
               ` : ''}
             </div>
 
             ${canEdit ? `
-              <button type="button" onclick="SwapStaffModal.removeStaff(${idx})" title="Xóa KTV này khỏi tour" class="absolute top-2.5 right-2.5 w-6 h-6 rounded-full bg-white dark:bg-spa-card border border-rose-200 text-rose-500 hover:bg-rose-50 flex items-center justify-center cursor-pointer active:scale-90 transition">
+              <button type="button" onclick="SwapStaffModal.removeStaff(${idx})" title="Xóa KTV này khỏi tour" class="absolute top-2.5 right-2.5 w-7 h-7 rounded-full bg-white dark:bg-spa-card border border-rose-200 dark:border-rose-900/50 text-rose-500 hover:bg-rose-50 flex items-center justify-center cursor-pointer active:scale-90 transition shadow-2xs z-10">
                 <i data-lucide="x" class="w-3.5 h-3.5"></i>
               </button>
             ` : ''}

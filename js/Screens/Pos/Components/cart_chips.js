@@ -8,20 +8,24 @@ const CartChips = {
    */
   render(cartItems = []) {
     if (!Array.isArray(cartItems) || cartItems.length === 0) {
-      return '';
+      return "";
     }
 
-    return cartItems.map(item => {
-      const price = Number(item.price) || 0;
-      const dur = Number(item.duration_min) || 0;
-      const isCombo = String(item.service_id || '').startsWith('CB') ||
-                      String(item.service_name || '').toLowerCase().includes('combo');
+    return cartItems
+      .map((item) => {
+        const price = Number(item.price) || 0;
+        const dur = Number(item.duration_min) || 0;
+        const isCombo =
+          String(item.service_id || "").startsWith("CB") ||
+          String(item.service_name || "")
+            .toLowerCase()
+            .includes("combo");
 
-      return `
-        <div class="inline-flex items-center gap-2.5 px-3 py-1 rounded-2xl bg-gradient-to-r from-spa-brand/10 to-spa-bg border border-spa-brand/30 text-spa-dark shadow-2xs hover:shadow-xs transition animate-in zoom-in-95">
+        return `
+        <div class="inline-flex items-center gap-2.5 px-3 py-1 rounded-full bg-gradient-to-r from-spa-brand/10 to-spa-bg border border-spa-brand/30 text-spa-dark shadow-2xs hover:shadow-xs transition animate-in zoom-in-95">
           <!-- Icon đại diện -->
           <div class="text-base sm:text-lg flex items-center justify-center shrink-0">
-            ${isCombo ? '💆' : '✨'}
+            ${isCombo ? "💆" : "✨"}
           </div>
           <!-- Cụm 2 dòng text: Tên ở trên, Giá & Phút ở dưới -->
           <div class="min-w-0 flex-1">
@@ -29,7 +33,7 @@ const CartChips = {
               ${item.service_name}
             </div>
             <div class="text-[11px] font-mono text-spa-dark/70 mt-0.5 flex items-center gap-1.5 leading-tight">
-              <span class="text-spa-brand font-black">${price.toLocaleString('vi-VN')} đ</span>
+              <span class="text-spa-brand font-black">${price.toLocaleString("vi-VN")} đ</span>
               <span>•</span>
               <span class="text-spa-sage font-bold">${dur}p</span>
             </div>
@@ -43,7 +47,8 @@ const CartChips = {
           </button>
         </div>
       `;
-    }).join('');
+      })
+      .join("");
   },
 
   /**
@@ -55,16 +60,16 @@ const CartChips = {
     if (!window.PosState) window.PosState = { selectedCartItems: [] };
     let cart = window.PosState.selectedCartItems || [];
 
-    const index = cart.findIndex(item => item.service_id === serviceId);
+    const index = cart.findIndex((item) => item.service_id === serviceId);
     if (index >= 0) {
       cart.splice(index, 1);
       window.PosState.selectedCartItems = cart;
 
-      if (typeof PosScreen !== 'undefined' && PosScreen.updateCartUI) {
+      if (typeof PosScreen !== "undefined" && PosScreen.updateCartUI) {
         PosScreen.updateCartUI();
       }
     }
-  }
+  },
 };
 
 window.CartChips = CartChips;

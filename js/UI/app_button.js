@@ -26,7 +26,9 @@ function AppButton({
       "bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 hover:bg-rose-100 border border-rose-200 dark:border-rose-900/50 font-bold",
     pink: "border-spa-brand/40 hover:border-spa-brand bg-spa-brand/5 hover:bg-spa-brand/10 text-spa-brand dark:text-spa-brand",
     dashPink:
-      "border-spa-brand/40 hover:border-spa-brand bg-spa-brand/5 hover:bg-spa-brand/10 text-spa-brand dark:text-spa-brand border border-dashed rounded-full",
+      "border-spa-brand/40 hover:border-spa-brand bg-spa-brand/5 hover:bg-spa-brand/10 text-spa-brand dark:text-spa-brand border border-dashed rounded-full font-bold",
+    dashDanger:
+      "border-rose-400 hover:border-rose-500 bg-rose-50/80 hover:bg-rose-100 dark:bg-rose-950/30 text-rose-600 dark:text-rose-400 border border-dashed rounded-full font-bold",
   };
 
   const sizeStyles = {
@@ -60,6 +62,7 @@ function AppButton({
     teal: "text-white",
     pink: "text-spa-brand",
     dashPink: "text-spa-brand",
+    dashDanger: "text-rose-600 dark:text-rose-400",
     danger: "text-rose-600 dark:text-rose-400",
     secondary: "text-spa-dark dark:text-white",
   };

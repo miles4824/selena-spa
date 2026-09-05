@@ -556,3 +556,134 @@ h6 {
     padding-top: 1.5rem !important;
   }
 }
+
+/* =============================================================
+   MODAL DIALOGS: LUÔN CĂN CHÍNH GIỮA, CAO ~2/3 MÀN HÌNH & ANIMATION MƯỢT MÀ
+   ============================================================= */
+@keyframes modalBackdropFadeIn {
+  0% {
+    opacity: 0;
+    backdrop-filter: blur(0px);
+    -webkit-backdrop-filter: blur(0px);
+  }
+  100% {
+    opacity: 1;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+}
+
+@keyframes modalBackdropFadeOut {
+  0% {
+    opacity: 1;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+  100% {
+    opacity: 0;
+    backdrop-filter: blur(0px);
+    -webkit-backdrop-filter: blur(0px);
+  }
+}
+
+@keyframes modalCardPopIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.92) translateY(18px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes modalCardPopOut {
+  0% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.94) translateY(12px);
+  }
+}
+
+[id^="modal-"].hidden {
+  display: none !important;
+}
+
+[id^="modal-"]:not(.hidden) {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  animation: modalBackdropFadeIn 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+[id^="modal-"]:not(.hidden) > div {
+  margin: auto !important;
+  max-height: 67dvh !important;
+  max-height: 67vh !important;
+  animation: modalCardPopIn 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: transform, opacity;
+}
+
+[id^="modal-"].is-closing {
+  display: flex !important;
+  animation: modalBackdropFadeOut 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+}
+
+[id^="modal-"].is-closing > div {
+  animation: modalCardPopOut 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+  will-change: transform, opacity;
+}
+
+@media (min-width: 640px) {
+  [id^="modal-"] > div {
+    max-height: 70dvh !important;
+    max-height: 70vh !important;
+  }
+}
+
+/* =============================================================
+   POS CARD TRANSITIONS: CHUYỂN ĐỔI MƯỢT MÀ TẠO TOUR & HỦY TOUR
+   (Enter trượt từ dưới lên, Leave trượt ngược lại xuống dưới)
+   ============================================================= */
+@keyframes posCardEnter {
+  0% {
+    opacity: 0;
+    transform: translateY(32px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes posCardLeave {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(32px);
+  }
+}
+
+.pos-card-enter {
+  animation: posCardEnter 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+  will-change: transform, opacity;
+}
+
+.pos-card-leave {
+  animation: posCardLeave 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+  will-change: transform, opacity;
+  pointer-events: none !important;
+}
+
+/* NÚT BOTTOM CỦA TẤT CẢ MODAL SHELL ĐỀU BO TRÒN ROUND-FULL */
+[id^="modal-"] [class*="border-t"] button {
+  border-radius: 9999px !important;
+}
+
+

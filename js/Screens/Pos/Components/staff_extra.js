@@ -71,21 +71,21 @@ const StaffExtra = {
       });
 
       return `
-        <div class="p-3.5 rounded-2xl bg-spa-brand/5 border border-spa-brand/20 space-y-2 animate-in fade-in zoom-in-95">
-          <div class="flex justify-between items-center">
+        <div class="relative p-3.5 rounded-2xl bg-spa-brand/5 border border-spa-brand/20 space-y-2 animate-in fade-in zoom-in-95">
+          <div class="flex justify-between items-center pr-8">
             <span class="text-xs font-bold text-spa-brand flex items-center gap-1.5">
               <i data-lucide="user-check" class="w-3.5 h-3.5"></i>
               <span class="font-extrabold text-spa-dark">KTV ${ktvNum} (Phụ):</span>
             </span>
-
-            <!-- Nút xóa KTV phụ -->
-            <button type="button" 
-              onclick="StaffExtra.remove(${idx})" 
-              class="p-1 text-spa-dark/40 hover:text-rose-600 hover:bg-rose-100 rounded-full transition cursor-pointer" 
-              title="Xóa KTV này">
-              <i data-lucide="x" class="w-4 h-4"></i>
-            </button>
           </div>
+
+          <!-- Nút xóa KTV phụ tròn góc trên bên phải -->
+          <button type="button" 
+            onclick="StaffExtra.remove(${idx})" 
+            class="absolute top-2.5 right-2.5 w-7 h-7 rounded-full bg-white dark:bg-spa-card border border-rose-200 dark:border-rose-900/50 text-rose-500 hover:bg-rose-50 flex items-center justify-center cursor-pointer active:scale-90 transition shadow-2xs z-10" 
+            title="Xóa KTV này">
+            <i data-lucide="x" class="w-3.5 h-3.5"></i>
+          </button>
 
           <select onchange="StaffExtra.onChange(${idx}, this.value)" 
             class="w-full bg-white border border-spa-border rounded-xl p-3 text-spa-dark font-bold text-sm focus:outline-none focus:border-spa-brand cursor-pointer">

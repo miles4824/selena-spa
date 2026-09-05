@@ -30,8 +30,15 @@ const HandoverModal = {
 
   close() {
     const modal = document.getElementById('modal-handover');
-    if (modal) modal.classList.add('hidden');
-    if (typeof showBottomNav === 'function') showBottomNav();
+    if (!modal) return;
+    if (typeof closeModal === 'function') {
+      closeModal(modal, () => {
+        if (typeof showBottomNav === 'function') showBottomNav();
+      });
+    } else {
+      modal.classList.add('hidden');
+      if (typeof showBottomNav === 'function') showBottomNav();
+    }
   },
 
   setSplitMode(mode) {
@@ -163,8 +170,9 @@ const HandoverModal = {
 
     const prevStaffName = session.staff_1_name;
     const prevStaffPhone = session.staff_1_phone;
+    const prevStaffId = session.staff_1_id;
 
-    // Cập nhật cấu trúc session bàn giao
+    // Cập nhật cấu trúc session bàn giao: KTV mới tiếp quản
     session.staff_1_name = targetStaff.full_name || targetStaff.name;
     session.staff_1_phone = targetStaff.phone;
     session.staff_1_id = targetStaff.staff_id || targetStaff.id;
@@ -172,31 +180,61 @@ const HandoverModal = {
     session.is_handover = true;
     session.handover_from_name = prevStaffName;
     session.handover_from_phone = prevStaffPhone;
+    session.handover_from_id = prevStaffId;
     session.handover_worked_min = elapsedMin;
     session.handover_split_mode = this.handoverSplitMode;
 
+    const normPrevPhone = (typeof normalizePhone === 'function')
+      ? normalizePhone(prevStaffPhone)
+      : String(prevStaffPhone || '').replace(/[^0-9]/g, '');
+
+    // Giữ lại các KTV phụ khác nếu có trong tour (loại bỏ người vừa bàn giao)
+    const otherStaffs = (session.staffs || []).filter(s => {
+      if (!s) return false;
+      const sPhone = (typeof normalizePhone === 'function') ? normalizePhone(s.phone) : String(s.phone || '').replace(/[^0-9]/g, '');
+      return sPhone !== normPrevPhone;
+    });
+
+    // Người bàn giao được đánh dấu rõ ràng là đã bàn giao / rời ca xong
     session.staffs = [
       {
         phone: prevStaffPhone,
         name: prevStaffName,
+        staff_id: prevStaffId || 'KTV01',
         pct: p1Pct,
-        worked_min: elapsedMin
+        worked_min: elapsedMin,
+        left_early: true,
+        is_handed_over: true,
+        is_handover_from: true,
+        left_min: elapsedMin
       },
       {
         phone: targetStaff.phone,
         name: targetStaff.full_name || targetStaff.name,
+        staff_id: targetStaff.staff_id || targetStaff.id,
         pct: p2Pct,
         joined_min: elapsedMin,
         is_takeover: true
-      }
+      },
+      ...otherStaffs
     ];
+
+    // Ghi nhận session này vào danh sách đã bàn giao trên thiết bị này để tránh Firebase sync ngược lại
+    const sId = String(session.session_id || session.start_timestamp || '');
+    try {
+      const handedList = JSON.parse(localStorage.getItem('selena_handed_over_sessions') || '[]');
+      if (sId && !handedList.includes(sId)) {
+        handedList.push(sId);
+        localStorage.setItem('selena_handed_over_sessions', JSON.stringify(handedList));
+      }
+    } catch (e) {}
 
     // Bắn lên Firebase để máy KTV mới nhận tour ngay
     if (typeof fbSaveLiveSession === 'function') {
       await fbSaveLiveSession(session);
     }
 
-    // Dọn dẹp tour trên máy của KTV hiện tại (vì đã bàn giao xong)
+    // Dọn dẹp dứt điểm tour trên máy vừa thực hiện bàn giao
     localStorage.removeItem('selena_active_live_session');
     if (window.PosState) window.PosState.currentLiveSession = null;
     if (typeof currentLiveSession !== 'undefined') currentLiveSession = null;

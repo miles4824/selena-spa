@@ -226,17 +226,48 @@ const PosScreen = {
 
   /**
    * Điều phối hiển thị giữa Form tạo ca và Ca đang chạy
+   * Tự động nhận diện thời điểm Tạo Tour / Hủy Tour để chuyển đổi animation mượt mà
    */
-  renderLiveSessionUI() {
+  renderLiveSessionUI(forceAnimate = false) {
     const liveCard = document.getElementById("live-session-card");
     const formBox = document.getElementById("pos-form-box");
+    if (!liveCard || !formBox) return;
+
     const session =
       window.PosState.currentLiveSession ||
       (typeof currentLiveSession !== "undefined" ? currentLiveSession : null);
 
+    const isLiveCurrentlyVisible = !liveCard.classList.contains("hidden");
+    const isFormCurrentlyVisible = !formBox.classList.contains("hidden");
+
     if (session) {
-      if (formBox) formBox.classList.add("hidden");
-      if (liveCard) liveCard.classList.remove("hidden");
+      // Đang có ca tour
+      const needsTransition =
+        this.initialized && (isFormCurrentlyVisible || forceAnimate);
+
+      if (needsTransition) {
+        // Chuyển mượt từ Form -> Live Card
+        formBox.classList.remove("pos-card-enter");
+        formBox.classList.add("pos-card-leave");
+
+        setTimeout(() => {
+          formBox.classList.add("hidden");
+          formBox.classList.remove("pos-card-leave");
+
+          liveCard.classList.remove("hidden", "pos-card-leave");
+          liveCard.classList.add("pos-card-enter");
+
+          window.scrollTo({ top: 0, behavior: "smooth" });
+
+          if (typeof lucide !== "undefined" && lucide.createIcons) {
+            lucide.createIcons();
+          }
+        }, 180);
+      } else {
+        formBox.classList.add("hidden");
+        formBox.classList.remove("pos-card-enter", "pos-card-leave");
+        liveCard.classList.remove("hidden", "pos-card-leave");
+      }
 
       if (typeof LiveHeader !== "undefined") {
         LiveHeader.update(session);
@@ -248,11 +279,63 @@ const PosScreen = {
         LiveActions.updateButtons(session, currentUser);
       }
     } else {
-      if (liveCard) liveCard.classList.add("hidden");
-      if (formBox) formBox.classList.remove("hidden");
+      // Không có ca tour (Đã hủy hoặc Hoàn thành)
+      const needsTransition =
+        this.initialized && (isLiveCurrentlyVisible || forceAnimate);
+
+      if (needsTransition) {
+        // Chuyển mượt từ Live Card -> Form
+        liveCard.classList.remove("pos-card-enter");
+        liveCard.classList.add("pos-card-leave");
+
+        setTimeout(() => {
+          liveCard.classList.add("hidden");
+          liveCard.classList.remove("pos-card-leave");
+
+          formBox.classList.remove("hidden", "pos-card-leave");
+          formBox.classList.add("pos-card-enter");
+
+          window.scrollTo({ top: 0, behavior: "smooth" });
+
+          if (typeof lucide !== "undefined" && lucide.createIcons) {
+            lucide.createIcons();
+          }
+        }, 180);
+      } else {
+        liveCard.classList.add("hidden");
+        liveCard.classList.remove("pos-card-enter", "pos-card-leave");
+        formBox.classList.remove("hidden", "pos-card-leave");
+      }
 
       if (typeof LiveTimer !== "undefined") {
         LiveTimer.stop();
+      }
+    }
+
+    // Cập nhật Header tiêu đề trang với hiệu ứng chuyển chữ mượt
+    const titleEl = document.getElementById("pos-page-main-title");
+    const subEl = document.getElementById("pos-header-subtitle");
+    if (session) {
+      if (titleEl) titleEl.innerText = "Tour Gội Đang Chạy";
+      if (subEl) {
+        subEl.innerHTML = `
+          <span class="flex h-2 w-2 relative">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-spa-brand opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-spa-brand"></span>
+          </span>
+          <span class="text-spa-brand">Đang trong ca phục vụ</span>
+        `;
+      }
+    } else {
+      if (titleEl) titleEl.innerText = "Tạo Tour Gội Mới";
+      if (subEl) {
+        subEl.innerHTML = `
+          <span class="flex h-2 w-2 relative">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-spa-sage opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-spa-sage"></span>
+          </span>
+          <span class="text-spa-sage">Sẵn sàng phục vụ</span>
+        `;
       }
     }
 

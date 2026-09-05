@@ -57,8 +57,15 @@ const CheckoutModal = {
 
   close() {
     const modal = document.getElementById('modal-checkout');
-    if (modal) modal.classList.add('hidden');
-    if (typeof showBottomNav === 'function') showBottomNav();
+    if (!modal) return;
+    if (typeof closeModal === 'function') {
+      closeModal(modal, () => {
+        if (typeof showBottomNav === 'function') showBottomNav();
+      });
+    } else {
+      modal.classList.add('hidden');
+      if (typeof showBottomNav === 'function') showBottomNav();
+    }
   },
 
   /**

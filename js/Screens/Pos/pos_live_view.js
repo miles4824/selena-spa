@@ -113,13 +113,98 @@ const PosLiveView = {
    * @returns {string} HTML string của các modal
    */
   renderModals() {
-    // 1. Modal Đổi Dịch Vụ Giữa Tour
+    // 1. Modal Đổi & Thêm Dịch Vụ Giữa Tour (Đầy đủ tính năng chuẩn OLD)
     const modalEditServicesHtml = ModalShell({
       id: "modal-edit-live-services",
-      title: "Đổi Dịch Vụ Giữa Tour",
-      icon: "edit-3",
-      maxWidth: "max-w-sm",
-      body: '<div id="modal-edit-services-list" class="space-y-2"></div>',
+      title: "Điều Chỉnh Dịch Vụ",
+      subtitle: '<span id="modal-edit-live-customer-info">Khách: Khách vãng lai</span>',
+      icon: "refresh-cw",
+      maxWidth: "max-w-lg",
+      body: `
+        <!-- HÀNG 1: CHỌN NHANH COMBO (SINGLE COMBO RULE) -->
+        <div class="space-y-2 text-left">
+          <div class="text-[11px] font-extrabold text-spa-muted flex items-center gap-1.5 text-left">
+            <i data-lucide="zap" class="w-3.5 h-3.5 text-spa-brand"></i>
+            <span>Gói Combo Chính (Tối đa 1 combo):</span>
+          </div>
+          <div id="modal-edit-live-quick-combos" class="flex flex-wrap gap-2 justify-start text-left"></div>
+        </div>
+
+        <!-- ĐƯỜNG DASH NGĂN CÁCH -->
+        <div class="border-t border-dashed border-spa-border my-2"></div>
+
+        <!-- HÀNG 2: MULTI-TAG COMBOBOX DỊCH VỤ ĐANG CHỌN -->
+        <div class="space-y-2.5 text-left">
+          <div class="flex justify-between items-center px-0.5">
+            <span class="text-xs font-black text-spa-muted uppercase tracking-wider flex items-center gap-1.5 text-left">
+              <i data-lucide="clipboard-list" class="w-3.5 h-3.5 text-spa-sage"></i> Dịch Vụ Đang Chọn:
+            </span>
+            <span id="modal-edit-live-count-badge" class="text-[10px] font-black px-2.5 py-0.5 rounded-full bg-spa-sage/10 text-spa-sage border border-spa-sage/30">
+              1 dịch vụ
+            </span>
+          </div>
+
+          <!-- HỘP MULTI-TAGS KÈM DROPDOWN TRIGGER -->
+          <div class="relative text-left">
+            <div id="modal-edit-live-tag-container" onclick="ServiceEditModal.togglePopover(event)" class="min-h-[56px] p-3 bg-white dark:bg-spa-card border border-spa-border hover:border-spa-brand/60 rounded-2xl flex flex-col gap-2.5 cursor-pointer transition-all focus-within:border-spa-brand focus-within:ring-2 focus-within:ring-spa-brand/20 shadow-2xs text-left items-start">
+              <div id="modal-edit-live-chips-list" class="flex flex-wrap gap-2.5 justify-start text-left w-full"></div>
+              
+              <div id="modal-edit-live-trigger-row" class="w-full flex items-center justify-between text-xs font-bold text-spa-muted hover:text-spa-brand py-3 mt-1 px-3 rounded-xl bg-spa-bg/80 dark:bg-spa-dark/40 hover:bg-spa-brand/10 transition border border-dashed border-spa-border text-left">
+                <span id="modal-edit-live-placeholder-text" class="flex items-center gap-1.5 truncate text-left">
+                  <i data-lucide="plus-circle" class="w-3.5 h-3.5 text-spa-brand"></i>
+                  <span>-- Chọn thêm dịch vụ từ menu --</span>
+                </span>
+                <i id="modal-edit-live-chevron" data-lucide="chevron-down" class="w-4 h-4 text-spa-dark/40 transition-transform duration-200 shrink-0 ml-1"></i>
+              </div>
+            </div>
+
+            <!-- DROPDOWN DANH SÁCH DỊCH VỤ DẠNG POPOVER NỔI -->
+            <div id="modal-edit-live-popover" class="hidden absolute left-0 right-0 top-full mt-2 bg-white dark:bg-spa-card border border-spa-border rounded-2xl shadow-2xl z-50 overflow-hidden flex flex-col animate-in fade-in zoom-in-95 text-left" onclick="event.stopPropagation()">
+              <div class="p-2 border-b border-spa-border bg-spa-bg/90 dark:bg-spa-dark/90 sticky top-0 z-20 text-left">
+                <div class="relative flex items-center">
+                  <i data-lucide="search" class="w-3.5 h-3.5 text-spa-dark/40 absolute left-2.5 pointer-events-none"></i>
+                  <input type="text" id="modal-edit-live-search-input" oninput="ServiceEditModal.onSearch(this.value)" placeholder="Tìm tên dịch vụ..." class="w-full pl-8 pr-7 py-2 text-xs bg-white dark:bg-spa-card border border-spa-border rounded-xl text-spa-dark dark:text-white placeholder:text-spa-dark/40 focus:outline-none focus:border-spa-brand font-medium transition text-left" autocomplete="off" />
+                  <button type="button" id="btn-clear-modal-edit-search" onclick="ServiceEditModal.clearSearch()" class="hidden absolute right-2 text-spa-dark/40 hover:text-spa-brand p-0.5 cursor-pointer">
+                    <i data-lucide="x" class="w-3.5 h-3.5"></i>
+                  </button>
+                </div>
+              </div>
+              <div id="modal-edit-live-dropdown-items" class="border-spa-border border-t pb-2 px-2 space-y-1 max-h-56 overflow-y-auto text-left"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- HÀNG 3: BẢNG TÍNH LẠI GIÁ VÀ THỜI LƯỢNG MỚI -->
+        <div class="p-3.5 rounded-2xl bg-spa-brand/10 border border-spa-brand/25 flex items-center justify-between text-left">
+          <div class="flex items-center gap-2.5 text-left">
+            <div class="w-9 h-9 rounded-xl bg-white dark:bg-spa-card border border-spa-brand/30 flex items-center justify-center text-spa-brand shadow-2xs shrink-0">
+              <i data-lucide="receipt" class="w-4 h-4"></i>
+            </div>
+            <div class="text-left">
+              <span class="text-[11px] font-extrabold text-spa-muted uppercase tracking-wider block text-left">Tổng Thanh Toán Mới</span>
+              <div id="modal-edit-live-total-price" class="text-xl font-black font-mono text-spa-brand tracking-tight leading-none mt-0.5 text-left">0 đ</div>
+            </div>
+          </div>
+
+          <div class="flex flex-col items-end text-right">
+            <div class="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-white dark:bg-spa-card border border-spa-border text-xs font-black text-spa-sage shadow-2xs">
+              <i data-lucide="clock" class="w-3.5 h-3.5"></i>
+              <span id="modal-edit-live-total-duration">50 phút</span>
+            </div>
+            <span id="modal-edit-live-remaining-note" class="text-[10px] text-spa-muted font-semibold mt-1">Còn lại khoảng -- phút</span>
+          </div>
+        </div>
+      `,
+      footer: `
+        ${AppButton({
+          text: "Xác Nhận Thay Đổi",
+          icon: "check",
+          variant: "primary",
+          size: "md",
+          onClick: "ServiceEditModal.saveChanges()",
+          customClass: "w-full shadow-md shadow-spa-brand/20",
+        })}
+      `,
       onClose: "ServiceEditModal.close()",
     });
 
@@ -131,10 +216,6 @@ const PosLiveView = {
       maxWidth: "max-w-md",
       body: `
         <div class="space-y-4 text-sm text-spa-dark dark:text-white">
-          <p class="text-xs text-spa-muted dark:text-white/70 leading-relaxed bg-spa-bg dark:bg-white/5 p-3 rounded-2xl border border-spa-border">
-            ✨ Bạn bận việc hoặc mệt đột xuất? Bạn có thể chuyển tour này cho bạn KTV khác làm tiếp. Hệ thống sẽ tự động đồng bộ sang máy bạn ấy và chia hoa hồng công bằng.
-          </p>
-
           <div class="space-y-1.5">
             <label class="block text-xs font-bold text-spa-muted uppercase tracking-wider">Chọn KTV Vào Thay Làm Tiếp:</label>
             <select id="modal-handover-staff-select" onchange="HandoverModal.updatePreview()" class="w-full bg-white dark:bg-spa-card border border-spa-border rounded-2xl p-3.5 text-sm text-spa-dark dark:text-white font-bold focus:outline-none focus:border-spa-brand transition cursor-pointer"></select>
@@ -167,7 +248,7 @@ const PosLiveView = {
         variant: "teal",
         size: "md",
         onClick: "HandoverModal.confirmHandover()",
-        customClass: "w-full !rounded-xl",
+        customClass: "w-full",
       }),
       onClose: "HandoverModal.close()",
     });
@@ -184,10 +265,16 @@ const PosLiveView = {
             <label class="block text-xs font-bold text-spa-muted uppercase tracking-wider">Danh Sách KTV Đang Làm Tour</label>
             <div id="swap-modal-staff-container" class="space-y-2.5"></div>
 
-            <button type="button" id="btn-swap-add-staff" onclick="SwapStaffModal.addStaff()" class="w-full py-3 px-3 rounded-2xl border border-dashed border-spa-brand/60 hover:bg-spa-brand/10 text-spa-brand font-bold text-xs flex items-center justify-center gap-1.5 transition cursor-pointer active:scale-98">
-              <i data-lucide="user-plus" class="w-4 h-4"></i>
-              <span>+ Thêm KTV vào tour này</span>
-            </button>
+            ${AppButton({
+              id: "btn-swap-add-staff",
+              text: "Thêm KTV vào tour này",
+              icon: "user-plus",
+              iconPosition: "left",
+              variant: "dashPink",
+              size: "md",
+              onClick: "SwapStaffModal.addStaff()",
+              customClass: "w-full font-bold text-xs",
+            })}
           </div>
 
           <div class="space-y-2 pt-1">
@@ -224,8 +311,8 @@ const PosLiveView = {
 
     // 4. Modal Checkout 2 pha (Khách xem & KTV ghi nhận tips)
     const modalCheckoutHtml = `
-      <div id="modal-checkout" class="hidden fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-sm transition-all duration-300">
-        <div class="w-full max-w-md max-h-[calc(100dvh-48px)] bg-spa-card rounded-[28px] border border-spa-border shadow-2xl flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+      <div id="modal-checkout" onclick="if(event.target === this) CheckoutModal.close()" class="hidden fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-sm transition-all duration-300 overflow-y-auto">
+        <div class="w-full max-w-md max-h-[67dvh] sm:max-h-[70dvh] m-auto my-auto bg-spa-card rounded-[28px] border border-spa-border shadow-2xl flex flex-col min-h-0 overflow-hidden" style="-webkit-mask-image: -webkit-radial-gradient(white, black); border-radius: 28px; -webkit-border-radius: 28px; isolation: isolate; max-height: 67dvh; max-height: 67vh;">
           <!-- Pha 1: Khách xem -->
           <div id="checkout-step-customer" class="flex flex-col flex-1 min-h-0">
             <div class="flex items-center justify-between px-6 py-4.5 border-b border-spa-border bg-spa-bg/90 dark:bg-spa-card/90 backdrop-blur-md shrink-0 select-none">
@@ -239,7 +326,7 @@ const PosLiveView = {
                 <i data-lucide="x" class="w-4 h-4"></i>
               </button>
             </div>
-            <div class="p-6 overflow-y-auto space-y-4 overscroll-contain flex-1 text-sm text-spa-dark dark:text-white">
+            <div class="p-6 overflow-y-auto space-y-4 overscroll-contain flex-1 min-h-0 text-sm text-spa-dark dark:text-white">
               <div class="p-4 rounded-2xl bg-spa-bg dark:bg-spa-dark/30 border border-spa-border space-y-2 text-xs sm:text-sm">
                 <div class="flex justify-between font-bold text-spa-dark dark:text-white">
                   <span id="chk-service-name">Combo</span>
@@ -296,7 +383,7 @@ const PosLiveView = {
                 Quay lại
               </button>
             </div>
-            <div class="p-6 overflow-y-auto space-y-4 overscroll-contain flex-1 text-sm text-spa-dark dark:text-white">
+            <div class="p-6 overflow-y-auto space-y-4 overscroll-contain flex-1 min-h-0 text-sm text-spa-dark dark:text-white">
               <div class="p-3.5 rounded-2xl bg-spa-bg dark:bg-spa-dark/30 border border-spa-border text-xs text-spa-muted flex justify-between items-center">
                 <span>Tiền dịch vụ tour: <b id="staff-step-service-price" class="text-spa-dark dark:text-white font-mono font-bold">0 đ</b></span>
                 <span class="font-semibold text-spa-sage" id="staff-step-pay-method">Chuyển khoản</span>

@@ -111,10 +111,16 @@ function checkUserRunningTour(user) {
     const maxExpiryMs = (targetMin + 30) * 60 * 1000;
     if (startTime > 0 && (now - startTime) > Math.max(maxExpiryMs, 90 * 60 * 1000)) continue;
 
+    // Nếu tour này đã được tôi bàn giao cho người khác -> Tôi không còn phục vụ tour này
+    if (s.is_handover && s.handover_from_phone) {
+      const fromP = (typeof PhoneService !== 'undefined') ? PhoneService.normalize(s.handover_from_phone) : String(s.handover_from_phone).replace(/[^0-9]/g, '');
+      if (myPhone && fromP === myPhone) continue;
+    }
+
     let isMe = false;
     if (s.staffs && Array.isArray(s.staffs) && s.staffs.length > 0) {
       const entry = s.staffs.find(st => {
-        if (!st || st.left_early) return false;
+        if (!st || st.left_early || st.is_handed_over || st.is_handover_from) return false;
         const stPhone = (typeof PhoneService !== 'undefined') ? PhoneService.normalize(st.phone) : String(st.phone || '').trim();
         const stId = String(st.staff_id || '').trim();
         const stName = (st.name || '').toLowerCase().replace('👑 ', '').replace('ktv ', '').trim();
@@ -247,8 +253,13 @@ function getLiveRunningTours() {
     const elapsedMin = startTime > 0 ? Math.max(0, Math.floor((now - startTime) / 60000)) : 0;
     const progressPct = Math.min(100, Math.round((elapsedMin / targetMin) * 100));
     const isOverdue = elapsedMin > targetMin;
-    const staffNames = (sess.staffs && Array.isArray(sess.staffs))
-      ? sess.staffs.map(s => s.name).join(', ')
+    // Chỉ hiển thị KTV đang trực tiếp phục vụ (loại bỏ người đã rời sớm / đã bàn giao)
+    const activeStaffs = (sess.staffs && Array.isArray(sess.staffs))
+      ? sess.staffs.filter(s => s && !s.left_early && !s.is_handed_over && !s.is_handover_from)
+      : [];
+
+    const staffNames = activeStaffs.length > 0
+      ? activeStaffs.map(s => s.name).join(', ')
       : (sess.staff_1_name || 'KTV');
 
     validSessions.push({

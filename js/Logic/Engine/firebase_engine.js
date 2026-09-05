@@ -215,25 +215,36 @@ function setupRealtimeListeners() {
 
     if (sessionsObj) {
       const allSessions = Object.values(sessionsObj).filter(Boolean);
-      // Tìm tour mà KTV hiện tại đang tham gia làm (Ưu tiên kiểm tra trạng thái rời ca)
+      // Tìm tour mà KTV hiện tại đang tham gia làm (Ưu tiên kiểm tra trạng thái rời ca & bàn giao)
       const mySession = allSessions.find(s => {
         const sId = String(s.session_id || s.start_timestamp || '');
         if (dismissedSessionIds.has(sId)) return false;
         if (!myPhone) return false;
 
+        // Nếu tour này đã được tôi bàn giao cho KTV khác -> Tuyệt đối không nhận lại
+        if (s.is_handover && s.handover_from_phone && normalizePhone(s.handover_from_phone) === myPhone) {
+          return false;
+        }
+
+        // Kiểm tra danh sách local tour đã bàn giao trên máy này
+        try {
+          const handedList = JSON.parse(localStorage.getItem('selena_handed_over_sessions') || '[]');
+          if (sId && handedList.includes(sId)) return false;
+        } catch (e) {}
+
         // Nếu có mảng staffs chi tiết
         if (s.staffs && Array.isArray(s.staffs) && s.staffs.length > 0) {
           const myEntry = s.staffs.find(st => st && st.phone && normalizePhone(st.phone) === myPhone);
           if (myEntry) {
-            // Nếu KTV này đã rời ca sớm -> Tuyệt đối không nhận session này
-            if (myEntry.left_early) return false;
+            // Nếu KTV này đã rời ca sớm hoặc đã bàn giao ca cho người khác -> Tuyệt đối không nhận session này
+            if (myEntry.left_early || myEntry.is_handed_over || myEntry.is_handover_from) return false;
             return true;
           }
         }
 
-        // KTV Chính khởi tạo tour
-        if (s.staff_1_phone && normalizePhone(s.staff_1_phone) === myPhone) return true;
+        // KTV Chính hiện tại đang chạy tour
         if (s.active_staff_phone && normalizePhone(s.active_staff_phone) === myPhone) return true;
+        if (s.staff_1_phone && normalizePhone(s.staff_1_phone) === myPhone) return true;
         return false;
       });
 
@@ -536,8 +547,29 @@ setInterval(async () => {
         const mySession = allSessions.find(s => {
           const sId = String(s.session_id || s.start_timestamp || '');
           if (dismissedSessionIds.has(sId)) return false;
+          if (!myPhone) return false;
+
+          // Nếu tour này đã được tôi bàn giao cho KTV khác -> Tuyệt đối không nhận lại
+          if (s.is_handover && s.handover_from_phone && normalizePhone(s.handover_from_phone) === myPhone) {
+            return false;
+          }
+
+          // Kiểm tra danh sách local tour đã bàn giao trên máy này
+          try {
+            const handedList = JSON.parse(localStorage.getItem('selena_handed_over_sessions') || '[]');
+            if (sId && handedList.includes(sId)) return false;
+          } catch (e) {}
+
+          if (s.staffs && Array.isArray(s.staffs) && s.staffs.length > 0) {
+            const myEntry = s.staffs.find(st => st && st.phone && normalizePhone(st.phone) === myPhone);
+            if (myEntry) {
+              if (myEntry.left_early || myEntry.is_handed_over || myEntry.is_handover_from) return false;
+              return true;
+            }
+          }
+
           if (s.active_staff_phone && normalizePhone(s.active_staff_phone) === myPhone) return true;
-          if (s.staffs && Array.isArray(s.staffs) && s.staffs.some(st => normalizePhone(st.phone) === myPhone)) return true;
+          if (s.staff_1_phone && normalizePhone(s.staff_1_phone) === myPhone) return true;
           return false;
         });
 

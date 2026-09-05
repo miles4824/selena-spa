@@ -306,12 +306,12 @@ function ModalHeader({
   const idAttr = id ? `id="${id}"` : "";
 
   return `
-    <div ${idAttr} class="flex items-center justify-between px-6 py-4.5 ${borderClass} bg-spa-bg/90 backdrop-blur-md shrink-0 select-none ${customClass}">
+    <div ${idAttr} class="flex items-center justify-between px-6 py-4.5 ${borderClass} bg-spa-bg/90 dark:bg-spa-card/90 shrink-0 select-none ${customClass}">
       <div class="flex items-center gap-2.5">
         ${iconHtml}
         <div>
           <div class="flex items-center gap-2">
-            <h3 class="text-base sm:text-lg font-bold text-spa-dark dark:text-white font-serif tracking-tight leading-tight">
+            <h3 class="text-base sm:text-lg font-bold uppercase text-spa-dark dark:text-white font-sans">
               ${titleContent}
             </h3>
             ${badgeHtml}
