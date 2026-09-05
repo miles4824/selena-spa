@@ -139,6 +139,10 @@ Toàn bộ hệ thống giao diện được quy chuẩn trên 5 gam màu phong 
 ---
 
 ## 6. Lịch Sử Phiên Bản & Lưu Vết (Changelog)
+- **v0.0.4.2 (2026-09-05)**:
+  - Rà soát quét toàn bộ codebase và triệt tiêu dứt điểm 100% các mã màu fix cứng còn sót lại (`manifest.json`, `Code.gs`, `modal_shell.js`, `bed_card.js`, `stat_card.js`, `status_badge.js`, `owner_home.js`, `login_screen.js`).
+  - Chuyển toàn bộ các thành phần sang token ngữ nghĩa Tailwind 4 Mindora Luxury (`bg-spa-card`, `bg-spa-sage-light`, `text-spa-sage`, `border-spa-border`, `to-spa-mist`...).
+  - Đồng bộ `APP_VERSION = 'v0.0.4.2'` giữa `config.js`, `index.html` và tài liệu kỹ thuật.
 - **v0.0.4.1 (2026-09-04)**:
   - Đồng bộ chuẩn hóa toàn bộ mã màu trong dự án sang 5 màu nhận diện Mindora Luxury (`#5E887E`, `#A7C7E7`, `#2F3E46`, `#F1F5F4`, `#E8AEB7`).
   - Xóa bỏ triệt để các mã màu fix cứng cũ (`#E58A7B`, `#FAF6F1`, `#2D2424`).

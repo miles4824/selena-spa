@@ -14,22 +14,22 @@ function StatCard({
 } = {}) {
   const colorStyles = {
     mint: { 
-      bg: 'bg-[#E8F8F5] dark:bg-spa-card', 
+      bg: 'bg-spa-sage-light dark:bg-spa-card', 
       border: 'border-spa-teal-border dark:border-spa-sage/40', 
-      text: 'text-spa-sage dark:text-[#88B8AD]' 
+      text: 'text-spa-sage dark:text-spa-sage' 
     },
     blue: { 
-      bg: 'bg-[#EBF5FB] dark:bg-spa-card', 
-      border: 'border-[#D4E6F1] dark:border-spa-mist/40', 
-      text: 'text-[#2980B9] dark:text-spa-mist' 
+      bg: 'bg-spa-mist/15 dark:bg-spa-card', 
+      border: 'border-spa-mist/40 dark:border-spa-mist/40', 
+      text: 'text-spa-dark dark:text-spa-mist' 
     },
     purple: { 
-      bg: 'bg-[#F5EEF8] dark:bg-spa-card', 
-      border: 'border-[#E8DAEF] dark:border-spa-brand/40', 
-      text: 'text-[#8E44AD] dark:text-spa-brand' 
+      bg: 'bg-spa-peach-light dark:bg-spa-card', 
+      border: 'border-spa-peach-border dark:border-spa-brand/40', 
+      text: 'text-spa-brand dark:text-spa-brand' 
     },
     coral: { 
-      bg: 'bg-gradient-to-br from-spa-brand to-[#D995A0] dark:from-spa-card dark:to-[#263339]', 
+      bg: 'bg-gradient-to-br from-spa-brand to-spa-brand-hover dark:from-spa-card dark:to-spa-card', 
       border: 'border-transparent dark:border-spa-brand/40', 
       text: 'text-white dark:text-spa-brand' 
     }

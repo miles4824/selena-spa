@@ -84,6 +84,8 @@
 ---
 
 ## 6. Lịch Sử Phiên Bản & Lưu Vết (Changelog)
+- **v0.0.4.2 (2026-09-05)**:
+  - Loại bỏ hoàn toàn mã màu hex fix cứng (`bg-white/90 dark:bg-[#2F3E46]/95`), quy chuẩn sang class ngữ nghĩa `bg-spa-card/90 dark:bg-spa-card/95 border border-spa-border`.
 - **v0.0.4.1 (2026-09-04)**:
   - Cập nhật công thức căn lề an toàn dưới đáy sang `max(14px, calc(env(safe-area-inset-bottom, 0px) + 6px))` đảm bảo không bao giờ bị dính mép dưới trên cả iPhone (tai thỏ / Dynamic Island) và Android.
   - Chuẩn hóa màu sắc nút và thanh Dock theo bộ 5 màu Mindora Luxury (`bg-white/90 dark:bg-[#2F3E46]/95`, `text-spa-muted dark:text-spa-mist hover:text-spa-brand dark:hover:text-white`).

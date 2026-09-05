@@ -165,7 +165,7 @@ function renderOwnerHome(user) {
               <h3 class="text-base sm:text-lg font-bold theme-heading">
                 Các Giường Đang Phục Vụ Trực Tiếp
               </h3>
-              <span class="text-xs font-mono font-bold px-2.5 py-0.5 rounded-full bg-spa-sage/15 text-spa-sage dark:text-[#88B8AD]">
+              <span class="text-xs font-mono font-bold px-2.5 py-0.5 rounded-full bg-spa-sage/15 text-spa-sage dark:text-spa-sage">
                 ${liveTours.length} đang chạy
               </span>
             </div>

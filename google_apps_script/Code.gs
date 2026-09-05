@@ -631,7 +631,7 @@ function updateCustomerNotes(params) {
         'audit_id', 'receipt_id', 'date_time', 'staff_id', 'staff_name',
         'old_customer', 'new_phone', 'new_customer_name', 'note'
       ]);
-      sheetAudit.getRange(1, 1, 1, 9).setFontWeight('bold').setBackground('#FFF0EB');
+      sheetAudit.getRange(1, 1, 1, 9).setFontWeight('bold').setBackground('#FBF0F2');
     }
     if (params.receipt_id || params.staff_name || params.action_type === 'ASSIGN_GUEST_CUSTOMER') {
       const now = new Date();
@@ -901,7 +901,7 @@ function createReceipt(params) {
       'staff_name', 'role_in_tour', 'commission_pct', 'commission_amount',
       'tip_amount', 'total_earned', 'payment_method', 'created_at'
     ]);
-    sheetPayroll.getRange(1, 1, 1, 19).setFontWeight('bold').setBackground('#FFF0EB');
+    sheetPayroll.getRange(1, 1, 1, 19).setFontWeight('bold').setBackground('#FBF0F2');
   }
 
   let payrollList = [];
@@ -1240,7 +1240,7 @@ function syncAllData(params) {
   if (!sheetMenu) {
     sheetMenu = ss.insertSheet('tb_menu');
     sheetMenu.appendRow(['service_id', 'service_name', 'price', 'duration_min', 'cosmetics_cost', 'commission_type', 'commission_value', 'is_active']);
-    sheetMenu.getRange(1, 1, 1, 8).setFontWeight('bold').setBackground('#FFF0EB');
+    sheetMenu.getRange(1, 1, 1, 8).setFontWeight('bold').setBackground('#FBF0F2');
   }
 
   const defaultMenuItems = [
@@ -1623,7 +1623,7 @@ function syncAllData(params) {
   if (!sheetConfig) {
     sheetConfig = ss.insertSheet('tb_config');
     sheetConfig.appendRow(['config_key', 'config_value', 'description']);
-    sheetConfig.getRange(1, 1, 1, 3).setFontWeight('bold').setBackground('#FFF0EB');
+    sheetConfig.getRange(1, 1, 1, 3).setFontWeight('bold').setBackground('#FBF0F2');
   }
 
   const defaultKeys = [
@@ -1968,7 +1968,7 @@ function backfillPayrollLogs() {
       'staff_name', 'role_in_tour', 'commission_pct', 'commission_amount',
       'tip_amount', 'total_earned', 'payment_method', 'created_at'
     ]);
-    sheetPayroll.getRange(1, 1, 1, 19).setFontWeight('bold').setBackground('#FFF0EB');
+    sheetPayroll.getRange(1, 1, 1, 19).setFontWeight('bold').setBackground('#FBF0F2');
   }
 
   const colMapR = createHeaderMap(sheetReceipts);

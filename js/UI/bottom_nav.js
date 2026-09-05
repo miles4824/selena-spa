@@ -23,7 +23,7 @@ function renderBottomNav(activeTab = "home") {
 
   container.innerHTML = `
     <nav id="mobile-bottom-nav" class="fixed left-4 right-4 z-50 max-w-sm mx-auto pointer-events-auto" style="bottom: max(14px, calc(env(safe-area-inset-bottom, 0px) + 6px));">
-      <div id="nav-dock" class="relative bg-white/90 dark:bg-[#2F3E46]/95 border border-spa-border dark:border-[#3D4E56] backdrop-blur-xl rounded-full shadow-[0_12px_32px_rgba(0,0,0,0.10)] dark:shadow-[0_12px_32px_rgba(0,0,0,0.5)] px-2.5 py-4 flex items-center justify-around">
+      <div id="nav-dock" class="relative bg-spa-card/90 dark:bg-spa-card/95 border border-spa-border backdrop-blur-xl rounded-full shadow-[0_12px_32px_rgba(0,0,0,0.10)] dark:shadow-[0_12px_32px_rgba(0,0,0,0.5)] px-2.5 py-4 flex items-center justify-around">
         <!-- VIÊN THUỐC TRƯỢT DI CHUYỂN TỰ ĐỘNG (SLIDING PILL) -->
         <div id="nav-sliding-indicator" class="absolute rounded-full bg-spa-brand shadow-glow-brand z-[1] pointer-events-none opacity-0 transition-all duration-300 ease-out"></div>
 

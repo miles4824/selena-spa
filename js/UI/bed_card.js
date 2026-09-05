@@ -16,7 +16,7 @@ function BedCard({
   const bedNumberStr = String(bedIndex).padStart(2, '0');
 
   return `
-    <div class="p-4 rounded-3xl bg-spa-card dark:bg-[#263339] border border-spa-border dark:border-[#384850] space-y-3 shadow-xs hover:border-spa-brand/50 dark:hover:border-spa-brand/50 transition group ${customClass}" style="-webkit-mask-image: -webkit-radial-gradient(white, black); border-radius: 24px; -webkit-border-radius: 24px; isolation: isolate; transform: translateZ(0);">
+    <div class="p-4 rounded-3xl bg-spa-card border border-spa-border space-y-3 shadow-xs hover:border-spa-brand/50 dark:hover:border-spa-brand/50 transition group ${customClass}" style="-webkit-mask-image: -webkit-radial-gradient(white, black); border-radius: 24px; -webkit-border-radius: 24px; isolation: isolate; transform: translateZ(0);">
       <div class="flex justify-between items-start">
         <div>
           <div class="text-[11px] font-black text-spa-brand uppercase tracking-wider flex items-center gap-1.5">
@@ -26,7 +26,7 @@ function BedCard({
           <div class="font-extrabold text-sm text-spa-dark dark:text-white mt-0.5">${sess.customer_name || 'Khách vãng lai'}</div>
           <div class="text-xs text-spa-muted dark:text-white/60">${sess.service_name || 'Dịch vụ'}</div>
         </div>
-        <span class="text-xs font-mono font-bold px-2.5 py-1 rounded-full ${isOverdue ? 'bg-rose-100 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300' : 'bg-spa-sage-light dark:bg-spa-sage/25 text-spa-sage dark:text-[#88B8AD]'}">
+        <span class="text-xs font-mono font-bold px-2.5 py-1 rounded-full ${isOverdue ? 'bg-rose-100 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300' : 'bg-spa-sage-light dark:bg-spa-sage/25 text-spa-sage dark:text-spa-sage'}">
           ${elapsedMin}/${targetMin}p
         </span>
       </div>
@@ -34,7 +34,7 @@ function BedCard({
       <!-- Tiến trình thời gian % động -->
       <div class="space-y-1">
         <div class="w-full h-2 bg-white dark:bg-black/30 rounded-full overflow-hidden shadow-inner">
-          <div class="h-full ${isOverdue ? 'bg-rose-500' : 'bg-gradient-to-r from-spa-sage to-[#7BA69C]'} rounded-full transition-all duration-500" style="width: ${progressPct}%"></div>
+          <div class="h-full ${isOverdue ? 'bg-rose-500' : 'bg-gradient-to-r from-spa-sage to-spa-mist'} rounded-full transition-all duration-500" style="width: ${progressPct}%"></div>
         </div>
         <div class="flex justify-between text-[10px] text-spa-hint dark:text-white/50 font-medium">
           <span>Bắt đầu: ${sess.start_time || '--:--'}</span>

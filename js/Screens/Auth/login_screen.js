@@ -75,7 +75,7 @@ function renderLoginScreen() {
         <!-- LỚP NỀN XANH THỦY TINH LỎNG KÈM QUẦNG SÁNG KHÚC XẠ (LIQUID GLASS AMBIENT CORE) -->
         <div class="absolute inset-0 m-0 -z-10 pointer-events-none select-none overflow-hidden rounded-[36px] transition-colors duration-300" style="border-radius: 36px;">
           <!-- Dải gradient khúc xạ ánh sáng lỏng (Liquid Refraction Gradient) -->
-          <div class="absolute inset-0 rounded-[36px] bg-gradient-to-br from-[#5E887E]/25 via-white/10 to-[#1F2D27]/30 dark:from-[#5E887E]/30 dark:via-[#3D544C]/40 dark:to-[#1F2D27]/60"></div>
+          <div class="absolute inset-0 rounded-[36px] bg-gradient-to-br from-spa-sage/25 via-white/10 to-spa-dark/30 dark:from-spa-sage/30 dark:via-spa-sage/30 dark:to-spa-dark/60"></div>
           
           <!-- Vệt sáng bóng kính cong phía trên (Liquid Curved Specular Reflection) -->
           <div class="absolute -top-1/2 left-0 right-0 h-full rounded-[36px] bg-[radial-gradient(ellipse_at_top,_rgba(255,255,255,0.35)_0%,_rgba(255,255,255,0.05)_50%,_transparent_75%)]"></div>

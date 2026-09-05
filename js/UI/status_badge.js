@@ -18,7 +18,7 @@ function StatusBadge({
     `;
   }
   return `
-    <div ${idAttr} class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#E8F8F5] dark:bg-spa-sage/20 text-spa-sage dark:text-[#88B8AD] border border-spa-teal-border dark:border-spa-sage/40 shadow-2xs ${customClass}">
+    <div ${idAttr} class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold bg-spa-sage-light dark:bg-spa-sage/20 text-spa-sage dark:text-spa-sage border border-spa-teal-border dark:border-spa-sage/40 shadow-2xs ${customClass}">
       <span class="w-2 h-2 rounded-full bg-spa-sage"></span>
       <span>Sẵn sàng phục vụ</span>
     </div>

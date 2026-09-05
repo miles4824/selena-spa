@@ -32,7 +32,7 @@ function AppCard({
       "app-card-peach rounded-xl border relative overflow-hidden transition-all duration-300",
 
     // 6. Mint Accent (Khối điểm nhấn thành tích ngọc bích)
-    mint: "app-card-mint bg-[#E8F8F5]/60 dark:bg-[#5E887E]/15 rounded-xl border border-[#B7EBDD] dark:border-[#5E887E]/30 relative overflow-hidden transition-all duration-300",
+    mint: "app-card-mint bg-spa-sage-light/60 dark:bg-spa-sage/15 rounded-xl border border-spa-teal-border dark:border-spa-sage/30 relative overflow-hidden transition-all duration-300",
   };
 
   const chosenStyle = variantStyles[variant] || variantStyles.banner;
