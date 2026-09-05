@@ -177,7 +177,7 @@ function renderStaffHome(user) {
           </h3>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+        <div class="grid grid-cols-2 sm:grid-cols-2 gap-3.5">
           ${toursCardHtml}
           ${commCardHtml}
         </div>

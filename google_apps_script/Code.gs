@@ -309,11 +309,11 @@ function getCategoriesList() {
   if (data.length <= 1 || (data.length === 1 && !data[0][0])) {
     sheet.clear();
     sheet.appendRow(['category_id', 'category_name', 'icon', 'icon_color', 'item_icon', 'sort_order', 'is_active']);
-    sheet.getRange(1, 1, 1, 7).setFontWeight('bold').setBackground('#FFF0EB');
+    sheet.getRange(1, 1, 1, 7).setFontWeight('bold').setBackground('#FBF0F2');
     const defaultCats = [
-      ['CB', 'Combo Gội Chính', 'sparkles', 'text-[#E58A7B]', '💆', 1, 'TRUE'],
-      ['DV_TL', 'Dịch Vụ Triệt Lông', 'sparkles', 'text-[#E58A7B]', '✨', 2, 'TRUE'],
-      ['DV_TM', 'Dịch Vụ Làm Thêm / Da Đầu', 'plus-circle', 'text-[#2E7D6D]', '🌿', 3, 'TRUE'],
+      ['CB', 'Combo Gội Chính', 'sparkles', 'text-[#E8AEB7]', '💆', 1, 'TRUE'],
+      ['DV_TL', 'Dịch Vụ Triệt Lông', 'sparkles', 'text-[#E8AEB7]', '✨', 2, 'TRUE'],
+      ['DV_TM', 'Dịch Vụ Làm Thêm / Da Đầu', 'plus-circle', 'text-[#5E887E]', '🌿', 3, 'TRUE'],
       ['DV_MS', 'Massage Trị Liệu & Thư Giãn', 'heart-pulse', 'text-[#D97706]', '💆', 4, 'TRUE'],
       ['DV_WX', 'Dịch Vụ Waxing', 'scissors', 'text-[#9333EA]', '✨', 5, 'TRUE'],
       ['DV_PL', 'Nặn Mụn & Peel Trị Liệu', 'shield-check', 'text-[#E11D48]', '🩺', 6, 'TRUE'],
@@ -338,7 +338,7 @@ function getCategoriesList() {
       if (!isActive) continue;
 
       let icon = String(getCell(row, colMap, ['icon', 'bieu_tuong'], 'sparkles')).trim() || 'sparkles';
-      let iconColor = String(getCell(row, colMap, ['icon_color', 'mau_icon'], 'text-[#E58A7B]')).trim() || 'text-[#E58A7B]';
+      let iconColor = String(getCell(row, colMap, ['icon_color', 'mau_icon'], 'text-[#E8AEB7]')).trim() || 'text-[#E8AEB7]';
       let itemIcon = String(getCell(row, colMap, ['item_icon', 'emoji'], '✨')).trim() || '✨';
       let sortOrder = Number(getCell(row, colMap, ['sort_order', 'thu_tu', 'stt'], i)) || i;
 

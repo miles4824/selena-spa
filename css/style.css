@@ -213,7 +213,7 @@ html[data-theme="dark"] .border-spa-border {
   ) !important;
   border-color: #f0eae1 !important;
   box-shadow:
-    0 10px 30px -5px rgba(229, 138, 123, 0.05),
+    0 10px 30px -5px rgba(232, 174, 183, 0.08),
     0 4px 12px rgba(0, 0, 0, 0.02) !important;
 }
 
@@ -221,7 +221,7 @@ html[data-theme="dark"] .border-spa-border {
   background: #ffffff !important;
   border-color: #e2e8e6 !important;
   box-shadow:
-    0 10px 30px -5px rgba(229, 138, 123, 0.05),
+    0 10px 30px -5px rgba(232, 174, 183, 0.06),
     0 4px 12px rgba(0, 0, 0, 0.02) !important;
 }
 

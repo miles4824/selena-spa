@@ -6,7 +6,7 @@ function AppTitle({
   configKey = '',
   defaultText = '',
   icon = '',
-  iconColor = 'text-[#E58A7B]',
+  iconColor = 'text-spa-brand',
   level = 'section', // 'section' | 'page' | 'card' | 'modal'
   rightText = '',
   rightAction = '',
@@ -22,17 +22,17 @@ function AppTitle({
   }
   if (!titleContent && defaultText) titleContent = defaultText;
 
-  // 2. Định hình khuôn mẫu UI Tailwind 4 chuẩn mực (Không bao giờ bị lệch kiểu dáng)
+  // 2. Định hình khuôn mẫu UI Tailwind 4 chuẩn mực (Tự động thích ứng Dark/Light Mode)
   const styles = {
-    section: 'text-xs font-extrabold uppercase tracking-wider text-[#7E7272]',
-    page: 'text-2xl font-serif font-medium text-[#2D2424]',
-    card: 'text-xs font-bold uppercase tracking-wider text-[#7E7272]',
-    modal: 'text-base sm:text-lg font-bold text-[#2D2424] font-serif tracking-tight'
+    section: 'text-xs font-extrabold uppercase tracking-wider text-spa-muted',
+    page: 'text-2xl font-serif font-medium text-spa-dark dark:text-white',
+    card: 'text-xs font-bold uppercase tracking-wider text-spa-muted',
+    modal: 'text-base sm:text-lg font-bold text-spa-dark dark:text-white font-serif tracking-tight'
   };
 
   const idAttr = id ? `id="${id}"` : '';
   const iconHtml = icon ? `<i data-lucide="${icon}" class="w-5 h-5 ${iconColor}"></i>` : '';
-  const rightHtml = rightAction ? rightAction : (rightText ? `<span class="text-[11px] text-[#A39696] font-medium">${rightText}</span>` : '');
+  const rightHtml = rightAction ? rightAction : (rightText ? `<span class="text-[11px] text-spa-hint font-medium">${rightText}</span>` : '');
 
   // Nếu là cấp section có khu vực bên phải (rightText / rightAction) -> Trả về flex row 2 đầu
   if (level === 'section' && (rightText || rightAction)) {
