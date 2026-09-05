@@ -118,14 +118,8 @@ function renderStaffHome(user) {
         typeof AppCard === "function"
           ? AppCard({
               variant: "mindora",
+              ambient: true,
               content: `
-          <!-- Ambient Glow Spheres (Bộ 5 màu) -->
-          <div class="absolute inset-0 pointer-events-none select-none overflow-hidden rounded-[28px]" style="-webkit-mask-image: -webkit-radial-gradient(white, black); border-radius: 28px;">
-            <div class="absolute -top-10 -right-10 w-44 h-44 rounded-full bg-[#5E8B7E]/20 dark:bg-[#5E8B7E]/10 blur-3xl pointer-events-none"></div>
-            <div class="absolute -bottom-10 -left-10 w-44 h-44 rounded-full bg-[#5E8B7E]/20 dark:bg-[#5E8B7E]/10 blur-3xl pointer-events-none"></div>
-            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-36 h-36 rounded-full bg-[#5E8B7E]/15 dark:bg-[#5E8B7E]/5 blur-3xl pointer-events-none"></div>
-          </div>
-
           <div class="relative z-10 space-y-3.5">
             <div class="flex items-center justify-between">
               ${statusBadgeHtml}

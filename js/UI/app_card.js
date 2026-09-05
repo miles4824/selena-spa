@@ -2,7 +2,8 @@
 // UI COMPONENT: APP CARD (CHUYÊN QUẢN LÝ KHUÔN THẺ NỀN LUXURY - TAILWIND 4)
 // =========================================================================
 function AppCard({
-  variant = "banner", // 'banner' (peach-cream gradient) | 'surface' (white) | 'peach' | 'mint'
+  variant = "banner", // 'banner' | 'surface' | 'peach' | 'mint' | 'mindora' | 'zen'
+  ambient = false,    // Bật hiệu ứng quả cầu phát sáng mờ ảo Ambient Glow (true/false)
   content = "",
   padding = "p-6 sm:p-7",
   customClass = "",
@@ -37,8 +38,21 @@ function AppCard({
   const chosenStyle = variantStyles[variant] || variantStyles.banner;
   const idAttr = id ? `id="${id}"` : "";
 
+  // TÍCH HỢP SẴN KHỐI AMBIENT GLOW SPHERES (Khi ambient: true)
+  const ambientHtml = ambient
+    ? `
+      <!-- Ambient Glow Spheres (Bộ 5 màu - Chuẩn WebKit Masking) -->
+      <div class="absolute inset-0 pointer-events-none select-none overflow-hidden rounded-[28px]" style="-webkit-mask-image: -webkit-radial-gradient(white, black); border-radius: 28px;">
+        <div class="absolute -top-10 -right-10 w-44 h-44 rounded-full bg-[#E8AEB7]/20 dark:bg-[#E8AEB7]/10 blur-3xl pointer-events-none"></div>
+        <div class="absolute -bottom-10 -left-10 w-44 h-44 rounded-full bg-[#5E887E]/20 dark:bg-[#5E887E]/10 blur-3xl pointer-events-none"></div>
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-36 h-36 rounded-full bg-[#A7C7E7]/15 dark:bg-[#A7C7E7]/5 blur-3xl pointer-events-none"></div>
+      </div>
+    `
+    : "";
+
   return `
     <div ${idAttr} class="${chosenStyle} ${padding} ${customClass}" style="-webkit-mask-image: -webkit-radial-gradient(white, black); border-radius: 28px; -webkit-border-radius: 28px; isolation: isolate; transform: translateZ(0);">
+      ${ambientHtml}
       ${content}
     </div>
   `;
